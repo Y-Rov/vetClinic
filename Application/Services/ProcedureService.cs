@@ -1,4 +1,4 @@
-﻿using Core;
+﻿using Core.Entities;
 using Core.Interfaces;
 
 namespace Application.Services;

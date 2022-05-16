@@ -1,4 +1,4 @@
-﻿namespace Core;
+﻿namespace Core.Entities;
 
 public class Procedure
 {
@@ -7,5 +7,5 @@ public class Procedure
     public string? Description { get; set; }
     public decimal Cost { get; set; }
     public int DurationInMinutes { get; set; }
-//    public IEnumerable<Specialization> Specializations { get; set;}
+    //public IEnumerable<Specialization> Specializations { get; set;}
 }
