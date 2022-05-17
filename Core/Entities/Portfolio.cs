@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core.Entities
 {
-    public class Animal
+    public class Portfolio
     {
-        public int Id { get; set; }
+        public string? Description { get; set; }
         public int UserId { get; set; }
-        public string? NickName { get; set; }
-        public DateTime BirthDate { get; set; }
+        public User? User { get; set; }
     }
 }
