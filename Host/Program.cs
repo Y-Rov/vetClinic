@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.AddApplicationMiddlewares();
+app.AddApplicationMiddleware();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
