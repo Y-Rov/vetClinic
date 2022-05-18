@@ -1,7 +1,7 @@
 ﻿namespace Core.Entities
 {
-    public class User
+    public class Procedure
     {
-        
+
     }
 }
