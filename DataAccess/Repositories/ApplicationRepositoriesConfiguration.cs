@@ -4,7 +4,7 @@ namespace DataAccess.Repositories
 {
     public static class ApplicationRepositoriesConfiguration
     {
-        public static void AddApplicationRepositorie(this IServiceCollection services)
+        public static void AddApplicationRepositories(this IServiceCollection services)
         {
 
 
