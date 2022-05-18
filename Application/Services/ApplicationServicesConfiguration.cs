@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Services
 {
@@ -6,8 +7,7 @@ namespace Application.Services
     {
         public static void AddApplicationServices(this IServiceCollection services)
         {
-
-
+            services.AddSingleton<ILoggerManager, LoggerManager>();
         }
     }
 }
