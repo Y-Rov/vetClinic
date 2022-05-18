@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "Host\Host.csproj", "{D3E74AEF-94D9-4627-8446-5B0763BD4131}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csproj", "{8BFB5DC5-72CA-42E9-A55C-4ABFBAB9F570}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF3E2FCD-B932-49EA-8859-721D97D054FF} = {EF3E2FCD-B932-49EA-8859-721D97D054FF}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{EF3E2FCD-B932-49EA-8859-721D97D054FF}"
 EndProject

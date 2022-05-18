@@ -1,5 +1,6 @@
 using Application.Services;
 using Host.Middleware;
+using WebApi.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
+
+//Start ConfigureAutoMapper
+var config = new AutoMapper.MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AutoMapperProfile());
+});
+var mapper = config.CreateMapper();
+builder.Services.AddSingleton(mapper);
+//End ConfigureAutoMapper
 
 var summaries = new[]
 {
