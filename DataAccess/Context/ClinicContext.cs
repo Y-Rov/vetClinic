@@ -19,8 +19,7 @@ namespace DataAccess.Context
         public DbSet<Salary> Salaries { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<User> Users { get; set; }
-        public ClinicContext() { }
-        public ClinicContext(DbContextOptions options) : base(options) { }
+        public ClinicContext(DbContextOptions<ClinicContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // ᓚᘏᗢ For fluent API configurations
