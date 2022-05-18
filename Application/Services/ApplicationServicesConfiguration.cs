@@ -4,7 +4,7 @@ namespace Application.Services
 {
     public static class ApplicationServicesConfiguration
     {
-        public static void AddApplicationService(this IServiceCollection services)
+        public static void AddApplicationServices(this IServiceCollection services)
         {
 
 
