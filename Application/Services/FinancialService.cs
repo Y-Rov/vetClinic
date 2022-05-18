@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Entities;
+using Core.Interfaces.Services;
 
 namespace Application.Services
 {
-    public class FinancialService
+    public class FinancialService:IFinancialService
     {
         public void GenerateFinancialStatementForMonth()
         {
@@ -28,9 +30,9 @@ namespace Application.Services
         {
             throw new NotImplementedException();
         }
-        //public IEnumerable<Salary> GetSalaries()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public IEnumerable<Salary> GetSalaries()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
