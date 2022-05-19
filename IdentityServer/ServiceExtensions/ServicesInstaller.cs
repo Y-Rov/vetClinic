@@ -28,15 +28,19 @@ public static class ServicesInstaller
             })
             .AddEntityFrameworkStores<ApplicationContext>()
             .AddDefaultTokenProviders();
+
+        var assembly = typeof(Program).Assembly.GetName().Name;
         
         services.AddIdentityServer()
             .AddDeveloperSigningCredential()
             .AddOperationalStore(opts =>
             {
-                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("Default"));
+                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("Default"), 
+                    opt => opt.MigrationsAssembly(assembly));
             })
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
             .AddInMemoryApiResources(Config.GetApiResources())
+            .AddInMemoryApiScopes(Config.GetApiScopes())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<User>();
     }
