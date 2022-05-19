@@ -2,6 +2,7 @@ using Application.Services;
 using Core.Entities;
 using DataAccess.Context;
 using Host.Middleware;
+using WebApi.AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using NLog;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,15 @@ builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<ClinicContext>();
 
 
+//Start ConfigureAutoMapper
+var config = new AutoMapper.MapperConfiguration(cfg =>
+{
+    cfg.AddMaps(typeof(WebApi.AutoMapper.UserProfile));
+});
+var mapper = config.CreateMapper();
+builder.Services.AddSingleton(mapper);
+//End ConfigureAutoMapper
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,7 +41,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
+
 
 var summaries = new[]
 {

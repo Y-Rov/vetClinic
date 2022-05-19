@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+ <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -13,7 +13,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+
+    <ProjectReference Include="..\WebApi\WebApi.csproj" />
+
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+
   </ItemGroup>
 
 </Project>
