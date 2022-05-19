@@ -1,6 +1,8 @@
 using Application.Services;
+using Core.Entities;
 using DataAccess.Context;
 using Host.Middleware;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ClinicContext>
     (options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentity<User, IdentityRole<int>>()
+    .AddEntityFrameworkStores<ClinicContext>();
+
 
 var app = builder.Build();
 

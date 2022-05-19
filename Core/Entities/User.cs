@@ -1,6 +1,8 @@
-﻿namespace Core.Entities
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Core.Entities
 {
-    public class User
+    public class User : IdentityUser<int>
     {
         
     }
