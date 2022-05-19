@@ -25,7 +25,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>()
 //Start ConfigureAutoMapper
 var config = new AutoMapper.MapperConfiguration(cfg =>
 {
-    cfg.AddProfile(new UserProfile());
+    cfg.AddMaps(typeof(WebApi.AutoMapper.UserProfile));
 });
 var mapper = config.CreateMapper();
 builder.Services.AddSingleton(mapper);
