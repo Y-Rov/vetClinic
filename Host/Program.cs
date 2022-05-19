@@ -10,6 +10,15 @@ builder.Services.AddApplicationServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Start ConfigureAutoMapper
+var config = new AutoMapper.MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AutoMapperProfile());
+});
+var mapper = config.CreateMapper();
+builder.Services.AddSingleton(mapper);
+//End ConfigureAutoMapper
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,14 +32,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//Start ConfigureAutoMapper
-var config = new AutoMapper.MapperConfiguration(cfg =>
-{
-    cfg.AddProfile(new AutoMapperProfile());
-});
-var mapper = config.CreateMapper();
-builder.Services.AddSingleton(mapper);
-//End ConfigureAutoMapper
 
 var summaries = new[]
 {
