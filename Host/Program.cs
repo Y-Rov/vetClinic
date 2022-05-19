@@ -3,9 +3,12 @@ using Core.Entities;
 using DataAccess.Context;
 using Host.Middleware;
 using Microsoft.AspNetCore.Identity;
+using NLog;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 // Add services to the container.
 builder.Services.AddApplicationServices();
