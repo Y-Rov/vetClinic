@@ -1,7 +1,9 @@
 using Application.Services;
+using Core.Entities;
 using DataAccess.Context;
 using Host.Middleware;
 using WebApi.AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using NLog;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ClinicContext>
     (options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentity<User, IdentityRole<int>>()
+    .AddEntityFrameworkStores<ClinicContext>();
+
 
 //Start ConfigureAutoMapper
 var config = new AutoMapper.MapperConfiguration(cfg =>
