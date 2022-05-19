@@ -16,7 +16,16 @@ public static class Config
     public static IEnumerable<ApiResource> GetApiResources()
         => new List<ApiResource>()
         {
-            new ApiResource("vetClinicApi", "Vet clinic API") 
+            new ApiResource("vetClinicApi", "Vet clinic API")
+            {
+                Scopes = {"vetClinicApi.info.read"}
+            } 
+        };
+    
+    public static IEnumerable<ApiScope> GetApiScopes()
+        =>  new[]
+        {
+            new ApiScope("vetClinicApi.info.read", "Read basic info about doctors, procedures ect.")
         };
 
     public static IEnumerable<Client> GetClients()
@@ -28,12 +37,13 @@ public static class Config
                 RequireConsent = false,
                 ClientId = "postman_client",
                 ClientName = "Postman",
-                AllowedScopes = {"vetClinicApi"},
+                AllowedScopes = {"vetClinicApi.info.read"},
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowAccessTokensViaBrowser = true,
                 AllowOfflineAccess = true, // enable refresh tokens
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
                 ClientSecrets = {new Secret("tests_client_secret".ToSha256())},
-                AccessTokenLifetime = 3600,
+                AccessTokenLifetime = 100,
             },
             
             // angular client
@@ -41,7 +51,7 @@ public static class Config
             {
                 ClientId = "angular_client",
                 ClientName = "Angular Client",
-                AllowedScopes = {"vetClinicApi"},
+                AllowedScopes = {"vetClinicApi.info.read"},
                 RequireConsent = false,
                 RequireClientSecret = false,
                 AllowOfflineAccess = true, // enable refresh tokens
