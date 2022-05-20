@@ -16,27 +16,27 @@ namespace DataAccess.Repositories
         {
             _context = context;
         }
-        public Task<Specialization> AddSpecialization(Specialization specialization)
+        public Task<Specialization> AddSpecializationAsync(Specialization specialization)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> DeleteSpecialization(int id)
+        public Task<int> DeleteSpecializationAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<Specialization>> GetAllSpecializations()
+        public Task<ICollection<Specialization>> GetAllSpecializationsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Specialization> GetSpecializationById(int id)
+        public Task<Specialization> GetSpecializationByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Specialization> UpdateSpecialization(int id, Specialization updatedSpecialization)
+        public Task<Specialization> UpdateSpecializationAsync(int id, Specialization updatedSpecialization)
         {
             throw new NotImplementedException();
         }

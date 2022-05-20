@@ -9,10 +9,10 @@ namespace Core.Interfaces.Repositories
 {
     public interface ISpecializationRepository
     {
-        Task<ICollection<Specialization>> GetAllSpecializations();
-        Task<Specialization> GetSpecializationById(int id);
-        Task<int> DeleteSpecialization(int id);
-        Task<Specialization> AddSpecialization(Specialization specialization);
-        Task<Specialization> UpdateSpecialization(int id, Specialization updatedSpecialization);
+        Task<ICollection<Specialization>> GetAllSpecializationsAsync();
+        Task<Specialization> GetSpecializationByIdAsync(int id);
+        Task<int> DeleteSpecializationAsync(int id);
+        Task<Specialization> AddSpecializationAsync(Specialization specialization);
+        Task<Specialization> UpdateSpecializationAsync(int id, Specialization updatedSpecialization);
     }
 }
