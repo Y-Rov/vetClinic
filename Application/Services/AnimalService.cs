@@ -10,32 +10,32 @@ namespace Application.Services
 {
     public class AnimalService : IAnimalService
     {
-        public void AddNewPet(Animal animal)
+        public async Task<Animal> AddNewPet(Animal animal)
+        {      
+            throw new NotImplementedException();
+        }      
+               
+        public async Task<Animal> DeletePet(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeletePet(int id)
+        public async Task<IEnumerable<Animal>> GetAllAnimals()
         {
             throw new NotImplementedException();
         }
 
-        public void UpdatePet(Animal animal)
+        public async Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalId(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Animal GetAnimalById(int id)
+        public async Task<Animal> GetAnimalById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Animal> GetAllAnimals()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Appointment> GetAllAppointmentsWithAnimalId(int id)
+        public async Task<Animal> UpdatePet(Animal animal)
         {
             throw new NotImplementedException();
         }

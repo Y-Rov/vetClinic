@@ -9,11 +9,11 @@ namespace Core.Interfaces.Services
 {
     public interface IAnimalService
     {
-        public void AddNewPet(Animal animal);
-        public void DeletePet(int id);
-        public void UpdatePet(Animal animal);
-        public IEnumerable<Animal> GetAllAnimals();
-        public Animal GetAnimalById(int id);
-        public IEnumerable<Appointment> GetAllAppointmentsWithAnimalId(int id);
+        Task<Animal> AddNewPet(Animal animal);
+        Task<Animal> DeletePet(int id);
+        Task<Animal> UpdatePet(Animal animal);
+        Task<IEnumerable<Animal>> GetAllAnimals();
+        Task<Animal> GetAnimalById(int id);
+        Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalId(int id);
     }
 }
