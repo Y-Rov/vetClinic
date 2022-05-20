@@ -23,8 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\mnt\8A8633A486339025\SoftServe Project\code\vetClinic\Core\Core.csproj" />
-      <ProjectReference Include="..\..\..\..\..\mnt\8A8633A486339025\SoftServe Project\code\vetClinic\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     </ItemGroup>
 
