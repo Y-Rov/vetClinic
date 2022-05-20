@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class AniamlService : IAnimalService
+    public class AnimalService : IAnimalService
     {
-        public void AddNewPet()
+        public void AddNewPet(Animal animal)
         {
             throw new NotImplementedException();
         }
 
-        public void DeletePet()
+        public void DeletePet(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Animal> GetAllAnimals()
+        public void UpdatePet(Animal animal)
         {
             throw new NotImplementedException();
         }
@@ -30,7 +30,7 @@ namespace Application.Services
             throw new NotImplementedException();
         }
 
-        public void UpdatePet()
+        public IEnumerable<Animal> GetAllAnimals()
         {
             throw new NotImplementedException();
         }
