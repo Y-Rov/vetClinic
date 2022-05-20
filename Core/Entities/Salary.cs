@@ -8,6 +8,7 @@ namespace Core.Entities
 {
     public class Salary
     {
+        public int Id { get; set; }
         public int UserId { get; set; }
         public User EmployeeUser { get; set; }
         public decimal Value { get; set; }
