@@ -8,6 +8,7 @@ namespace DataAccess.Repositories
         public static void AddApplicationRepositories(this IServiceCollection services)
         {
             services.AddScoped<IPortfolioRepository, PortfolioRepository>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
         }
     }
 }
