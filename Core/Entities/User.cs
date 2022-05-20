@@ -8,9 +8,9 @@ namespace Core.Entities
         public string? LastName { get; set; }
         public DateTime BirthDate { get; set; }
 
-        public Salary? Salary { get; set; }
-        public Address? Address { get; set; }
-        public Portfolio? Portfolio { get; set; }
+        //public Salary? Salary { get; set; }
+        //public Address? Address { get; set; }
+        //public Portfolio? Portfolio { get; set; }
 
         public IEnumerable<Animal>? Animals { get; set; }
         public IEnumerable<Appointment>? Appointments { get; set; }

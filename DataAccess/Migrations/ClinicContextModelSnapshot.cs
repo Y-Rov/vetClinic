@@ -22,43 +22,6 @@ namespace DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Core.Entities.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<byte?>("BuildingNumber")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("FlatNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("House")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Street")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ZipCode")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Address");
-                });
-
             modelBuilder.Entity("Core.Entities.Animal", b =>
                 {
                     b.Property<int>("Id")
@@ -105,50 +68,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Appointment");
-                });
-
-            modelBuilder.Entity("Core.Entities.Portfolio", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Portfolio");
-                });
-
-            modelBuilder.Entity("Core.Entities.Salary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Salary");
                 });
 
             modelBuilder.Entity("Core.Entities.User", b =>
@@ -361,17 +280,6 @@ namespace DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entities.Address", b =>
-                {
-                    b.HasOne("Core.Entities.User", "User")
-                        .WithOne("Address")
-                        .HasForeignKey("Core.Entities.Address", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Core.Entities.Animal", b =>
                 {
                     b.HasOne("Core.Entities.User", "Owner")
@@ -396,28 +304,6 @@ namespace DataAccess.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Animal");
-                });
-
-            modelBuilder.Entity("Core.Entities.Portfolio", b =>
-                {
-                    b.HasOne("Core.Entities.User", "User")
-                        .WithOne("Portfolio")
-                        .HasForeignKey("Core.Entities.Portfolio", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Core.Entities.Salary", b =>
-                {
-                    b.HasOne("Core.Entities.User", "EmployeeUser")
-                        .WithOne("Salary")
-                        .HasForeignKey("Core.Entities.Salary", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EmployeeUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -478,15 +364,9 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Core.Entities.User", b =>
                 {
-                    b.Navigation("Address");
-
                     b.Navigation("Animals");
 
                     b.Navigation("Appointments");
-
-                    b.Navigation("Portfolio");
-
-                    b.Navigation("Salary");
                 });
 #pragma warning restore 612, 618
         }
