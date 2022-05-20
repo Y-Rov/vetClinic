@@ -8,34 +8,34 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class AniamlService : IAnimalService
+    public class AnimalService : IAnimalService
     {
-        public void AddNewPet()
+        public async Task<Animal> AddNewPetAsync(Animal animal)
+        {      
+            throw new NotImplementedException();
+        }      
+               
+        public async Task<Animal> DeletePetAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeletePet()
+        public async Task<IEnumerable<Animal>> GetAllAnimalsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Animal> GetAllAnimals()
+        public async Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Animal GetAnimalById(int id)
+        public async Task<Animal> GetAnimalByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdatePet()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Appointment> GetAllAppointmentsWithAnimalId(int id)
+        public async Task<Animal> UpdatePetAsync(Animal animal)
         {
             throw new NotImplementedException();
         }
