@@ -9,7 +9,6 @@ public static class Config
         => new List<IdentityResource>()
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Email(),
             new IdentityResources.Profile()
         };
 
@@ -18,14 +17,14 @@ public static class Config
         {
             new ApiResource("vetClinicApi", "Vet clinic API")
             {
-                Scopes = {"vetClinicApi.info.read"}
+                Scopes = {"apiAccess"}
             } 
         };
     
     public static IEnumerable<ApiScope> GetApiScopes()
         =>  new[]
         {
-            new ApiScope("vetClinicApi.info.read", "Read basic info about doctors, procedures ect.")
+            new ApiScope("apiAccess", "Access vet clinic Api")
         };
 
     public static IEnumerable<Client> GetClients()
@@ -37,7 +36,7 @@ public static class Config
                 RequireConsent = false,
                 ClientId = "postman_client",
                 ClientName = "Postman",
-                AllowedScopes = {"vetClinicApi.info.read"},
+                AllowedScopes = {"apiAccess", "profile"},
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowAccessTokensViaBrowser = true,
                 AllowOfflineAccess = true, // enable refresh tokens
@@ -51,7 +50,7 @@ public static class Config
             {
                 ClientId = "angular_client",
                 ClientName = "Angular Client",
-                AllowedScopes = {"vetClinicApi.info.read"},
+                AllowedScopes = {"apiAccess", "profile"},
                 RequireConsent = false,
                 RequireClientSecret = false,
                 AllowOfflineAccess = true, // enable refresh tokens
