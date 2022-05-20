@@ -7,4 +7,4 @@ builder.Services.AddServices(config);
 var app = builder.Build();
 
 app.UseIdentityServer();
-app.Run();
+app.Run("http://localhost:5297");
