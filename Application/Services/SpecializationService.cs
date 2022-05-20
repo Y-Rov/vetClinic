@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using System;
 using System.Collections.Generic;
@@ -10,29 +11,24 @@ namespace Application.Services
 {
     public class SpecializationService : ISpecializationService
     {
-        public Task<Specialization> AddSpecialization(Specialization specialization)
+        ISpecializationRepository _repository;
+        public SpecializationService(ISpecializationRepository repository)
         {
-            throw new NotImplementedException();
+            _repository = repository;
         }
+        public async Task<IEnumerable<Specialization>> GetAllSpecializations() =>
+            await _repository.GetAllSpecializations();
 
-        public Task<int> DeleteSpecialization(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<Specialization> GetSpecializationById(int id) =>
+            await _repository.GetSpecializationById(id);
 
-        public Task<IEnumerable<Specialization>> GetAllSpecializations()
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<Specialization> AddSpecialization(Specialization specialization) =>
+            await _repository.AddSpecialization(specialization);
 
-        public Task<Specialization> GetSpecializationById(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<int> DeleteSpecialization(int id) =>
+            await _repository.DeleteSpecialization(id);
 
-        public Task<Specialization> UpdateSpecialization(int id, Specialization updated)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<Specialization> UpdateSpecialization(int id, Specialization updated) =>
+            await _repository.UpdateSpecialization(id, updated);
     }
 }
