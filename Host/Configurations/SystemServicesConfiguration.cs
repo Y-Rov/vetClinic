@@ -1,20 +1,19 @@
-﻿using Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Application.Services;
+using Core.Interfaces;
 using FluentValidation.AspNetCore;
 using WebApi.Validators;
 
-namespace Application.Services
+namespace Host.Configurations
 {
-    public static class ApplicationServicesConfiguration
+    public static class SystemServicesConfiguration
     {
-        public static void AddApplicationServices(this IServiceCollection services)
+        public static void AddSystemServices(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssemblyContaining<ProcedureValidator>();
             });
-
         }
     }
 }

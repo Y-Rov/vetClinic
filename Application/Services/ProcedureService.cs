@@ -1,31 +1,38 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using DataAccess.Context;
 
 namespace Application.Services;
 
 public class ProcedureService : IProcedureService
 {
-    public void CreateNewProcedure(Procedure procedure)
+    private readonly ClinicContext _clinicContext;
+    public ProcedureService(ClinicContext clinicContext)
+    {
+        _clinicContext = clinicContext;
+    }
+
+    public Task CreateNewProcedureAsync(Procedure procedure)
     {
         throw new NotImplementedException();
     }
 
-    public void UpdateProcedure(int oldProcedureId, Procedure newProcedure)
+    public Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure)
     {
         throw new NotImplementedException();
     }
 
-    public void DeleteProcedure(int procedureId)
+    public Task DeleteProcedureAsync(int procedureId)
     {
         throw new NotImplementedException();
     }
 
-    public Procedure GetById(int procedureId)
+    public Task<Procedure> GetByIdAsync(int procedureId)
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<Procedure> GetAllProcedures()
+    public Task<IEnumerable<Procedure>> GetAllProceduresAsync()
     {
         throw new NotImplementedException();
     }
