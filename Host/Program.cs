@@ -1,13 +1,12 @@
-using Application.Services;
+using Application.Configuration;
 using Core.Entities;
 using DataAccess.Context;
-using Host.Middleware;
-using WebApi.AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using NLog;
-using Microsoft.EntityFrameworkCore;
+using DataAccess.Repositories;
 using Host.Configurations;
-using Application.Configuration;
+using Host.Middleware;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
@@ -15,6 +14,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 // Add services to the container.
 builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();
+builder.Services.AddApplicationRepositories();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

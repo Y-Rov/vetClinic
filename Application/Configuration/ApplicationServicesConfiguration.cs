@@ -9,6 +9,7 @@ namespace Application.Configuration
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IAnimalService, AnimalService>();
+            services.AddScoped<IPortfolioService, PortfolioService>();
         }
     }
 }
