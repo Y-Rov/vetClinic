@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Linq;
 using Core.Entities;
 using DataAccess;
+using IdentityServer.Services;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +14,8 @@ public static class ServicesInstaller
     public static void AddServices(this IServiceCollection services, IConfiguration config)
     {
         // services.AddCors(opts =>
-        //     opts.AddPolicy("AllowAll",
-        //         p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowAnyHeader()));
+        //      opts.AddPolicy("AllowAll",
+        //          p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         
         services.AddDbContext<ApplicationContext>(opts => 
             opts.UseSqlServer(config.GetConnectionString("Default")));
@@ -43,5 +45,7 @@ public static class ServicesInstaller
             .AddInMemoryApiScopes(Config.GetApiScopes())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<User>();
+
+        services.AddScoped<IProfileService, ProfileService>();
     }
 }
