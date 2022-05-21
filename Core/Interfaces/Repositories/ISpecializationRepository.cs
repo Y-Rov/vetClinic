@@ -9,7 +9,7 @@ namespace Core.Interfaces.Repositories
 {
     public interface ISpecializationRepository
     {
-        Task<ICollection<Specialization>> GetAllSpecializationsAsync();
+        Task<IEnumerable<Specialization>> GetAllSpecializationsAsync();
         Task<Specialization> GetSpecializationByIdAsync(int id);
         Task<int> DeleteSpecializationAsync(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
