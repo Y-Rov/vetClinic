@@ -14,5 +14,6 @@ namespace Core.Entities
 
         public IEnumerable<Animal>? Animals { get; set; }
         public IEnumerable<Appointment>? Appointments { get; set; }
+        public IEnumerable<Specialization> Specializations { get; set; }
     }
 }

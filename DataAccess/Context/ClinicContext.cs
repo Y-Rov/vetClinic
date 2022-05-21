@@ -9,6 +9,7 @@ namespace DataAccess.Context
     {
         public DbSet<Animal> Animals { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
+        public DbSet<UserSpecialization> UserSpecializations { get; set; }
 
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }
