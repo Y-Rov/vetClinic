@@ -8,7 +8,7 @@
 # Ignore appsettings.json files
 
 Host/appsettings.json
-Host/appsettings.Development.json
+Host/appsettings.*.json
 
 # User-specific files
 *.suo
