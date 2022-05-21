@@ -30,7 +30,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace??String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext!.SaveChangesAsync();
                 }
 
@@ -42,7 +42,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
@@ -55,7 +55,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
@@ -68,7 +68,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
@@ -81,7 +81,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
@@ -94,7 +94,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
@@ -106,7 +106,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
@@ -118,7 +118,7 @@ namespace Host.Middleware
                 using (var serviceScope = _serviceProvider.CreateScope())
                 {
                     var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
-                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? String.Empty, context.Request.Path));
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext.SaveChangesAsync();
                 }
 
