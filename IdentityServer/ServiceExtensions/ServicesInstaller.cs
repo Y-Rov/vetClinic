@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Linq;
 using Core.Entities;
 using DataAccess;
+using DataAccess.Context;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
@@ -13,11 +14,7 @@ public static class ServicesInstaller
 {
     public static void AddServices(this IServiceCollection services, IConfiguration config)
     {
-        // services.AddCors(opts =>
-        //      opts.AddPolicy("AllowAll",
-        //          p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-        
-        services.AddDbContext<ApplicationContext>(opts => 
+        services.AddDbContext<ClinicContext>(opts => 
             opts.UseSqlServer(config.GetConnectionString("Default")));
         
         services.AddIdentity<User, IdentityRole<int>>(opts =>
@@ -28,7 +25,7 @@ public static class ServicesInstaller
                 opts.Password.RequireUppercase = false;
                 opts.Password.RequiredLength = 5;
             })
-            .AddEntityFrameworkStores<ApplicationContext>()
+            .AddEntityFrameworkStores<ClinicContext>()
             .AddDefaultTokenProviders();
 
         var assembly = typeof(Program).Assembly.GetName().Name;
