@@ -8,7 +8,7 @@ namespace DataAccess.Context
     public class ClinicContext : IdentityDbContext<User, IdentityRole<int>,int>
     {
         public DbSet<Animal> Animals { get; set; }
-        
+        public DbSet<ExceptionEntity> Exceptions { get; set; }
 
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }
