@@ -12,6 +12,7 @@ namespace Application.Configuration
             services.AddScoped<IAnimalService, AnimalService>();
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<ISpecializationService, SpecializationService>();
         }
     }
 }
