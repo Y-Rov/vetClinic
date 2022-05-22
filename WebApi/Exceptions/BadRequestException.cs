@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Host.Exceptions
+namespace WebApi.Exceptions
 {
     public class BadRequestException : Exception
     {

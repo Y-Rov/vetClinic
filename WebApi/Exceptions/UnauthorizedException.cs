@@ -1,4 +1,4 @@
-﻿namespace Host.Exceptions
+﻿namespace WebApi.Exceptions
 {
     public class UnauthorizedException : Exception
     {

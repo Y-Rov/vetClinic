@@ -1,7 +1,7 @@
 ﻿using Core.Entities;
 using Core.Models;
 using DataAccess.Context;
-using Host.Exceptions;
+using WebApi.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -35,7 +35,7 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
 
-                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (NotFoundException ex)
@@ -47,7 +47,7 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
 
-                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExeptionAsync(context, HttpStatusCode.NotFound,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (ForbidException ex)
@@ -59,7 +59,7 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
 
-                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExeptionAsync(context, HttpStatusCode.Forbidden,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (BadRequestException ex)
@@ -71,7 +71,7 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
 
-                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExeptionAsync(context, HttpStatusCode.BadRequest,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (DivideByZeroException ex)
