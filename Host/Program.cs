@@ -1,20 +1,22 @@
-using Application.Services;
+using Application.Configuration;
 using Core.Entities;
 using DataAccess.Context;
-using Host.Middleware;
-using WebApi.AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using NLog;
-using Microsoft.EntityFrameworkCore;
+using DataAccess.Repositories;
 using Host.Configurations;
-using Application.Configuration;
+using Host.Middleware;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
-LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();
+builder.Services.AddApplicationRepositories();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -43,32 +45,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
 
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.MapControllers();
 
 app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

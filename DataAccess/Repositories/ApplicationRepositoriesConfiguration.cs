@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Core.Interfaces.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.Repositories
 {
@@ -6,8 +7,11 @@ namespace DataAccess.Repositories
     {
         public static void AddApplicationRepositories(this IServiceCollection services)
         {
-
-
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPortfolioRepository, PortfolioRepository>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
+            services.AddScoped<ISpecializationRepository, SpecializationRepository>();
+            services.AddScoped<IProcedureRepository, ProcedureRepository>();
         }
     }
 }

@@ -1,13 +1,25 @@
 ﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Configurations;
 
-public static class ProcedureConfiguration
+public class ProcedureConfiguration : IEntityTypeConfiguration<Procedure>
 {
-    public static void ConfigureProcedureEntity(this ModelBuilder modelBuilder)
+    public void Configure(EntityTypeBuilder<Procedure> builder)
     {
-        modelBuilder.Entity<Procedure>()
-            .HasMany<Procedure>();
+        builder
+            .HasKey(procedure => procedure.Id);
+
+        builder
+            .Property(procedure => procedure.Description)
+            .HasMaxLength(250);
+        
+        builder
+            .Property(procedure => procedure.Name)
+            .HasMaxLength(100);
+
+        builder
+            .ToTable("Procedures");
     }
 }
