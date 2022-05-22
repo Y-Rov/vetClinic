@@ -9,14 +9,16 @@ namespace DataAccess.Context
     {
         public DbSet<Animal> Animals { get; set; }
         
-
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+            modelBuilder.SeedRoles();
+            modelBuilder.SeedAdmin();
         }
     }
 }
