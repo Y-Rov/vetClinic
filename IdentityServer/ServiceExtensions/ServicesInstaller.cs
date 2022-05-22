@@ -34,7 +34,7 @@ public static class ServicesInstaller
             .AddDeveloperSigningCredential()
             .AddOperationalStore(opts =>
             {
-                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("Default"), 
+                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("DefaultConnection"), 
                     opt => opt.MigrationsAssembly(assembly));
             })
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
