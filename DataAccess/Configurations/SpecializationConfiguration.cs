@@ -15,11 +15,6 @@ namespace DataAccess.Configurations
                 .Property(spec => spec.Name)
                 .HasMaxLength(50);
 
-            builder
-                .HasMany(specialization => specialization.Doctors)
-                .WithMany(doctor => doctor.Specializations)
-                .UsingEntity<UserSpecialization>();
-
             builder.ToTable("Specializations");
         }
     }
