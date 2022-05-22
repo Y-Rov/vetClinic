@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Models;
 using DataAccess.Context;
+using Host.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -24,6 +25,54 @@ namespace Host.Middleware
             try
             {
                 await _next(context);
+            }
+            catch (UnauthorizedException ex)
+            {
+                using (var serviceScope = _serviceProvider.CreateScope())
+                {
+                    var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
+                    await dataContext!.SaveChangesAsync();
+                }
+
+                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                    $"{ex.Message}. Path:{context.Request.Path}.");
+            }
+            catch (NotFoundException ex)
+            {
+                using (var serviceScope = _serviceProvider.CreateScope())
+                {
+                    var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
+                    await dataContext!.SaveChangesAsync();
+                }
+
+                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                    $"{ex.Message}. Path:{context.Request.Path}.");
+            }
+            catch (ForbidException ex)
+            {
+                using (var serviceScope = _serviceProvider.CreateScope())
+                {
+                    var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
+                    await dataContext!.SaveChangesAsync();
+                }
+
+                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                    $"{ex.Message}. Path:{context.Request.Path}.");
+            }
+            catch (BadRequestException ex)
+            {
+                using (var serviceScope = _serviceProvider.CreateScope())
+                {
+                    var dataContext = serviceScope.ServiceProvider.GetService<ClinicContext>();
+                    dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
+                    await dataContext!.SaveChangesAsync();
+                }
+
+                await HandleExeptionAsync(context, HttpStatusCode.InternalServerError,
+                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (DivideByZeroException ex)
             {
