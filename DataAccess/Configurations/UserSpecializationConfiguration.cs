@@ -16,12 +16,13 @@ namespace DataAccess.Configurations
                         userSpec.SpecializationId
                     });
 
-            builder.
-                HasOne(userSpec => userSpec.User)
+            builder
+                .HasOne(userSpec => userSpec.User)
                 .WithMany(user => user.UserSpecializations)
                 .HasForeignKey(userSpec => userSpec.UserId);
 
-            builder.HasOne(userSpec => userSpec.Specialization)
+            builder
+                .HasOne(userSpec => userSpec.Specialization)
                 .WithMany(specialization => specialization.UserSpecializations)
                 .HasForeignKey(userSpec => userSpec.SpecializationId);
 
