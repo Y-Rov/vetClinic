@@ -31,7 +31,7 @@ namespace DataAccess.Configurations
                 .HasColumnType("tinyint");
 
             builder
-                .Property(address => address.FlatNumber)
+                .Property(address => address.ApartmentNumber)
                 .HasColumnType("smallint");
 
             builder
