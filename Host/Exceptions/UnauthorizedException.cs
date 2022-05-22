@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Host.Exceptions
+﻿namespace Host.Exceptions
 {
-    public class UnauthorizedException:Exception
+    public class UnauthorizedException : Exception
     {
         public new string Message { get; set; }
         public UnauthorizedException()
