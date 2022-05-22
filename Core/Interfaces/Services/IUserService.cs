@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Core.Interfaces.Services
 {
@@ -6,9 +7,8 @@ namespace Core.Interfaces.Services
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User?> GetUserByIdAsync(int id);
-        Task SaveChangesAsync();
-        void Add(User user);
-        void Update(User user);
-        void Delete(User user);
+        Task<IdentityResult> CreateAsync(User user, string password);
+        Task<IdentityResult> UpdateAsync(User user);
+        Task<IdentityResult> DeleteAsync(User user);
     }
 }
