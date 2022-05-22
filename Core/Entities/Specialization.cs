@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<Procedure> Procedures { get; set; }
-        public ICollection<User> Doctors { get; set; }
+        public ICollection<ProcedureSpecialization> ProcedureSpecializations { get; set; }
+        public ICollection<UserSpecialization> UserSpecializations { get; set; }
     }
 }
