@@ -14,6 +14,7 @@ namespace DataAccess.Context
         public DbSet<AppointmentProcedure> AppointmentProcedures { get; set; }
         public DbSet<AppointmentUser> AppointmentUsers { get; set; }
         public DbSet<ExceptionEntity> Exceptions { get; set; }
+        public DbSet<Procedure> Procedures { get; set; }
 
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }

@@ -11,6 +11,7 @@ namespace DataAccess.Repositories
             services.AddScoped<IPortfolioRepository, PortfolioRepository>();
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<ISpecializationRepository, SpecializationRepository>();
+            services.AddScoped<IProcedureRepository, ProcedureRepository>();
         }
     }
 }
