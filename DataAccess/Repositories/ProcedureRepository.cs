@@ -32,20 +32,6 @@ public class ProcedureRepository : IProcedureRepository
 
     public async void UpdateProcedureAsync(Procedure newProcedure)
     {
-
-        // var oldProcedure = await GetProcedureByIdAsync(procedureId);
-        //
-        // oldProcedure.AppointmentProcedures = newProcedure.AppointmentProcedures;
-        // oldProcedure.Cost = newProcedure.Cost;
-        // oldProcedure.Description = newProcedure.Description;
-        // oldProcedure.DurationInMinutes = newProcedure.DurationInMinutes;
-        // oldProcedure.Name = newProcedure.Name;
-        // oldProcedure.ProcedureSpecializations = newProcedure.ProcedureSpecializations;
-        //
-        // await SaveChangesAsync();
-        //
-        // _clinicContext.Set<Procedure>().Update(newProcedure);
-
         _clinicContext.Entry(newProcedure).State = EntityState.Modified;
         await SaveChangesAsync();
     }
