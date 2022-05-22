@@ -15,7 +15,7 @@ public static class ServicesInstaller
     public static void AddServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<ClinicContext>(opts => 
-            opts.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+            opts.UseSqlServer(config.GetConnectionString("Default")));
         
         services.AddIdentity<User, IdentityRole<int>>(opts =>
             {
@@ -34,7 +34,7 @@ public static class ServicesInstaller
             .AddDeveloperSigningCredential()
             .AddOperationalStore(opts =>
             {
-                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("DefaultConnection"), 
+                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("Default"), 
                     opt => opt.MigrationsAssembly(assembly));
             })
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
