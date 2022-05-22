@@ -15,7 +15,7 @@ public static class ServicesInstaller
     public static void AddServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<ClinicContext>(opts => 
-            opts.UseSqlServer(config.GetConnectionString("Default")));
+            opts.UseSqlServer(config.GetConnectionString("DefaultConnection")));
         
         services.AddIdentity<User, IdentityRole<int>>(opts =>
             {
