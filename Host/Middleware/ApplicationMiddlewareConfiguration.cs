@@ -6,7 +6,7 @@ namespace Host.Middleware
     {
         public static void AddApplicationMiddleware(this IApplicationBuilder app)
         {
-         
+            app.UseMiddleware<ExceptionMiddleware>();
         }
     }
 }

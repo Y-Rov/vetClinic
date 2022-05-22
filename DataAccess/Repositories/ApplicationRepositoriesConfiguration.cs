@@ -10,6 +10,7 @@ namespace DataAccess.Repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPortfolioRepository, PortfolioRepository>();
             services.AddScoped<IAddressRepository, AddressRepository>();
+            services.AddScoped<IProcedureRepository, ProcedureRepository>();
         }
     }
 }

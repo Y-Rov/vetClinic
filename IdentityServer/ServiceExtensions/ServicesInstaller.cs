@@ -14,10 +14,12 @@ public static class ServicesInstaller
 {
     public static void AddServices(this IServiceCollection services, IConfiguration config)
     {
+
         services.AddDbContext<ClinicContext>(opts => 
             opts.UseSqlServer(config.GetConnectionString("Default")));
-        
+
         services.AddIdentity<User, IdentityRole<int>>(opts =>
+
             {
                 opts.Password.RequireDigit = false;
                 opts.Password.RequireLowercase = false;
@@ -29,12 +31,12 @@ public static class ServicesInstaller
             .AddDefaultTokenProviders();
 
         var assembly = typeof(Program).Assembly.GetName().Name;
-        
+
         services.AddIdentityServer()
             .AddDeveloperSigningCredential()
             .AddOperationalStore(opts =>
             {
-                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("Default"), 
+                opts.ConfigureDbContext = builder => builder.UseSqlServer(config.GetConnectionString("Default"),
                     opt => opt.MigrationsAssembly(assembly));
             })
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
