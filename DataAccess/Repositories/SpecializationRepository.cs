@@ -15,13 +15,13 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync() =>
             await _context.Specializations
-                .Include(specialization => specialization.Doctors)
+                .Include(specialization => specialization.UserSpecializations)
                 .ToListAsync();
 
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id) =>
             await _context.Specializations
-                .Include(specialization => specialization.Doctors)
+                .Include(specialization => specialization.UserSpecializations)
                 .FirstAsync(specialization => specialization.Id == id);
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
