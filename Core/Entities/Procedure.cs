@@ -7,7 +7,10 @@ public class Procedure
     public string? Description { get; set; }
     public decimal Cost { get; set; }
     public int DurationInMinutes { get; set; }
-    public IEnumerable<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
-    public IEnumerable<Specialization>? Specializations { get; set;}
+    public IEnumerable<AppointmentProcedure> AppointmentProcedures { get; set; } = 
+        new List<AppointmentProcedure>();
+
+    public IEnumerable<ProcedureSpecialization>? ProcedureSpecializations { get; set; } =
+        new List<ProcedureSpecialization>();
 }
 
