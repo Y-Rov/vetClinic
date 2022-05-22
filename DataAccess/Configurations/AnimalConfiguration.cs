@@ -23,7 +23,8 @@ namespace DataAccess.Configurations
             builder
                 .HasOne<User>(animal => animal.Owner)
                 .WithMany(user => user.Animals)
-                .HasForeignKey(animal => animal.OwnerId);
+                .HasForeignKey(animal => animal.OwnerId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.ToTable("Animals");
         }
