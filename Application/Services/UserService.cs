@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
@@ -13,14 +14,14 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
-        public void Add(User user)
+        public async Task<IdentityResult> CreateAsync(User user, string password)
         {
-            _userRepository.Add(user);
+            return await _userRepository.CreateAsync(user, password);
         }
 
-        public void Delete(User user)
+        public async Task<IdentityResult> DeleteAsync(User user)
         {
-            _userRepository.Delete(user);
+            return await _userRepository.DeleteAsync(user);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -33,14 +34,9 @@ namespace Application.Services
             return await _userRepository.GetUserByIdAsync(id);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task<IdentityResult> UpdateAsync(User user)
         {
-            await _userRepository.SaveChangesAsync();
-        }
-
-        public void Update(User user)
-        {
-            _userRepository.Update(user);
+            return await _userRepository.UpdateAsync(user);
         }
     }
 }

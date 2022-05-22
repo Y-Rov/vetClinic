@@ -1,47 +1,43 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using DataAccess.Context;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ClinicContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public UserRepository(ClinicContext context)
+        public UserRepository(UserManager<User> userManager)
         {
-            _context = context;
+            _userManager = userManager;
         }
 
-        public void Add(User user)
+        public async Task<IdentityResult> CreateAsync(User user, string password)
         {
-            _context.Users.Add(user);
+            return await _userManager.CreateAsync(user, password);
         }
 
-        public void Delete(User user)
+        public async Task<IdentityResult> DeleteAsync(User user)
         {
-            _context.Users.Remove(user);
+            return await _userManager.DeleteAsync(user);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _userManager.Users.ToListAsync();
         }
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            return await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+            return await _userManager.Users.SingleOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task<IdentityResult> UpdateAsync(User user)
         {
-            await _context.SaveChangesAsync();
-        }
-
-        public void Update(User user)
-        {
-            _context.Users.Remove(user);
+            return await _userManager.UpdateAsync(user);
         }
     }
 }
