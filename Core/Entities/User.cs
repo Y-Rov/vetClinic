@@ -10,7 +10,7 @@ namespace Core.Entities
 
         //public Salary? Salary { get; set; }
         //public Address? Address { get; set; }
-        //public Portfolio? Portfolio { get; set; }
+        public Portfolio? Portfolio { get; set; }
 
         public IEnumerable<Animal>? Animals { get; set; }
         public IEnumerable<AppointmentUser>? AppointmentUsers { get; set; }
