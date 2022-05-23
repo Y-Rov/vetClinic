@@ -13,6 +13,8 @@ namespace Host.Configurations
             services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssemblyContaining<ProcedureDtoValidator>();
+                fv.RegisterValidatorsFromAssemblyContaining<UserCreateDtoValidator>();
+                fv.RegisterValidatorsFromAssemblyContaining<UserUpdateDtoValidator>();
             });
         }
     }
