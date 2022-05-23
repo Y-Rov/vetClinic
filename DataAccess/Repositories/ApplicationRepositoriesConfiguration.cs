@@ -12,6 +12,7 @@ namespace DataAccess.Repositories
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<ISpecializationRepository, SpecializationRepository>();
             services.AddScoped<IProcedureRepository, ProcedureRepository>();
+            services.AddScoped<IExceptionEntityRepository, ExceptionEntityRepository>();
         }
     }
 }
