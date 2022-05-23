@@ -5,7 +5,8 @@ using WebApi.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using FluentValidation.Results;
-using Newtonsoft.Json;
+
+
 
 namespace Host.Middleware
 {
@@ -38,7 +39,7 @@ namespace Host.Middleware
                 }
 
                 await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
-                    $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure);
+                    $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (NotFoundException ex)
             {
@@ -49,7 +50,7 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
                 await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
-                                   $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure);
+                                   $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (ForbidException ex)
             {
@@ -61,7 +62,7 @@ namespace Host.Middleware
                 }
 
                 await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
-                     $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure);
+                     $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (BadRequestException ex)
             {
@@ -73,7 +74,7 @@ namespace Host.Middleware
                 }
 
                 await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
-                    $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure);
+                    $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (DivideByZeroException ex)
             {
