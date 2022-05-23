@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Core.DTO;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
 
@@ -22,21 +22,21 @@ namespace WebApi.Controllers
 
         [HttpGet("/getSpecializations")]
         public async Task<ActionResult> GetSpecializations() =>
-            Ok(_mapper.Map<IEnumerable<SpecializationDTO>>(await _service.GetAllSpecializationsAsync()));
+            Ok(_mapper.Map<IEnumerable<SpecializationViewModel>>(await _service.GetAllSpecializationsAsync()));
 
         [HttpGet("/getSpecializationById/{id}")]
         public async Task<ActionResult> GetSpecializationById(int id) =>
-            Ok(_mapper.Map<SpecializationDTO>(await _service.GetSpecializationByIdAsync(id)));
+            Ok(_mapper.Map<SpecializationViewModel>(await _service.GetSpecializationByIdAsync(id)));
 
         [HttpPost]
-        public async Task<ActionResult> AddSpecialization(SpecializationDTO specialization) =>
+        public async Task<ActionResult> AddSpecialization(SpecializationViewModel specialization) =>
             !ModelState.IsValid ? throw new BadRequestException() :
-                Ok(_mapper.Map<SpecializationDTO>(
+                Ok(_mapper.Map<SpecializationViewModel>(
                     await _service.AddSpecializationAsync(_mapper.Map<Specialization>(specialization))));
 
         
         [HttpPut("/update/{id}")]
-        public async Task<ActionResult> UpdateSpecialization(int id, SpecializationDTO updated) =>
+        public async Task<ActionResult> UpdateSpecialization(int id, SpecializationViewModel updated) =>
             !ModelState.IsValid? throw new BadRequestException() :
                 Ok(await _service.UpdateSpecializationAsync(id,_mapper.Map<Specialization>(updated)));
 

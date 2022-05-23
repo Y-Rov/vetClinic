@@ -12,14 +12,19 @@ public class ProcedureService : IProcedureService
         _procedureRepository = procedureRepository;
     }
 
-    public async Task<Procedure> CreateNewProcedureAsync(Procedure procedure) =>
-        await _procedureRepository.AddProcedureAsync(procedure);
-
-    public async Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure) => 
+    public async Task<Procedure> CreateNewProcedureAsync(Procedure procedure)
+    { 
+        return await _procedureRepository.AddProcedureAsync(procedure);
+    }
+    public async Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure)
+    {
         await _procedureRepository.UpdateProcedureAsync(oldProcedureId, newProcedure);
+    }
 
-    public async Task DeleteProcedureAsync(int procedureId) =>
+    public async Task DeleteProcedureAsync(int procedureId)
+    {
         await _procedureRepository.DeleteProcedureAsync(procedureId);
+    }
 
     public async Task<Procedure> GetByIdAsync(int procedureId)
     { 
