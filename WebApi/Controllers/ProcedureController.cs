@@ -36,7 +36,7 @@ public class ProcedureController : ControllerBase
         }
         catch (NullReferenceException)
         {
-            return NotFound();
+            throw new NotFoundException();
         }
 
         return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureModel>>(result));
@@ -52,11 +52,11 @@ public class ProcedureController : ControllerBase
         }
         catch (NullReferenceException)
         {
-            return NotFound();
+            throw new NotFoundException();
         }        
         catch (InvalidOperationException)
         {
-            return NotFound();
+            throw new NotFoundException();
         }
 
         return Ok(_mapper.Map<Procedure, ProcedureModel>(result));
@@ -68,7 +68,7 @@ public class ProcedureController : ControllerBase
         var validationResult = await _validator.ValidateAsync(procedure);
         if (!validationResult.IsValid)
         {
-            return BadRequest(validationResult.Errors);
+            throw new BadRequestException(validationResult.Errors);
         }
         var createdProcedure = await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureDTO, Procedure>(procedure));
         return Created(nameof(Create), _mapper.Map<ProcedureModel>(createdProcedure));
