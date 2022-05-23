@@ -1,8 +1,10 @@
-﻿using Core.Entities;
+﻿using Core.DTO;
+using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
+using AutoMapper;
 
 namespace WebApi.Controllers
 {
@@ -12,14 +14,16 @@ namespace WebApi.Controllers
     {
         private readonly IExceptionEntityService _exceptionEntityService;
         private readonly ILoggerManager _loggerManager;
-        public ExceptionController(IExceptionEntityService exceptionEntityService, ILoggerManager loggerManager)
+        private readonly IMapper _mapper;
+        public ExceptionController(IExceptionEntityService exceptionEntityService, ILoggerManager loggerManager, IMapper mapper)
         {
             _exceptionEntityService = exceptionEntityService;
             _loggerManager = loggerManager;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntity>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadDto>>> GetAllAsync()
         {
             _loggerManager.LogInfo("Open ExceptionController action GetAllAsync()");
             var allExceptions = await _exceptionEntityService.GetAllAsync();
@@ -31,7 +35,8 @@ namespace WebApi.Controllers
             }
 
             _loggerManager.LogInfo("Exit ExceptionController action GetAllAsync()");
-            return Ok(allExceptions);
+            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadDto>>(allExceptions);
+            return Ok(readDtos);
         }
 
         [HttpGet("Stats")]
@@ -69,19 +74,20 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("Today")]
-        public async Task<ActionResult<IEnumerable<ExceptionEntity>>> GetTodayAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadDto>>> GetTodayAsync()
         {
             _loggerManager.LogInfo("Open ExceptionController action GetTodayAsync()");
-            var exceptions = await _exceptionEntityService.GetTodayAsync();
+            var allExceptions = await _exceptionEntityService.GetTodayAsync();
 
-            if (exceptions == null)
+            if (allExceptions == null)
             {
                 _loggerManager.LogError("Error (NotFoundException) at ExceptionController action GetTodayAsync()");
                 throw new NotFoundException();
             }
 
             _loggerManager.LogInfo("Exit ExceptionController action GetTodayAsync()");
-            return Ok(exceptions);
+            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadDto>>(allExceptions);
+            return Ok(readDtos);
 
         }
 
