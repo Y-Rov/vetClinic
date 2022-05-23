@@ -12,7 +12,7 @@ public class ProcedureService : IProcedureService
         _procedureRepository = procedureRepository;
     }
 
-    public async Task CreateNewProcedureAsync(Procedure procedure) =>
+    public async Task<Procedure> CreateNewProcedureAsync(Procedure procedure) =>
         await _procedureRepository.AddProcedureAsync(procedure);
 
     public async Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure) => 

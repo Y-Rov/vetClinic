@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
+using Core.Models;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,15 +25,15 @@ public class ProcedureRepository : IProcedureRepository
         return await _clinicContext.Procedures.SingleOrDefaultAsync(pr => pr.Id == procedureId);
     }
 
-    public async Task AddProcedureAsync(Procedure procedure)
+    public async Task<Procedure> AddProcedureAsync(Procedure procedure)
     {
-        await _clinicContext.Procedures.AddAsync(procedure);
+        var result = await _clinicContext.Procedures.AddAsync(procedure);
         await SaveChangesAsync();
+        return result.Entity;
     }
 
     public async Task UpdateProcedureAsync(int procedureId, Procedure newProcedure)
     {
-        //_clinicContext.Entry(newProcedure).State = EntityState.Modified;
         var oldProcedure = await GetProcedureByIdAsync(procedureId);
         
         oldProcedure.Cost = newProcedure.Cost;

@@ -1,9 +1,8 @@
-﻿using Application.Services;
-using AutoMapper;
-using Core.ViewModel.ProcedureViewModels;
+﻿using AutoMapper;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.ViewModel.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
 
