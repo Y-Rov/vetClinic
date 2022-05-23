@@ -8,7 +8,7 @@ namespace WebApi.AutoMapper
     {
         public ExceptionEntityProfile()
         {
-            CreateMap<ExceptionEntity, ExceptionEntityReadDto>();
+            CreateMap<ExceptionEntity, ExceptionEntityReadViewModel>();
         }
     }
 }

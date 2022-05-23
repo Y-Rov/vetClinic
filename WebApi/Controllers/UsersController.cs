@@ -27,16 +27,16 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserReadDto>>> Get()
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> Get()
         {
             var users = await _userService.GetAllUsersAsync();
-            var readDtos = _mapper.Map<IEnumerable<UserReadDto>>(users);
+            var readDtos = _mapper.Map<IEnumerable<UserReadViewModel>>(users);
 
             return Ok(readDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserReadDto>> Get(int id)
+        public async Task<ActionResult<UserReadViewModel>> Get(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
 
@@ -45,13 +45,13 @@ namespace WebApi.Controllers
                 return NotFound();
             }
 
-            var readDto = _mapper.Map<UserReadDto>(user);
+            var readDto = _mapper.Map<UserReadViewModel>(user);
 
             return Ok(readDto);
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserReadDto>> Create(UserCreateDto createDto)
+        public async Task<ActionResult<UserReadViewModel>> Create(UserCreateViewModel createDto)
         {
             var validationResult = _createValidator.Validate(createDto);
 
@@ -68,13 +68,13 @@ namespace WebApi.Controllers
                 return BadRequest(createResult.Errors);
             }
 
-            var readDto = _mapper.Map<UserReadDto>(user);
+            var readDto = _mapper.Map<UserReadViewModel>(user);
 
             return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, UserUpdateDto updateDto)
+        public async Task<ActionResult> Update(int id, UserUpdateViewModel updateDto)
         {
             var user = await _userService.GetUserByIdAsync(id);
 
