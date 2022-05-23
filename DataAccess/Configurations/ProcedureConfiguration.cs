@@ -20,6 +20,10 @@ public class ProcedureConfiguration : IEntityTypeConfiguration<Procedure>
             .HasMaxLength(100);
 
         builder
+            .Property(procedure => procedure.Cost)
+            .HasPrecision(8, 2);
+
+        builder
             .ToTable("Procedures");
     }
 }

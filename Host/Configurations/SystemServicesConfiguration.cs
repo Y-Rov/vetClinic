@@ -12,7 +12,7 @@ namespace Host.Configurations
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddFluentValidation(fv =>
             {
-                fv.RegisterValidatorsFromAssemblyContaining<ProcedureValidator>();
+                fv.RegisterValidatorsFromAssemblyContaining<ProcedureDtoValidator>();
             });
         }
     }
