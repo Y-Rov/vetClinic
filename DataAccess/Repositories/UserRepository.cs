@@ -1,6 +1,5 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
-using DataAccess.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
