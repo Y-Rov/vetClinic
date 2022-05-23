@@ -1,10 +1,10 @@
-﻿using Core.DTO;
+﻿using AutoMapper;
+using Core.DTO;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
-using AutoMapper;
 
 namespace WebApi.Controllers
 {
