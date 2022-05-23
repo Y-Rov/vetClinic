@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Core.DTO;
+using Core.ViewModel;
 using Core.Entities;
 
 namespace WebApi.AutoMapper
@@ -8,7 +8,7 @@ namespace WebApi.AutoMapper
     {
         public ExceptionEntityProfile()
         {
-            CreateMap<ExceptionEntity, ExceptionEntityReadDto>();
+            CreateMap<ExceptionEntity, ExceptionEntityReadViewModel>();
         }
     }
 }

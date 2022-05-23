@@ -4,6 +4,9 @@ using DataAccess.Context;
 using WebApi.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using FluentValidation.Results;
+
+
 
 namespace Host.Middleware
 {
@@ -36,7 +39,7 @@ namespace Host.Middleware
                 }
 
                 await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
-                    $"{ex.Message}. Path:{context.Request.Path}.");
+                    $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (NotFoundException ex)
             {
@@ -46,9 +49,8 @@ namespace Host.Middleware
                     dataContext!.Add(new ExceptionEntity(ex.GetType().Name, _dateTime, ex.StackTrace ?? string.Empty, context.Request.Path));
                     await dataContext!.SaveChangesAsync();
                 }
-
-                await HandleExeptionAsync(context, HttpStatusCode.NotFound,
-                    $"{ex.Message}. Path:{context.Request.Path}.");
+                await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
+                                   $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (ForbidException ex)
             {
@@ -59,8 +61,8 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
 
-                await HandleExeptionAsync(context, HttpStatusCode.Forbidden,
-                    $"{ex.Message}. Path:{context.Request.Path}.");
+                await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
+                     $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (BadRequestException ex)
             {
@@ -71,8 +73,8 @@ namespace Host.Middleware
                     await dataContext!.SaveChangesAsync();
                 }
 
-                await HandleExeptionAsync(context, HttpStatusCode.BadRequest,
-                    $"{ex.Message}. Path:{context.Request.Path}.");
+                await HandleExeptionAsync(context, HttpStatusCode.Unauthorized,
+                    $"{ex.Message}. Path:{context.Request.Path}.", ex.ValidationFailure!);
             }
             catch (DivideByZeroException ex)
             {
@@ -186,6 +188,16 @@ namespace Host.Middleware
                 StatusCode = context.Response.StatusCode,
                 Message = errorMessage
             }.ToString());
+        }
+        private Task HandleExeptionAsync(HttpContext context, HttpStatusCode errorCode, string errorMessage, List<ValidationFailure> validationFailures)
+        {
+            context.Response.ContentType = "appliaction/json";
+            context.Response.StatusCode = (int)errorCode;
+            return context.Response.WriteAsync(new ErrorDetails
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = errorMessage
+            }.ToString() + validationFailures.ToString());
         }
     }
 }

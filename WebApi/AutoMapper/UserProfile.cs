@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Core.DTO;
+using Core.ViewModel;
 using Core.Entities;
 
 namespace WebApi.AutoMapper
@@ -8,10 +8,10 @@ namespace WebApi.AutoMapper
     {
         public UserProfile()
         {
-            CreateMap<User, UserReadDto>();
-            CreateMap<UserCreateDto, User>()
+            CreateMap<User, UserReadViewModel>();
+            CreateMap<UserCreateViewModel, User>()
                 .AfterMap((dto, u) => u.UserName = u.Email);
-            CreateMap<UserUpdateDto, User>()
+            CreateMap<UserUpdateViewModel, User>()
                 .AfterMap((dto, u) => u.UserName = u.Email);
         }
     }

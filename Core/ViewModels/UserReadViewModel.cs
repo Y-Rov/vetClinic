@@ -1,6 +1,6 @@
-﻿namespace Core.DTO
+﻿namespace Core.ViewModel
 {
-    public record UserReadDto
+    public record UserReadViewModel
     {
         public int Id { get; init; }
         public string? FirstName { get; init; }

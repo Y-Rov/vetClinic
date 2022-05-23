@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Core.DTO;
+using Core.ViewModel;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Services;
@@ -24,7 +24,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadDto>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAllAsync()
         {
             _loggerManager.LogInfo("Open ExceptionController action GetAllAsync()");
             var allExceptions = await _exceptionEntityService.GetAllAsync();
@@ -36,7 +36,7 @@ namespace WebApi.Controllers
             }
 
             _loggerManager.LogInfo("Exit ExceptionController action GetAllAsync()");
-            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadDto>>(allExceptions);
+            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadViewModel>>(allExceptions);
             return Ok(readDtos);
         }
 
@@ -75,7 +75,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("Today")]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadDto>>> GetTodayAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetTodayAsync()
         {
             _loggerManager.LogInfo("Open ExceptionController action GetTodayAsync()");
             var allExceptions = await _exceptionEntityService.GetTodayAsync();
@@ -87,7 +87,7 @@ namespace WebApi.Controllers
             }
 
             _loggerManager.LogInfo("Exit ExceptionController action GetTodayAsync()");
-            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadDto>>(allExceptions);
+            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadViewModel>>(allExceptions);
             return Ok(readDtos);
 
         }

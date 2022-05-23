@@ -1,6 +1,6 @@
-﻿namespace Core.DTO.ProcedureDTOs;
+﻿namespace Core.ViewModel.ProcedureViewModels;
 
-public class ProcedureDTO
+public class ProcedureViewModel
 {
     public string? Name { get; set; }
     public string? Description { get; set; }

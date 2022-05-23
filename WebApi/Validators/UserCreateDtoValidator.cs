@@ -1,9 +1,9 @@
-﻿using Core.DTO;
+﻿using Core.ViewModel;
 using FluentValidation;
 
 namespace WebApi.Validators
 {
-    public class UserCreateDtoValidator : AbstractValidator<UserCreateDto>
+    public class UserCreateDtoValidator : AbstractValidator<UserCreateViewModel>
     {
         public UserCreateDtoValidator()
         {
