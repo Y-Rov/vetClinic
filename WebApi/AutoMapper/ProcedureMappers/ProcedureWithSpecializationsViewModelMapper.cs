@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.ViewModel;
 using Core.ViewModels;
 using WebApi.AutoMapper.Interfaces;

@@ -2,7 +2,9 @@
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels;
+using DataAccess.Configurations;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.AutoMapper.Interfaces;
 using WebApi.Exceptions;
 
 namespace WebApi.Controllers;
@@ -12,28 +14,38 @@ namespace WebApi.Controllers;
 public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
-    private readonly IMapper _mapper;
+    private readonly IViewModelMapper<ProcedureViewModelBase, Procedure> _procedureMapper;
+    private readonly IViewModelMapper<Procedure, ProcedureWithSpecializationsViewModel> _modelMapper;
 
-    public ProcedureController(IProcedureService procedureService, IMapper mapper)
+    public ProcedureController(IProcedureService procedureService, 
+        IViewModelMapper<ProcedureViewModelBase, Procedure> procedureMapper,
+        IViewModelMapper<Procedure, ProcedureWithSpecializationsViewModel> modelMapper)
     {
         _procedureService = procedureService;
-        _mapper = mapper;
+        _procedureMapper = procedureMapper;
+        _modelMapper = modelMapper;
     }
 
     [HttpGet("/Procedures/getall")]
     public async Task<ActionResult<IEnumerable<ProcedureWithSpecializationsViewModel>>> GetAll()
     {
-        IEnumerable<Procedure> result;
+        IEnumerable<Procedure> procedures;
         try
         {
-            result = await _procedureService.GetAllProceduresAsync();
+            procedures = await _procedureService.GetAllProceduresAsync();
         }
         catch (NullReferenceException)
         {
             return NotFound();
         }
 
-        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModelBase>>(result));
+        var result = new List<ProcedureWithSpecializationsViewModel>();
+        foreach (var p in procedures)
+        {
+            result.Add(_modelMapper.Map(p));
+        }
+
+        return Ok(result);
     }
     
     [HttpGet("/Procedures/get/{id}")]
@@ -53,7 +65,7 @@ public class ProcedureController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<Procedure, ProcedureViewModelBase>(result));
+        return Ok(_modelMapper.Map(result));
     }
     
     [HttpPost("/Procedures/new")]
@@ -63,7 +75,7 @@ public class ProcedureController : ControllerBase
         {
             throw new BadRequestException();
         }
-        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(procedure));
+        await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
         return Ok();
     }
     
@@ -81,7 +93,7 @@ public class ProcedureController : ControllerBase
         {
             throw new BadRequestException();
         }
-        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
+        await _procedureService.UpdateProcedureAsync(id, _procedureMapper.Map(newProcedure));
         return Ok();
     }
 }
