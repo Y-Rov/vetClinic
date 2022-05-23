@@ -13,7 +13,7 @@ namespace DataAccess.Repositories
 
         public async Task<Address> GetAddressByIdAsync(int id)
         {
-            return await _clinicContext.Addresses.Where(address => address.Id == id).SingleOrDefaultAsync();
+            return await _clinicContext.Addresses.FirstOrDefaultAsync(address => address.Id == id);
         }
 
         public async Task<IEnumerable<Address>> GetAllAddressesAsync()
