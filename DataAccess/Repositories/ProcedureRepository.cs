@@ -32,7 +32,6 @@ public class ProcedureRepository : IProcedureRepository
 
     public async Task UpdateProcedureAsync(int procedureId, Procedure newProcedure)
     {
-        //_clinicContext.Entry(newProcedure).State = EntityState.Modified;
         var oldProcedure = await GetProcedureByIdAsync(procedureId);
         
         oldProcedure.Cost = newProcedure.Cost;
