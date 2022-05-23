@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace WebApi.Validators
 {
-    public class UserUpdateDtoValidator : AbstractValidator<UserUpdateDto>
+    public class UserUpdateDtoValidator : AbstractValidator<UserUpdateViewModel>
     {
         public UserUpdateDtoValidator()
         {
