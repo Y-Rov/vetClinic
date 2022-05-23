@@ -17,19 +17,24 @@ namespace Application.Services
             return await _exceptionEntityRepository.GetAllAsync();
         }
 
-        public async Task<ExceptionEntity> GetById(int id)
+        public async Task<ExceptionEntity> GetByIdAsync(int id)
         {
-            return await _exceptionEntityRepository.GetById(id);
+            return await _exceptionEntityRepository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<ExceptionEntity>> GetForThisDay()
+        public async Task<IEnumerable<ExceptionEntity>> GetTodayAsync()
         {
-            return await _exceptionEntityRepository.GetForThisDay();
+            return await _exceptionEntityRepository.GetTodayAsync();
         }
 
-        public async Task<IEnumerable<object>> GroupAllByName()
+        public async Task<IEnumerable<object>> GetStatsAsync()
         {
-            return await _exceptionEntityRepository.GroupAllByName();
+            return await _exceptionEntityRepository.GetStatsAsync();
+        }
+
+        public async Task<IEnumerable<object>> GetTodayStatsAsync()
+        {
+            return await _exceptionEntityRepository.GetTodayStatsAsync();
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using Core.Entities;
-using DataAccess.Context;
+using Core.Interfaces;
+using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using WebApi.Exceptions;
 
 namespace WebApi.Controllers
 {
@@ -9,31 +10,72 @@ namespace WebApi.Controllers
     [ApiController]
     public class ExceptionController : ControllerBase
     {
-        private readonly ClinicContext _dataContext;
-        public ExceptionController(ClinicContext dataContext)
+        private readonly IExceptionEntityService _exceptionEntityService;
+
+        public ExceptionController(IExceptionEntityService exceptionEntityService)
         {
-            _dataContext = dataContext;
+            _exceptionEntityService = exceptionEntityService;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntity>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ExceptionEntity>>> GetAllAsync()
         {
-            if (_dataContext.Exceptions == null)
-            {
-                return NotFound();
-            }
+            var allExceptions = await _exceptionEntityService.GetAllAsync();
 
-            return await _dataContext.Exceptions.ToListAsync();
+            if (allExceptions == null)
+                throw new NotFoundException();
+
+            return Ok(allExceptions);
         }
-        [HttpGet("Types")]
 
-        public async Task<ActionResult<IEnumerable<object>>> GetTyped()
+        [HttpGet("Stats")]
+        public async Task<ActionResult<IEnumerable<object>>> GetStats()
         {
-            if (_dataContext.Exceptions == null)
-            {
-                return NotFound();
-            }
-            var query = _dataContext.Exceptions.GroupBy(ex => ex.Name).Select(g => new { Name = g.Key, Count = g.Count() });
-            return await query.ToListAsync();
+            var exceptionsStats = await _exceptionEntityService.GetStatsAsync();
+
+            if (exceptionsStats == null)
+                throw new NotFoundException();
+
+            return Ok(exceptionsStats);
+
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ExceptionEntity>> GetByIdAsync(int id)
+        {
+            var exception = await _exceptionEntityService.GetByIdAsync(id);
+
+            if (exception == null)
+                throw new NotFoundException();
+
+            return Ok(exception);
+
+        }
+
+        [HttpGet("Today")]
+        public async Task<ActionResult<IEnumerable<ExceptionEntity>>> GetToday()
+        {
+            var exceptions = await _exceptionEntityService.GetTodayAsync();
+
+            if (exceptions == null)
+                throw new NotFoundException();
+
+            return Ok(exceptions);
+
+        }
+
+        [HttpGet("Stats/Today")]
+        public async Task<ActionResult<IEnumerable<object>>> GetTodayStats()
+        {
+            var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync();
+
+            if (exceptionsStats  == null)
+                throw new NotFoundException();
+
+   
+
+            return Ok(exceptionsStats);
+
         }
     }
 }
