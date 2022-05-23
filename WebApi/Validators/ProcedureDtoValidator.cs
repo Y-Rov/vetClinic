@@ -8,12 +8,20 @@ public class ProcedureDtoValidator : AbstractValidator<ProcedureViewModel>
     public ProcedureDtoValidator()
     {
         RuleFor(dto => dto.Cost)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .WithMessage("Procedure cost must be greater than 0");
         RuleFor(dto => dto.Description)
-            .Length(10, 250);
+            .MinimumLength(5)
+            .WithMessage("Procedure description length must be greater than 5")
+            .MaximumLength(250)
+            .WithMessage("Procedure description length must be less than 250");
         RuleFor(dto => dto.Name)
-            .Length(10, 100);
+            .MinimumLength(5)
+            .WithMessage("Procedure name length must be greater than 5")
+            .MaximumLength(100)
+            .WithMessage("Procedure name length must be less than 250");
         RuleFor(dto => dto.DurationInMinutes)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .WithMessage("Procedure duration must be greater than 1 minute");
     }
 }
