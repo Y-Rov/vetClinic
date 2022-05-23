@@ -78,7 +78,7 @@ public class ProcedureController : ControllerBase
     public async Task<ActionResult> Delete(int id)
     {
         await _procedureService.DeleteProcedureAsync(id);
-        return Ok();
+        return NoContent();
     }
     
     [HttpPut("/Procedures/update/{id:int}")]
@@ -90,6 +90,6 @@ public class ProcedureController : ControllerBase
             return BadRequest(validationResult.Errors);
         }
         await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureDTO, Procedure>(newProcedure));
-        return Ok();
+        return NoContent();
     }
 }
