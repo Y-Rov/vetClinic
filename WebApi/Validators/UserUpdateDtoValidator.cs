@@ -1,4 +1,4 @@
-﻿using Core.DTO;
+﻿using Core.ViewModel;
 using FluentValidation;
 using System.Text.RegularExpressions;
 

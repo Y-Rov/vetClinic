@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Core.DTO.ProcedureDTOs;
+using Core.ViewModel.ProcedureDTOs;
 using Core.Entities;
 
 namespace WebApi.AutoMapper.ProcedureProfiles;

@@ -1,4 +1,4 @@
-﻿namespace Core.DTO
+﻿namespace Core.ViewModel
 {
     public record ExceptionEntityReadDto
     {

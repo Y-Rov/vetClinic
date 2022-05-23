@@ -1,6 +1,6 @@
-﻿namespace Core.DTO
+﻿namespace Core.ViewModel
 {
-    public class SpecializationDTO
+    public class SpecializationViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

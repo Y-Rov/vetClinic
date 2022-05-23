@@ -1,5 +1,5 @@
 using Application.Configuration;
-using Core.DTO;
+using Core.ViewModel;
 using Core.Entities;
 using DataAccess.Context;
 using DataAccess.Repositories;
