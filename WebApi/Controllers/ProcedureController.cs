@@ -6,6 +6,7 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
+using WebApi.Validators;
 
 namespace WebApi.Controllers;
 
@@ -15,11 +16,13 @@ public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
     private readonly IMapper _mapper;
+    private readonly ProcedureDtoValidator _validator;
 
-    public ProcedureController(IProcedureService procedureService, IMapper mapper)
+    public ProcedureController(IProcedureService procedureService, IMapper mapper, ProcedureDtoValidator validator)
     {
         _procedureService = procedureService;
         _mapper = mapper;
+        _validator = validator;
     }
 
     [HttpGet("/Procedures/getall")]
@@ -61,9 +64,10 @@ public class ProcedureController : ControllerBase
     [HttpPost("/Procedures/new")]
     public async Task<ActionResult> Create(ProcedureDTO procedure)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _validator.ValidateAsync(procedure);
+        if (!validationResult.IsValid)
         {
-            throw new BadRequestException();
+            return BadRequest(validationResult.Errors);
         }
         await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureDTO, Procedure>(procedure));
         return Ok();
@@ -79,9 +83,10 @@ public class ProcedureController : ControllerBase
     [HttpPut("/Procedures/update/{id:int}")]
     public async Task<ActionResult> Update(int id, ProcedureDTO newProcedure)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _validator.ValidateAsync(newProcedure);
+        if (!validationResult.IsValid)
         {
-            throw new BadRequestException();
+            return BadRequest(validationResult.Errors);
         }
         await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureDTO, Procedure>(newProcedure));
         return Ok();
