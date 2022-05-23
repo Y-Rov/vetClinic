@@ -1,4 +1,4 @@
-﻿using Core.DTO.ProcedureDTOs;
+﻿using Core.ViewModel.ProcedureDTOs;
 using FluentValidation;
 
 namespace WebApi.Validators;

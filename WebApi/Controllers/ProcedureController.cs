@@ -1,6 +1,6 @@
 ﻿using Application.Services;
 using AutoMapper;
-using Core.DTO.ProcedureDTOs;
+using Core.ViewModel.ProcedureDTOs;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;

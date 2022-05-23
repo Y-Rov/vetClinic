@@ -1,4 +1,4 @@
-﻿namespace Core.DTO.ProcedureDTOs;
+﻿namespace Core.ViewModel.ProcedureDTOs;
 
 public class ProcedureDTO
 {
