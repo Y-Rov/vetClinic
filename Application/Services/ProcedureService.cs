@@ -1,39 +1,37 @@
 ﻿using Core.Entities;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using DataAccess.Context;
 
 namespace Application.Services;
 
 public class ProcedureService : IProcedureService
 {
-    private readonly ClinicContext _clinicContext;
-    public ProcedureService(ClinicContext clinicContext)
+    private readonly IProcedureRepository _procedureRepository;
+    public ProcedureService(IProcedureRepository procedureRepository)
     {
-        _clinicContext = clinicContext;
+        _procedureRepository = procedureRepository;
     }
 
-    public Task CreateNewProcedureAsync(Procedure procedure)
-    {
-        throw new NotImplementedException();
+    public async Task CreateNewProcedureAsync(Procedure procedure) =>
+        await _procedureRepository.AddProcedureAsync(procedure);
+
+    public async Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure) => 
+        await _procedureRepository.UpdateProcedureAsync(oldProcedureId, newProcedure);
+
+    public async Task DeleteProcedureAsync(int procedureId) =>
+        await _procedureRepository.DeleteProcedureAsync(procedureId);
+
+    public async Task<Procedure> GetByIdAsync(int procedureId)
+    { 
+       var result= await _procedureRepository.GetProcedureByIdAsync(procedureId);
+       if (result is null) throw new NullReferenceException();
+       return result;
     }
 
-    public Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure)
+    public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
     {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteProcedureAsync(int procedureId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Procedure> GetByIdAsync(int procedureId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<Procedure>> GetAllProceduresAsync()
-    {
-        throw new NotImplementedException();
+        var result = await _procedureRepository.GetAllProceduresAsync(); 
+        if (result is null) throw new NullReferenceException();
+        return result;
     }
 }

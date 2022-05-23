@@ -8,8 +8,11 @@ namespace DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<ExceptionEntity> builder)
         {
-            builder.HasKey(x => x.Id);
-            builder.ToTable("Exceptions");
+            builder
+                .HasKey(x => x.Id);
+
+            builder
+                .ToTable("Exceptions");
         }
     }
 }

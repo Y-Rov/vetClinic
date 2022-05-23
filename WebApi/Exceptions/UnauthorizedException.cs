@@ -1,0 +1,19 @@
+﻿namespace WebApi.Exceptions
+{
+    public class UnauthorizedException : Exception
+    {
+        public new string Message { get; set; }
+        public UnauthorizedException()
+        {
+            Message = "Access is denied due to invalid credentials";
+        }
+        public UnauthorizedException(string message) : base(message)
+        {
+            Message = message;
+        }
+        public UnauthorizedException(string message, Exception inner) : base(message, inner)
+        {
+            Message = message;
+        }
+    }
+}

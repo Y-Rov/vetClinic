@@ -24,19 +24,26 @@ public class ProcedureRepository : IProcedureRepository
         return await _clinicContext.Procedures.SingleOrDefaultAsync(pr => pr.Id == procedureId);
     }
 
-    public async void AddProcedureAsync(Procedure procedure)
+    public async Task AddProcedureAsync(Procedure procedure)
     {
         await _clinicContext.Procedures.AddAsync(procedure);
         await SaveChangesAsync();
     }
 
-    public async void UpdateProcedureAsync(Procedure newProcedure)
+    public async Task UpdateProcedureAsync(int procedureId, Procedure newProcedure)
     {
-        _clinicContext.Entry(newProcedure).State = EntityState.Modified;
+        //_clinicContext.Entry(newProcedure).State = EntityState.Modified;
+        var oldProcedure = await GetProcedureByIdAsync(procedureId);
+        
+        oldProcedure.Cost = newProcedure.Cost;
+        oldProcedure.DurationInMinutes = newProcedure.DurationInMinutes;
+        oldProcedure.Name = newProcedure.Name;
+        oldProcedure.Description = newProcedure.Description;
+        
         await SaveChangesAsync();
     }
 
-    public async void DeleteProcedureAsync(int procedureId)
+    public async Task DeleteProcedureAsync(int procedureId)
     {
         var procedureToRemove = await GetProcedureByIdAsync(procedureId);
         if (procedureToRemove is null) throw new NullReferenceException();
