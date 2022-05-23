@@ -22,7 +22,7 @@ namespace DataAccess.Repositories
 
         public async Task<ExceptionEntity> GetByIdAsync(int id)
         {
-            return await _clinicContext.Exceptions.FirstOrDefaultAsync(ex => ex.Id == id);
+            return await _clinicContext.Exceptions.SingleOrDefaultAsync(ex => ex.Id == id);
         }
 
         public async Task<IEnumerable<ExceptionEntity>> GetTodayAsync()
