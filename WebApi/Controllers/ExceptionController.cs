@@ -3,6 +3,7 @@ using Core.DTO;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Services;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
 
@@ -40,7 +41,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("Stats")]
-        public async Task<ActionResult<IEnumerable<object>>> GetStatsAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetStatsAsync()
         {
             _loggerManager.LogInfo("Open ExceptionController action GetStatsAsync()");
             var exceptionsStats = await _exceptionEntityService.GetStatsAsync();
@@ -92,7 +93,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("Stats/Today")]
-        public async Task<ActionResult<IEnumerable<object>>> GetTodayStatsAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetTodayStatsAsync()
         {
             _loggerManager.LogInfo("Open ExceptionController action GetTodayStatsAsync()");
             var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync();

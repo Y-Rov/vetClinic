@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 
 namespace Application.Services
 {
@@ -27,12 +28,12 @@ namespace Application.Services
             return await _exceptionEntityRepository.GetTodayAsync();
         }
 
-        public async Task<IEnumerable<object>> GetStatsAsync()
+        public async Task<IEnumerable<ExceptionStats>> GetStatsAsync()
         {
             return await _exceptionEntityRepository.GetStatsAsync();
         }
 
-        public async Task<IEnumerable<object>> GetTodayStatsAsync()
+        public async Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync()
         {
             return await _exceptionEntityRepository.GetTodayStatsAsync();
         }

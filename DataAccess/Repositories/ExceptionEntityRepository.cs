@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
+using Core.Models;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,15 +31,15 @@ namespace DataAccess.Repositories
             return await _clinicContext.Exceptions.Where(ex => ex.DateTime.Day == DateTime.Today.Day).ToListAsync();
         }
 
-        public async Task<IEnumerable<object>> GetStatsAsync()
+        public async Task<IEnumerable<ExceptionStats>> GetStatsAsync()
         {
-            return await _clinicContext.Exceptions.GroupBy(ex => ex.Name).Select(g => new { Name = g.Key, Count = g.Count() }).ToListAsync();
+            return await _clinicContext.Exceptions.GroupBy(ex => ex.Name).Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() }).ToListAsync();
         }
 
-        public async Task<IEnumerable<object>> GetTodayStatsAsync()
+        public async Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync()
         {
             return  await _clinicContext.Exceptions.Where(ex => ex.DateTime.Day == DateTime.Today.Day)
-                .GroupBy(ex => ex.Name).Select(g => new { Name = g.Key, Count = g.Count() }).ToListAsync();
+                .GroupBy(ex => ex.Name).Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() }).ToListAsync();
         }
     }
 }
