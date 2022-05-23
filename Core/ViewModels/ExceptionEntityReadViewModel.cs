@@ -1,6 +1,6 @@
 ﻿namespace Core.ViewModel
 {
-    public record ExceptionEntityReadDto
+    public record ExceptionEntityReadViewModel
     {
         public int Id { get; init; }
         public string? Name { get; init; }
