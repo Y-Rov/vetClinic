@@ -13,8 +13,6 @@ namespace Application.Configuration
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<ISpecializationService, SpecializationService>();
-            services.AddScoped<IExceptionEntityService, ExceptionEntityService>();
-            services.AddScoped<IProcedureService, ProcedureService>();
         }
     }
 }
