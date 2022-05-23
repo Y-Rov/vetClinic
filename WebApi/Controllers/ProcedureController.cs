@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using Core.Entities;
 using Core.Interfaces.Services;
-using Core.Models;
-using Core.ViewModel.ProcedureViewModels;
+using Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
 
@@ -22,7 +21,7 @@ public class ProcedureController : ControllerBase
     }
 
     [HttpGet("/Procedures/getall")]
-    public async Task<ActionResult<IEnumerable<ProcedureModel>>> GetAll()
+    public async Task<ActionResult<IEnumerable<ProcedureWithSpecializationsViewModel>>> GetAll()
     {
         IEnumerable<Procedure> result;
         try
@@ -34,11 +33,11 @@ public class ProcedureController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureModel>>(result));
+        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModelBase>>(result));
     }
     
     [HttpGet("/Procedures/get/{id}")]
-    public async Task<ActionResult<ProcedureModel>> GetById(int id)
+    public async Task<ActionResult<ProcedureWithSpecializationsViewModel>> GetById(int id)
     {
         Procedure result;
         try
@@ -54,17 +53,17 @@ public class ProcedureController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<Procedure, ProcedureModel>(result));
+        return Ok(_mapper.Map<Procedure, ProcedureViewModelBase>(result));
     }
     
     [HttpPost("/Procedures/new")]
-    public async Task<ActionResult> Create(ProcedureViewModel procedure)
+    public async Task<ActionResult> Create(ProcedureViewModelBase procedure)
     {
         if (!ModelState.IsValid)
         {
             throw new BadRequestException();
         }
-        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModel, Procedure>(procedure));
+        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(procedure));
         return Ok();
     }
     
@@ -76,13 +75,13 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPut("/Procedures/update/{id:int}")]
-    public async Task<ActionResult> Update(int id, ProcedureViewModel newProcedure)
+    public async Task<ActionResult> Update(int id, ProcedureViewModelBase newProcedure)
     {
         if (!ModelState.IsValid)
         {
             throw new BadRequestException();
         }
-        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModel, Procedure>(newProcedure));
+        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
         return Ok();
     }
 }

@@ -1,8 +1,6 @@
-﻿using Core.Entities;
+﻿namespace Core.ViewModels;
 
-namespace Core.Models;
-
-public class ProcedureModel
+public class ProcedureViewModelBase
 {
     public int Id { get; set; }
     public string? Name { get; set; }

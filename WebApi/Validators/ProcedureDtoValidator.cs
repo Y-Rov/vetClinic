@@ -1,9 +1,9 @@
-﻿using Core.ViewModel.ProcedureViewModels;
+﻿using Core.ViewModels;
 using FluentValidation;
 
 namespace WebApi.Validators;
 
-public class ProcedureDtoValidator : AbstractValidator<ProcedureViewModel>
+public class ProcedureDtoValidator : AbstractValidator<ProcedureWithSpecializationsViewModel>
 {
     public ProcedureDtoValidator()
     {
