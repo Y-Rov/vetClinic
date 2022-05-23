@@ -21,38 +21,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("/getSpecializations")]
-        public async Task<ActionResult> GetSpecializations()
-        {
-            IEnumerable<Specialization> specializations;
-            try
-            {
-                specializations = await _service.GetAllSpecializationsAsync();
-            }
-            catch(NullReferenceException)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<IEnumerable<SpecializationDTO>>(specializations));
-        }
+        public async Task<ActionResult> GetSpecializations() =>
+            Ok(_mapper.Map<IEnumerable<SpecializationDTO>>(await _service.GetAllSpecializationsAsync()));
 
         [HttpGet("/getSpecializationById/{id}")]
-        public async Task<ActionResult> GetSpecializationById(int id)
-        {
-            Specialization specialization;
-            try
-            {
-                specialization = await _service.GetSpecializationByIdAsync(id);
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<SpecializationDTO>(specialization));
-        }
+        public async Task<ActionResult> GetSpecializationById(int id) =>
+            Ok(_mapper.Map<SpecializationDTO>(await _service.GetSpecializationByIdAsync(id)));
 
         [HttpPost]
         public async Task<ActionResult> AddSpecialization(SpecializationDTO specialization) =>
