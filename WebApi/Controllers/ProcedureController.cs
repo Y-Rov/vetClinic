@@ -1,9 +1,8 @@
-﻿using Application.Services;
-using AutoMapper;
-using Core.ViewModel.ProcedureDTOs;
+﻿using AutoMapper;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.ViewModel.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
 
@@ -59,13 +58,13 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPost("/Procedures/new")]
-    public async Task<ActionResult> Create(ProcedureDTO procedure)
+    public async Task<ActionResult> Create(ProcedureViewModel procedure)
     {
         if (!ModelState.IsValid)
         {
             throw new BadRequestException();
         }
-        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureDTO, Procedure>(procedure));
+        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModel, Procedure>(procedure));
         return Ok();
     }
     
@@ -77,13 +76,13 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPut("/Procedures/update/{id:int}")]
-    public async Task<ActionResult> Update(int id, ProcedureDTO newProcedure)
+    public async Task<ActionResult> Update(int id, ProcedureViewModel newProcedure)
     {
         if (!ModelState.IsValid)
         {
             throw new BadRequestException();
         }
-        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureDTO, Procedure>(newProcedure));
+        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModel, Procedure>(newProcedure));
         return Ok();
     }
 }
