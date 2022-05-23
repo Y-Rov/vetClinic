@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using System.Net;
+using Application.Services;
 using AutoMapper;
 using Core.DTO.ProcedureDTOs;
 using Core.Entities;
@@ -69,8 +70,8 @@ public class ProcedureController : ControllerBase
         {
             return BadRequest(validationResult.Errors);
         }
-        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureDTO, Procedure>(procedure));
-        return Ok();
+        var createdProcedure = await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureDTO, Procedure>(procedure));
+        return Created(nameof(Create), _mapper.Map<ProcedureModel>(createdProcedure));
     }
     
     [HttpDelete("/Procedures/delete/{id:int}")]
