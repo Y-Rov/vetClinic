@@ -13,16 +13,20 @@ namespace DataAccess.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync() =>
-            await _context.Specializations
+        public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
+        {
+           return await _context.Specializations
                 .Include(specialization => specialization.UserSpecializations)
                 .ToListAsync();
+        }
 
-
-        public async Task<Specialization> GetSpecializationByIdAsync(int id) =>
-            await _context.Specializations
+        public async Task<Specialization> GetSpecializationByIdAsync(int id)
+        {
+            Specialization result = await _context.Specializations
                 .Include(specialization => specialization.UserSpecializations)
                 .FirstAsync(specialization => specialization.Id == id);
+            return result ?? throw new Exception("Specialization not found");
+        }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
         {
