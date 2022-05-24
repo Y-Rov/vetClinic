@@ -1,14 +1,12 @@
-﻿using Core.ViewModel;
+﻿using Core.ViewModels.User;
 using FluentValidation;
 
 namespace WebApi.Validators
 {
-    public class UserCreateDtoValidator : AbstractValidator<UserCreateViewModel>
+    public class UserCreateValidator : UserValidator<UserCreateViewModel>
     {
-        public UserCreateDtoValidator()
+        public UserCreateValidator()
         {
-            Include(new UserUpdateDtoValidator());
-
             RuleFor(u => u.Password)
                 .Equal(u => u.ConfirmPassword)
                 .WithMessage("Passwords do not match");

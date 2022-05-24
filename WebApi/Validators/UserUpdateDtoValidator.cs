@@ -1,12 +1,12 @@
-﻿using Core.ViewModel;
+﻿using Core.ViewModels.User;
 using FluentValidation;
 using System.Text.RegularExpressions;
 
 namespace WebApi.Validators
 {
-    public class UserUpdateDtoValidator : AbstractValidator<UserUpdateViewModel>
+    public class UserValidator<T> : AbstractValidator<T> where T : UserBaseViewModel
     {
-        public UserUpdateDtoValidator()
+        public UserValidator()
         {
             RuleFor(dto => dto.FirstName)
                 .MinimumLength(1)

@@ -1,5 +1,4 @@
 using Application.Configuration;
-using Core.ViewModel;
 using Core.Entities;
 using DataAccess.Context;
 using DataAccess.Repositories;
@@ -16,7 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
+
 builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationRepositories();
