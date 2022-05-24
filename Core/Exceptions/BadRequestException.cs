@@ -1,10 +1,10 @@
-﻿using FluentValidation.Results;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Core.Exceptions
 {
     public class BadRequestException : Exception
     {
-        public List<ValidationFailure>? ValidationFailure;
+        public List<IdentityError>? IdentityError { get; set; }
         public new string Message { get; set; }
 
         public BadRequestException()
@@ -22,10 +22,10 @@ namespace Core.Exceptions
             Message = message;
         }
 
-        public BadRequestException(List<ValidationFailure> validationFailures)
+        public BadRequestException(IEnumerable<IdentityError> identityError)
         {
             Message = "Illegal request";
-            ValidationFailure = validationFailures;
+            IdentityError = identityError.ToList();
         }
     }
 }
