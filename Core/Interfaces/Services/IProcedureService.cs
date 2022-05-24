@@ -6,6 +6,8 @@ public interface IProcedureService
 {
     public Task<Procedure> CreateNewProcedureAsync(Procedure procedure);
     public Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure);
+    Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds);
+
     public Task DeleteProcedureAsync(int procedureId);
 
     public Task<Procedure> GetByIdAsync(int procedureId);

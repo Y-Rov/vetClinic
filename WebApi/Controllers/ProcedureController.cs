@@ -23,7 +23,7 @@ public class ProcedureController : ControllerBase
         _validator = validator;
     }
 
-    [HttpGet("/Procedures/getall")]
+    [HttpGet("/api/Procedures/getall")]
     public async Task<ActionResult<IEnumerable<ProcedureViewModel>>> GetAll()
     {
         IEnumerable<Procedure> result;
@@ -39,7 +39,7 @@ public class ProcedureController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModel>>(result));
     }
     
-    [HttpGet("/Procedures/get/{id}")]
+    [HttpGet("/api/Procedures/get/{id}")]
     public async Task<ActionResult<ProcedureViewModel>> GetById(int id)
     {
         Procedure result;
@@ -59,7 +59,7 @@ public class ProcedureController : ControllerBase
         return Ok(_mapper.Map<Procedure, ProcedureViewModel>(result));
     }
     
-    [HttpPost("/Procedures/new")]
+    [HttpPost("/api/Procedures/new")]
     public async Task<ActionResult> Create(ProcedureViewModelBase procedure)
     {
         var validationResult = await _validator.ValidateAsync(procedure);
@@ -75,14 +75,14 @@ public class ProcedureController : ControllerBase
         return Created(nameof(Create), result);
     }
     
-    [HttpDelete("/Procedures/delete/{id:int}")]
+    [HttpDelete("/api/Procedures/delete/{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
         await _procedureService.DeleteProcedureAsync(id);
         return NoContent();
     }
     
-    [HttpPut("/Procedures/update/{id:int}")]
+    [HttpPut("/api/Procedures/update/{id:int}")]
     public async Task<ActionResult> Update(int id, ProcedureViewModelBase newProcedure)
     {
         var validationResult = await _validator.ValidateAsync(newProcedure);
@@ -93,6 +93,20 @@ public class ProcedureController : ControllerBase
         }
         
         await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
+        return NoContent();
+    }
+
+    [HttpPatch("/api/Procedures/updatespec/{id:int}")]
+    public async Task<ActionResult> UpdateProcedureSpecializations(int id, IEnumerable<int> specializationIds)
+    {
+        try
+        {
+            await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new BadRequestException();
+        }
         return NoContent();
     }
 }
