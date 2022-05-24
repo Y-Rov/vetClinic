@@ -1,11 +1,10 @@
-﻿using FluentValidation.Results;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Core.Exceptions
 {
     public class UnauthorizedException : Exception
     {
-        public List<ValidationFailure>? ValidationFailure;
+        public List<IdentityError>? IdentityError { get; set; }
         public new string Message { get; set; }
 
         public UnauthorizedException()
@@ -23,14 +22,10 @@ namespace Core.Exceptions
             Message = message;
         }
 
-        public UnauthorizedException(List<ValidationFailure> validationFailures)
+        public UnauthorizedException(IEnumerable<IdentityError> identityError)
         {
-            Message = "Illegal request";
-            ValidationFailure = validationFailures;
-        }
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this);
+            Message = "Access is denied due to invalid credentials";
+            IdentityError = identityError!.ToList();
         }
     }
 }
