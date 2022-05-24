@@ -77,15 +77,8 @@ public class ProcedureController : ControllerBase
 
     [HttpPatch("/api/Procedures/{id:int:min(1)}")]
     public async Task<ActionResult> UpdateProcedureSpecializationsAsync([FromRoute]int id, IEnumerable<int> specializationIds)
-    {
-        try
-        {
-            await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
-        }
-        catch (InvalidOperationException)
-        {
-            throw new BadRequestException();
-        }
+    { 
+        await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
         return NoContent();
     }
 }

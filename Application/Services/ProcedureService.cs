@@ -37,7 +37,15 @@ public class ProcedureService : IProcedureService
 
     public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
     {
-        await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
+        try
+        {
+            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
+        }
+        catch (InvalidOperationException)
+        {
+            throw new NotFoundException();
+        }
+
         await _procedureRepository.SaveChangesAsync();
     }
 
