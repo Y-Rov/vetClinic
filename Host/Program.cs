@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
+using WebApi.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
@@ -19,6 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationRepositories();
+builder.Services.AddApplicationMappers();
 
 builder.Services.AddDbContext<ClinicContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
