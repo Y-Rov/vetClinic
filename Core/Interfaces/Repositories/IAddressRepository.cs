@@ -9,5 +9,6 @@ namespace Core.Interfaces.Repositories
         Task CreateAddressAsync(Address address);
         Task UpdateAddressAsync(Address address);
         Task DeleteAddressByUserIdAsync(int id);
+        Task SaveChangesAsync();
     }
 }

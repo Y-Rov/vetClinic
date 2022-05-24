@@ -9,5 +9,6 @@ namespace Core.Interfaces.Repositories
         Task CreatePortfolioAsync(Portfolio portfolio);
         Task UpdatePortfolioAsync(Portfolio portfolio);
         Task DeletePortfolioByUserIdAsync(int id);
+        Task SaveChangesAsync();
     }
 }
