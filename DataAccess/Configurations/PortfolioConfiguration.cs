@@ -9,18 +9,19 @@ namespace DataAccess.Configurations
         public void Configure(EntityTypeBuilder<Portfolio> builder)
         {
             builder
-                .HasKey(portfolio => portfolio.Id);
+                .HasKey(portfolio => portfolio.UserId);
 
             builder
                 .Property(portfolio => portfolio.Description)
                 .HasMaxLength(512)
                 .IsRequired();
 
+            // Ask Andrii about OnDelete
             builder
                 .HasOne<User>(portfolio => portfolio.User)
                 .WithOne(user => user.Portfolio)
                 .HasForeignKey<Portfolio>(portfolio => portfolio.UserId);
-
+            
             builder.ToTable("Portfolios");
         }
     }
