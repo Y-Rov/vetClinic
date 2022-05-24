@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Core.ViewModel;
 using Core.Entities;
+using Core.ViewModels.User;
 
 namespace WebApi.AutoMapper
 {
