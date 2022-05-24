@@ -25,7 +25,7 @@ public static class ServicesInstaller
                 opts.Password.RequireLowercase = false;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireUppercase = false;
-                opts.Password.RequiredLength = 5;
+                opts.Password.RequiredLength = 6;
             })
             .AddEntityFrameworkStores<ClinicContext>()
             .AddDefaultTokenProviders();
