@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Core.Entities;
 using Core.Interfaces.Services;
-using Core.Models;
-using Core.ViewModel.ProcedureViewModels;
+using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
+using WebApi.Validators;
 
 namespace WebApi.Controllers;
 
@@ -14,15 +14,17 @@ public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
     private readonly IMapper _mapper;
+    private readonly ProcedureViewModelBaseValidator _validator;
 
-    public ProcedureController(IProcedureService procedureService, IMapper mapper)
+    public ProcedureController(IProcedureService procedureService, IMapper mapper, ProcedureViewModelBaseValidator validator)
     {
         _procedureService = procedureService;
         _mapper = mapper;
+        _validator = validator;
     }
 
     [HttpGet("/Procedures/getall")]
-    public async Task<ActionResult<IEnumerable<ProcedureModel>>> GetAll()
+    public async Task<ActionResult<IEnumerable<ProcedureViewModel>>> GetAll()
     {
         IEnumerable<Procedure> result;
         try
@@ -34,11 +36,11 @@ public class ProcedureController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureModel>>(result));
+        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModel>>(result));
     }
     
     [HttpGet("/Procedures/get/{id}")]
-    public async Task<ActionResult<ProcedureModel>> GetById(int id)
+    public async Task<ActionResult<ProcedureViewModel>> GetById(int id)
     {
         Procedure result;
         try
@@ -47,42 +49,50 @@ public class ProcedureController : ControllerBase
         }
         catch (NullReferenceException)
         {
-            return NotFound();
+            throw new NotFoundException();
         }        
         catch (InvalidOperationException)
         {
-            return NotFound();
+            throw new NotFoundException();
         }
 
-        return Ok(_mapper.Map<Procedure, ProcedureModel>(result));
+        return Ok(_mapper.Map<Procedure, ProcedureViewModel>(result));
     }
     
     [HttpPost("/Procedures/new")]
-    public async Task<ActionResult> Create(ProcedureViewModel procedure)
+    public async Task<ActionResult> Create(ProcedureViewModelBase procedure)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _validator.ValidateAsync(procedure);
+
+        if (!validationResult.IsValid)
         {
-            throw new BadRequestException();
+            throw new BadRequestException(validationResult.Errors);
         }
-        await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModel, Procedure>(procedure));
-        return Ok();
+
+        var result =
+            await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(procedure));
+        
+        return Created(nameof(Create), result);
     }
     
     [HttpDelete("/Procedures/delete/{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
         await _procedureService.DeleteProcedureAsync(id);
-        return Ok();
+        return NoContent();
     }
     
     [HttpPut("/Procedures/update/{id:int}")]
-    public async Task<ActionResult> Update(int id, ProcedureViewModel newProcedure)
+    public async Task<ActionResult> Update(int id, ProcedureViewModelBase newProcedure)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _validator.ValidateAsync(newProcedure);
+
+        if (!validationResult.IsValid)
         {
-            throw new BadRequestException();
+            throw new BadRequestException(validationResult.Errors);
         }
-        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModel, Procedure>(newProcedure));
-        return Ok();
+        
+        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
+        return NoContent();
     }
 }

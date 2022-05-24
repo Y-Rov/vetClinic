@@ -9,7 +9,7 @@ namespace DataAccess.Configurations
         public void Configure(EntityTypeBuilder<Address> builder)
         {
             builder
-                .HasKey(address => address.Id);
+                .HasKey(address => address.UserId);
 
             builder
                 .Property(address => address.City)
@@ -38,11 +38,12 @@ namespace DataAccess.Configurations
                 .Property(address => address.ZipCode)
                 .HasColumnType("int");
 
+            // Ask Andrii about OnDelete
             builder
                 .HasOne<User>(address => address.User)
                 .WithOne(user => user.Address)
                 .HasForeignKey<Address>(address => address.UserId);
-
+            
             builder.ToTable("Addresses");
         }
     }
