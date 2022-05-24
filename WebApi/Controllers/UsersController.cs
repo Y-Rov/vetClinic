@@ -18,7 +18,7 @@ namespace WebApi.Controllers
 
         public UsersController(IUserService userService, IMapper mapper,
             UserCreateValidator createValidator, 
-            UserValidator<UserUpdateViewModel> updateValidator)
+            Validators.UserValidator<UserUpdateViewModel> updateValidator)
         {
             _userService = userService;
             _mapper = mapper;
@@ -57,6 +57,7 @@ namespace WebApi.Controllers
             var user = _mapper.Map<User>(createDto);
 
             await _userService.CreateAsync(user, createDto.Password!);
+            await _userService.AssignToRoleAsync(user, "Client");
 
             var readDto = _mapper.Map<UserReadViewModel>(user);
 

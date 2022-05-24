@@ -10,9 +10,9 @@ namespace WebApi.AutoMapper
         {
             CreateMap<User, UserReadViewModel>();
             CreateMap<UserCreateViewModel, User>()
-                .AfterMap((dto, u) => u.UserName = u.Email);
+                .AfterMap((vm, u) => u.UserName = u.Email);
             CreateMap<UserUpdateViewModel, User>()
-                .AfterMap((dto, u) => u.UserName = u.Email);
+                .AfterMap((vm, u) => u.UserName = u.Email);
         }
     }
 }

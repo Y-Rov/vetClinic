@@ -14,6 +14,16 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
+        public async Task AssignToRoleAsync(User user, string role)
+        {
+            var assignResult = await _userRepository.AssignRoleAsync(user, role);
+
+            if (!assignResult.Succeeded)
+            {
+                throw new BadRequestException(assignResult.Errors);
+            }
+        }
+
         public async Task CreateAsync(User user, string password)
         {
             var createResult = await _userRepository.CreateAsync(user, password);

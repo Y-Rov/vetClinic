@@ -38,5 +38,10 @@ namespace DataAccess.Repositories
         {
             return await _userManager.UpdateAsync(user);
         }
+
+        public async Task<IdentityResult> AssignRoleAsync(User user, string role)
+        {
+            return await _userManager.AddToRoleAsync(user, role);
+        }
     }
 }

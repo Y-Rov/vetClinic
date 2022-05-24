@@ -10,5 +10,6 @@ namespace Core.Interfaces.Services
         Task CreateAsync(User user, string password);
         Task UpdateAsync(User user);
         Task DeleteAsync(User user);
+        Task AssignToRoleAsync(User user, string role);
     }
 }

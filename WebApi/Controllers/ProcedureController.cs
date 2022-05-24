@@ -45,7 +45,7 @@ public class ProcedureController : ControllerBase
 
         if (!validationResult.IsValid)
         {
-            throw new BadRequestException(validationResult.Errors);
+            throw new BadRequestException(validationResult.Errors.ToString());
         }
 
         var result =
@@ -68,7 +68,7 @@ public class ProcedureController : ControllerBase
 
         if (!validationResult.IsValid)
         {
-            throw new BadRequestException(validationResult.Errors);
+            throw new BadRequestException(validationResult.Errors.ToString());
         }
         
         await _procedureService.UpdateProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));

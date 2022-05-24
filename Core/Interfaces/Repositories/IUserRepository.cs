@@ -10,5 +10,6 @@ namespace Core.Interfaces.Repositories
         Task<IdentityResult> CreateAsync(User user, string password);
         Task<IdentityResult> UpdateAsync(User user);
         Task<IdentityResult> DeleteAsync(User user);
+        Task<IdentityResult> AssignRoleAsync(User user, string role);
     }
 }
