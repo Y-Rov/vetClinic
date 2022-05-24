@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Core.ViewModel.ProcedureViewModels;
 using Core.Entities;
+using Core.ViewModels.ProcedureViewModels;
 
 namespace WebApi.AutoMapper.ProcedureProfiles;
 

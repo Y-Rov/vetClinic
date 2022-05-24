@@ -2,7 +2,7 @@
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.ViewModel.ProcedureViewModels;
+using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Exceptions;
 
@@ -22,7 +22,7 @@ public class ProcedureController : ControllerBase
     }
 
     [HttpGet("/Procedures/getall")]
-    public async Task<ActionResult<IEnumerable<ProcedureModel>>> GetAll()
+    public async Task<ActionResult<IEnumerable<ProcedureViewModelBase>>> GetAll()
     {
         IEnumerable<Procedure> result;
         try
@@ -34,11 +34,11 @@ public class ProcedureController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureModel>>(result));
+        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModelBase>>(result));
     }
     
     [HttpGet("/Procedures/get/{id}")]
-    public async Task<ActionResult<ProcedureModel>> GetById(int id)
+    public async Task<ActionResult<ProcedureViewModelBase>> GetById(int id)
     {
         Procedure result;
         try
@@ -54,7 +54,7 @@ public class ProcedureController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<Procedure, ProcedureModel>(result));
+        return Ok(_mapper.Map<Procedure, ProcedureViewModelBase>(result));
     }
     
     [HttpPost("/Procedures/new")]
