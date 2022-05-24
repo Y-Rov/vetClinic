@@ -21,7 +21,12 @@ public class ProcedureService : IProcedureService
 
     public async Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure)   
     {
-        await _procedureRepository.UpdateProcedureAsync(oldProcedureId, newProcedure);
+        var oldProcedure = await _procedureRepository.GetProcedureByIdAsync(oldProcedureId);
+        
+        oldProcedure.Cost = newProcedure.Cost;
+        oldProcedure.DurationInMinutes = newProcedure.DurationInMinutes;
+        oldProcedure.Name = newProcedure.Name;
+        oldProcedure.Description = newProcedure.Description;        
         await _procedureRepository.SaveChangesAsync();
     }
 
