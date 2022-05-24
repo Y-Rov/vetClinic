@@ -68,12 +68,9 @@ public class ProcedureRepository : IProcedureRepository
         }
     }
 
-    public async Task DeleteProcedureAsync(int procedureId)
+    public async Task DeleteProcedureAsync(Procedure procedure)
     {
-        var procedureToRemove = await GetProcedureByIdAsync(procedureId);
-        if (procedureToRemove is null) throw new NullReferenceException();
-        
-        _clinicContext.Remove(procedureToRemove);
+        _clinicContext.Remove(procedure);
     }
 
     public async Task SaveChangesAsync()

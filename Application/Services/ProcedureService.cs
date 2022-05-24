@@ -31,9 +31,11 @@ public class ProcedureService : IProcedureService
         await _procedureRepository.SaveChangesAsync();
     }
 
-    public async Task DeleteProcedureAsync(int procedureId)     
+    public async Task DeleteProcedureAsync(int procedureId)
     {
-        await _procedureRepository.DeleteProcedureAsync(procedureId);
+        var procedureToRemove = await _procedureRepository.GetProcedureByIdAsync(procedureId);
+        if (procedureToRemove is null) throw new NullReferenceException();
+        await _procedureRepository.DeleteProcedureAsync(procedureToRemove);
         await _procedureRepository.SaveChangesAsync();
     }
 
