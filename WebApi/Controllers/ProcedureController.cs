@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Exceptions;
 using WebApi.Validators;
 
 namespace WebApi.Controllers;
@@ -23,44 +23,23 @@ public class ProcedureController : ControllerBase
         _validator = validator;
     }
 
-    [HttpGet("/api/Procedures/getall")]
-    public async Task<ActionResult<IEnumerable<ProcedureViewModel>>> GetAll()
+    [HttpGet("/api/Procedures/")]
+    public async Task<ActionResult<IEnumerable<ProcedureViewModel>>> GetAsync()
     {
-        IEnumerable<Procedure> result;
-        try
-        {
-            result = await _procedureService.GetAllProceduresAsync();
-        }
-        catch (NullReferenceException)
-        {
-            return NotFound();
-        }
+        var result = await _procedureService.GetAllProceduresAsync();
 
         return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModel>>(result));
     }
     
-    [HttpGet("/api/Procedures/get/{id}")]
-    public async Task<ActionResult<ProcedureViewModel>> GetById(int id)
+    [HttpGet("/api/Procedures/{id:int:min(1)}")]
+    public async Task<ActionResult<ProcedureViewModel>> GetAsync([FromRoute]int id)
     {
-        Procedure result;
-        try
-        {
-            result = await _procedureService.GetByIdAsync(id);
-        }
-        catch (NullReferenceException)
-        {
-            throw new NotFoundException();
-        }        
-        catch (InvalidOperationException)
-        {
-            throw new NotFoundException();
-        }
-
+        var result = await _procedureService.GetByIdAsync(id);
         return Ok(_mapper.Map<Procedure, ProcedureViewModel>(result));
     }
     
-    [HttpPost("/api/Procedures/new")]
-    public async Task<ActionResult> Create(ProcedureViewModelBase procedure)
+    [HttpPost("/api/Procedures/")]
+    public async Task<ActionResult> CreateAsync(ProcedureViewModelBase procedure)
     {
         var validationResult = await _validator.ValidateAsync(procedure);
 
@@ -72,18 +51,18 @@ public class ProcedureController : ControllerBase
         var result =
             await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(procedure));
         
-        return Created(nameof(Create), result);
+        return Created(nameof(CreateAsync), result);
     }
     
-    [HttpDelete("/api/Procedures/delete/{id:int}")]
-    public async Task<ActionResult> Delete(int id)
+    [HttpDelete("/api/Procedures/{id:int:min(1)}")]
+    public async Task<ActionResult> DeleteAsync([FromRoute]int id)
     {
         await _procedureService.DeleteProcedureAsync(id);
         return NoContent();
     }
     
-    [HttpPut("/api/Procedures/update/{id:int}")]
-    public async Task<ActionResult> Update(int id, ProcedureViewModelBase newProcedure)
+    [HttpPut("/api/Procedures/")]
+    public async Task<ActionResult> UpdateAsync(ProcedureViewModelBase newProcedure)
     {
         var validationResult = await _validator.ValidateAsync(newProcedure);
 
@@ -92,18 +71,18 @@ public class ProcedureController : ControllerBase
             throw new BadRequestException(validationResult.Errors);
         }
         
-        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
+        await _procedureService.UpdateProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
         return NoContent();
     }
 
-    [HttpPatch("/api/Procedures/updatespec/{id:int}")]
-    public async Task<ActionResult> UpdateProcedureSpecializations(int id, IEnumerable<int> specializationIds)
+    [HttpPatch("/api/Procedures/{id:int:min(1)}")]
+    public async Task<ActionResult> UpdateProcedureSpecializationsAsync([FromRoute]int id, IEnumerable<int> specializationIds)
     {
         try
         {
             await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
         }
-        catch (InvalidOperationException e)
+        catch (InvalidOperationException)
         {
             throw new BadRequestException();
         }

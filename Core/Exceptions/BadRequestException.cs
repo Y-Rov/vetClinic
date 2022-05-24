@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace WebApi.Exceptions
+namespace Core.Exceptions
 {
     public class BadRequestException : Exception
     {

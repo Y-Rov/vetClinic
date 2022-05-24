@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
@@ -19,9 +20,13 @@ public class ProcedureService : IProcedureService
         return result;
     }
 
-    public async Task UpdateProcedureAsync(int oldProcedureId, Procedure newProcedure)   
+    public async Task UpdateProcedureAsync(Procedure newProcedure)   
     {
-        var oldProcedure = await _procedureRepository.GetProcedureByIdAsync(oldProcedureId);
+        var oldProcedure = await _procedureRepository.GetProcedureByIdAsync(newProcedure.Id);
+        if (oldProcedure is null)
+        {
+            throw new NotFoundException($"Procedure with Id {newProcedure.Id} does not exist");
+        }
         
         oldProcedure.Cost = newProcedure.Cost;
         oldProcedure.DurationInMinutes = newProcedure.DurationInMinutes;
@@ -39,23 +44,34 @@ public class ProcedureService : IProcedureService
     public async Task DeleteProcedureAsync(int procedureId)
     {
         var procedureToRemove = await _procedureRepository.GetProcedureByIdAsync(procedureId);
-        if (procedureToRemove is null) throw new NullReferenceException();
+        if (procedureToRemove is null)
+        {
+            throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
+        }
         await _procedureRepository.DeleteProcedureAsync(procedureToRemove);
         await _procedureRepository.SaveChangesAsync();
     }
 
 
     public async Task<Procedure> GetByIdAsync(int procedureId)
-    { 
-       var result= await _procedureRepository.GetProcedureByIdAsync(procedureId);
-       if (result is null) throw new NullReferenceException();
-       return result;
+    {
+        var procedure = await _procedureRepository.GetProcedureByIdAsync(procedureId);
+        
+        if (procedure is null)
+        {
+            throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
+        }
+
+        return procedure;
     }
 
     public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
     {
-        var result = await _procedureRepository.GetAllProceduresAsync(); 
-        if (result is null) throw new NullReferenceException();
-        return result;
+        var procedures = await _procedureRepository.GetAllProceduresAsync(); 
+        if (procedures is null)
+        {
+            throw new NotFoundException("Procedures DBSet is null");
+        }
+        return procedures;
     }
 }

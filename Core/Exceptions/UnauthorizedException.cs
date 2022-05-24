@@ -1,7 +1,7 @@
 ﻿using FluentValidation.Results;
 using Newtonsoft.Json;
 
-namespace WebApi.Exceptions
+namespace Core.Exceptions
 {
     public class UnauthorizedException : Exception
     {
