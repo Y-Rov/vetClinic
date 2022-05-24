@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
@@ -18,7 +19,11 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            return await _repository.GetSpecializationByIdAsync(id);
+            Specialization specialization = 
+                await _repository.GetSpecializationByIdAsync(id);
+            return specialization is null ?
+                throw new NotFoundException($"Specialization with id: {id} not found"):
+                specialization;
         }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
@@ -33,6 +38,10 @@ namespace Application.Services
 
         public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updated)
         {
+            Specialization specializationToUpdate = await _repository.GetSpecializationByIdAsync(updated.Id);
+            if (specializationToUpdate == null)
+                throw new NotFoundException($"Specialization with id: {updated.Id} not found");
+
             return await _repository.UpdateSpecializationAsync(id, updated);
         }
     }
