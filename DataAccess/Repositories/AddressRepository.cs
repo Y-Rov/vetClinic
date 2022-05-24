@@ -9,9 +9,12 @@ namespace DataAccess.Repositories
     {
         private readonly ClinicContext _clinicContext;
 
-        public AddressRepository(ClinicContext clinicContext) => _clinicContext = clinicContext;
+        public AddressRepository(ClinicContext clinicContext)
+        {
+            _clinicContext = clinicContext;
+        }
 
-        public async Task<Address> GetAddressByIdAsync(int id)
+        public async Task<Address?> GetAddressByUserIdAsync(int id)
         {
             return await _clinicContext.Addresses.FirstOrDefaultAsync(address => address.UserId == id);
         }
@@ -26,16 +29,15 @@ namespace DataAccess.Repositories
             await _clinicContext.Addresses.AddAsync(address);
         }
 
-        public async Task<Address> UpdateAddressAsync(Address address)
+        public async Task UpdateAddressAsync(Address address)
         {
             _clinicContext.Addresses.Update(address);
             await _clinicContext.SaveChangesAsync();
-            return address;
         }
 
-        public async Task DeleteAddressAsync(int id)
+        public async Task DeleteAddressByUserIdAsync(int id)
         {
-            _clinicContext.Remove(GetAddressByIdAsync(id));
+            _clinicContext.Remove(GetAddressByUserIdAsync(id));
             await _clinicContext.SaveChangesAsync();
         }
     }
