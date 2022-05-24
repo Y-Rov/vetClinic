@@ -1,8 +1,9 @@
-﻿namespace Core.ViewModel
+﻿using Core.ViewModels.Base;
+
+namespace Core.ViewModel
 {
-    public class SpecializationViewModel
+    public class SpecializationViewModel : ViewModelsBase
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+
     }
 }
