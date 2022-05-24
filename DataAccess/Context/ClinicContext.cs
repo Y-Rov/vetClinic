@@ -15,6 +15,7 @@ namespace DataAccess.Context
         public DbSet<AppointmentUser> AppointmentUsers { get; set; }
         public DbSet<ExceptionEntity> Exceptions { get; set; }
         public DbSet<Procedure> Procedures { get; set; }
+        public DbSet<ProcedureSpecialization> ProcedureSpecializations { get; set; }
         public DbSet<Portfolio> Portfolios { get; set; }
         public DbSet<Address> Addresses { get; set; }
 

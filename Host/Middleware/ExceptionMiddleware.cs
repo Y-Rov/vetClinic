@@ -1,12 +1,10 @@
 ﻿using Core.Entities;
 using Core.Models;
 using DataAccess.Context;
-using WebApi.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using Core.Exceptions;
 using FluentValidation.Results;
-
-
 
 namespace Host.Middleware
 {
