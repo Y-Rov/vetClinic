@@ -4,6 +4,7 @@ using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ClinicContext))]
-    partial class ClinicContextModelSnapshot : ModelSnapshot
+    [Migration("20220524093526_PortfolioWithoutID")]
+    partial class PortfolioWithoutID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +26,11 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Core.Entities.Address", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<short?>("ApartmentNumber")
                         .HasColumnType("smallint");
@@ -48,10 +53,16 @@ namespace DataAccess.Migrations
                         .HasMaxLength(85)
                         .HasColumnType("nvarchar(85)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ZipCode")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Addresses", (string)null);
                 });
@@ -325,14 +336,14 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "9ff875ce-1a1e-4124-8f8a-94c96bf75b03",
+                            ConcurrencyStamp = "4e20c4f8-7b09-4ec8-8c1a-6b0c60935d82",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBZx7BhB+tmD6RQwTtvpyhgQ10YJPI79/VsHzXfMVXj14vSSgZeCb6kF1sxMLAFxwg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFnPNHnhK4lMW7fLmsZL2Z+zhDPTn0iNT/guysIUqgjW5mfT5R/hmi05dJE9/D8GBg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "95e2a2de-114a-47b0-8c29-9dbb5a50fa3a",
+                            SecurityStamp = "8264c318-0d50-48c8-8747-1f11e7002a6e",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -386,28 +397,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "728191a1-6b20-43c7-b2ff-f57e72f11050",
+                            ConcurrencyStamp = "3ac25cc9-a103-487f-ad91-075ae0365c16",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "e04c1cd9-e346-4c8f-b54d-f1a58a60e909",
+                            ConcurrencyStamp = "5b7c5473-2ab7-4a0f-9749-cc07f6755c3a",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "bc9241cd-96fc-49de-a31e-8e0886199cce",
+                            ConcurrencyStamp = "3d64f376-a7a0-4095-a4e5-215958b3754d",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "d5f22341-35b0-4435-9ff6-7ca8a532d6c1",
+                            ConcurrencyStamp = "7256e2ca-6a81-4004-81ee-f3091beca31d",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
