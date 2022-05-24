@@ -14,7 +14,7 @@ namespace DataAccess.Configurations
             builder
                 .Property(salary => salary.Value)
                 .HasColumnType("decimal")
-                .HasPrecision(7,2)
+                .HasPrecision(10,2)
                 .IsRequired();
 
             builder.
