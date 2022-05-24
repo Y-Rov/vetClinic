@@ -8,6 +8,6 @@ public class ProcedureDtoProfile : Profile
 {
     public ProcedureDtoProfile()
     {
-        CreateMap<ProcedureViewModel, Procedure>();
+        CreateMap<ProcedureViewModelBase, Procedure>();
     }
 }

@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace WebApi.Validators;
 
-public class ProcedureDtoValidator : AbstractValidator<ProcedureViewModel>
+public class ProcedureViewModelBaseValidator : AbstractValidator<ProcedureViewModelBase>
 {
-    public ProcedureDtoValidator()
+    public ProcedureViewModelBaseValidator()
     {
         RuleFor(dto => dto.Cost)
             .GreaterThan(0)
@@ -22,6 +22,6 @@ public class ProcedureDtoValidator : AbstractValidator<ProcedureViewModel>
             .WithMessage("Procedure name length must be less than 250");
         RuleFor(dto => dto.DurationInMinutes)
             .GreaterThan(0)
-            .WithMessage("Procedure duration must be greater than 1 minute");
+            .WithMessage("Procedure duration must be greater than 0");
     }
 }

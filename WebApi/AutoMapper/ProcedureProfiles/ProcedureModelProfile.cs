@@ -9,6 +9,6 @@ public class ProcedureModelProfile : Profile
 {
     public ProcedureModelProfile()
     {
-        CreateMap<Procedure, ProcedureViewModelBase>();
+        CreateMap<Procedure, ProcedureViewModel>();
     }
 }
