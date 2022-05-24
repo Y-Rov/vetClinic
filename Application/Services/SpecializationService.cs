@@ -11,19 +11,29 @@ namespace Application.Services
         {
             _repository = repository;
         }
-        public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync() =>
-            await _repository.GetAllSpecializationsAsync();
+        public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
+        {
+            return await _repository.GetAllSpecializationsAsync();
+        }
 
-        public async Task<Specialization> GetSpecializationByIdAsync(int id) =>
-            await _repository.GetSpecializationByIdAsync(id);
+        public async Task<Specialization> GetSpecializationByIdAsync(int id)
+        {
+            return await _repository.GetSpecializationByIdAsync(id);
+        }
 
-        public async Task<Specialization> AddSpecializationAsync(Specialization specialization) =>
-            await _repository.AddSpecializationAsync(specialization);
+        public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
+        {
+            return await _repository.AddSpecializationAsync(specialization);
+        }
 
-        public async Task<int> DeleteSpecializationAsync(int id) =>
-            await _repository.DeleteSpecializationAsync(id);
+        public async Task<int> DeleteSpecializationAsync(int id) 
+        {
+            return await _repository.DeleteSpecializationAsync(id); 
+        }
 
-        public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updated) =>
-            await _repository.UpdateSpecializationAsync(id, updated);
+        public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updated)
+        {
+            return await _repository.UpdateSpecializationAsync(id, updated);
+        }
     }
 }
