@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.ViewModels.User;
 using FluentValidation.AspNetCore;
 using WebApi.Validators;
+using WebApi.Validators.User;
 
 namespace Host.Configurations
 {
@@ -11,8 +12,6 @@ namespace Host.Configurations
         public static void AddSystemServices(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
-
-            services.AddScoped<UserValidator<UserUpdateViewModel>>();
 
             services.AddFluentValidation(fv =>
             {
