@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
@@ -24,7 +25,7 @@ namespace Application.Services
             var animalToDelete = await _animalRepository.GetAnimalByIdAsync(animalId);
             if (animalToDelete == null)
             {
-                throw new ArgumentNullException(nameof(animalToDelete));
+                throw new NotFoundException($"Animal with {animalId} does not exist");
             }
             await _animalRepository.DeleteAnimalAsync(animalToDelete);
             await _animalRepository.SaveChangesAsync();
@@ -34,7 +35,7 @@ namespace Application.Services
         {
             if (animal == null)
             {
-                throw new ArgumentNullException(nameof(animal));
+                throw new NotFoundException($"Animal does not exist");
             }
             await _animalRepository.UpdateAnimalAsync(animal);
             await _animalRepository.SaveChangesAsync();
@@ -45,7 +46,7 @@ namespace Application.Services
             var animals = await _animalRepository.GetAllAnimalsAsync();
             if (animals is null)
             {
-                throw new ArgumentNullException(nameof(animals));
+                throw new NotFoundException();
             }
             return animals;
         }
@@ -55,7 +56,7 @@ namespace Application.Services
             var appointments = await _animalRepository.GetAllAppointmentsWithAnimalIdAsync(id);
             if (appointments is null)
             {
-                throw new ArgumentNullException(nameof(appointments));
+                throw new NotFoundException();
             }
             return appointments;
         }
@@ -65,7 +66,7 @@ namespace Application.Services
             var animal = await _animalRepository.GetAnimalByIdAsync(id);
             if (animal is null)
             {
-                throw new ArgumentNullException();
+                throw new NotFoundException();
             }
             return animal;
         }
