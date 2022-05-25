@@ -9,7 +9,7 @@ namespace WebApi.Validators
         {
             RuleFor(dto => dto.NickName)
                 .MinimumLength(1)
-                .WithMessage("Animal nickname lenght must be greater that 5")
+                .WithMessage("Animal nickname lenght must be greater that 1")
                 .MaximumLength(100)
                 .WithMessage("Animal nickname lenght must be less that 100");
         }
