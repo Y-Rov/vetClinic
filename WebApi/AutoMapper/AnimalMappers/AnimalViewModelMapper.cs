@@ -9,17 +9,18 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AnimalMappers
 {
-    public class AnimalMapperAsync : IViewModelMapperAsync<Animal, AnimalViewModel>
+    public class AnimalViewModelMapper : IViewModelMapper<AnimalViewModel, Animal>
     {
-        public async Task<AnimalViewModel> MapAsync(Animal source)
+        public Animal Map(AnimalViewModel source)
         {
-            var animalViewModel =  new AnimalViewModel
+            var animalViewModel = new Animal
             {
                 Id = source.Id,
                 OwnerId = source.OwnerId,
                 NickName = source.NickName,
-                BirthDate = source.BirthDate,
+                BirthDate = source.BirthDate
             };
+
             return animalViewModel;
         }
     }

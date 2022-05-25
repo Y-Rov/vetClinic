@@ -17,13 +17,6 @@ namespace Application.Services
 
         public async Task AddNewAnimalAsync(Animal animal)
         {
-            //-----------
-            //var owner = _userRepository.GetUserByIdAsync(animal.OwnerId);
-            //if(owner == null)
-            //{
-            //    throw new NotFoundException();
-            //}
-            //----------
             await _animalRepository.AddNewAnimalAsync(animal);
             await _animalRepository.SaveChangesAsync();
         }

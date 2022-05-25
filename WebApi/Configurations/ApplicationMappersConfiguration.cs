@@ -17,8 +17,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
             SpecializationProcedureToSpecViewModel>();
         services.AddScoped<IViewModelMapperAsync<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
-        //animal
-        services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalMapper>();
-        services.AddScoped<IViewModelMapperAsync<Animal, AnimalViewModel>, AnimalMapperAsync>();
+        services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
+        services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
     }
 }

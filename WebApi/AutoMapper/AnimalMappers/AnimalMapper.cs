@@ -9,11 +9,11 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AnimalMappers
 {
-    public class AnimalMapper : IViewModelMapper<AnimalViewModel, Animal>
+    public class AnimalMapper : IViewModelMapper<Animal, AnimalViewModel>
     {
-        public Animal Map(AnimalViewModel source)
+        public AnimalViewModel Map(Animal source)
         {
-            var animalViewModel = new Animal
+            var animal = new AnimalViewModel
             {
                 Id = source.Id,
                 OwnerId = source.OwnerId,
@@ -21,7 +21,7 @@ namespace WebApi.AutoMapper.AnimalMappers
                 BirthDate = source.BirthDate
             };
 
-            return animalViewModel;
+            return animal;
         }
     }
 }

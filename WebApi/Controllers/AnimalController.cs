@@ -13,15 +13,15 @@ namespace WebApi.Controllers
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalService _animalService;
-        private readonly IViewModelMapper<AnimalViewModel, Animal> _mapper;
-        private readonly IViewModelMapperAsync<Animal, AnimalViewModel> _mapperAsync;
+        private readonly IViewModelMapper<AnimalViewModel, Animal> _mapperVMtoM;
+        private readonly IViewModelMapper<Animal, AnimalViewModel> _mapperMtoVM;
         private readonly AnimalViewModelValidator _validator;
 
-        public AnimalController(IAnimalService animalService, IViewModelMapper<AnimalViewModel, Animal> mapper, IViewModelMapperAsync<Animal, AnimalViewModel> mapperAsync, AnimalViewModelValidator validator)
+        public AnimalController(IAnimalService animalService, IViewModelMapper<AnimalViewModel, Animal> mapperVMtoM, IViewModelMapper<Animal, AnimalViewModel> mapperMtoVM, AnimalViewModelValidator validator)
         {
             _animalService = animalService;
-            _mapper = mapper;
-            _mapperAsync = mapperAsync;
+            _mapperVMtoM = mapperVMtoM;
+            _mapperMtoVM = mapperMtoVM;
             _validator = validator;
         }
 
@@ -32,7 +32,7 @@ namespace WebApi.Controllers
             var map = new List<AnimalViewModel>();
             foreach (var animal in animals)
             {
-                map.Add(await _mapperAsync.MapAsync(animal));
+                map.Add(_mapperMtoVM.Map(animal));
             }
             return Ok(map);
         }
@@ -41,12 +41,9 @@ namespace WebApi.Controllers
         public async Task<ActionResult<AnimalViewModel>> GetAsync(int id)
         {
             var animal = await _animalService.GetAnimalByIdAsync(id);
-            var map = await _mapperAsync.MapAsync(animal);
+            var map = _mapperMtoVM.Map(animal);
             return Ok(map);
         }
-
-        //[HttpGet("api/[controller]/appointsmentfor/{id:int:min(1)")]
-        //public async Task<ActionResult<IEnumerable<App>>>
 
         [HttpPost("/api/[controller]/")]
         public async Task<ActionResult> PostAsync(AnimalViewModel model)
@@ -57,7 +54,7 @@ namespace WebApi.Controllers
                 throw new BadRequestException(validResult.Errors.ToString());
             }
 
-            await _animalService.AddNewAnimalAsync(_mapper.Map(model));
+            await _animalService.AddNewAnimalAsync(_mapperVMtoM.Map(model));
             return Ok();
         }
 
@@ -77,7 +74,7 @@ namespace WebApi.Controllers
                 throw new BadRequestException(validResult.Errors.ToString());
             }
 
-            var map = _mapper.Map(model);
+            var map = _mapperVMtoM.Map(model);
             await _animalService.UpdateAnimalAsync(map);
             return Ok();
         }
