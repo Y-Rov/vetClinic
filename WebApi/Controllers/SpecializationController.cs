@@ -2,8 +2,9 @@
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Services;
-using Core.ViewModel;
+using Core.ViewModels.SpecializationViewModels;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
 {
@@ -12,32 +13,41 @@ namespace WebApi.Controllers
     public class SpecializationController : ControllerBase
     {
         ISpecializationService _service;
-        IMapper _mapper;
+        IViewModelMapper<SpecializationViewModel, Specialization> _mapper;
+        IViewModelMapper<Specialization, SpecializationViewModel> _viewModelMapper;
 
-        public SpecializationController(ISpecializationService service, IMapper mapper)
+        public SpecializationController(
+            ISpecializationService service, 
+            IViewModelMapper<SpecializationViewModel, Specialization> mapper, IViewModelMapper<Specialization, 
+            SpecializationViewModel> viewModelMapper)
         {
             _service = service;
             _mapper = mapper;
+            _viewModelMapper = viewModelMapper;
         }
 
         [HttpGet()]
         public async Task<ActionResult> GetSpecializations()
         {
-            return Ok(_mapper.Map<IEnumerable<SpecializationViewModel>>(await _service.GetAllSpecializationsAsync()));
+            var res = await _service.GetAllSpecializationsAsync();
+            var viewModels = new List<SpecializationViewModel>();
+            foreach (var spec in res)
+                viewModels.Add(_viewModelMapper.Map(spec));
+            return Ok(viewModels);
         }
 
         [HttpGet("api/specialization/{id:int:min(1)}")]
         public async Task<ActionResult> GetSpecializationById([FromRoute] int id)
         {
-            return Ok(_mapper.Map<SpecializationViewModel>(await _service.GetSpecializationByIdAsync(id)));
+            return Ok(_viewModelMapper.Map(await _service.GetSpecializationByIdAsync(id)));
         }
 
         [HttpPost]
         public async Task<ActionResult> AddSpecialization(SpecializationViewModel specialization)
         {
             return !ModelState.IsValid ? throw new BadRequestException() :
-                Ok(_mapper.Map<SpecializationViewModel>(
-                    await _service.AddSpecializationAsync(_mapper.Map<Specialization>(specialization))));
+                Ok(_viewModelMapper.Map(
+                    await _service.AddSpecializationAsync(_mapper.Map(specialization))));
         }
 
 
@@ -46,7 +56,7 @@ namespace WebApi.Controllers
         {
             if(!ModelState.IsValid)
                 throw new BadRequestException("invalid parameters");
-            await _service.UpdateSpecializationAsync(id, _mapper.Map<Specialization>(updated));
+            await _service.UpdateSpecializationAsync(_mapper.Map(updated));
             return Ok();
         }
 

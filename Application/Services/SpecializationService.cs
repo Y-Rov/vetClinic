@@ -42,7 +42,7 @@ namespace Application.Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task UpdateSpecializationAsync(int id, Specialization updated)
+        public async Task UpdateSpecializationAsync(Specialization updated)
         {
             Specialization specialization = await _repository.GetSpecializationByIdAsync(updated.Id);
             if (specialization == null) throw new NotFoundException($"Specialization with id: {updated.Id} not found");
