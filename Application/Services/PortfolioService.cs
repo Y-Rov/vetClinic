@@ -31,7 +31,6 @@ namespace Application.Services
 
         public async Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync()
         {
-            _loggerManager.LogInfo("Inside GetAllPortfoliosAsync");
             return await _portfolioRepository.GetAllPortfoliosAsync();
         }
 
