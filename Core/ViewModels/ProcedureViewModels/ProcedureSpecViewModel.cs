@@ -1,4 +1,4 @@
-﻿using Core.ViewModel;
+﻿using Core.ViewModels.SpecializationViewModels;
 
 namespace Core.ViewModels.ProcedureViewModels;
 

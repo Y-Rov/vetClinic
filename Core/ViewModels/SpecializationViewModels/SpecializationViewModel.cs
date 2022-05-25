@@ -1,4 +1,4 @@
-﻿namespace Core.ViewModel
+﻿namespace Core.ViewModels.SpecializationViewModels
 {
     public class SpecializationViewModel
     {

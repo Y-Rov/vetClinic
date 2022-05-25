@@ -1,6 +1,6 @@
 ﻿using Core.Entities;
-using Core.ViewModel;
 using Core.ViewModels.ProcedureViewModels;
+using Core.ViewModels.SpecializationViewModels;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ProcedureMappers;
