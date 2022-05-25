@@ -31,23 +31,18 @@ namespace DataAccess.Repositories
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
         {
             await _context.Specializations.AddAsync(specialization);
-            await _context.SaveChangesAsync();
             return specialization;
         }
 
-        public async Task<int> DeleteSpecializationAsync(int id)
+        public async Task DeleteSpecializationAsync(Specialization specialization)
         {
             _context.Specializations
-                .Remove(await _context.Specializations.FirstAsync(spec => spec.Id == id));
-            int affectedColumns = await _context.SaveChangesAsync();
-            return affectedColumns;
+                .Remove(specialization);
         }
 
-        public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updatedSpecialization)
+        public async Task SaveChangesAsync()
         {
-            _context.Entry(updatedSpecialization).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return updatedSpecialization;
         }
     }
 }

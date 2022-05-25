@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.Validators;
 using Core.ViewModels.User;
 using WebApi.AutoMapper.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Core.Exceptions;
 
 namespace WebApi.Controllers
 {
@@ -101,6 +103,28 @@ namespace WebApi.Controllers
             await _userService.DeleteAsync(user!);
 
             return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("register/{role}")]
+        public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromRoute] string role, 
+            [FromBody] UserCreateViewModel createDto)
+        {
+            var validationResult = _createValidator.Validate(createDto);
+
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException(validationResult.Errors.ToString()!);
+            }
+
+            var user = _createMapper.Map(createDto);
+
+            await _userService.CreateAsync(user, createDto.Password!);
+            await _userService.AssignToRoleAsync(user, role);
+
+            var readDto = _readMapper.Map(user);
+
+            return CreatedAtAction(nameof(GetAsync), new { id = readDto.Id }, readDto);
         }
     }
 }

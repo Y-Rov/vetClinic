@@ -38,7 +38,7 @@ namespace DataAccess.Repositories
 
         public async Task<Animal?> GetAnimalByIdAsync(int animalId)
         {
-            var animal = await _clinicContext.Animals.SingleOrDefaultAsync(animal => animal.Id == animalId);
+            var animal = await _clinicContext.Animals.AsNoTracking().SingleOrDefaultAsync(animal => animal.Id == animalId);
             return animal;
         }
 

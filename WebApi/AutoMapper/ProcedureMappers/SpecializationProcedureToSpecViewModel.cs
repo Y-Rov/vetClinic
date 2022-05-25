@@ -1,30 +1,26 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
-using Core.ViewModel;
+using Core.ViewModels.SpecializationViewModels;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ProcedureMappers;
 
 public class SpecializationProcedureToSpecViewModel :
-    IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>
+    IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>
 {
-    private readonly ISpecializationRepository _specializationRepository;
+    private readonly IViewModelMapper<Specialization, SpecializationViewModel> _specMapper;
 
-    public SpecializationProcedureToSpecViewModel(ISpecializationRepository specializationRepository)
+    public SpecializationProcedureToSpecViewModel(IViewModelMapper<Specialization, SpecializationViewModel> specMapper)
     {
-        _specializationRepository = specializationRepository;
+        _specMapper = specMapper;
     }
 
-    public async Task<IEnumerable<SpecializationViewModel>> MapAsync(IEnumerable<ProcedureSpecialization> source)
+    public IEnumerable<SpecializationViewModel> Map(IEnumerable<ProcedureSpecialization> source)
     {
         var viewModels = new List<SpecializationViewModel>();
-        foreach (var pr in source)
+        foreach (var ps in source)
         {
-            viewModels.Add(new SpecializationViewModel()
-            {
-                Id = pr.SpecializationId,
-                Name = (await _specializationRepository.GetSpecializationByIdAsync(pr.SpecializationId)).Name
-            });
+            viewModels.Add(_specMapper.Map(ps.Specialization) );
         }
 
         return viewModels;

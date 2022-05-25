@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
@@ -18,22 +19,35 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            return await _repository.GetSpecializationByIdAsync(id);
+            Specialization specialization = 
+                await _repository.GetSpecializationByIdAsync(id);
+            return specialization is null ?
+                throw new NotFoundException($"Specialization with id: {id} not found"):
+                specialization;
         }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
         {
-            return await _repository.AddSpecializationAsync(specialization);
+            await _repository.AddSpecializationAsync(specialization);
+            await _repository.SaveChangesAsync();
+            return specialization;
         }
 
-        public async Task<int> DeleteSpecializationAsync(int id) 
+        public async Task DeleteSpecializationAsync(int id) 
         {
-            return await _repository.DeleteSpecializationAsync(id); 
+            var specialization = await _repository.GetSpecializationByIdAsync(id);
+            if (specialization == null)
+                throw new NotFoundException($"Specialization with id: {id} not found");
+            await _repository.DeleteSpecializationAsync(specialization);
+            await _repository.SaveChangesAsync();
         }
 
-        public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updated)
+        public async Task UpdateSpecializationAsync(Specialization updated)
         {
-            return await _repository.UpdateSpecializationAsync(id, updated);
+            Specialization specialization = await _repository.GetSpecializationByIdAsync(updated.Id);
+            if (specialization == null) throw new NotFoundException($"Specialization with id: {updated.Id} not found");
+            specialization.Name = updated.Name;
+            await _repository.SaveChangesAsync();
         }
     }
 }

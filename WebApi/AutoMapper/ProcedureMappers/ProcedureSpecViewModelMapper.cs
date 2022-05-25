@@ -1,20 +1,20 @@
 ﻿using Core.Entities;
-using Core.ViewModel;
 using Core.ViewModels.ProcedureViewModels;
+using Core.ViewModels.SpecializationViewModels;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ProcedureMappers;
 
-public class ProcedureSpecViewModelMapper : IViewModelMapperAsync<Procedure, ProcedureSpecViewModel>
+public class ProcedureSpecViewModelMapper : IViewModelMapper<Procedure, ProcedureSpecViewModel>
 {
-    private readonly IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> _internalMapper;
+    private readonly IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> _internalMapper;
 
     public ProcedureSpecViewModelMapper(
-        IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> internalMapper)
+        IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> internalMapper)
     {
         _internalMapper = internalMapper;
     }
-    public async Task<ProcedureSpecViewModel> MapAsync(Procedure source)
+    public ProcedureSpecViewModel Map(Procedure source)
     {
         var procedureSpecViewModel = new ProcedureSpecViewModel()
         {
@@ -25,7 +25,7 @@ public class ProcedureSpecViewModelMapper : IViewModelMapperAsync<Procedure, Pro
             DurationInMinutes = source.DurationInMinutes
         };
 
-        procedureSpecViewModel.Specializations = await _internalMapper.MapAsync(source.ProcedureSpecializations);
+        procedureSpecViewModel.Specializations =  _internalMapper.Map(source.ProcedureSpecializations);
         return procedureSpecViewModel;
     }
 }

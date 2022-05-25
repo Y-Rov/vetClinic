@@ -20,6 +20,7 @@ public class ProcedureRepository : IProcedureRepository
     { 
         return await _clinicContext.Procedures
             .Include(procedure => procedure.ProcedureSpecializations)
+            .ThenInclude(ps => ps.Specialization)
             .ToListAsync();
     }
 
