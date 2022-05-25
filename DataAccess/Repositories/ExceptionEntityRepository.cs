@@ -16,12 +16,12 @@ namespace DataAccess.Repositories
             _clinicContext = clinicContext;
         }
 
-        public async Task<IEnumerable<ExceptionEntity>> GetAllAsync()
+        public async Task<IEnumerable<ExceptionEntity>> GetAsync()
         {
             return await _clinicContext.Exceptions.ToListAsync();
         }
 
-        public async Task<ExceptionEntity> GetByIdAsync(int id)
+        public async Task<ExceptionEntity> GetAsync(int id)
         {
             return await _clinicContext.Exceptions.SingleOrDefaultAsync(ex => ex.Id == id);
         }

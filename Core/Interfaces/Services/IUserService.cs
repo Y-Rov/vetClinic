@@ -6,7 +6,7 @@ namespace Core.Interfaces.Services
     public interface IUserService
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<User?> GetUserByIdAsync(int id);
+        Task<User> GetUserByIdAsync(int id);
         Task CreateAsync(User user, string password);
         Task UpdateAsync(User user);
         Task DeleteAsync(User user);
