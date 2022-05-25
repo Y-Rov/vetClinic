@@ -4,10 +4,10 @@ namespace Core.Interfaces.Services
 {
     public interface IAddressService
     {
-        Task<Address> GetAddressByIdAsync(int id);
+        Task<Address> GetAddressByUserIdAsync(int id);
         Task<IEnumerable<Address>> GetAllAddressesAsync();
-        Task CreateAddressAsync(Address portfolio);
-        Task<Address> UpdateAddressAsync(Address portfolio);
-        Task DeleteAddressAsync(int id);
+        Task CreateAddressAsync(Address address);
+        Task UpdateAddressAsync(Address address);
+        Task DeleteAddressByUserIdAsync(int id);
     }
 }
