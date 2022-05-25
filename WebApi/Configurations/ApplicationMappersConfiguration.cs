@@ -13,6 +13,7 @@ namespace WebApi.Configurations;
 
 public static class ApplicationMappersConfiguration
 {
+    // transfer to automapper
     public static void AddApplicationMappers(this IServiceCollection services)
     {
         services.AddScoped<IViewModelMapper<User, UserReadViewModel>, UserToUserReadViewModelMapper>();
