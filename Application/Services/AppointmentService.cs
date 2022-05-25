@@ -22,7 +22,7 @@ namespace Application.Services
         public async Task CreateAsync(Appointment appointment)
         {
             await _appointmentRepository.CreateAsync(appointment);
-            _logger.LogInfo("Appointment was created in method CreateAsync(Appointment appointment)");
+            _logger.LogInfo("Appointment was created in method CreateAsync");
         }
 
         public async Task DeleteAsync(int appointmentId)
@@ -34,14 +34,14 @@ namespace Application.Services
                 throw new NotFoundException($"Appointment with Id {appointmentId} does not exist");
             }
 
-            _logger.LogInfo("Appointment was getted by appointmentId in method DeleteAsync(int appointmentId)");
+            _logger.LogInfo("Appointment was getted by appointmentId in method DeleteAsync");
             await _appointmentRepository.DeleteAsync(appointment);
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
             var appointments = await _appointmentRepository.GetAsync();
-            _logger.LogInfo("Appointments were getted in method GetAsync()");
+            _logger.LogInfo("Appointments were getted in method GetAsync");
             return appointments;
         }
 
@@ -51,7 +51,7 @@ namespace Application.Services
            
             if (appointment != null)
             {
-                _logger.LogInfo("Appointment was getted by appointmentId in method GetAsync(int appointmentId)");
+                _logger.LogInfo("Appointment was getted by appointmentId in method GetAsync");
                 return appointment;
             }
             throw new NotFoundException($"Appointment with Id {appointmentId} does not exist");
@@ -63,7 +63,7 @@ namespace Application.Services
             
             if (existingAppointment != null)
             {
-                _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync(Appointment appointment)");
+                _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
 
                 existingAppointment.Date = appointment.Date;
                 existingAppointment.MeetHasOccureding= appointment.MeetHasOccureding;
