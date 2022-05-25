@@ -28,18 +28,26 @@ namespace Application.Services
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
         {
-            return await _repository.AddSpecializationAsync(specialization);
+            await _repository.AddSpecializationAsync(specialization);
+            await _repository.SaveChangesAsync();
+            return specialization;
         }
 
-        public async Task<int> DeleteSpecializationAsync(int id) 
+        public async Task DeleteSpecializationAsync(int id) 
         {
-            return await _repository.DeleteSpecializationAsync(id); 
+            var specialization = await _repository.GetSpecializationByIdAsync(id);
+            if (specialization == null)
+                throw new NotFoundException($"Specialization with id: {id} not found");
+            await _repository.DeleteSpecializationAsync(specialization);
+            await _repository.SaveChangesAsync();
         }
 
         public async Task UpdateSpecializationAsync(int id, Specialization updated)
         {
-            Specialization specialization = await _repository.UpdateSpecializationAsync(id, updated);
+            Specialization specialization = await _repository.GetSpecializationByIdAsync(updated.Id);
             if (specialization == null) throw new NotFoundException($"Specialization with id: {updated.Id} not found");
+            specialization.Name = updated.Name;
+            await _repository.SaveChangesAsync();
         }
     }
 }

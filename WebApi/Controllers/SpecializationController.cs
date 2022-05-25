@@ -20,14 +20,14 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("/getSpecializations")]
+        [HttpGet()]
         public async Task<ActionResult> GetSpecializations()
         {
             return Ok(_mapper.Map<IEnumerable<SpecializationViewModel>>(await _service.GetAllSpecializationsAsync()));
         }
 
-        [HttpGet("/getSpecializationById/{id}")]
-        public async Task<ActionResult> GetSpecializationById(int id)
+        [HttpGet("api/specialization/{id:int:min(1)}")]
+        public async Task<ActionResult> GetSpecializationById([FromRoute] int id)
         {
             return Ok(_mapper.Map<SpecializationViewModel>(await _service.GetSpecializationByIdAsync(id)));
         }
@@ -41,19 +41,20 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpPut("/update/{id}")]
-        public async Task<ActionResult> UpdateSpecialization(int id, SpecializationViewModel updated)
+        [HttpPut("api/specialization/{id:int:min(1)}")]
+        public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, SpecializationViewModel updated)
         {
             if(!ModelState.IsValid)
                 throw new BadRequestException("invalid parameters");
             await _service.UpdateSpecializationAsync(id, _mapper.Map<Specialization>(updated));
-            return NoContent();
+            return Ok();
         }
 
-        [HttpDelete("/delete/{id}")]
-        public async Task<ActionResult> DeleteSpecialization(int id)
+        [HttpDelete("api/specialization/{id:int:min(1)}")]
+        public async Task<ActionResult> DeleteSpecialization([FromRoute] int id)
         {
-            return Ok(await _service.DeleteSpecializationAsync(id));
+            await _service.DeleteSpecializationAsync(id);
+            return Ok();
         }
     }
 }

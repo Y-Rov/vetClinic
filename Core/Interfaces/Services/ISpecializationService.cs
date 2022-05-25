@@ -8,6 +8,6 @@ namespace Core.Interfaces.Services
         Task<Specialization> GetSpecializationByIdAsync(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
         Task UpdateSpecializationAsync(int id, Specialization updated);
-        Task<int> DeleteSpecializationAsync(int id);
+        Task DeleteSpecializationAsync(int id);
     }
 }

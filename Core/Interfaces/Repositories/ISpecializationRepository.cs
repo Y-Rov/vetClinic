@@ -6,9 +6,8 @@ namespace Core.Interfaces.Repositories
     {
         Task<IEnumerable<Specialization>> GetAllSpecializationsAsync();
         Task<Specialization> GetSpecializationByIdAsync(int id);
-        Task<int> DeleteSpecializationAsync(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
-        Task<Specialization> UpdateSpecializationAsync(int id, Specialization updatedSpecialization);
+        Task DeleteSpecializationAsync(Specialization id);
         Task SaveChangesAsync();
     }
 }
