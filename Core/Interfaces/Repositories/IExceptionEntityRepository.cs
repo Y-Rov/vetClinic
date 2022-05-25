@@ -5,9 +5,9 @@ namespace Core.Interfaces.Repositories
 {
     public interface IExceptionEntityRepository
     {
-        Task<IEnumerable<ExceptionEntity>> GetAllAsync();
+        Task<IEnumerable<ExceptionEntity>> GetAsync();
         Task<IEnumerable<ExceptionStats>> GetStatsAsync();
-        Task<ExceptionEntity> GetByIdAsync(int id);
+        Task<ExceptionEntity> GetAsync(int id);
         Task<IEnumerable<ExceptionEntity>> GetTodayAsync();
         Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync();
     }
