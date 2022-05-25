@@ -33,7 +33,7 @@ namespace Application.Services
 
         public async Task UpdateAnimalAsync(Animal animal)
         {
-            var animalToUpdate = _animalRepository.GetAnimalByIdAsync(animal.Id);
+            var animalToUpdate = await _animalRepository.GetAnimalByIdAsync(animal.Id);
             if (animalToUpdate == null)
             {
                 throw new NotFoundException($"Animal does not exist");
