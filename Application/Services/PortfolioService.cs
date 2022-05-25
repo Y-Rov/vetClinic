@@ -25,7 +25,7 @@ namespace Application.Services
                 return portfolio;
             }
 
-            _loggerManager.LogError($"User with ID - {id} doesn't have a portfolio!");
+            _loggerManager.LogWarn($"User with ID - {id} doesn't have a portfolio!");
             throw new NotFoundException($"User with ID - {id} doesn't have a portfolio!");
         }
 
@@ -43,7 +43,7 @@ namespace Application.Services
                 await _portfolioRepository.SaveChangesAsync();
             }
 
-            _loggerManager.LogError($"User with ID - {portfolio.UserId} has already a portfolio!");
+            _loggerManager.LogWarn($"User with ID - {portfolio.UserId} has already a portfolio!");
             throw new BadRequestException($"User with ID - {portfolio.UserId} has already a portfolio!");
         }
 
@@ -56,7 +56,7 @@ namespace Application.Services
                 await _portfolioRepository.SaveChangesAsync();
             }
 
-            _loggerManager.LogError($"User with ID - {portfolio.UserId} doesn't have a portfolio!");
+            _loggerManager.LogWarn($"User with ID - {portfolio.UserId} doesn't have a portfolio!");
             throw new NotFoundException($"User with ID - {portfolio.UserId} doesn't have a portfolio!");
         }
 
@@ -69,7 +69,7 @@ namespace Application.Services
                 await _portfolioRepository.SaveChangesAsync();
             }
 
-            _loggerManager.LogError($"User with ID - {id} doesn't have a portfolio!");
+            _loggerManager.LogWarn($"User with ID - {id} doesn't have a portfolio!");
             throw new NotFoundException($"User with ID - {id} doesn't have a portfolio!");
         }
     }

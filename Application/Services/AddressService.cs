@@ -25,7 +25,7 @@ namespace Application.Services
                 return address;
             }
 
-            _loggerManager.LogError($"User with ID - {id} doesn't have an address!");
+            _loggerManager.LogWarn($"User with ID - {id} doesn't have an address!");
             throw new NotFoundException($"User with ID - {id} doesn't have an address!");
         }
 
@@ -43,7 +43,7 @@ namespace Application.Services
                 await _addressRepository.SaveChangesAsync();
             }
 
-            _loggerManager.LogError($"User with ID - {address.UserId} has already an address!");
+            _loggerManager.LogWarn($"User with ID - {address.UserId} has already an address!");
             throw new BadRequestException($"User with ID - {address.UserId} has already an address!");
         }
 
@@ -56,7 +56,7 @@ namespace Application.Services
                 await _addressRepository.SaveChangesAsync();
             }
 
-            _loggerManager.LogError($"User with ID - {address.UserId} doesn't have an address!");
+            _loggerManager.LogWarn($"User with ID - {address.UserId} doesn't have an address!");
             throw new NotFoundException($"User with ID - {address.UserId} doesn't have an address!");
         }
 
@@ -69,7 +69,7 @@ namespace Application.Services
                 await _addressRepository.SaveChangesAsync();
             }
 
-            _loggerManager.LogError($"User with ID - {id} doesn't have an address!");
+            _loggerManager.LogWarn($"User with ID - {id} doesn't have an address!");
             throw new NotFoundException($"User with ID - {id} doesn't have an address!");
         }
     }
