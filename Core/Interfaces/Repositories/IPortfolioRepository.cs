@@ -4,10 +4,11 @@ namespace Core.Interfaces.Repositories
 {
     public interface IPortfolioRepository
     {
-        Task<Portfolio> GetPortfolioByIdAsync(int id);
+        Task<Portfolio?> GetPortfolioByUserIdAsync(int id);
         Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync();
         Task CreatePortfolioAsync(Portfolio portfolio);
-        Task<Portfolio> UpdatePortfolioAsync(Portfolio portfolio);
-        Task DeletePortfolioAsync(int id);
+        Task UpdatePortfolioAsync(Portfolio portfolio);
+        Task DeletePortfolioByUserIdAsync(int id);
+        Task SaveChangesAsync();
     }
 }
