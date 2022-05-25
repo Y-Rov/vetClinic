@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Core.ViewModel;
-using Core.Entities;
-using Core.Exceptions;
+﻿using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
 {
@@ -15,61 +14,45 @@ namespace WebApi.Controllers
     {
         private readonly IExceptionEntityService _exceptionEntityService;
         private readonly ILoggerManager _loggerManager;
-        private readonly IMapper _mapper;
-        public ExceptionController(IExceptionEntityService exceptionEntityService, ILoggerManager loggerManager, IMapper mapper)
+        private readonly IViewModelMapper<IEnumerable<ExceptionEntity>,IEnumerable<ExceptionEntityReadViewModel>> _exceptionModel;
+        public ExceptionController(IExceptionEntityService exceptionEntityService, ILoggerManager loggerManager,
+             IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> exceptionModel)
         {
             _exceptionEntityService = exceptionEntityService;
             _loggerManager = loggerManager;
-            _mapper = mapper;
+            _exceptionModel = exceptionModel;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAsync()
         {
-            _loggerManager.LogInfo("Open ExceptionController action GetAllAsync()");
-            var allExceptions = await _exceptionEntityService.GetAllAsync();
+            _loggerManager.LogInfo("Enter ExceptionController action GetAsync()");
+            var allExceptions = await _exceptionEntityService.GetAsync();
 
-            if (allExceptions == null)
-            {
-                _loggerManager.LogError("Error (NotFoundException) at ExceptionController action GetAllAsync()");
-                throw new NotFoundException();
-            }
+            var readDtos = _exceptionModel.Map(allExceptions);
 
-            _loggerManager.LogInfo("Exit ExceptionController action GetAllAsync()");
-            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadViewModel>>(allExceptions);
+            _loggerManager.LogInfo("Exit ExceptionController action GetAsync()");
             return Ok(readDtos);
         }
 
         [HttpGet("Stats")]
         public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetStatsAsync()
         {
-            _loggerManager.LogInfo("Open ExceptionController action GetStatsAsync()");
+            _loggerManager.LogInfo("Enter ExceptionController action GetStatsAsync()");
             var exceptionsStats = await _exceptionEntityService.GetStatsAsync();
-
-            if (exceptionsStats == null)
-            {
-                _loggerManager.LogError("Error (NotFoundException) at ExceptionController action GetStatsAsync()");
-                throw new NotFoundException();
-            }
 
             _loggerManager.LogInfo("Exit ExceptionController action GetStatsAsync()");
             return Ok(exceptionsStats);
 
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ExceptionEntity>> GetByIdAsync(int id)
+        [HttpGet("{id:int:min(1)}")]
+        public async Task<ActionResult<ExceptionEntity>> GetAsync([FromRoute]int id)
         {
-            _loggerManager.LogInfo("Open ExceptionController action GetByIdAsync()");
-            var exception = await _exceptionEntityService.GetByIdAsync(id);
+            _loggerManager.LogInfo("Enter ExceptionController action GetAsync(int id)");
+            var exception = await _exceptionEntityService.GetAsync(id);
 
-            if (exception == null)
-            {
-                _loggerManager.LogError("Error (NotFoundException) at ExceptionController action GetByIdAsync()");
-                throw new NotFoundException();
-            }
-
-            _loggerManager.LogInfo("Exit ExceptionController action GetByIdAsync()");
+            _loggerManager.LogInfo("Exit ExceptionController action GetAsync(int id)");
             return Ok(exception);
 
         }
@@ -77,17 +60,13 @@ namespace WebApi.Controllers
         [HttpGet("Today")]
         public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetTodayAsync()
         {
-            _loggerManager.LogInfo("Open ExceptionController action GetTodayAsync()");
+            _loggerManager.LogInfo("Enter ExceptionController action GetTodayAsync()");
             var allExceptions = await _exceptionEntityService.GetTodayAsync();
 
-            if (allExceptions == null)
-            {
-                _loggerManager.LogError("Error (NotFoundException) at ExceptionController action GetTodayAsync()");
-                throw new NotFoundException();
-            }
+
+            var readDtos = _exceptionModel.Map(allExceptions);
 
             _loggerManager.LogInfo("Exit ExceptionController action GetTodayAsync()");
-            var readDtos = _mapper.Map<IEnumerable<ExceptionEntityReadViewModel>>(allExceptions);
             return Ok(readDtos);
 
         }
@@ -95,14 +74,8 @@ namespace WebApi.Controllers
         [HttpGet("Stats/Today")]
         public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetTodayStatsAsync()
         {
-            _loggerManager.LogInfo("Open ExceptionController action GetTodayStatsAsync()");
+            _loggerManager.LogInfo("Enter ExceptionController action GetTodayStatsAsync()");
             var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync();
-
-            if (exceptionsStats == null)
-            {
-                _loggerManager.LogError("Error (NotFoundException) at ExceptionController action GetTodayStatsAsync()");
-                throw new NotFoundException();
-            }
 
             _loggerManager.LogInfo("Exit ExceptionController action GetTodayStatsAsync()");
             return Ok(exceptionsStats);
