@@ -11,7 +11,8 @@ using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
-
+using Core.ViewModels;
+using WebApi.AutoMapper.AppointmentMapper;
 
 namespace WebApi.Configurations;
 
@@ -33,5 +34,8 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
         services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
+        services.AddScoped<IViewModelMapper<Appointment, AppointmentViewModel>, AppointmentMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>>, AppointmentsMapper>();
+        services.AddScoped<IViewModelMapper<AppointmentViewModel, Appointment>, AppointmentViewModelMapper>();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Core.ViewModels
 {
-    public class AppointmentViewModels : AppointmentBaseViewModel
+    public class AppointmentViewModel : AppointmentBaseViewModel
 
     {
         public DateTime Date { get; set; }
