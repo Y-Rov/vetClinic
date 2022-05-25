@@ -8,6 +8,7 @@ namespace Application.Services
     public class AnimalService : IAnimalService
     {
         private readonly IAnimalRepository _animalRepository;
+        private readonly IUserRepository _userRepository;
 
         public AnimalService(IAnimalRepository animalRepository)
         {
@@ -16,6 +17,13 @@ namespace Application.Services
 
         public async Task AddNewAnimalAsync(Animal animal)
         {
+            //-----------
+            //var owner = _userRepository.GetUserByIdAsync(animal.OwnerId);
+            //if(owner == null)
+            //{
+            //    throw new NotFoundException();
+            //}
+            //----------
             await _animalRepository.AddNewAnimalAsync(animal);
             await _animalRepository.SaveChangesAsync();
         }
@@ -33,7 +41,7 @@ namespace Application.Services
 
         public async Task UpdateAnimalAsync(Animal animal)
         {
-            var animalToUpdate = _animalRepository.GetAnimalByIdAsync(animal.Id);
+            var animalToUpdate = await _animalRepository.GetAnimalByIdAsync(animal.Id);
             if (animalToUpdate == null)
             {
                 throw new NotFoundException($"Animal does not exist");
