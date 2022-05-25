@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers
 {
     [ApiController]
-    [Route("api/appointment/")]
+    [Route("api/Appointment/")]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -24,8 +24,8 @@ namespace WebApi.Controllers
             return appointments;
         }
 
-        [HttpGet("{appointmentId}")]
-        public async Task<Appointment> GetAsync(int appointmentId)
+        [HttpGet("{AppointmentId}")]
+        public async Task<Appointment> GetAsync([FromRoute] int appointmentId)
         {
             var appointment = await _appointmentService.GetAsync(appointmentId);
             return appointment;
@@ -46,7 +46,7 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAsync(int appointmentId)
+        public async Task<IActionResult> DeleteAsync([FromRoute] int appointmentId)
         {
             await _appointmentService.DeleteAsync(appointmentId);
             return Ok();
