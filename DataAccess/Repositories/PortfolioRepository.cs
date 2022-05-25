@@ -9,9 +9,12 @@ namespace DataAccess.Repositories
     {
         private readonly ClinicContext _clinicContext;
 
-        public PortfolioRepository(ClinicContext clinicContext) => _clinicContext = clinicContext;
-
-        public async Task<Portfolio> GetPortfolioByIdAsync(int id)
+        public PortfolioRepository(ClinicContext clinicContext)
+        {
+            _clinicContext = clinicContext;
+        }
+        
+        public async Task<Portfolio?> GetPortfolioByUserIdAsync(int id)
         {
             return await _clinicContext.Portfolios.FirstOrDefaultAsync(portfolio => portfolio.UserId == id);
         }
@@ -26,16 +29,18 @@ namespace DataAccess.Repositories
             await _clinicContext.Portfolios.AddAsync(portfolio);
         }
 
-        public async Task<Portfolio> UpdatePortfolioAsync(Portfolio portfolio)
+        public async Task UpdatePortfolioAsync(Portfolio portfolio)
         {
             _clinicContext.Portfolios.Update(portfolio);
-            await _clinicContext.SaveChangesAsync();
-            return portfolio;
         }
 
-        public async Task DeletePortfolioAsync(int id)
+        public async Task DeletePortfolioByUserIdAsync(int id)
         {
-            _clinicContext.Remove(GetPortfolioByIdAsync(id));
+            _clinicContext.Remove(GetPortfolioByUserIdAsync(id));
+        }
+
+        public async Task SaveChangesAsync()
+        {
             await _clinicContext.SaveChangesAsync();
         }
     }

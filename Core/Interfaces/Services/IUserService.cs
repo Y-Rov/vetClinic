@@ -7,8 +7,9 @@ namespace Core.Interfaces.Services
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User?> GetUserByIdAsync(int id);
-        Task<IdentityResult> CreateAsync(User user, string password);
-        Task<IdentityResult> UpdateAsync(User user);
-        Task<IdentityResult> DeleteAsync(User user);
+        Task CreateAsync(User user, string password);
+        Task UpdateAsync(User user);
+        Task DeleteAsync(User user);
+        Task AssignToRoleAsync(User user, string role);
     }
 }
