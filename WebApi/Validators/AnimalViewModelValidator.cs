@@ -11,7 +11,7 @@ namespace WebApi.Validators
                 .MinimumLength(1)
                 .WithMessage("Animal nickname lenght must be greater that 5")
                 .MaximumLength(100)
-                .WithMessage("Animal nickname lenght must be less that 5");
+                .WithMessage("Animal nickname lenght must be less that 100");
         }
     }
 }
