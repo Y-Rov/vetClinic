@@ -4,10 +4,10 @@ namespace Core.Interfaces.Services
 {
     public interface IPortfolioService
     {
-        Task<Portfolio> GetPortfolioByIdAsync(int id);
+        Task<Portfolio> GetPortfolioByUserIdAsync(int id);
         Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync();
         Task CreatePortfolioAsync(Portfolio portfolio);
-        Task<Portfolio> UpdatePortfolioAsync(Portfolio portfolio);
-        Task DeletePortfolioAsync(int id);
+        Task UpdatePortfolioAsync(Portfolio portfolio);
+        Task DeletePortfolioByUserIdAsync(int id);
     }
 }
