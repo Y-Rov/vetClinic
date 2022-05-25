@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
@@ -18,16 +19,14 @@ namespace Application.Services
         
         public async Task<Portfolio> GetPortfolioByUserIdAsync(int id)
         {
-            _loggerManager.LogInfo("Inside GetPortfolioByUserIdAsync");
             var portfolio = await _portfolioRepository.GetPortfolioByUserIdAsync(id);
             if (portfolio != null)
             {
-                _loggerManager.LogInfo("Return from GetPortfolioByUserIdAsync");
                 return portfolio;
             }
 
             _loggerManager.LogError($"User with ID - {id} doesn't have a portfolio!");
-            throw new NullReferenceException();
+            throw new NotFoundException($"User with ID - {id} doesn't have a portfolio!");
         }
 
         public async Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync()
@@ -38,44 +37,41 @@ namespace Application.Services
 
         public async Task CreatePortfolioAsync(Portfolio portfolio)
         {
-            _loggerManager.LogInfo("Inside CreatePortfolioAsync");
-            var portfolioInTable = await _portfolioRepository.GetPortfolioByUserIdAsync(portfolio.UserId);
-            if (portfolioInTable == null)
+            var possiblePortfolioInTable = await _portfolioRepository.GetPortfolioByUserIdAsync(portfolio.UserId);
+            if (possiblePortfolioInTable == null)
             {
-                _loggerManager.LogInfo("Creating user's portfolio...");
                 await _portfolioRepository.CreatePortfolioAsync(portfolio);
+                await _portfolioRepository.SaveChangesAsync();
             }
 
             _loggerManager.LogError($"User with ID - {portfolio.UserId} has already a portfolio!");
-            throw new ArgumentException();
+            throw new BadRequestException($"User with ID - {portfolio.UserId} has already a portfolio!");
         }
 
         public async Task UpdatePortfolioAsync(Portfolio portfolio)
         {
-            _loggerManager.LogInfo("Inside UpdatePortfolioAsync");
             var portfolioInTable = await _portfolioRepository.GetPortfolioByUserIdAsync(portfolio.UserId);
             if (portfolioInTable != null)
             {
-                _loggerManager.LogInfo("Updating user's portfolio...");
                 await _portfolioRepository.UpdatePortfolioAsync(portfolio);
+                await _portfolioRepository.SaveChangesAsync();
             }
 
             _loggerManager.LogError($"User with ID - {portfolio.UserId} doesn't have a portfolio!");
-            throw new NullReferenceException();
+            throw new NotFoundException($"User with ID - {portfolio.UserId} doesn't have a portfolio!");
         }
 
         public async Task DeletePortfolioByUserIdAsync(int id)
         {
-            _loggerManager.LogInfo("Inside DeletePortfolioByUserIdAsync");
             var portfolioInTable = await _portfolioRepository.GetPortfolioByUserIdAsync(id);
             if (portfolioInTable != null)
             {
-                _loggerManager.LogInfo("Deleting user's portfolio...");
                 await _portfolioRepository.DeletePortfolioByUserIdAsync(id);
+                await _portfolioRepository.SaveChangesAsync();
             }
 
             _loggerManager.LogError($"User with ID - {id} doesn't have a portfolio!");
-            throw new NullReferenceException();
+            throw new NotFoundException($"User with ID - {id} doesn't have a portfolio!");
         }
     }
 }
