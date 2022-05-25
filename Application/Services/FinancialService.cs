@@ -1,33 +1,41 @@
 ﻿using Core.Entities;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
 namespace Application.Services
 {
-    public class FinancialService:IFinancialService
+    public class FinancialService : IFinancialService
     {
-        public void GenerateFinancialStatementForMonth()
+        private readonly ISalaryRepository _salaryRepository;
+
+    public FinancialService(ISalaryRepository salaryRepository)
         {
-            throw new NotImplementedException();
+            salaryRepository = salaryRepository;
         }
-        public void GenerateFinancialStatementForHalfOfYear()
+
+        public async Task CreateSalaryAsync(Salary salary)
         {
-            throw new NotImplementedException();
+            await _salaryRepository.CreateSalaryAsync(salary);
         }
-        public void GenerateFinancialStatementForYear()
+
+        public async Task DeleteSalaryAsync(int id)
         {
-            throw new NotImplementedException();
+            await _salaryRepository.DeleteSalaryAsync(id);
         }
-        public decimal GetSalaryById(int id)
+
+        public async Task<Salary> GetSalaryAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _salaryRepository.GetSalaryAsync(id);
         }
-        public decimal SetSalaryById(int id, decimal value)
+
+        public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
-            throw new NotImplementedException();
+            return await _salaryRepository.GetSalaryAsync();
         }
-        public IEnumerable<Salary> GetSalaries()
+
+        public async Task UpdateSalaryAsync(Salary salary)
         {
-            throw new NotImplementedException();
+            await _salaryRepository.UpdateSalaryAsync(salary);
         }
     }
 }
