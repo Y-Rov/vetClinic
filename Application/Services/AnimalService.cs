@@ -8,7 +8,6 @@ namespace Application.Services
     public class AnimalService : IAnimalService
     {
         private readonly IAnimalRepository _animalRepository;
-        private readonly IUserRepository _userRepository;
 
         public AnimalService(IAnimalRepository animalRepository)
         {
