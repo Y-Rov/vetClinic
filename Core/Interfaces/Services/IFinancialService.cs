@@ -7,10 +7,10 @@ namespace Core.Interfaces.Services
         //public void GenerateFinancialStatementForMonth();
         //public void GenerateFinancialStatementForHalfOfYear();
         //public void GenerateFinancialStatementForYear();
-        Task<Salary> GetSalaryAsync(int id);
+        Task<Salary> GetSalaryByUserIdAsync(int id);
         Task<IEnumerable<Salary>> GetSalaryAsync();
         Task CreateSalaryAsync(Salary salary);
         Task UpdateSalaryAsync(Salary salary);
-        Task DeleteSalaryAsync(int id);
+        Task DeleteSalaryByUserIdAsync(int id);
     }
 }
