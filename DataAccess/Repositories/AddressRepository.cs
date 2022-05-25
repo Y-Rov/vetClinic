@@ -27,19 +27,16 @@ namespace DataAccess.Repositories
         public async Task CreateAddressAsync(Address address)
         {
             await _clinicContext.Addresses.AddAsync(address);
-            await SaveChangesAsync();
         }
 
         public async Task UpdateAddressAsync(Address address)
         {
             _clinicContext.Addresses.Update(address);
-            await SaveChangesAsync();
         }
 
         public async Task DeleteAddressByUserIdAsync(int id)
         {
             _clinicContext.Remove(GetAddressByUserIdAsync(id));
-            await SaveChangesAsync();
         }
 
         public async Task SaveChangesAsync()

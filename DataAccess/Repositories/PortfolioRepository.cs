@@ -27,19 +27,16 @@ namespace DataAccess.Repositories
         public async Task CreatePortfolioAsync(Portfolio portfolio)
         {
             await _clinicContext.Portfolios.AddAsync(portfolio);
-            await SaveChangesAsync();
         }
 
         public async Task UpdatePortfolioAsync(Portfolio portfolio)
         {
             _clinicContext.Portfolios.Update(portfolio);
-            await SaveChangesAsync();
         }
 
         public async Task DeletePortfolioByUserIdAsync(int id)
         {
             _clinicContext.Remove(GetPortfolioByUserIdAsync(id));
-            await SaveChangesAsync();
         }
 
         public async Task SaveChangesAsync()
