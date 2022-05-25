@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Validators;
 using Core.ViewModels.User;
+using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
 {
@@ -12,16 +12,23 @@ namespace WebApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IMapper _mapper;
+        private readonly IViewModelMapper<User, UserReadViewModel> _readMapper;
+        private readonly IViewModelMapper<UserCreateViewModel, User> _createMapper;
+        private readonly IViewModelMapperUpdater<UserUpdateViewModel, User> _updateMapper;
         private readonly UserCreateValidator _createValidator;
         private readonly UserValidator<UserUpdateViewModel> _updateValidator;
 
-        public UsersController(IUserService userService, IMapper mapper,
-            UserCreateValidator createValidator, 
-            Validators.UserValidator<UserUpdateViewModel> updateValidator)
+        public UsersController(IUserService userService,
+            IViewModelMapper<User, UserReadViewModel> readMapper,
+            IViewModelMapper<UserCreateViewModel, User> createMapper,
+            IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper,
+            UserCreateValidator createValidator,
+            UserValidator<UserUpdateViewModel> updateValidator)
         {
             _userService = userService;
-            _mapper = mapper;
+            _readMapper = readMapper;
+            _createMapper = createMapper;
+            _updateMapper = updateMapper;
             _updateValidator = updateValidator;
             _createValidator = createValidator;
         }
@@ -30,18 +37,23 @@ namespace WebApi.Controllers
         public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
         {
             var users = await _userService.GetAllUsersAsync();
-            var readDtos = _mapper.Map<IEnumerable<UserReadViewModel>>(users);
+            var readViewModels = new List<UserReadViewModel>();
 
-            return Ok(readDtos);
+            foreach (var user in users)
+            {
+                readViewModels.Add(_readMapper.Map(user));
+            }
+
+            return Ok(readViewModels);
         }
 
         [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult<UserReadViewModel>> GetAsync([FromRoute] int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-            var readDto = _mapper.Map<UserReadViewModel>(user);
+            var readViewModel = _readMapper.Map(user!);
 
-            return Ok(readDto);
+            return Ok(readViewModel);
         }
 
         [HttpPost("register")]
@@ -54,12 +66,12 @@ namespace WebApi.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            var user = _mapper.Map<User>(createDto);
+            var user = _createMapper.Map(createDto);
 
             await _userService.CreateAsync(user, createDto.Password!);
             await _userService.AssignToRoleAsync(user, "Client");
 
-            var readDto = _mapper.Map<UserReadViewModel>(user);
+            var readDto = _readMapper.Map(user);
 
             return CreatedAtAction(nameof(GetAsync), new { id = readDto.Id }, readDto);
         }
@@ -75,8 +87,8 @@ namespace WebApi.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            _mapper.Map(updateDto, user);
-             await _userService.UpdateAsync(user!);
+            _updateMapper.Map(updateDto, user);
+            await _userService.UpdateAsync(user!);
 
             return NoContent();
         }
