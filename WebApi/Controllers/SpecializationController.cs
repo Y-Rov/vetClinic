@@ -26,7 +26,7 @@ namespace WebApi.Controllers
             _viewModelMapper = viewModelMapper;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<ActionResult> GetSpecializations()
         {
             var res = await _service.GetAllSpecializationsAsync();

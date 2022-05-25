@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.ViewModel;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using Core.ViewModels.User;
@@ -20,7 +21,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<User, UserReadViewModel>, UserToUserReadViewModelMapper>();
         services.AddScoped<IViewModelMapper<UserCreateViewModel, User>, CreateViewModelToUserMapper>();
         services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UpdateViewModelToUserMapper>();
-
+        services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
         services.AddScoped<IViewModelMapper<ProcedureViewModelBase, Procedure>, ProcedureMapper>();
         services.AddScoped<IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
             SpecializationProcedureToSpecViewModel>();
