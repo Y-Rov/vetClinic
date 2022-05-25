@@ -1,10 +1,12 @@
 ﻿using Core.Entities;
 using Core.ViewModel;
+using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using Core.ViewModels.User;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.AutoMapper.ExceptionMapper;
+using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SpecializationMappers;
@@ -28,5 +30,8 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapperAsync<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
         services.AddScoped<IViewModelMapper<SpecializationViewModel, Specialization>, SpecializationMapper>();
+        services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
+        services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
+        services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
     }
 }
