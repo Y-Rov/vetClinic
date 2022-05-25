@@ -30,7 +30,7 @@ namespace Application.Services
 
             if (!createResult.Succeeded)
             {
-                throw new BadRequestException();
+                throw new BadRequestException(createResult.Errors);
             }
         }
 
@@ -40,7 +40,7 @@ namespace Application.Services
 
             if (!deleteResult.Succeeded)
             {
-                throw new BadRequestException();
+                throw new BadRequestException(deleteResult.Errors);
             }
         }
 
@@ -49,7 +49,7 @@ namespace Application.Services
             return await _userRepository.GetAllUsersAsync();
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);
 
@@ -67,7 +67,7 @@ namespace Application.Services
 
             if (!updateResult.Succeeded)
             {
-                throw new BadRequestException();
+                throw new BadRequestException(updateResult.Errors);
             }
         }
     }
