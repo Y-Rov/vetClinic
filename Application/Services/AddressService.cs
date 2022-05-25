@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
@@ -7,12 +8,26 @@ namespace Application.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly ILoggerManager _loggerManager;
 
-        public AddressService(IAddressRepository addressRepository) => _addressRepository = addressRepository;
-
-        public async Task<Address> GetAddressByIdAsync(int id)
+        public AddressService(IAddressRepository addressRepository, ILoggerManager loggerManager)
         {
-            return await _addressRepository.GetAddressByIdAsync(id);
+            _addressRepository = addressRepository;
+            _loggerManager = loggerManager;
+        }
+
+        public async Task<Address> GetAddressByUserIdAsync(int id)
+        {
+            _loggerManager.LogInfo("Inside GetAddressByUserIdAsync");
+            var address = await _addressRepository.GetAddressByUserIdAsync(id);
+            if (address != null)
+            {
+                _loggerManager.LogInfo("Return from GetAddressByUserIdAsync");
+                return address;
+            }
+
+            _loggerManager.LogError($"User with ID - {id} doesn't have an address!");
+            throw new NullReferenceException();
         }
 
         public async Task<IEnumerable<Address>> GetAllAddressesAsync()
@@ -20,19 +35,19 @@ namespace Application.Services
             return await _addressRepository.GetAllAddressesAsync();
         }
 
-        public async Task CreateAddressAsync(Address portfolio)
+        public async Task CreateAddressAsync(Address address)
         {
-            await _addressRepository.CreateAddressAsync(portfolio);
+            await _addressRepository.CreateAddressAsync(address);
         }
 
-        public Task<Address> UpdateAddressAsync(Address portfolio)
+        public async Task UpdateAddressAsync(Address address)
         {
-            return _addressRepository.UpdateAddressAsync(portfolio);
+            await _addressRepository.UpdateAddressAsync(address);
         }
 
-        public async Task DeleteAddressAsync(int id)
+        public async Task DeleteAddressByUserIdAsync(int id)
         {
-            await _addressRepository.DeleteAddressAsync(id);
+            await _addressRepository.DeleteAddressByUserIdAsync(id);
         }
     }
 }
