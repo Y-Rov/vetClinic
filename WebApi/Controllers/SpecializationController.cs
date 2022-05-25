@@ -44,8 +44,10 @@ namespace WebApi.Controllers
         [HttpPut("/update/{id}")]
         public async Task<ActionResult> UpdateSpecialization(int id, SpecializationViewModel updated)
         {
-            return !ModelState.IsValid ? throw new BadRequestException() :
-                Ok(await _service.UpdateSpecializationAsync(id, _mapper.Map<Specialization>(updated)));
+            if(!ModelState.IsValid)
+                throw new BadRequestException("invalid parameters");
+            await _service.UpdateSpecializationAsync(id, _mapper.Map<Specialization>(updated));
+            return NoContent();
         }
 
         [HttpDelete("/delete/{id}")]

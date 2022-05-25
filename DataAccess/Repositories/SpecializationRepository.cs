@@ -43,6 +43,11 @@ namespace DataAccess.Repositories
             return affectedColumns;
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updatedSpecialization)
         {
             _context.Entry(updatedSpecialization).State = EntityState.Modified;

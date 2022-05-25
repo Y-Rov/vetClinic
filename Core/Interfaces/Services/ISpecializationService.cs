@@ -7,7 +7,7 @@ namespace Core.Interfaces.Services
         Task<IEnumerable<Specialization>> GetAllSpecializationsAsync();
         Task<Specialization> GetSpecializationByIdAsync(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
-        Task<Specialization> UpdateSpecializationAsync(int id, Specialization updated);
+        Task UpdateSpecializationAsync(int id, Specialization updated);
         Task<int> DeleteSpecializationAsync(int id);
     }
 }

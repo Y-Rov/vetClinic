@@ -9,5 +9,6 @@ namespace Core.Interfaces.Repositories
         Task<int> DeleteSpecializationAsync(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
         Task<Specialization> UpdateSpecializationAsync(int id, Specialization updatedSpecialization);
+        Task SaveChangesAsync();
     }
 }

@@ -36,13 +36,10 @@ namespace Application.Services
             return await _repository.DeleteSpecializationAsync(id); 
         }
 
-        public async Task<Specialization> UpdateSpecializationAsync(int id, Specialization updated)
+        public async Task UpdateSpecializationAsync(int id, Specialization updated)
         {
-            Specialization specializationToUpdate = await _repository.GetSpecializationByIdAsync(updated.Id);
-            if (specializationToUpdate == null)
-                throw new NotFoundException($"Specialization with id: {updated.Id} not found");
-
-            return await _repository.UpdateSpecializationAsync(id, updated);
+            Specialization specialization = await _repository.UpdateSpecializationAsync(id, updated);
+            if (specialization == null) throw new NotFoundException($"Specialization with id: {updated.Id} not found");
         }
     }
 }
