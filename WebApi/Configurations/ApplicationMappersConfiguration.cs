@@ -25,9 +25,9 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UpdateViewModelToUserMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
         services.AddScoped<IViewModelMapper<ProcedureViewModelBase, Procedure>, ProcedureMapper>();
-        services.AddScoped<IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
+        services.AddScoped<IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
             SpecializationProcedureToSpecViewModel>();
-        services.AddScoped<IViewModelMapperAsync<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
+        services.AddScoped<IViewModelMapper<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
         services.AddScoped<IViewModelMapper<SpecializationViewModel, Specialization>, SpecializationMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
