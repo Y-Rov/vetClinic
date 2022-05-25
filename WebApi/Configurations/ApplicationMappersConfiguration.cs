@@ -1,7 +1,9 @@
 ﻿using Core.Entities;
 using Core.ViewModel;
+using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.ProcedureViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.ProcedureMappers;
 
@@ -15,5 +17,8 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapperAsync<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
             SpecializationProcedureToSpecViewModel>();
         services.AddScoped<IViewModelMapperAsync<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
+        //animal
+        services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalMapper>();
+        services.AddScoped<IViewModelMapperAsync<Animal, AnimalViewModel>, AnimalMapperAsync>();
     }
 }
