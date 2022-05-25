@@ -4,11 +4,13 @@ namespace Core.Interfaces.Services
 {
     public interface IFinancialService
     {
-        public void GenerateFinancialStatementForMonth();
-        public void GenerateFinancialStatementForHalfOfYear();
-        public void GenerateFinancialStatementForYear();
-        public decimal GetSalaryById(int id);
-        public decimal SetSalaryById(int id, decimal value);
-        public IEnumerable<Salary> GetSalaries();
+        //public void GenerateFinancialStatementForMonth();
+        //public void GenerateFinancialStatementForHalfOfYear();
+        //public void GenerateFinancialStatementForYear();
+        Task<Salary> GetSalaryByUserIdAsync(int id);
+        Task<IEnumerable<Salary>> GetSalaryAsync();
+        Task CreateSalaryAsync(Salary salary);
+        Task UpdateSalaryAsync(Salary salary);
+        Task DeleteSalaryByUserIdAsync(int id);
     }
 }

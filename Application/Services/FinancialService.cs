@@ -1,33 +1,62 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
+using Core.Interfaces;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
 namespace Application.Services
 {
-    public class FinancialService:IFinancialService
+    public class FinancialService : IFinancialService
     {
-        public void GenerateFinancialStatementForMonth()
+        private readonly ISalaryRepository _salaryRepository;
+        private readonly ILoggerManager _logger;
+
+        public FinancialService(ISalaryRepository salaryRepository, ILoggerManager logger)
         {
-            throw new NotImplementedException();
+            _salaryRepository = salaryRepository;
+            _logger = logger;
         }
-        public void GenerateFinancialStatementForHalfOfYear()
+
+        public async Task CreateSalaryAsync(Salary salary)
         {
-            throw new NotImplementedException();
+            await _salaryRepository.CreateSalaryAsync(salary);
+            _logger.LogInfo("Salary was created in method CreateSalaryAsync");
         }
-        public void GenerateFinancialStatementForYear()
+
+        public async Task DeleteSalaryByUserIdAsync(int id)
         {
-            throw new NotImplementedException();
+            Salary? salary = await _salaryRepository.GetSalaryByUserIdAsync(id);
+
+            if (salary == null)
+            {
+                throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
+            }
+
+            _logger.LogInfo("Salary was deleted by EmployeeId in method DeleteByUserIdAsync");
+            await _salaryRepository.DeleteSalaryByUserIdAsync(id);
         }
-        public decimal GetSalaryById(int id)
+
+        public async Task<Salary> GetSalaryByUserIdAsync(int id)
         {
-            throw new NotImplementedException();
+            Salary? salary = await _salaryRepository.GetSalaryByUserIdAsync(id);
+            if (salary == null)
+            {
+                throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
+            }
+            _logger.LogInfo("Salary was getted by EmployeeId in method GetSalaryByUserIdAsync");
+            return salary;
         }
-        public decimal SetSalaryById(int id, decimal value)
+
+        public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
-            throw new NotImplementedException();
+            _logger.LogInfo("Salary was getted method GetSalaryAsync");
+            return await _salaryRepository.GetSalaryAsync();
         }
-        public IEnumerable<Salary> GetSalaries()
+
+        public async Task UpdateSalaryAsync(Salary salary)
         {
-            throw new NotImplementedException();
+            _logger.LogInfo("Salary was updated in method UpdateSalaryAsync");
+            await _salaryRepository.UpdateSalaryAsync(salary);
         }
     }
 }
