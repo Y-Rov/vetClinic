@@ -34,9 +34,9 @@ namespace DataAccess.Repositories
             _clinicContext.Portfolios.Update(portfolio);
         }
 
-        public async Task DeletePortfolioByUserIdAsync(int id)
+        public async Task DeletePortfolioAsync(Portfolio portfolio)
         {
-            _clinicContext.Remove(GetPortfolioByUserIdAsync(id));
+            _clinicContext.Portfolios.Remove(portfolio);
         }
 
         public async Task SaveChangesAsync()

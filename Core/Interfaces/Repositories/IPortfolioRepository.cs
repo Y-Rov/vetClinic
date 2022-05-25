@@ -8,7 +8,7 @@ namespace Core.Interfaces.Repositories
         Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync();
         Task CreatePortfolioAsync(Portfolio portfolio);
         Task UpdatePortfolioAsync(Portfolio portfolio);
-        Task DeletePortfolioByUserIdAsync(int id);
+        Task DeletePortfolioAsync(Portfolio portfolio);
         Task SaveChangesAsync();
     }
 }
