@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Core.ViewModel;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Validators;
+using Core.ViewModels.User;
 
 namespace WebApi.Controllers
 {
@@ -13,12 +13,12 @@ namespace WebApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        private readonly UserCreateDtoValidator _createValidator;
-        private readonly UserUpdateDtoValidator _updateValidator;
+        private readonly UserCreateValidator _createValidator;
+        private readonly UserValidator<UserUpdateViewModel> _updateValidator;
 
         public UsersController(IUserService userService, IMapper mapper,
-            UserCreateDtoValidator createValidator, 
-            UserUpdateDtoValidator updateValidator)
+            UserCreateValidator createValidator, 
+            Validators.UserValidator<UserUpdateViewModel> updateValidator)
         {
             _userService = userService;
             _mapper = mapper;
@@ -27,7 +27,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> Get()
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
         {
             var users = await _userService.GetAllUsersAsync();
             var readDtos = _mapper.Map<IEnumerable<UserReadViewModel>>(users);
@@ -35,23 +35,17 @@ namespace WebApi.Controllers
             return Ok(readDtos);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserReadViewModel>> Get(int id)
+        [HttpGet("{id:int:min(1)}")]
+        public async Task<ActionResult<UserReadViewModel>> GetAsync([FromRoute] int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-
-            if (user is null)
-            {
-                return NotFound();
-            }
-
             var readDto = _mapper.Map<UserReadViewModel>(user);
 
             return Ok(readDto);
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserReadViewModel>> Create(UserCreateViewModel createDto)
+        public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromBody] UserCreateViewModel createDto)
         {
             var validationResult = _createValidator.Validate(createDto);
 
@@ -61,28 +55,19 @@ namespace WebApi.Controllers
             }
 
             var user = _mapper.Map<User>(createDto);
-            var createResult = await _userService.CreateAsync(user, createDto.Password!);
 
-            if (!createResult.Succeeded)
-            {
-                return BadRequest(createResult.Errors);
-            }
+            await _userService.CreateAsync(user, createDto.Password!);
+            await _userService.AssignToRoleAsync(user, "Client");
 
             var readDto = _mapper.Map<UserReadViewModel>(user);
 
-            return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
+            return CreatedAtAction(nameof(GetAsync), new { id = readDto.Id }, readDto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, UserUpdateViewModel updateDto)
+        [HttpPut("{id:int:min(1)}")]
+        public async Task<ActionResult> UpdateAsync([FromRoute] int id, [FromBody] UserUpdateViewModel updateDto)
         {
             var user = await _userService.GetUserByIdAsync(id);
-
-            if (user is null)
-            {
-                return NotFound();
-            }
-
             var validationResult = _updateValidator.Validate(updateDto);
 
             if (!validationResult.IsValid)
@@ -91,32 +76,17 @@ namespace WebApi.Controllers
             }
 
             _mapper.Map(updateDto, user);
-            var updateResult = await _userService.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-            {
-                return BadRequest(updateResult.Errors);
-            }
+             await _userService.UpdateAsync(user!);
 
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("{id:int:min(1)}")]
+        public async Task<ActionResult> DeleteAsync([FromRoute] int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
 
-            if (user is null)
-            {
-                return NotFound();
-            }
-
-            var deleteResult = await _userService.DeleteAsync(user);
-
-            if (!deleteResult.Succeeded)
-            {
-                return BadRequest(deleteResult.Errors);
-            }
+            await _userService.DeleteAsync(user!);
 
             return NoContent();
         }

@@ -1,10 +1,10 @@
-﻿using FluentValidation.Results;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace WebApi.Exceptions
+namespace Core.Exceptions
 {
     public class ForbidException : Exception
     {
-        public List<ValidationFailure>? ValidationFailure;
+        public List<IdentityError>? IdentityError { get; set; }
         public new string Message { get; set; }
 
         public ForbidException()
@@ -22,10 +22,10 @@ namespace WebApi.Exceptions
             Message = message;
         }
 
-        public ForbidException(List<ValidationFailure> validationFailures)
+        public ForbidException(IEnumerable<IdentityError>? identityError)
         {
-            Message = "Illegal request";
-            ValidationFailure = validationFailures;
+            Message = "You don't have permission to access / on this server";
+            IdentityError = identityError!.ToList();
         }
     }
 }

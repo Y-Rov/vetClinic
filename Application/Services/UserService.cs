@@ -1,7 +1,7 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
@@ -14,14 +14,34 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<IdentityResult> CreateAsync(User user, string password)
+        public async Task AssignToRoleAsync(User user, string role)
         {
-            return await _userRepository.CreateAsync(user, password);
+            var assignResult = await _userRepository.AssignRoleAsync(user, role);
+
+            if (!assignResult.Succeeded)
+            {
+                throw new BadRequestException(assignResult.Errors);
+            }
         }
 
-        public async Task<IdentityResult> DeleteAsync(User user)
+        public async Task CreateAsync(User user, string password)
         {
-            return await _userRepository.DeleteAsync(user);
+            var createResult = await _userRepository.CreateAsync(user, password);
+
+            if (!createResult.Succeeded)
+            {
+                throw new BadRequestException();
+            }
+        }
+
+        public async Task DeleteAsync(User user)
+        {
+            var deleteResult = await _userRepository.DeleteAsync(user);
+
+            if (!deleteResult.Succeeded)
+            {
+                throw new BadRequestException();
+            }
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -31,12 +51,24 @@ namespace Application.Services
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            return await _userRepository.GetUserByIdAsync(id);
+            var user = await _userRepository.GetUserByIdAsync(id);
+
+            if (user is null)
+            {
+                throw new NotFoundException($"User with id {id} not found");
+            }
+
+            return user;
         }
 
-        public async Task<IdentityResult> UpdateAsync(User user)
+        public async Task UpdateAsync(User user)
         {
-            return await _userRepository.UpdateAsync(user);
+            var updateResult = await _userRepository.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                throw new BadRequestException();
+            }
         }
     }
 }

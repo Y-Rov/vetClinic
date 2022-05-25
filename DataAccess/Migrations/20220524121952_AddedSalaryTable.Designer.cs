@@ -4,6 +4,7 @@ using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ClinicContext))]
-    partial class ClinicContextModelSnapshot : ModelSnapshot
+    [Migration("20220524121952_AddedSalaryTable")]
+    partial class AddedSalaryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,18 +341,14 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-
                             ConcurrencyStamp = "b134f364-1825-4c22-a733-3f4429bb4a7d",
-
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-
                             PasswordHash = "AQAAAAEAACcQAAAAEF0az7vcLdmFiJ3fh/zx1tG/7239jA3/X5tuKvnBO4jQEdZwYGFGkXZiafNnZ5ePGw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "68f0bcfc-f8cb-413f-9547-9b0d25ab7b1a",
-
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -404,36 +402,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-
                             ConcurrencyStamp = "80bbf13e-930c-4259-9156-65b46793d3ee",
-
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-
                             ConcurrencyStamp = "967a5d0d-b998-42eb-992a-167c195d53b3",
-
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-
                             ConcurrencyStamp = "d371c2ed-d5b0-4c54-9d35-02501aa470ce",
-
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-
                             ConcurrencyStamp = "46919830-c303-4038-a159-175982bcc096",
-
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

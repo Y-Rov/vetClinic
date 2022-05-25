@@ -1,14 +1,14 @@
-﻿using FluentValidation.Results;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace WebApi.Exceptions
+namespace Core.Exceptions
 {
     public class NotFoundException : Exception
     {
-        public List<ValidationFailure>? ValidationFailure;
+        public List<IdentityError>? IdentityError { get; set; }
         public new string Message { get; set; }
         public NotFoundException()
         {
-            Message = "We coudn't find that page";
+            Message = "We coudn't find that";
         }
 
         public NotFoundException(string message) : base(message)
@@ -21,10 +21,10 @@ namespace WebApi.Exceptions
             Message = message;
         }
 
-        public NotFoundException(List<ValidationFailure> validationFailures)
+        public NotFoundException(IEnumerable<IdentityError>? identityError)
         {
-            Message = "Illegal request";
-            ValidationFailure = validationFailures;
+            Message = "We coudn't find that";
+            IdentityError = identityError!.ToList();
         }
     }
 }

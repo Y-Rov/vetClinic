@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Exceptions;
+using WebApi.AutoMapper.Interface;
 using WebApi.Validators;
 
 namespace WebApi.Controllers;
@@ -13,86 +14,81 @@ namespace WebApi.Controllers;
 public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
-    private readonly IMapper _mapper;
     private readonly ProcedureViewModelBaseValidator _validator;
+    private readonly IViewModelMapper<ProcedureViewModelBase, Procedure> _procedureMapper;
+    private readonly IViewModelMapperAsync<Procedure, ProcedureSpecViewModel> _procedureViewModelMapper;
 
-    public ProcedureController(IProcedureService procedureService, IMapper mapper, ProcedureViewModelBaseValidator validator)
+    public ProcedureController(IProcedureService procedureService, 
+        ProcedureViewModelBaseValidator validator,
+        IViewModelMapper<ProcedureViewModelBase, Procedure> procedureMapper,
+        IViewModelMapperAsync<Procedure, ProcedureSpecViewModel> procedureViewModelMapper)
     {
         _procedureService = procedureService;
-        _mapper = mapper;
         _validator = validator;
+        _procedureMapper = procedureMapper;
+        _procedureViewModelMapper = procedureViewModelMapper;
     }
 
-    [HttpGet("/Procedures/getall")]
-    public async Task<ActionResult<IEnumerable<ProcedureViewModel>>> GetAll()
+    [HttpGet("/api/Procedures/")]
+    public async Task<ActionResult<IEnumerable<ProcedureSpecViewModel>>> GetAsync()
     {
-        IEnumerable<Procedure> result;
-        try
+        var procedures = await _procedureService.GetAllProceduresAsync();
+        var viewModels = new List<ProcedureSpecViewModel>();
+        foreach (var p in procedures)
         {
-            result = await _procedureService.GetAllProceduresAsync();
+            viewModels.Add(await _procedureViewModelMapper.MapAsync(p));
         }
-        catch (NullReferenceException)
-        {
-            return NotFound();
-        }
-
-        return Ok(_mapper.Map<IEnumerable<Procedure>, IEnumerable<ProcedureViewModel>>(result));
+        return Ok(viewModels);
     }
     
-    [HttpGet("/Procedures/get/{id}")]
-    public async Task<ActionResult<ProcedureViewModel>> GetById(int id)
+    [HttpGet("/api/Procedures/{id:int:min(1)}")]
+    public async Task<ActionResult<ProcedureSpecViewModel>> GetAsync([FromRoute]int id)
     {
-        Procedure result;
-        try
-        {
-            result = await _procedureService.GetByIdAsync(id);
-        }
-        catch (NullReferenceException)
-        {
-            throw new NotFoundException();
-        }        
-        catch (InvalidOperationException)
-        {
-            throw new NotFoundException();
-        }
-
-        return Ok(_mapper.Map<Procedure, ProcedureViewModel>(result));
+        var result = await _procedureService.GetByIdAsync(id);
+        return Ok(await _procedureViewModelMapper.MapAsync(result));
     }
     
-    [HttpPost("/Procedures/new")]
-    public async Task<ActionResult> Create(ProcedureViewModelBase procedure)
+    [HttpPost("/api/Procedures/")]
+    public async Task<ActionResult> CreateAsync(ProcedureViewModelBase procedure)
     {
         var validationResult = await _validator.ValidateAsync(procedure);
 
         if (!validationResult.IsValid)
         {
-            throw new BadRequestException(validationResult.Errors);
+            throw new BadRequestException(validationResult.Errors.ToString());
         }
 
         var result =
-            await _procedureService.CreateNewProcedureAsync(_mapper.Map<ProcedureViewModelBase, Procedure>(procedure));
+            await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
         
-        return Created(nameof(Create), result);
+        return Created(nameof(CreateAsync), result);
     }
     
-    [HttpDelete("/Procedures/delete/{id:int}")]
-    public async Task<ActionResult> Delete(int id)
+    [HttpDelete("/api/Procedures/{id:int:min(1)}")]
+    public async Task<ActionResult> DeleteAsync([FromRoute]int id)
     {
         await _procedureService.DeleteProcedureAsync(id);
         return NoContent();
     }
     
-    [HttpPut("/Procedures/update/{id:int}")]
-    public async Task<ActionResult> Update(int id, ProcedureViewModelBase newProcedure)
+    [HttpPut("/api/Procedures/")]
+    public async Task<ActionResult> UpdateAsync(ProcedureViewModelBase newProcedure)
     {
         var validationResult = await _validator.ValidateAsync(newProcedure);
 
         if (!validationResult.IsValid)
         {
-            throw new BadRequestException(validationResult.Errors);
+            throw new BadRequestException(validationResult.Errors.ToString());
         }
         
-        await _procedureService.UpdateProcedureAsync(id, _mapper.Map<ProcedureViewModelBase, Procedure>(newProcedure));
+        await _procedureService.UpdateProcedureAsync(_procedureMapper.Map(newProcedure));
+        return NoContent();
+    }
+
+    [HttpPatch("/api/Procedures/{id:int:min(1)}")]
+    public async Task<ActionResult> UpdateProcedureSpecializationsAsync([FromRoute]int id, IEnumerable<int> specializationIds)
+    { 
+        await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
         return NoContent();
     }
 }

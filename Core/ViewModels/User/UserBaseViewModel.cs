@@ -1,6 +1,6 @@
-﻿namespace Core.ViewModel
+﻿namespace Core.ViewModels.User
 {
-    public record UserUpdateViewModel
+    public record UserBaseViewModel
     {
         public string? FirstName { get; init; }
         public string? LastName { get; init; }

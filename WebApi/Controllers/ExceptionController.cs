@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Core.ViewModel;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Exceptions;
 
 namespace WebApi.Controllers
 {
