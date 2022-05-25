@@ -24,7 +24,7 @@ namespace WebApi.Controllers
             return appointments;
         }
 
-        [HttpGet]
+        [HttpGet("{appointmentId}")]
         public async Task<Appointment> GetAsync(int appointmentId)
         {
             var appointment = await _appointmentService.GetAsync(appointmentId);
