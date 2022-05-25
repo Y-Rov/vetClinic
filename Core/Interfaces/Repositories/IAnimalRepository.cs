@@ -1,14 +1,15 @@
 ﻿using Core.Entities;
 
-namespace Core.Interfaces.Services
+namespace Core.Interfaces.Repositories
 {
-    public interface IAnimalService
+    public interface IAnimalRepository
     {
         Task AddNewAnimalAsync(Animal animal);
-        Task DeleteAnimalAsync(int id);
+        Task DeleteAnimalAsync(Animal animal);
         Task UpdateAnimalAsync(Animal animal);
         Task<IEnumerable<Animal>> GetAllAnimalsAsync();
-        Task<Animal> GetAnimalByIdAsync(int id);
+        Task<Animal?> GetAnimalByIdAsync(int animalId);
         Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id);
+        Task SaveChangesAsync();
     }
 }
