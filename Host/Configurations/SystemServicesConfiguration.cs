@@ -17,7 +17,6 @@ namespace Host.Configurations
             services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssemblyContaining<ProcedureViewModelBaseValidator>();
-                fv.RegisterValidatorsFromAssemblyContaining<PortfolioViewModelValidator>();
             });
         }
     }
