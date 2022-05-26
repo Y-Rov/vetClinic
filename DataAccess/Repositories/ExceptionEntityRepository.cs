@@ -11,6 +11,7 @@ namespace DataAccess.Repositories
     public class ExceptionEntityRepository : IExceptionEntityRepository
     {
         private readonly ClinicContext _clinicContext;
+
         public ExceptionEntityRepository(ClinicContext clinicContext)
         {
             _clinicContext = clinicContext;
