@@ -19,21 +19,23 @@ public class ProcedureRepository : IProcedureRepository
     }
 
     public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
-    { 
-        return await _clinicContext.Procedures
+    {
+        var procedures = await _clinicContext.Procedures
             .Include(procedure => procedure.ProcedureSpecializations)
             .ThenInclude(ps => ps.Specialization)
             .AsNoTracking()
             .ToListAsync();
+        return procedures;
     }
 
     public async Task<Procedure?> GetProcedureByIdAsync(int procedureId)
     {
-        return await _clinicContext.Procedures
+        var procedure = await _clinicContext.Procedures
             .Include(procedure => procedure.ProcedureSpecializations)
             .ThenInclude(ps => ps.Specialization)
             .AsNoTracking()
             .SingleOrDefaultAsync(pr => pr.Id == procedureId);
+        return procedure;
     }
 
     public async Task<Procedure> AddProcedureAsync(Procedure procedure)
