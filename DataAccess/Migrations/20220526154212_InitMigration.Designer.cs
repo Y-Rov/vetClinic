@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ClinicContext))]
-    [Migration("20220524094635_WithoutOnDeletePortfolioAddress")]
-    partial class WithoutOnDeletePortfolioAddress
+    [Migration("20220526154212_InitMigration")]
+    partial class InitMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,9 +32,6 @@ namespace DataAccess.Migrations
                     b.Property<short?>("ApartmentNumber")
                         .HasColumnType("smallint");
 
-                    b.Property<byte?>("BuildingNumber")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(85)
@@ -50,8 +47,9 @@ namespace DataAccess.Migrations
                         .HasMaxLength(85)
                         .HasColumnType("nvarchar(85)");
 
-                    b.Property<int>("ZipCode")
-                        .HasColumnType("int");
+                    b.Property<string>("ZipCode")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("UserId");
 
@@ -174,8 +172,8 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.HasKey("UserId");
 
@@ -225,6 +223,20 @@ namespace DataAccess.Migrations
                     b.ToTable("ProcedureSpecializations", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entities.Salary", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Value")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("EmployeeId");
+
+                    b.ToTable("Salaries", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.Specialization", b =>
                 {
                     b.Property<int>("Id")
@@ -271,6 +283,9 @@ namespace DataAccess.Migrations
                     b.Property<string>("FirstName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(50)
@@ -327,14 +342,15 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "2699f26a-1b8e-40bc-9704-b5609036247f",
+                            ConcurrencyStamp = "2043fb25-307c-4086-b6ff-14a83899bc1d",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
+                            IsActive = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEC3hQZNtMNZ9lh9Ic49DMF2TPLnefSWwqfPHsr+IuzU4wHyeLh6BeSBb29EhOKrOqA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC4g9Qc3DmFwUdsQiZ8HmTShHZYpWYCLKmXOqx2mtMPibWDhrt3YB16kHZU2pICt9g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d38e74f5-8d06-4d9f-a690-277b033197c4",
+                            SecurityStamp = "5ff178e8-7fac-4198-baec-6dcb22879ffd",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -388,28 +404,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "d5afbc0b-15a2-497f-bac0-42a71f01a157",
+                            ConcurrencyStamp = "3e091edc-cdbc-43a4-a78f-4e5fcdbb02f3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "ad24bf56-43a5-47e0-893e-e260db72273f",
+                            ConcurrencyStamp = "f0f3428e-e163-417b-9334-065390483c2f",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "bf77de74-b81f-4260-b5f8-1cb91ab66573",
+                            ConcurrencyStamp = "61bc6865-ed83-4dd4-8785-bce832309d31",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "36624077-3b93-48e8-88ef-68130e619974",
+                            ConcurrencyStamp = "24aa01ea-982c-4d54-abed-30061b90ccf1",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -626,6 +642,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Specialization");
                 });
 
+            modelBuilder.Entity("Core.Entities.Salary", b =>
+                {
+                    b.HasOne("Core.Entities.User", "Employee")
+                        .WithOne("Salary")
+                        .HasForeignKey("Core.Entities.Salary", "EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("Core.Entities.UserSpecialization", b =>
                 {
                     b.HasOne("Core.Entities.Specialization", "Specialization")
@@ -731,6 +758,8 @@ namespace DataAccess.Migrations
                     b.Navigation("AppointmentUsers");
 
                     b.Navigation("Portfolio");
+
+                    b.Navigation("Salary");
 
                     b.Navigation("UserSpecializations");
                 });
