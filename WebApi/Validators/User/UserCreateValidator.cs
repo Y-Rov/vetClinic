@@ -1,9 +1,9 @@
 ﻿using Core.ViewModels.User;
 using FluentValidation;
 
-namespace WebApi.Validators
+namespace WebApi.Validators.User
 {
-    public class UserCreateValidator : UserValidator<UserCreateViewModel>
+    public class UserCreateValidator : UserBaseValidator<UserCreateViewModel>
     {
         public UserCreateValidator()
         {
