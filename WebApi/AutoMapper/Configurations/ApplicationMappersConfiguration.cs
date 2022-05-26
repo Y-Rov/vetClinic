@@ -25,9 +25,10 @@ public static class ApplicationMappersConfiguration
     // transfer to automapper
     public static void AddApplicationMappers(this IServiceCollection services)
     {
-        services.AddScoped<IViewModelMapper<User, UserReadViewModel>, UserToUserReadViewModelMapper>();
-        services.AddScoped<IViewModelMapper<UserCreateViewModel, User>, CreateViewModelToUserMapper>();
-        services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UpdateViewModelToUserMapper>();
+        services.AddScoped<IViewModelMapper<User, UserReadViewModel>, UserReadMapper>();
+        services.AddScoped<IViewModelMapper<UserCreateViewModel, User>, UserCreateMapper>();
+        services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UserUpdateMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>, UserReadEnumerableMapper>();
 
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
 
@@ -39,8 +40,6 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
         services.AddScoped<IViewModelMapper<SpecializationViewModel, Specialization>, SpecializationMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Specialization>, IEnumerable<SpecializationViewModel>>, SpecializationListViewModel>();
-
-        services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
 
         services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
