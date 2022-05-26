@@ -29,7 +29,7 @@ namespace WebApi.Controllers
             _salaryValidator = salaryValidator;
         }
 
-        [HttpGet("/api/finances/")]
+        [HttpGet("/api/[controller]/")]
         public async Task<ActionResult<IEnumerable<SalaryViewModel>>> GetAsync()
         {
             var salaries = await _financialService.GetSalaryAsync();
@@ -41,7 +41,7 @@ namespace WebApi.Controllers
             return Ok(map);
         }
 
-        [HttpGet("/api/finances/{id:int:min(1)}")]
+        [HttpGet("/api/[controller]/{id:int:min(1)}")]
         public async Task<ActionResult<SalaryViewModel>> GetAsync(int id)
         {
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
@@ -49,8 +49,8 @@ namespace WebApi.Controllers
             return Ok(map);
         }
 
-        [HttpPost("api/finances")]
-        public async Task<ActionResult> PostAsync(SalaryViewModel model)
+        [HttpPost]
+        public async Task<ActionResult> PostAsync([FromBody]SalaryViewModel model)
         {
             var validResult = await _salaryValidator.ValidateAsync(model);
             if(!validResult.IsValid)
@@ -62,15 +62,15 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [HttpDelete("api/finances/{id:int:min(1)}")]
+        [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
             await _financialService.DeleteSalaryByUserIdAsync(id);
             return NoContent();
         }
 
-        [HttpPut("api/finances")]
-        public async Task<ActionResult> PutAsync(SalaryViewModel model)
+        [HttpPut]
+        public async Task<ActionResult> PutAsync([FromBody]SalaryViewModel model)
         {
             var validResult = await _salaryValidator.ValidateAsync(model);
             if(!validResult.IsValid)

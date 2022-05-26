@@ -26,7 +26,8 @@ namespace DataAccess.Repositories
 
         public async Task<Salary?> GetSalaryByUserIdAsync(int id)
         {
-            var result = await _clinicContext.Salaries.FirstOrDefaultAsync(salary => salary.EmployeeId == id);
+            var result = await _clinicContext.Salaries
+                .SingleOrDefaultAsync(salary => salary.EmployeeId == id);
             return result;
         }
 
