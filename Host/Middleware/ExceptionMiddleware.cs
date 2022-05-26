@@ -13,9 +13,11 @@ namespace Host.Middleware
         private readonly RequestDelegate _next;
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly DateTime _dateTime = DateTime.Now;
+        private static DateTime _dateTime { get; } = DateTime.Now;
 
-        public ExceptionMiddleware(RequestDelegate next, IServiceProvider serviceProvider)
+        public ExceptionMiddleware(
+            RequestDelegate next,
+            IServiceProvider serviceProvider)
         {
             _next = next;
             _serviceProvider = serviceProvider;
