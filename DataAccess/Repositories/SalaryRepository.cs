@@ -22,28 +22,28 @@ namespace DataAccess.Repositories
         public async Task DeleteSalaryByUserIdAsync(int id)
         {
             _clinicContext.Remove(GetSalaryByUserIdAsync(id));
-            await _clinicContext.SaveChangesAsync();
         }
 
         public async Task<Salary?> GetSalaryByUserIdAsync(int id)
         {
-            return await _clinicContext.Salaries.FirstOrDefaultAsync(salary => salary.EmployeeId == id);
+            var result = await _clinicContext.Salaries.FirstOrDefaultAsync(salary => salary.EmployeeId == id);
+            return result;
         }
 
         public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
-            return await _clinicContext.Salaries.ToListAsync();
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _clinicContext.SaveChangesAsync();
+            var result = await _clinicContext.Salaries.ToListAsync();
+            return result;
         }
 
         public async Task UpdateSalaryAsync(Salary salary)
         {
             _clinicContext.Salaries.Update(salary);
+        }
+        public async Task SaveChangesAsync()
+        {
             await _clinicContext.SaveChangesAsync();
         }
+
     }
 }
