@@ -4,8 +4,7 @@ namespace Core.Exceptions
 {
     public class BadRequestException : Exception
     {
-        public List<IdentityError>? IdentityError { get; set; }
-        public new string Message { get; set; }
+        public new string Message { get; set; } = string.Empty;
 
         public BadRequestException()
         {
@@ -22,10 +21,16 @@ namespace Core.Exceptions
             Message = message;
         }
 
-        public BadRequestException(IEnumerable<IdentityError> identityError)
+        public BadRequestException(IEnumerable<IdentityError> identityErrors)
+        { 
+            identityErrors
+                .ToList()
+                .ForEach(error => AddMessage(error));
+        }
+
+        private void AddMessage(IdentityError error)
         {
-            Message = "Illegal request";
-            IdentityError = identityError.ToList();
+            Message += error.Description + " ";
         }
     }
 }

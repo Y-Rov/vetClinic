@@ -14,11 +14,11 @@ namespace WebApi.Controllers
     public class ExceptionController : ControllerBase
     {
         private readonly IExceptionEntityService _exceptionEntityService;
-        private readonly IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> _exceptionModel;
+        private readonly IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> _exceptionModel;
 
         public ExceptionController(
             IExceptionEntityService exceptionEntityService,
-            IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> exceptionModel)
+            IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> exceptionModel)
         {
             _exceptionEntityService = exceptionEntityService;
             _exceptionModel = exceptionModel;

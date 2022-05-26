@@ -4,7 +4,6 @@ using Core.Models;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 
-#nullable disable
 
 namespace DataAccess.Repositories
 {
@@ -19,28 +18,45 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<ExceptionEntity>> GetAsync()
         {
-            return await _clinicContext.Exceptions.ToListAsync();
+            var errors = await _clinicContext.Exceptions.ToListAsync();
+
+            return errors;
         }
 
         public async Task<ExceptionEntity> GetAsync(int id)
         {
-            return await _clinicContext.Exceptions.SingleOrDefaultAsync(ex => ex.Id == id);
+            var error = await _clinicContext.Exceptions.SingleOrDefaultAsync(ex => ex.Id == id);
+
+            return error;
         }
 
         public async Task<IEnumerable<ExceptionEntity>> GetTodayAsync()
         {
-            return await _clinicContext.Exceptions.Where(ex => ex.DateTime.Day == DateTime.Today.Day).ToListAsync();
+            var todayErors = await _clinicContext.Exceptions
+                .Where(ex => ex.DateTime.Day == DateTime.Today.Day)
+                .ToListAsync();
+
+            return todayErors;
         }
 
         public async Task<IEnumerable<ExceptionStats>> GetStatsAsync()
         {
-            return await _clinicContext.Exceptions.GroupBy(ex => ex.Name).Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() }).ToListAsync();
+            var statsErrors = await _clinicContext.Exceptions
+                .GroupBy(ex => ex.Name)
+                .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            return statsErrors;
         }
 
         public async Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync()
         {
-            return  await _clinicContext.Exceptions.Where(ex => ex.DateTime.Day == DateTime.Today.Day)
-                .GroupBy(ex => ex.Name).Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() }).ToListAsync();
+            var todayErrorStats = await _clinicContext.Exceptions.Where(ex => ex.DateTime.Day == DateTime.Today.Day)
+                .GroupBy(ex => ex.Name)
+                .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            return todayErrorStats;
         }
     }
 }
