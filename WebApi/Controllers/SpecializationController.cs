@@ -45,8 +45,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> AddSpecialization(SpecializationViewModel specialization)
         {
-            return !ModelState.IsValid ? throw new BadRequestException() :
-                Ok(_viewModelMapper.Map(
+               return Ok(_viewModelMapper.Map(
                     await _service.AddSpecializationAsync(_mapper.Map(specialization))));
         }
 
@@ -54,8 +53,6 @@ namespace WebApi.Controllers
         [HttpPut("api/specialization/{id:int:min(1)}")]
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, SpecializationViewModel updated)
         {
-            if(!ModelState.IsValid)
-                throw new BadRequestException("invalid parameters");
             await _service.UpdateSpecializationAsync(_mapper.Map(updated));
             return Ok();
         }
