@@ -1,7 +1,7 @@
 using Application.Configuration;
 using Core.Entities;
 using DataAccess.Context;
-using DataAccess.Repositories;
+using DataAccess.Repositories.Configuration;
 using Host.Configurations;
 using Host.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
-using WebApi.Configurations;
+using WebApi.AutoMapper.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
