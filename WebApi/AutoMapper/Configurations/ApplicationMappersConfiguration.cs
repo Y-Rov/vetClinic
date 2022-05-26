@@ -18,7 +18,7 @@ using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
 using WebApi.AutoMapper.SalaryMappers;
 
-namespace WebApi.Configurations;
+namespace WebApi.AutoMapper.Configurations;
 
 public static class ApplicationMappersConfiguration
 {
