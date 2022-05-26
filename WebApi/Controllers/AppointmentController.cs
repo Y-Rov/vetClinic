@@ -1,10 +1,8 @@
 ﻿using Core.Entities;
-using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators;
 
 namespace WebApi.Controllers
 {
@@ -14,23 +12,20 @@ namespace WebApi.Controllers
     {
         private readonly IAppointmentService _appointmentService;
         private readonly IViewModelMapper<Appointment, AppointmentViewModel> _appointmentViewModelMapper;
-        private readonly IEnumerableViewModelMapper<Appointment, AppointmentViewModel> _appointmentsViewModelMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>> _appointmentsViewModelMapper;
         private readonly IViewModelMapper<AppointmentViewModel, Appointment> _appointmentMapper;
-        private readonly AppointmentViewModelValidator _appointmentValidator;
 
         public AppointmentController(
             IAppointmentService appointmentService,
             IViewModelMapper<Appointment, AppointmentViewModel> appointmentViewModelMapper,
-            IEnumerableViewModelMapper<Appointment, AppointmentViewModel> appointmentsViewModelMapper,
-            IViewModelMapper<AppointmentViewModel, Appointment> appointmentMapper,
-            AppointmentViewModelValidator appointmentValidator
+            IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>> appointmentsViewModelMapper,
+            IViewModelMapper<AppointmentViewModel, Appointment> appointmentMapper
             )
         {
             _appointmentService = appointmentService;
             _appointmentViewModelMapper = appointmentViewModelMapper;
             _appointmentsViewModelMapper = appointmentsViewModelMapper;
             _appointmentMapper = appointmentMapper;
-            _appointmentValidator = appointmentValidator;
         }
 
         [HttpGet]
@@ -56,35 +51,21 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync(AppointmentViewModel appointmentViewModel)
         {
-            var validResult = await _appointmentValidator.ValidateAsync(appointmentViewModel);
-            
-            if (!validResult.IsValid)
-            {
-                throw new BadRequestException(validResult.Errors.ToString());
-            }
-
             var appointment = _appointmentMapper.Map(appointmentViewModel);
 
             await _appointmentService.CreateAsync(appointment);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
         public async Task<IActionResult> PutAsync(AppointmentViewModel appointmentViewModel) 
         {
-            var validResult = await _appointmentValidator.ValidateAsync(appointmentViewModel);
-            
-            if (!validResult.IsValid)
-            {
-                throw new BadRequestException(validResult.Errors.ToString());
-            }
-
             var appointment = _appointmentMapper.Map(appointmentViewModel);
 
             await _appointmentService.UpdateAsync(appointment);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{AppointmentId:int:min(1)}")]
@@ -92,7 +73,7 @@ namespace WebApi.Controllers
         {
             await _appointmentService.DeleteAsync(appointmentId);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

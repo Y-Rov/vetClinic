@@ -2,7 +2,7 @@
 using Core.ViewModels;
 using WebApi.AutoMapper.Interface;
 
-namespace WebApi.AutoMapper.AppointmentMapper
+namespace WebApi.AutoMapper.AppointmentMappers
 {
     public class AppointmentViewModelMapper : IViewModelMapper<AppointmentViewModel, Appointment>
     {
