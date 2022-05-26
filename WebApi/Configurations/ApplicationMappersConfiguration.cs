@@ -4,6 +4,7 @@ using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using Core.ViewModels.User;
+using Core.ViewModels.SalaryViewModel;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.AnimalMappers;
@@ -11,6 +12,7 @@ using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
+using WebApi.AutoMapper.SalaryMappers;
 
 
 namespace WebApi.Configurations;
@@ -33,5 +35,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
         services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
+        services.AddScoped<IViewModelMapper<Salary,SalaryViewModel>, SalaryMapper>();
+        services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();
     }
 }
