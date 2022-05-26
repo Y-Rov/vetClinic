@@ -13,10 +13,9 @@ namespace DataAccess.Configurations
 
             builder
                 .Property(portfolio => portfolio.Description)
-                .HasMaxLength(512)
+                .HasMaxLength(2048)
                 .IsRequired();
 
-            // Ask Andrii about OnDelete
             builder
                 .HasOne<User>(portfolio => portfolio.User)
                 .WithOne(user => user.Portfolio)

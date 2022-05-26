@@ -18,6 +18,16 @@ namespace DataAccess.Configurations
             builder
                 .Property(u => u.LastName)
                 .HasMaxLength(50);
+
+            builder
+                .HasOne<Portfolio>(user => user.Portfolio)
+                .WithOne(portfolio => portfolio.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasOne<Address>(user => user.Address)
+                .WithOne(address => address.User)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
