@@ -31,6 +31,7 @@ public class ProcedureRepository : IProcedureRepository
     {
         return await _clinicContext.Procedures
             .Include(procedure => procedure.ProcedureSpecializations)
+            .ThenInclude(ps => ps.Specialization)
             .AsNoTracking()
             .SingleOrDefaultAsync(pr => pr.Id == procedureId);
     }

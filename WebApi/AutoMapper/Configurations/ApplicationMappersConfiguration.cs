@@ -32,10 +32,12 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
 
-        services.AddScoped<IViewModelMapper<ProcedureViewModelBase, Procedure>, ProcedureMapper>();
-        services.AddScoped<IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
-            SpecializationProcedureToSpecViewModel>();
-        services.AddScoped<IViewModelMapper<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
+        services.AddScoped<IViewModelMapper<ProcedureViewModelBase, Procedure>, ProcedureCreateMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>,
+            ProcedureReadEnumerableMapper>();
+        services.AddScoped<IViewModelMapper<Procedure, ProcedureReadViewModel>, ProcedureReadMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>,
+                ProcedureSpecEnumerableMapper>();
 
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
         services.AddScoped<IViewModelMapper<SpecializationViewModel, Specialization>, SpecializationMapper>();
