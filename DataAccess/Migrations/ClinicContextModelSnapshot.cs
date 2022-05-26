@@ -170,8 +170,8 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.HasKey("UserId");
 
@@ -282,6 +282,9 @@ namespace DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -337,14 +340,15 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "007d0f8d-fc75-4852-ba41-81bf7787f2cb",
+                            ConcurrencyStamp = "2043fb25-307c-4086-b6ff-14a83899bc1d",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
+                            IsActive = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB8ID9V6s+MvdKO3TQo5WBGnZ4DKx605jNRRi+rMLGNL2Y6tMGR077IUkNYjGmLuVQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC4g9Qc3DmFwUdsQiZ8HmTShHZYpWYCLKmXOqx2mtMPibWDhrt3YB16kHZU2pICt9g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e37b7593-b448-4bc5-bea6-8001409a209c",
+                            SecurityStamp = "5ff178e8-7fac-4198-baec-6dcb22879ffd",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -398,28 +402,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "070322e4-88b1-4565-a663-9ec6c62c684a",
+                            ConcurrencyStamp = "3e091edc-cdbc-43a4-a78f-4e5fcdbb02f3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "9d74ddd2-9c37-4dc1-90a3-821626910d25",
+                            ConcurrencyStamp = "f0f3428e-e163-417b-9334-065390483c2f",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "41a1c068-c1fc-48a8-a10d-b7546444b373",
+                            ConcurrencyStamp = "61bc6865-ed83-4dd4-8785-bce832309d31",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "8202ea42-6d10-499f-b969-1d6698fa539c",
+                            ConcurrencyStamp = "24aa01ea-982c-4d54-abed-30061b90ccf1",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
