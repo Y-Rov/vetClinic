@@ -30,7 +30,7 @@ namespace Core.Exceptions
 
         private void AddMessage(IdentityError error)
         {
-            Message += error.Description + " ";
+            Message += error.Description.Concat(" ");
         }
     }
 }
