@@ -8,7 +8,7 @@ namespace Core.Interfaces.Repositories
         Task<IEnumerable<Address>> GetAllAddressesAsync();
         Task CreateAddressAsync(Address address);
         Task UpdateAddressAsync(Address address);
-        Task DeleteAddressByUserIdAsync(int id);
+        Task DeleteAddressAsync(Address address);
         Task SaveChangesAsync();
     }
 }
