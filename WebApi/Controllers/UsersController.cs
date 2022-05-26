@@ -4,7 +4,6 @@ using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators.User;
 
 namespace WebApi.Controllers
 {
@@ -16,23 +15,17 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<User, UserReadViewModel> _readMapper;
         private readonly IViewModelMapper<UserCreateViewModel, User> _createMapper;
         private readonly IViewModelMapperUpdater<UserUpdateViewModel, User> _updateMapper;
-        private readonly UserCreateValidator _createValidator;
-        private readonly UserUpdateValidator _updateValidator;
 
         public UsersController(
             IUserService userService,
             IViewModelMapper<User, UserReadViewModel> readMapper,
             IViewModelMapper<UserCreateViewModel, User> createMapper,
-            IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper,
-            UserCreateValidator createValidator,
-            UserUpdateValidator updateValidator)
+            IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper)
         {
             _userService = userService;
             _readMapper = readMapper;
             _createMapper = createMapper;
             _updateMapper = updateMapper;
-            _updateValidator = updateValidator;
-            _createValidator = createValidator;
         }
 
         [HttpGet]
@@ -61,8 +54,6 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromBody] UserCreateViewModel createModel)
         {
-            _createValidator.Validate(createModel);
-
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
             await _userService.AssignToRoleAsync(user, "Client");
@@ -78,7 +69,6 @@ namespace WebApi.Controllers
         {
             var user = await _userService.GetUserByIdAsync(id);
 
-            _updateValidator.Validate(updateModel);
             _updateMapper.Map(updateModel, user);
             await _userService.UpdateAsync(user!);
 
@@ -99,8 +89,6 @@ namespace WebApi.Controllers
         public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromRoute] string role, 
             [FromBody] UserCreateViewModel createModel)
         {
-            _createValidator.Validate(createModel);
-
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
             await _userService.AssignToRoleAsync(user, role);
