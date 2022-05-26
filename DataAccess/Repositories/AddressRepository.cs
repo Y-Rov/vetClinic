@@ -16,16 +16,20 @@ namespace DataAccess.Repositories
 
         public async Task<Address?> GetAddressByUserIdAsync(int id)
         {
-            return await _clinicContext.Addresses
+            var address = await _clinicContext.Addresses
                 .AsNoTracking()
                 .FirstOrDefaultAsync(address => address.UserId == id);
+
+            return address;
         }
 
         public async Task<IEnumerable<Address>> GetAllAddressesAsync()
         {
-            return await _clinicContext.Addresses
+            var addresses = await _clinicContext.Addresses
                 .AsNoTracking()
                 .ToListAsync();
+
+            return addresses;
         }
 
         public async Task CreateAddressAsync(Address address)
