@@ -15,18 +15,15 @@ namespace WebApi.Controllers
         private readonly IFinancialService _financialService;
         private readonly IViewModelMapper<Salary, SalaryViewModel> _mapperMtoVM;
         private readonly IViewModelMapper<SalaryViewModel, Salary> _mapperVMtoM;
-        private readonly SalaryValidator _salaryValidator;
 
         public FinancialController(
             IFinancialService financialService,
             IViewModelMapper<Salary, SalaryViewModel> mapperMtoVM,
-            IViewModelMapper<SalaryViewModel, Salary> mapperVMtoM,
-            SalaryValidator salaryValidator)
+            IViewModelMapper<SalaryViewModel, Salary> mapperVMtoM)
         {
             _financialService = financialService;
             _mapperMtoVM = mapperMtoVM;
             _mapperVMtoM = mapperVMtoM;
-            _salaryValidator = salaryValidator;
         }
 
         [HttpGet("/api/[controller]/")]
