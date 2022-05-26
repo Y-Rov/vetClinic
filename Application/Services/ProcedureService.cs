@@ -1,16 +1,23 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
+using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Newtonsoft.Json;
 
 namespace Application.Services;
 
 public class ProcedureService : IProcedureService
 {
     private readonly IProcedureRepository _procedureRepository;
-    public ProcedureService(IProcedureRepository procedureRepository)
+    private readonly ILoggerManager _loggerManager;
+
+    public ProcedureService(
+        IProcedureRepository procedureRepository,
+        ILoggerManager loggerManager)
     {
         _procedureRepository = procedureRepository;
+        _loggerManager = loggerManager;
     }
 
     public async Task<Procedure> CreateNewProcedureAsync(Procedure procedure)    
@@ -25,24 +32,31 @@ public class ProcedureService : IProcedureService
         var oldProcedure = await _procedureRepository.GetProcedureByIdAsync(newProcedure.Id);
         if (oldProcedure is null)
         {
+            _loggerManager.LogWarn($"Procedure with id {newProcedure.Id} does not exist");
             throw new NotFoundException($"Procedure with Id {newProcedure.Id} does not exist");
         }
-        
-        oldProcedure.Cost = newProcedure.Cost;
-        oldProcedure.DurationInMinutes = newProcedure.DurationInMinutes;
-        oldProcedure.Name = newProcedure.Name;
-        oldProcedure.Description = newProcedure.Description;        
+
+        _loggerManager.LogInfo($"Updating procedure with id {newProcedure.Id}...");
+        await _procedureRepository.UpdateProcedureAsync(newProcedure);
         await _procedureRepository.SaveChangesAsync();
     }
 
     public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
     {
+        var procedureToUpdate = await _procedureRepository.GetProcedureByIdAsync(procedureId);
+        if (procedureToUpdate is null)
+        {
+            _loggerManager.LogWarn($"Procedure with id {procedureId} does not exist");
+            throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
+        }
         try
         {
-            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
+            _loggerManager.LogInfo($"Updating specializations list of the procedure with Id {procedureId}...");
+            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureToUpdate, specializationIds);
         }
         catch (InvalidOperationException)
         {
+            _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
             throw new NotFoundException();
         }
 
@@ -54,8 +68,11 @@ public class ProcedureService : IProcedureService
         var procedureToRemove = await _procedureRepository.GetProcedureByIdAsync(procedureId);
         if (procedureToRemove is null)
         {
+            _loggerManager.LogWarn($"Procedure with id {procedureId} does not exist");
             throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
         }
+        
+        _loggerManager.LogInfo($"Deleting procedure with Id {procedureId}...");
         await _procedureRepository.DeleteProcedureAsync(procedureToRemove);
         await _procedureRepository.SaveChangesAsync();
     }
@@ -67,9 +84,11 @@ public class ProcedureService : IProcedureService
         
         if (procedure is null)
         {
+            _loggerManager.LogWarn($"Procedure with id {procedureId} does not exist");
             throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
         }
 
+        _loggerManager.LogInfo($"Found procedure with id {procedureId}");
         return procedure;
     }
 
@@ -78,8 +97,11 @@ public class ProcedureService : IProcedureService
         var procedures = await _procedureRepository.GetAllProceduresAsync(); 
         if (procedures is null)
         {
+            _loggerManager.LogWarn("Procedures DBSet is null");
             throw new NotFoundException("Procedures DBSet is null");
         }
+        
+        _loggerManager.LogInfo("Found all procedures");
         return procedures;
     }
 }
