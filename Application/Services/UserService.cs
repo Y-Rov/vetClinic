@@ -11,7 +11,9 @@ namespace Application.Services
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _loggerManager;
 
-        public UserService(IUserRepository userRepository, ILoggerManager loggerManager)
+        public UserService(
+            IUserRepository userRepository, 
+            ILoggerManager loggerManager)
         {
             _userRepository = userRepository;
             _loggerManager = loggerManager;
