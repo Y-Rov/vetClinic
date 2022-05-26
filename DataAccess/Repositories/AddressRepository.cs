@@ -16,12 +16,16 @@ namespace DataAccess.Repositories
 
         public async Task<Address?> GetAddressByUserIdAsync(int id)
         {
-            return await _clinicContext.Addresses.FirstOrDefaultAsync(address => address.UserId == id);
+            return await _clinicContext.Addresses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(address => address.UserId == id);
         }
 
         public async Task<IEnumerable<Address>> GetAllAddressesAsync()
         {
-            return await _clinicContext.Addresses.ToListAsync();
+            return await _clinicContext.Addresses
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task CreateAddressAsync(Address address)
@@ -34,9 +38,9 @@ namespace DataAccess.Repositories
             _clinicContext.Addresses.Update(address);
         }
 
-        public async Task DeleteAddressByUserIdAsync(int id)
+        public async Task DeleteAddressAsync(Address address)
         {
-            _clinicContext.Remove(GetAddressByUserIdAsync(id));
+            _clinicContext.Addresses.Remove(address);
         }
 
         public async Task SaveChangesAsync()
