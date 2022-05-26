@@ -41,7 +41,7 @@ namespace Application.Services
                 throw new NotFoundException($"There is no exception with such an Id:{id}");
             }
 
-            _loggerManager.LogInfo($"Got exception {id} from ExceptionEntityService method GetAsync()");
+            _loggerManager.LogInfo($"Got exception {id} from ExceptionEntityService method  GetAsync(int id)");
             return exception;
         }
 
@@ -49,7 +49,7 @@ namespace Application.Services
         {
             var today = await _exceptionEntityRepository.GetTodayAsync();
 
-            _loggerManager.LogInfo("Got all today's exceptions from ExceptionEntityService method GetAsync()");
+            _loggerManager.LogInfo("Got all today's exceptions from ExceptionEntityService method GetTodayAsync()");
             return today;
         }
 
@@ -57,7 +57,7 @@ namespace Application.Services
         {
             var stats = await _exceptionEntityRepository.GetStatsAsync();
 
-            _loggerManager.LogInfo("Got exceptions' stats from ExceptionEntityService method GetAsync()");
+            _loggerManager.LogInfo("Got exceptions' stats from ExceptionEntityService method GetStatsAsync()");
             return stats;
         }
 
@@ -65,7 +65,7 @@ namespace Application.Services
         {
             var todayStats = await _exceptionEntityRepository.GetTodayStatsAsync();
 
-            _loggerManager.LogInfo("Got today exceptions' stats from ExceptionEntityService method GetAsync()");
+            _loggerManager.LogInfo("Got today exceptions' stats from ExceptionEntityService method GetTodayStatsAsync()");
             return todayStats;
         }
     }
