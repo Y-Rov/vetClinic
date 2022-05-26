@@ -5,18 +5,19 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ProcedureMappers;
 
-public class ProcedureSpecViewModelMapper : IViewModelMapper<Procedure, ProcedureSpecViewModel>
+public class ProcedureReadMapper : IViewModelMapper<Procedure, ProcedureReadViewModel>
 {
     private readonly IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> _internalMapper;
 
-    public ProcedureSpecViewModelMapper(
-        IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> internalMapper)
+    public ProcedureReadMapper(
+        IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> internalMapper)
     {
         _internalMapper = internalMapper;
     }
-    public ProcedureSpecViewModel Map(Procedure source)
+    
+    public ProcedureReadViewModel Map(Procedure source)
     {
-        var procedureSpecViewModel = new ProcedureSpecViewModel()
+        var procedureSpecViewModel = new ProcedureReadViewModel()
         {
             Id = source.Id,
             Name = source.Name,
