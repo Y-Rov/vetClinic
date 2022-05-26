@@ -1,13 +1,12 @@
-﻿namespace Core.Entities
+﻿namespace Core.ViewModels.AddressViewModels
 {
-    public class Address
+    public class AddressViewModel
     {
+        public int UserId { get; set; }
         public string City { get; set; }
+        public string? ZipCode { get; set; }
         public string Street { get; set; }
         public string House { get; set; }
         public ushort? ApartmentNumber { get; set; }
-        public string? ZipCode { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
     }
 }

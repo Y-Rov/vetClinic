@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.ViewModel;
+using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.PortfolioViewModels;
 using Core.ViewModels.ProcedureViewModels;
@@ -7,8 +8,9 @@ using Core.ViewModels.SpecializationViewModels;
 using Core.ViewModels.User;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.Extensions.DependencyInjection;
-using WebApi.AutoMapper.ExceptionMapper;
+using WebApi.AutoMapper.AddressMappers;
 using WebApi.AutoMapper.AnimalMappers;
+using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.PortfolioMappers;
 using WebApi.AutoMapper.ProcedureMappers;
@@ -48,5 +50,8 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<Portfolio, PortfolioViewModel>, PortfolioViewModelMapper>();
         services.AddScoped<IViewModelMapper<PortfolioViewModel, Portfolio>, PortfolioMapper>();
+
+        services.AddScoped<IViewModelMapper<Address, AddressViewModel>, AddressViewModelMapper>();
+        services.AddScoped<IViewModelMapper<AddressViewModel, Address>, AddressModelMapper>();
     }
 }
