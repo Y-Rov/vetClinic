@@ -26,7 +26,6 @@ public class ProfileService : IProfileService
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
         var sub = context.Subject.GetSubjectId();
-        if (sub is null) throw new InvalidCredentialException("User must contain sub claim");
         User user = await _userManager.FindByIdAsync(sub);
         ClaimsPrincipal userClaimsPrincipal = await _claimsFactory.CreateAsync(user);
         Claim roleClaim = userClaimsPrincipal.Claims.Single(c => c.Type == "role");
@@ -37,6 +36,6 @@ public class ProfileService : IProfileService
     {
         var sub = context.Subject.GetSubjectId();
         User user = await _userManager.FindByIdAsync(sub);
-        context.IsActive = user != null;
+        context.IsActive = user.IsActive;
     }
 }
