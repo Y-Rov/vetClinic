@@ -15,6 +15,7 @@ namespace Application.Configuration
             services.AddScoped<ISpecializationService, SpecializationService>();
             services.AddScoped<IExceptionEntityService, ExceptionEntityService>();
             services.AddScoped<IProcedureService, ProcedureService>();
+            services.AddScoped<IFinancialService, FinancialService>();
         }
     }
 }
