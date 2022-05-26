@@ -44,7 +44,7 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(ProcedureViewModelBase procedure)
+    public async Task<ActionResult> CreateAsync([FromBody]ProcedureViewModelBase procedure)
     {
         var result =
             await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
@@ -60,14 +60,16 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync(ProcedureViewModelBase newProcedure)
+    public async Task<ActionResult> UpdateAsync([FromBody]ProcedureViewModelBase newProcedure)
     {
         await _procedureService.UpdateProcedureAsync(_procedureMapper.Map(newProcedure));
         return NoContent();
     }
 
     [HttpPatch("{id:int:min(1)}")]
-    public async Task<ActionResult> UpdateProcedureSpecializationsAsync([FromRoute]int id, IEnumerable<int> specializationIds)
+    public async Task<ActionResult> UpdateProcedureSpecializationsAsync(
+        [FromRoute]int id, 
+        [FromBody]IEnumerable<int> specializationIds)
     { 
         await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
         return NoContent();

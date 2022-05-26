@@ -3,7 +3,6 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Newtonsoft.Json;
 
 namespace Application.Services;
 
@@ -22,59 +21,45 @@ public class ProcedureService : IProcedureService
 
     public async Task<Procedure> CreateNewProcedureAsync(Procedure procedure)    
     {
-        var result = await _procedureRepository.AddProcedureAsync(procedure);
+        var createdProcedure = await _procedureRepository.AddProcedureAsync(procedure);
         await _procedureRepository.SaveChangesAsync();
-        return result;
+        _loggerManager.LogInfo($"Created new procedure with Id: {createdProcedure.Id}");
+        return createdProcedure;
     }
 
-    public async Task UpdateProcedureAsync(Procedure newProcedure)   
+    public async Task UpdateProcedureAsync(Procedure newProcedure)
     {
-        var oldProcedure = await _procedureRepository.GetProcedureByIdAsync(newProcedure.Id);
-        if (oldProcedure is null)
-        {
-            _loggerManager.LogWarn($"Procedure with id {newProcedure.Id} does not exist");
-            throw new NotFoundException($"Procedure with Id {newProcedure.Id} does not exist");
-        }
+        var oldProcedure = await GetByIdAsync(newProcedure.Id);
 
-        _loggerManager.LogInfo($"Updating procedure with id {newProcedure.Id}...");
         await _procedureRepository.UpdateProcedureAsync(newProcedure);
         await _procedureRepository.SaveChangesAsync();
+        _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
     }
 
     public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
     {
-        var procedureToUpdate = await _procedureRepository.GetProcedureByIdAsync(procedureId);
-        if (procedureToUpdate is null)
-        {
-            _loggerManager.LogWarn($"Procedure with id {procedureId} does not exist");
-            throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
-        }
+        var procedureToUpdate = await GetByIdAsync(procedureId);
         try
         {
-            _loggerManager.LogInfo($"Updating specializations list of the procedure with Id {procedureId}...");
             await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureToUpdate, specializationIds);
         }
         catch (InvalidOperationException)
         {
             _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
-            throw new NotFoundException();
+            throw new NotFoundException("At least one of the specializations from the given list does not exist");
         }
 
         await _procedureRepository.SaveChangesAsync();
+        _loggerManager.LogInfo($"Updated specializations list of the procedure with Id {procedureId}");
     }
 
     public async Task DeleteProcedureAsync(int procedureId)
     {
-        var procedureToRemove = await _procedureRepository.GetProcedureByIdAsync(procedureId);
-        if (procedureToRemove is null)
-        {
-            _loggerManager.LogWarn($"Procedure with id {procedureId} does not exist");
-            throw new NotFoundException($"Procedure with Id {procedureId} does not exist");
-        }
+        var procedureToRemove = await GetByIdAsync(procedureId);
         
-        _loggerManager.LogInfo($"Deleting procedure with Id {procedureId}...");
         await _procedureRepository.DeleteProcedureAsync(procedureToRemove);
         await _procedureRepository.SaveChangesAsync();
+        _loggerManager.LogInfo($"Deleted procedure with Id {procedureId}");
     }
 
 
