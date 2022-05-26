@@ -4,8 +4,7 @@ namespace Core.Exceptions
 {
     public class ForbidException : Exception
     {
-        public List<IdentityError>? IdentityError { get; set; }
-        public new string Message { get; set; }
+        public new string Message { get; set; } = string.Empty;
 
         public ForbidException()
         {
@@ -22,10 +21,16 @@ namespace Core.Exceptions
             Message = message;
         }
 
-        public ForbidException(IEnumerable<IdentityError>? identityError)
+        public ForbidException(IEnumerable<IdentityError> identityErrors)
         {
-            Message = "You don't have permission to access / on this server";
-            IdentityError = identityError!.ToList();
+            identityErrors
+                .ToList()
+                .ForEach(error => AddMessage(error));
+        }
+
+        private void AddMessage(IdentityError error)
+        {
+            Message += error.Description.Concat(" ");
         }
     }
 }

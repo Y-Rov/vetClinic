@@ -4,8 +4,8 @@ namespace Core.Exceptions
 {
     public class NotFoundException : Exception
     {
-        public List<IdentityError>? IdentityError { get; set; }
-        public new string Message { get; set; }
+        public new string Message { get; set; } = string.Empty;
+
         public NotFoundException()
         {
             Message = "We coudn't find that";
@@ -21,10 +21,16 @@ namespace Core.Exceptions
             Message = message;
         }
 
-        public NotFoundException(IEnumerable<IdentityError>? identityError)
+        public NotFoundException(IEnumerable<IdentityError> identityErrors)
         {
-            Message = "We coudn't find that";
-            IdentityError = identityError!.ToList();
+            identityErrors
+                .ToList()
+                .ForEach(error => AddMessage(error));
+        }
+
+        private void AddMessage(IdentityError error)
+        {
+            Message += error.Description.Concat(" ");
         }
     }
 }
