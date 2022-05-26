@@ -14,6 +14,7 @@ namespace DataAccess.Repositories
             services.AddScoped<IProcedureRepository, ProcedureRepository>();
             services.AddScoped<IExceptionEntityRepository, ExceptionEntityRepository>();
             services.AddScoped<IAnimalRepository, AnimalRepository>();
+            services.AddScoped<ISalaryRepository,SalaryRepository>();
         }
     }
 }
