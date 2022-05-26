@@ -61,15 +61,6 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Start ConfigureAutoMapper
-var config = new AutoMapper.MapperConfiguration(cfg =>
-{
-    cfg.AddMaps(typeof(WebApi.AutoMapper.UserProfile));
-});
-var mapper = config.CreateMapper();
-builder.Services.AddSingleton(mapper);
-//End ConfigureAutoMapper
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

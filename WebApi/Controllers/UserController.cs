@@ -9,35 +9,33 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly IViewModelMapper<User, UserReadViewModel> _readMapper;
         private readonly IViewModelMapper<UserCreateViewModel, User> _createMapper;
         private readonly IViewModelMapperUpdater<UserUpdateViewModel, User> _updateMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _readEnumerableMapper;
 
-        public UsersController(
+        public UserController(
             IUserService userService,
             IViewModelMapper<User, UserReadViewModel> readMapper,
             IViewModelMapper<UserCreateViewModel, User> createMapper,
-            IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper)
+            IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper,
+            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> readEnumerableMapper)
         {
             _userService = userService;
             _readMapper = readMapper;
             _createMapper = createMapper;
             _updateMapper = updateMapper;
+            _readEnumerableMapper = readEnumerableMapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
         {
             var users = await _userService.GetAllUsersAsync();
-            var readModels = new List<UserReadViewModel>();
-
-            foreach (var user in users)
-            {
-                readModels.Add(_readMapper.Map(user));
-            }
+            var readModels = _readEnumerableMapper.Map(users);
 
             return Ok(readModels);
         }

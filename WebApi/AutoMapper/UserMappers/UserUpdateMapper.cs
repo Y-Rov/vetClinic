@@ -4,7 +4,7 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.UserMappers
 {
-    public class UpdateViewModelToUserMapper : IViewModelMapperUpdater<UserUpdateViewModel, User>
+    public class UserUpdateMapper : IViewModelMapperUpdater<UserUpdateViewModel, User>
     {
         public User Map(UserUpdateViewModel source)
         {
