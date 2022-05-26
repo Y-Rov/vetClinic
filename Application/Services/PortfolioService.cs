@@ -37,7 +37,7 @@ namespace Application.Services
         {
             var portfolios = await _portfolioRepository.GetAllPortfoliosAsync();
 
-            _loggerManager.LogInfo("Returning all available portfolios");
+            _loggerManager.LogInfo("Getting all available portfolios");
             return portfolios;
         }
 
