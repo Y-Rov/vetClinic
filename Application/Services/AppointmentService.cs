@@ -11,7 +11,9 @@ namespace Application.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly ILoggerManager _logger;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, ILoggerManager logger)
+        public AppointmentService(
+            IAppointmentRepository appointmentRepository, 
+            ILoggerManager logger)
         {
             _appointmentRepository = appointmentRepository;
             _logger = logger;  
@@ -46,6 +48,7 @@ namespace Application.Services
         public async Task<Appointment> GetAsync(int appointmentId)
         {
             var appointment = await _appointmentRepository.GetAsync(appointmentId);
+           
             if (appointment != null)
             {
                 _logger.LogInfo("Appointment was getted by appointmentId in method GetAsync");
@@ -57,6 +60,7 @@ namespace Application.Services
         public async Task UpdateAsync(Appointment appointment)
         {
             var existingAppointment = await _appointmentRepository.GetAsync(appointment.Id);
+            
             if (existingAppointment != null)
             {
                 _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
