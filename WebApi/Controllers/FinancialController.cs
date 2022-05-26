@@ -52,11 +52,6 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody]SalaryViewModel model)
         {
-            var validResult = await _salaryValidator.ValidateAsync(model);
-            if(!validResult.IsValid)
-            {
-                throw new BadRequestException(validResult.Errors.ToString());
-            }
             var salary = _mapperVMtoM.Map(model);
             await _financialService.CreateSalaryAsync(salary);
             return Ok();
@@ -72,11 +67,6 @@ namespace WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult> PutAsync([FromBody]SalaryViewModel model)
         {
-            var validResult = await _salaryValidator.ValidateAsync(model);
-            if(!validResult.IsValid)
-            {
-                throw new BadRequestException(validResult.Errors.ToString());
-            }
             var salary = _mapperVMtoM.Map(model);
             await _financialService.UpdateSalaryAsync(salary);
             return Ok();
