@@ -16,16 +16,20 @@ namespace DataAccess.Repositories
         
         public async Task<Portfolio?> GetPortfolioByUserIdAsync(int id)
         {
-            return await _clinicContext.Portfolios
+            var portfolio = await _clinicContext.Portfolios
                 .AsNoTracking()
                 .FirstOrDefaultAsync(portfolio => portfolio.UserId == id);
+
+            return portfolio;
         }
 
         public async Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync()
         {
-            return await _clinicContext.Portfolios
+            var portfolios = await _clinicContext.Portfolios
                 .AsNoTracking()
                 .ToListAsync();
+
+            return portfolios;
         }
 
         public async Task CreatePortfolioAsync(Portfolio portfolio)

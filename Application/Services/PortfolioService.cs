@@ -37,7 +37,7 @@ namespace Application.Services
         {
             var portfolios = await _portfolioRepository.GetAllPortfoliosAsync();
 
-            _loggerManager.LogInfo("Getting all available portfolios");
+            _loggerManager.LogInfo("Getting all available portfolios...");
             return portfolios;
         }
 
@@ -51,7 +51,7 @@ namespace Application.Services
                 throw new BadRequestException($"User with ID - {portfolio.UserId} has already a portfolio!");
             }
 
-            _loggerManager.LogInfo($"Creating portfolio for user with ID - {portfolio.UserId}");
+            _loggerManager.LogInfo($"Creating portfolio for user with ID - {portfolio.UserId}...");
             await _portfolioRepository.CreatePortfolioAsync(portfolio);
             await _portfolioRepository.SaveChangesAsync();
         }
@@ -66,7 +66,7 @@ namespace Application.Services
                 throw new NotFoundException($"User with ID - {portfolio.UserId} doesn't have a portfolio!");
             }
 
-            _loggerManager.LogInfo($"Updating portfolio for user with ID - {portfolio.UserId}");
+            _loggerManager.LogInfo($"Updating portfolio for user with ID - {portfolio.UserId}...");
             await _portfolioRepository.UpdatePortfolioAsync(portfolio);
             await _portfolioRepository.SaveChangesAsync();
         }
@@ -81,6 +81,7 @@ namespace Application.Services
                 throw new NotFoundException($"User with ID - {id} doesn't have a portfolio!");
             }
 
+            _loggerManager.LogInfo($"Deleting portfolio for user with ID - {id}...");
             await _portfolioRepository.DeletePortfolioAsync(portfolioInTable);
             await _portfolioRepository.SaveChangesAsync();
         }
