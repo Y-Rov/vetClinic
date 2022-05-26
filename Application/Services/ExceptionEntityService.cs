@@ -12,7 +12,9 @@ namespace Application.Services
         private readonly IExceptionEntityRepository _exceptionEntityRepository;
         private readonly ILoggerManager _loggerManager;
 
-        public ExceptionEntityService(IExceptionEntityRepository exceptionEntityRepository, ILoggerManager loggerManager)
+        public ExceptionEntityService(
+            IExceptionEntityRepository exceptionEntityRepository,
+            ILoggerManager loggerManager)
         {
             _exceptionEntityRepository = exceptionEntityRepository;
             _loggerManager = loggerManager;
@@ -20,57 +22,50 @@ namespace Application.Services
 
         public async Task<IEnumerable<ExceptionEntity>> GetAsync()
         {
-            _loggerManager.LogInfo("Enter ExceptionEntityService method GetAsync()");
 
             var excpetions = _exceptionEntityRepository.GetAsync();
 
-            _loggerManager.LogInfo("Exit ExceptionEntityService method GetAsync()");
+            _loggerManager.LogInfo("Got all exceptions from ExceptionEntityService method GetAsync()");
             return await excpetions;
         }
 
         public async Task<ExceptionEntity> GetAsync(int id)
         {
-            _loggerManager.LogInfo("Enter ExceptionEntityService method GetAsync(int id)");
+          
             var exception = await _exceptionEntityRepository.GetAsync(id);
 
-            if (exception == null)
+            if (exception is null)
             {
                 _loggerManager.LogWarn("Warning in ExceptionEntityService method  GetAsync(int id)." +
                     $"There is no error with such an ID: {id}");
-                throw new NotFoundException("There is no exception with such an ID");
+                throw new NotFoundException($"There is no exception with such an Id:{id}");
             }
 
-            _loggerManager.LogInfo("Exit ExceptionEntityService method GetAsync(int id)");
+            _loggerManager.LogInfo($"Got exception {id} from ExceptionEntityService method  GetAsync(int id)");
             return exception;
         }
 
         public async Task<IEnumerable<ExceptionEntity>> GetTodayAsync()
         {
-            _loggerManager.LogInfo("Enter ExceptionEntityService method  GetTodayAsync()");
-
             var today = await _exceptionEntityRepository.GetTodayAsync();
 
-            _loggerManager.LogInfo("Exit ExceptionEntityService method GetTodayAsync()");
+            _loggerManager.LogInfo("Got all today's exceptions from ExceptionEntityService method GetTodayAsync()");
             return today;
         }
 
         public async Task<IEnumerable<ExceptionStats>> GetStatsAsync()
         {
-            _loggerManager.LogInfo("Enter ExceptionEntityService method  GetStatsAsync()");
-
             var stats = await _exceptionEntityRepository.GetStatsAsync();
 
-            _loggerManager.LogInfo("Exit ExceptionEntityService method GetStatsAsync()");
+            _loggerManager.LogInfo("Got exceptions' stats from ExceptionEntityService method GetStatsAsync()");
             return stats;
         }
 
         public async Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync()
         {
-            _loggerManager.LogInfo("Enter ExceptionEntityService method  GetTodayStatsAsync()");
-
             var todayStats = await _exceptionEntityRepository.GetTodayStatsAsync();
 
-            _loggerManager.LogInfo("Exit ExceptionEntityService method  GetTodayStatsAsync()");
+            _loggerManager.LogInfo("Got today exceptions' stats from ExceptionEntityService method GetTodayStatsAsync()");
             return todayStats;
         }
     }

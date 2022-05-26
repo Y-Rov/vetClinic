@@ -27,18 +27,13 @@ namespace DataAccess.Configurations
                 .IsRequired();
 
             builder
-                .Property(address => address.BuildingNumber)
-                .HasColumnType("tinyint");
-
-            builder
                 .Property(address => address.ApartmentNumber)
                 .HasColumnType("smallint");
 
             builder
                 .Property(address => address.ZipCode)
-                .HasColumnType("int");
+                .HasMaxLength(15);
 
-            // Ask Andrii about OnDelete
             builder
                 .HasOne<User>(address => address.User)
                 .WithOne(user => user.Address)

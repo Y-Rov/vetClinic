@@ -10,7 +10,9 @@ public class ProcedureRepository : IProcedureRepository
     private readonly ClinicContext _clinicContext;
     private readonly ISpecializationRepository _specializationRepository;
 
-    public ProcedureRepository(ClinicContext clinicContext, ISpecializationRepository specializationRepository)
+    public ProcedureRepository(
+        ClinicContext clinicContext, 
+        ISpecializationRepository specializationRepository)
     {
         _clinicContext = clinicContext;
         _specializationRepository = specializationRepository;
@@ -21,6 +23,7 @@ public class ProcedureRepository : IProcedureRepository
         return await _clinicContext.Procedures
             .Include(procedure => procedure.ProcedureSpecializations)
             .ThenInclude(ps => ps.Specialization)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -28,6 +31,7 @@ public class ProcedureRepository : IProcedureRepository
     {
         return await _clinicContext.Procedures
             .Include(procedure => procedure.ProcedureSpecializations)
+            .AsNoTracking()
             .SingleOrDefaultAsync(pr => pr.Id == procedureId);
     }
 
@@ -37,14 +41,9 @@ public class ProcedureRepository : IProcedureRepository
         return result.Entity;
     }
 
-    public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
+    public async Task UpdateProcedureSpecializationsAsync(Procedure procedure, IEnumerable<int> specializationIds)
     {
-        var procedureSpecializationsToRemove = await _clinicContext
-            .ProcedureSpecializations
-            .Where(ps => ps.ProcedureId == procedureId)
-            .ToListAsync();
-        
-        _clinicContext.ProcedureSpecializations.RemoveRange(procedureSpecializationsToRemove);
+        _clinicContext.ProcedureSpecializations.RemoveRange(procedure.ProcedureSpecializations);
         await SaveChangesAsync();
         
         foreach (var specializationId in specializationIds)
@@ -52,7 +51,7 @@ public class ProcedureRepository : IProcedureRepository
             await _specializationRepository.GetSpecializationByIdAsync(specializationId);
             await _clinicContext.ProcedureSpecializations.AddAsync(new ProcedureSpecialization()
             {
-                ProcedureId = procedureId,
+                ProcedureId = procedure.Id,
                 SpecializationId = specializationId
             });
         }
@@ -60,7 +59,12 @@ public class ProcedureRepository : IProcedureRepository
 
     public async Task DeleteProcedureAsync(Procedure procedure)
     {
-        _clinicContext.Remove(procedure);
+        _clinicContext.Procedures.Remove(procedure);
+    }
+
+    public async Task UpdateProcedureAsync(Procedure procedure)
+    {
+        _clinicContext.Procedures.Update(procedure);
     }
 
     public async Task SaveChangesAsync()

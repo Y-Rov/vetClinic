@@ -7,7 +7,9 @@ public interface IProcedureRepository
     Task<IEnumerable<Procedure>> GetAllProceduresAsync();
     Task<Procedure?> GetProcedureByIdAsync(int procedureId);
     Task<Procedure> AddProcedureAsync(Procedure procedure);
-    Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds);
+    Task UpdateProcedureSpecializationsAsync(Procedure procedure, IEnumerable<int> specializationIds);
     Task DeleteProcedureAsync(Procedure procedure);
+    Task UpdateProcedureAsync(Procedure procedure);
+
     Task SaveChangesAsync();
 }

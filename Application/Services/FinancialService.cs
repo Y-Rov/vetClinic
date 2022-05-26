@@ -20,6 +20,7 @@ namespace Application.Services
         public async Task CreateSalaryAsync(Salary salary)
         {
             await _salaryRepository.CreateSalaryAsync(salary);
+            await _salaryRepository.SaveChangesAsync();
             _logger.LogInfo("Salary was created in method CreateSalaryAsync");
         }
 
@@ -32,8 +33,9 @@ namespace Application.Services
                 throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
             }
 
-            _logger.LogInfo("Salary was deleted by EmployeeId in method DeleteByUserIdAsync");
             await _salaryRepository.DeleteSalaryByUserIdAsync(id);
+            await _salaryRepository.SaveChangesAsync();
+            _logger.LogInfo("Salary was deleted by EmployeeId in method DeleteByUserIdAsync");
         }
 
         public async Task<Salary> GetSalaryByUserIdAsync(int id)
@@ -55,8 +57,9 @@ namespace Application.Services
 
         public async Task UpdateSalaryAsync(Salary salary)
         {
-            _logger.LogInfo("Salary was updated in method UpdateSalaryAsync");
             await _salaryRepository.UpdateSalaryAsync(salary);
+            await _salaryRepository.SaveChangesAsync();
+            _logger.LogInfo("Salary was updated in method UpdateSalaryAsync");
         }
     }
 }

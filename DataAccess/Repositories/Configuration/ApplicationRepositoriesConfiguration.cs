@@ -1,7 +1,7 @@
 ﻿using Core.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DataAccess.Repositories
+namespace DataAccess.Repositories.Configuration
 {
     public static class ApplicationRepositoriesConfiguration
     {
@@ -14,6 +14,7 @@ namespace DataAccess.Repositories
             services.AddScoped<IProcedureRepository, ProcedureRepository>();
             services.AddScoped<IExceptionEntityRepository, ExceptionEntityRepository>();
             services.AddScoped<IAnimalRepository, AnimalRepository>();
+            services.AddScoped<ISalaryRepository, SalaryRepository>();
         }
     }
 }

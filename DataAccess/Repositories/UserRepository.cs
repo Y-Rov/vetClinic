@@ -16,32 +16,38 @@ namespace DataAccess.Repositories
 
         public async Task<IdentityResult> CreateAsync(User user, string password)
         {
-            return await _userManager.CreateAsync(user, password);
+            var createResult = await _userManager.CreateAsync(user, password);
+            return createResult;
         }
 
         public async Task<IdentityResult> DeleteAsync(User user)
         {
-            return await _userManager.DeleteAsync(user);
+            var deleteResult = await _userManager.DeleteAsync(user);
+            return deleteResult;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
+            return users;
         }
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            return await _userManager.Users.SingleOrDefaultAsync(u => u.Id == id);
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == id);
+            return user;
         }
 
         public async Task<IdentityResult> UpdateAsync(User user)
         {
-            return await _userManager.UpdateAsync(user);
+            var updateResult = await _userManager.UpdateAsync(user);
+            return updateResult;
         }
 
         public async Task<IdentityResult> AssignRoleAsync(User user, string role)
         {
-            return await _userManager.AddToRoleAsync(user, role);
+            var assignResult = await _userManager.AddToRoleAsync(user, role);
+            return assignResult;
         }
     }
 }
