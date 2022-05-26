@@ -14,7 +14,6 @@ using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
 
-
 namespace WebApi.Configurations;
 
 public static class ApplicationMappersConfiguration
@@ -35,7 +34,6 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
         services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
-        services.AddScoped<IViewModelMapperAsync<Procedure, ProcedureSpecViewModel>, ProcedureSpecViewModelMapper>();
         services.AddScoped<IViewModelMapper<Portfolio, PortfolioViewModel>, PortfolioViewModelMapper>();
         services.AddScoped<IViewModelMapper<PortfolioViewModel, Portfolio>, PortfolioMapper>();
     }
