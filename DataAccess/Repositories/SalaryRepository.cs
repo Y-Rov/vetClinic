@@ -19,16 +19,15 @@ namespace DataAccess.Repositories
             await _clinicContext.Salaries.AddAsync(salary);
         }
 
-        public async Task DeleteSalaryByUserIdAsync(int id)
-        {
-            _clinicContext.Remove(GetSalaryByUserIdAsync(id));
-        }
-
         public async Task<Salary?> GetSalaryByUserIdAsync(int id)
         {
             var result = await _clinicContext.Salaries
                 .SingleOrDefaultAsync(salary => salary.EmployeeId == id);
             return result;
+        }
+        public async Task DeleteSalaryAsync(Salary salary)
+        {
+            _clinicContext.Salaries.Remove(salary);
         }
 
         public async Task<IEnumerable<Salary>> GetSalaryAsync()

@@ -8,7 +8,7 @@ namespace Core.Interfaces.Repositories
         Task<IEnumerable<Salary>> GetSalaryAsync();
         Task CreateSalaryAsync(Salary salary);
         Task UpdateSalaryAsync(Salary salary);
-        Task DeleteSalaryByUserIdAsync(int id);
+        Task DeleteSalaryAsync(Salary salary);
         Task SaveChangesAsync();
     }
 }
