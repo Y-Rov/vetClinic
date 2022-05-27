@@ -28,6 +28,7 @@ namespace DataAccess.Repositories
         {
             var appointment = await _clinicContext.Appointments
                 .Include(appointment => appointment.AppointmentProcedures)
+                .ThenInclude(appointment => appointment.Procedure)
                 .Include(appointment => appointment.AppointmentUsers).ToListAsync();
             return appointment;
         }
@@ -36,6 +37,7 @@ namespace DataAccess.Repositories
         {
             var appointment = await _clinicContext.Appointments
                 .Include(appointment => appointment.AppointmentProcedures)
+                .ThenInclude(appointment => appointment.Procedure)
                 .Include(appointment => appointment.AppointmentUsers)
                 .FirstOrDefaultAsync(app => app.Id == appointmentId);
             return appointment;
