@@ -83,7 +83,7 @@ namespace Application.Services
 
             await _addressRepository.DeleteAddressAsync(addressInTable);
             await _addressRepository.SaveChangesAsync();
-            _loggerManager.LogInfo($"Address for user with ID =- {id} was deleted");
+            _loggerManager.LogInfo($"Address for user with ID = {id} was deleted");
         }
     }
 }
