@@ -11,16 +11,16 @@ namespace WebApi.Controllers
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;
-        private readonly IViewModelMapper<Address, AddressViewModel> _addressViewModelBaseMapper;
+        private readonly IViewModelMapper<Address, AddressViewModel> _addressViewModelMapper;
         private readonly IViewModelMapper<AddressViewModel, Address> _addressMapper;
 
         public AddressController(
             IAddressService addressService,
-            IViewModelMapper<Address, AddressViewModel> addressViewModelBaseMapper,
+            IViewModelMapper<Address, AddressViewModel> addressViewModelMapper,
             IViewModelMapper<AddressViewModel, Address> addressMapper)
         {
             _addressService = addressService;
-            _addressViewModelBaseMapper = addressViewModelBaseMapper;
+            _addressViewModelMapper = addressViewModelMapper;
             _addressMapper = addressMapper;
         }
 
@@ -29,7 +29,7 @@ namespace WebApi.Controllers
         {
             var addresses = await _addressService.GetAllAddressesAsync();
 
-            var viewModels = addresses.Select(p => _addressViewModelBaseMapper.Map(p));
+            var viewModels = addresses.Select(p => _addressViewModelMapper.Map(p));
             return Ok(viewModels);
         }
 
@@ -38,23 +38,23 @@ namespace WebApi.Controllers
         {
             var address = await _addressService.GetAddressByUserIdAsync(id);
 
-            var viewModel = _addressViewModelBaseMapper.Map(address);
+            var viewModel = _addressViewModelMapper.Map(address);
             return Ok(viewModel);
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync(AddressViewModel addressWithApartment)
+        public async Task<ActionResult> CreateAsync(AddressViewModel addressViewModel)
         {
-            var address = _addressMapper.Map(addressWithApartment);
+            var address = _addressMapper.Map(addressViewModel);
 
             await _addressService.CreateAddressAsync(address);
             return Ok();
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateAsync(AddressViewModel addressWithApartment)
+        public async Task<ActionResult> UpdateAsync(AddressViewModel addressViewModel)
         {
-            var address = _addressMapper.Map(addressWithApartment);
+            var address = _addressMapper.Map(addressViewModel);
 
             await _addressService.UpdateAddressAsync(address);
             return NoContent();

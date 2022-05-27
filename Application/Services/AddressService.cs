@@ -9,13 +9,16 @@ namespace Application.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _loggerManager;
 
         public AddressService(
             IAddressRepository addressRepository,
+            IUserRepository userRepository,
             ILoggerManager loggerManager)
         {
             _addressRepository = addressRepository;
+            _userRepository = userRepository;
             _loggerManager = loggerManager;
         }
 
@@ -25,11 +28,11 @@ namespace Application.Services
 
             if (address == null)
             {
-                _loggerManager.LogWarn($"Address with UserID - {id} wasn't found in the database");
-                throw new NotFoundException($"User with ID - {id} doesn't have an address");
+                _loggerManager.LogWarn($"Address with UserID = {id} doesn't exist");
+                throw new NotFoundException($"Address with UserID = {id} wasn't found");
             }
 
-            _loggerManager.LogInfo($"Address with UserId - {id} was found");
+            _loggerManager.LogInfo($"Address with UserID = {id} was found");
             return address;
         }
 
@@ -37,53 +40,50 @@ namespace Application.Services
         {
             var addresses = await _addressRepository.GetAllAddressesAsync();
 
-            _loggerManager.LogInfo("Getting all available addresses...");
+            _loggerManager.LogInfo("Getting all available addresses");
             return addresses;
         }
 
         public async Task CreateAddressAsync(Address address)
         {
-            var possibleAddressInTable = await _addressRepository.GetAddressByUserIdAsync(address.UserId);
-            
-            if (possibleAddressInTable != null)
+            var possiblyExistingUser = await _userRepository.GetByIdAsync(address.UserId);
+
+            if (possiblyExistingUser == null)
             {
-                _loggerManager.LogWarn($"User with ID - {address.UserId} has already an address!");
-                throw new BadRequestException($"User with ID - {address.UserId} has already an address!");
+                _loggerManager.LogWarn($"User with ID = {address.UserId} doesn't exist");
+                throw new NotFoundException("Address can't be added to non-existent user");
             }
 
-            _loggerManager.LogInfo($"Creating address for user with ID - {address.UserId}...");
+            var possiblyExistingAddress = await _addressRepository.GetAddressByUserIdAsync(address.UserId);
+            
+            if (possiblyExistingAddress != null)
+            {
+                _loggerManager.LogWarn($"User with ID = {address.UserId} has already an address");
+                throw new BadRequestException($"User with ID = {address.UserId} has already an address");
+            }
+
+            address.User = possiblyExistingUser;
             await _addressRepository.CreateAddressAsync(address);
             await _addressRepository.SaveChangesAsync();
+            _loggerManager.LogInfo($"Address for user with ID = {address.UserId} was created");
         }
 
         public async Task UpdateAddressAsync(Address address)
         {
-            var addressInTable = await _addressRepository.GetAddressByUserIdAsync(address.UserId);
+            await GetAddressByUserIdAsync(address.UserId);
             
-            if (addressInTable == null)
-            {
-                _loggerManager.LogWarn($"User with ID - {address.UserId} doesn't have an address!");
-                throw new NotFoundException($"User with ID - {address.UserId} doesn't have an address!");
-            }
-
-            _loggerManager.LogInfo($"Updating address for user with ID - {address.UserId}...");
             await _addressRepository.UpdateAddressAsync(address);
             await _addressRepository.SaveChangesAsync();
+            _loggerManager.LogInfo($"Address for user with ID = {address.UserId} was updated");
         }
 
         public async Task DeleteAddressByUserIdAsync(int id)
         {
-            var addressInTable = await _addressRepository.GetAddressByUserIdAsync(id);
+            var addressInTable = await GetAddressByUserIdAsync(id);
 
-            if (addressInTable == null)
-            {
-                _loggerManager.LogWarn($"User with ID - {id} doesn't have an address!");
-                throw new NotFoundException($"User with ID - {id} doesn't have an address!");
-            }
-
-            _loggerManager.LogInfo($"Deleting address for user with ID - {id}...");
             await _addressRepository.DeleteAddressAsync(addressInTable);
             await _addressRepository.SaveChangesAsync();
+            _loggerManager.LogInfo($"Address for user with ID =- {id} was deleted");
         }
     }
 }
