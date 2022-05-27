@@ -33,7 +33,7 @@ namespace Application.Services
                 throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
             }
 
-            await _salaryRepository.DeleteSalaryByUserIdAsync(salary);
+            await _salaryRepository.DeleteSalaryAsync(salary);
             await _salaryRepository.SaveChangesAsync();
             _logger.LogInfo("Salary was deleted by EmployeeId in method DeleteByUserIdAsync");
         }

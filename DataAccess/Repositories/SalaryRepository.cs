@@ -25,7 +25,7 @@ namespace DataAccess.Repositories
                 .SingleOrDefaultAsync(salary => salary.EmployeeId == id);
             return result;
         }
-        public async Task DeleteSalaryByUserIdAsync(Salary salary)
+        public async Task DeleteSalaryAsync(Salary salary)
         {
             _clinicContext.Salaries.Remove(salary);
         }
