@@ -4,7 +4,7 @@ namespace Core.Interfaces.Services
 {
     public interface IAnimalService
     {
-        Task AddNewAnimalAsync(Animal animal);
+        Task<Animal> AddNewAnimalAsync(Animal animal);
         Task DeleteAnimalAsync(int id);
         Task UpdateAnimalAsync(Animal animal);
         Task<IEnumerable<Animal>> GetAllAnimalsAsync();
