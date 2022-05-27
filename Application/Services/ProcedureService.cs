@@ -79,13 +79,7 @@ public class ProcedureService : IProcedureService
 
     public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
     {
-        var procedures = await _procedureRepository.GetAllProceduresAsync(); 
-        if (procedures is null)
-        {
-            _loggerManager.LogWarn("Procedures DBSet is null");
-            throw new NotFoundException("Procedures DBSet is null");
-        }
-        
+        var procedures = await _procedureRepository.GetAllProceduresAsync();
         _loggerManager.LogInfo("Found all procedures");
         return procedures;
     }
