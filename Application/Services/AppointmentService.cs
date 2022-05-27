@@ -28,13 +28,7 @@ namespace Application.Services
 
         public async Task DeleteAsync(int appointmentId)
         {
-            Appointment? appointment = await _appointmentRepository.GetAsync(appointmentId);
-
-            if (appointment is null)
-            {
-                _logger.LogWarn($"Appointment with id {appointmentId} does not exist");
-                throw new NotFoundException($"Appointment with Id {appointmentId} does not exist");
-            }
+            Appointment? appointment = await GetAsync(appointmentId);
 
             _logger.LogInfo("Appointment was getted by appointmentId in method DeleteAsync");
             await _appointmentRepository.DeleteAsync(appointment);
