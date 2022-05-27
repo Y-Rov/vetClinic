@@ -46,9 +46,9 @@ namespace Application.Services
 
         public async Task CreateAddressAsync(Address address)
         {
-            var possiblyExistingUser = await _userRepository.GetByIdAsync(address.UserId);
+            var user = await _userRepository.GetByIdAsync(address.UserId);
 
-            if (possiblyExistingUser == null)
+            if (user == null)
             {
                 _loggerManager.LogWarn($"User with ID = {address.UserId} doesn't exist");
                 throw new NotFoundException("Address can't be added to non-existent user");
@@ -62,7 +62,7 @@ namespace Application.Services
                 throw new BadRequestException($"User with ID = {address.UserId} has already an address");
             }
 
-            address.User = possiblyExistingUser;
+            address.User = user;
             await _addressRepository.CreateAddressAsync(address);
             await _addressRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Address for user with ID = {address.UserId} was created");
@@ -79,9 +79,9 @@ namespace Application.Services
 
         public async Task DeleteAddressByUserIdAsync(int id)
         {
-            var addressInTable = await GetAddressByUserIdAsync(id);
+            var address = await GetAddressByUserIdAsync(id);
 
-            await _addressRepository.DeleteAddressAsync(addressInTable);
+            await _addressRepository.DeleteAddressAsync(address);
             await _addressRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Address for user with ID = {id} was deleted");
         }

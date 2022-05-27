@@ -46,9 +46,9 @@ namespace Application.Services
 
         public async Task CreatePortfolioAsync(Portfolio portfolio)
         {
-            var possiblyExistingUser = await _userRepository.GetByIdAsync(portfolio.UserId);
+            var user = await _userRepository.GetByIdAsync(portfolio.UserId);
 
-            if (possiblyExistingUser == null)
+            if (user == null)
             {
                 _loggerManager.LogWarn($"User with ID = {portfolio.UserId} doesn't exist");
                 throw new NotFoundException("Portfolio can't be added to non-existent user");
@@ -62,7 +62,7 @@ namespace Application.Services
                 throw new BadRequestException($"User with ID = {portfolio.UserId} has already a portfolio");
             }
 
-            portfolio.User = possiblyExistingUser;
+            portfolio.User = user;
             await _portfolioRepository.CreatePortfolioAsync(portfolio);
             await _portfolioRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Portfolio for user with ID = {portfolio.UserId} was created");
@@ -79,9 +79,9 @@ namespace Application.Services
 
         public async Task DeletePortfolioByUserIdAsync(int id)
         {
-            var portfolioInTable = await GetPortfolioByUserIdAsync(id);
+            var portfolio = await GetPortfolioByUserIdAsync(id);
 
-            await _portfolioRepository.DeletePortfolioAsync(portfolioInTable);
+            await _portfolioRepository.DeletePortfolioAsync(portfolio);
             await _portfolioRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Portfolio for user with ID = {id} was deleted");
         }
