@@ -58,7 +58,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync(AnimalViewModel model)
+        public async Task<ActionResult> CreateAsync([FromBody]AnimalViewModel model)
         {
             var map = _mapperVMtoM.Map(model);
             var newAnimal =  await _animalService.AddNewAnimalAsync(map);

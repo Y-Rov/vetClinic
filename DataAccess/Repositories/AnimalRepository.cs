@@ -32,7 +32,7 @@ namespace DataAccess.Repositories
                 .ToListAsync();
             return result;
         }
-        //include nav prop
+
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id)
         {
             var result = await _clinicContext.Appointments
