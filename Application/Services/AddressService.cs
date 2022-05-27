@@ -25,11 +25,11 @@ namespace Application.Services
 
             if (address == null)
             {
-                _loggerManager.LogWarn($"User with ID - {id} doesn't have an address!");
-                throw new NotFoundException($"User with ID - {id} doesn't have an address!");
+                _loggerManager.LogWarn($"Address with UserID - {id} wasn't found in the database");
+                throw new NotFoundException($"User with ID - {id} doesn't have an address");
             }
 
-            _loggerManager.LogInfo($"Address with UserId - {id} was found!");
+            _loggerManager.LogInfo($"Address with UserId - {id} was found");
             return address;
         }
 
