@@ -21,7 +21,7 @@ using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
 using WebApi.AutoMapper.SalaryMappers;
 using Core.ViewModels.AppointmentsViewModel;
-using WebApi.AutoMapper.AppointmentMapper;
+using WebApi.AutoMapper.AppointmentMappers;
 using Core.ViewModels;
 
 
