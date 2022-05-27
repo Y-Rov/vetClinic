@@ -51,8 +51,9 @@ namespace Application.Services
 
         public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
+            var salaries = await _salaryRepository.GetSalaryAsync();
             _logger.LogInfo("Salary was getted method GetSalaryAsync");
-            return await _salaryRepository.GetSalaryAsync();
+            return salaries;
         }
 
         public async Task UpdateSalaryAsync(Salary salary)
