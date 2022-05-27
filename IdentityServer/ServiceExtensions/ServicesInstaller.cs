@@ -19,7 +19,6 @@ public static class ServicesInstaller
             opts.UseSqlServer(config.GetConnectionString("Default")));
 
         services.AddIdentity<User, IdentityRole<int>>(opts =>
-
             {
                 opts.Password.RequireDigit = false;
                 opts.Password.RequireLowercase = false;
