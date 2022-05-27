@@ -63,11 +63,13 @@ public class ProcedureRepository : IProcedureRepository
     public async Task DeleteProcedureAsync(Procedure procedure)
     {
         _clinicContext.Procedures.Remove(procedure);
+        await Task.CompletedTask;
     }
 
     public async Task UpdateProcedureAsync(Procedure procedure)
     {
         _clinicContext.Procedures.Update(procedure);
+        await Task.CompletedTask;
     }
 
     public async Task SaveChangesAsync()

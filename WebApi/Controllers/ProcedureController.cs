@@ -3,7 +3,6 @@ using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators;
 
 namespace WebApi.Controllers;
 
