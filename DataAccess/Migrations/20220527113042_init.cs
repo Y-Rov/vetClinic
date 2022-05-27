@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataAccess.Migrations
 {
-    public partial class InitMigration : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -407,16 +407,16 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "e79eb2a7-c05c-4235-9486-94fd7282c0ad", "Admin", "ADMIN" },
-                    { 2, "d7d0ec9c-adad-418d-a7f8-41aee21d4dc7", "Doctor", "DOCTOR" },
-                    { 3, "7937889e-e652-42e0-9a92-df6d9c377a67", "Accountant", "ACCOUNTANT" },
-                    { 4, "c15fefcf-ddea-42ad-b54f-96877d3e60c4", "Client", "CLIENT" }
+                    { 1, "f55bc062-eda5-474e-ac20-c2020adb96eb", "Admin", "ADMIN" },
+                    { 2, "7570ffe4-07eb-48fc-a37c-211dbdb893a4", "Doctor", "DOCTOR" },
+                    { 3, "73d43bf3-b8e5-4c69-9251-a55b28a4e4af", "Accountant", "ACCOUNTANT" },
+                    { 4, "07bed065-25d1-4533-b779-79ede1fd3536", "Client", "CLIENT" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDate", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "IsActive", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "e65eb1c9-59a0-43fb-8418-5345b163752b", null, false, "AdminFirstName", true, null, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAECeLRKeY2M9SudqJvg/856Gem7sJ66gERtgdTYaMfhDbBF330qOVz1odlmpoMBlSjw==", null, false, "86f0a14d-3877-40bc-850b-6ff086b1cb8b", false, "Admin" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "2c03eb91-f53b-4169-bfae-02ab75ce452c", null, false, "AdminFirstName", true, null, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEIhwL1k0PvJ3hyJ0B3DfgBHAUi190ds3TMsAB8NS1OkjjV/d15oBHWi2Bvjrtb+dFA==", null, false, "fc31edef-ec50-45f2-96f8-c16a53770ebe", false, "Admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

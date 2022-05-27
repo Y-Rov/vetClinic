@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace WebApi.Validators
 {
-    public class SalaryValidator: AbstractValidator<SalaryViewModel>
+    public class SalaryViewModelValidator: AbstractValidator<SalaryViewModel>
     {
-        public SalaryValidator()
+        public SalaryViewModelValidator()
         {
             RuleFor(dto => dto.Value)
                 .GreaterThan(0)

@@ -20,9 +20,9 @@ namespace WebApi.Validators.AddressValidators
 
             RuleFor(viewModel => viewModel.ZipCode)
                 .MinimumLength(5)
-                .WithMessage("Zipcode must be greater than 4 symbols")
+                .WithMessage("ZipCode must be greater than 4 symbols")
                 .Matches(new Regex(@"^\d{5}(?:[-\s]\d{4})?$"))
-                .WithMessage("Zipcode is not valid");
+                .WithMessage("ZipCode is not valid");
 
             RuleFor(viewModel => viewModel.Street)
                 .MinimumLength(3)

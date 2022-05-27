@@ -33,7 +33,7 @@ namespace Application.Services
                 throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
             }
 
-            await _salaryRepository.DeleteSalaryByUserIdAsync(id);
+            await _salaryRepository.DeleteSalaryAsync(salary);
             await _salaryRepository.SaveChangesAsync();
             _logger.LogInfo("Salary was deleted by EmployeeId in method DeleteByUserIdAsync");
         }
@@ -51,8 +51,9 @@ namespace Application.Services
 
         public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
+            var salaries = await _salaryRepository.GetSalaryAsync();
             _logger.LogInfo("Salary was getted method GetSalaryAsync");
-            return await _salaryRepository.GetSalaryAsync();
+            return salaries;
         }
 
         public async Task UpdateSalaryAsync(Salary salary)

@@ -12,9 +12,9 @@ namespace WebApi.AutoMapper.AddressMappers
             {
                 UserId = source.UserId,
                 City = source.City,
-                ZipCode = source.ZipCode,
                 Street = source.Street,
                 House = source.House,
+                ZipCode = source.ZipCode,
                 ApartmentNumber = source.ApartmentNumber
             };
         }

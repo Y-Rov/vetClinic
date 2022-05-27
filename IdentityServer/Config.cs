@@ -35,7 +35,7 @@ public static class Config
             {
                 RequireConsent = false,
                 ClientId = "postman_client",
-                ClientName = "Postman",
+                ClientName = "Postman Client",
                 AllowedScopes = {"apiAccess", "profile"},
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowAccessTokensViaBrowser = true,
