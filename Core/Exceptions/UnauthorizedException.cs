@@ -4,8 +4,7 @@ namespace Core.Exceptions
 {
     public class UnauthorizedException : Exception
     {
-        public List<IdentityError>? IdentityError { get; set; }
-        public new string Message { get; set; }
+        public new string Message { get; set; } = string.Empty;
 
         public UnauthorizedException()
         {
@@ -22,10 +21,16 @@ namespace Core.Exceptions
             Message = message;
         }
 
-        public UnauthorizedException(IEnumerable<IdentityError> identityError)
+        public UnauthorizedException(IEnumerable<IdentityError> identityErrors)
         {
-            Message = "Access is denied due to invalid credentials";
-            IdentityError = identityError!.ToList();
+            identityErrors
+                .ToList()
+                .ForEach(error => AddMessage(error));
+        }
+
+        private void AddMessage(IdentityError error)
+        {
+            Message += string.Join(" ", error.Description);
         }
     }
 }

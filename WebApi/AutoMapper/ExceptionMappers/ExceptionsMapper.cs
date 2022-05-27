@@ -4,25 +4,25 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ExceptionMapper;
 
-public class ExceptionsMapper : IViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>
+public class ExceptionsMapper : IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>
 {
-
     public IEnumerable<ExceptionEntityReadViewModel> Map(IEnumerable<ExceptionEntity> source)
     {
-        List<ExceptionEntityReadViewModel> result = new();
-        foreach (var item in source)
+        var exceptionEntityReadViewModels = source.Select(GetExceptionEntityReadViewModel).ToList();
+        return exceptionEntityReadViewModels;
+    }
+
+    private ExceptionEntityReadViewModel GetExceptionEntityReadViewModel(ExceptionEntity exception)
+    {
+        var appointmentViewModel = new ExceptionEntityReadViewModel()
         {
-            result.Add(new ExceptionEntityReadViewModel()
-            {
+            Id = exception.Id,
+            DateTime = exception.DateTime,
+            Name = exception.Name,
+            Path = exception.Path
+        };
 
-                Id = item.Id,
-                Name = item.Name,
-                DateTime = item.DateTime,
-                Path = item.Path,
-
-            });
-        }
-            return result;
+        return appointmentViewModel;
     }
 }
 

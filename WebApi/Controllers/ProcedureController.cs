@@ -13,38 +13,40 @@ public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
     private readonly IViewModelMapper<ProcedureViewModelBase, Procedure> _procedureMapper;
-    private readonly IViewModelMapper<Procedure, ProcedureSpecViewModel> _procedureViewModelMapper;
+    private readonly IViewModelMapper<Procedure, ProcedureReadViewModel> _procedureViewModelMapper;
+
+    private readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
+        _procedureEnumerableViewModelMapper;
 
     public ProcedureController(IProcedureService procedureService, 
         IViewModelMapper<ProcedureViewModelBase, Procedure> procedureMapper,
-        IViewModelMapper<Procedure, ProcedureSpecViewModel> procedureViewModelMapper)
+        IViewModelMapper<Procedure, ProcedureReadViewModel> procedureViewModelMapper, 
+        IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> procedureEnumerableViewModelMapper)
     {
         _procedureService = procedureService;
         _procedureMapper = procedureMapper;
         _procedureViewModelMapper = procedureViewModelMapper;
+        _procedureEnumerableViewModelMapper = procedureEnumerableViewModelMapper;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProcedureSpecViewModel>>> GetAsync()
+    public async Task<ActionResult<IEnumerable<ProcedureReadViewModel>>> GetAsync()
     {
         var procedures = await _procedureService.GetAllProceduresAsync();
-        var viewModels = new List<ProcedureSpecViewModel>();
-        foreach (var p in procedures)
-        {
-            viewModels.Add(_procedureViewModelMapper.Map(p));
-        }
+        var viewModels = _procedureEnumerableViewModelMapper.Map(procedures);
         return Ok(viewModels);
     }
     
     [HttpGet("{id:int:min(1)}")]
-    public async Task<ActionResult<ProcedureSpecViewModel>> GetAsync([FromRoute]int id)
+    public async Task<ActionResult<ProcedureReadViewModel>> GetAsync([FromRoute]int id)
     {
         var result = await _procedureService.GetByIdAsync(id);
-        return Ok(_procedureViewModelMapper.Map(result));
+        var viewModel = _procedureViewModelMapper.Map(result);
+        return Ok(viewModel);
     }
     
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(ProcedureViewModelBase procedure)
+    public async Task<ActionResult> CreateAsync([FromBody]ProcedureViewModelBase procedure)
     {
         var result =
             await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
@@ -60,14 +62,16 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync(ProcedureViewModelBase newProcedure)
+    public async Task<ActionResult> UpdateAsync([FromBody]ProcedureViewModelBase newProcedure)
     {
         await _procedureService.UpdateProcedureAsync(_procedureMapper.Map(newProcedure));
         return NoContent();
     }
 
     [HttpPatch("{id:int:min(1)}")]
-    public async Task<ActionResult> UpdateProcedureSpecializationsAsync([FromRoute]int id, IEnumerable<int> specializationIds)
+    public async Task<ActionResult> UpdateProcedureSpecializationsAsync(
+        [FromRoute]int id, 
+        [FromBody]IEnumerable<int> specializationIds)
     { 
         await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
         return NoContent();

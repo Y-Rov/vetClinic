@@ -4,7 +4,7 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.UserMappers
 {
-    public class CreateViewModelToUserMapper : IViewModelMapper<UserCreateViewModel, User>
+    public class UserCreateMapper : IViewModelMapper<UserCreateViewModel, User>
     {
         public User Map(UserCreateViewModel source)
         {
@@ -12,7 +12,7 @@ namespace WebApi.AutoMapper.UserMappers
             {
                 FirstName = source.FirstName,
                 LastName = source.LastName,
-                UserName = source.Email,
+                UserName = $"{source.Email}_{Guid.NewGuid()}",
                 Email = source.Email,
                 PhoneNumber = source.PhoneNumber,
                 BirthDate = source.BirthDate

@@ -5,11 +5,11 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.UserMappers
 {
-    public class UserToUserReadViewModelMapper : IViewModelMapper<User, UserReadViewModel>
+    public class UserReadMapper : IViewModelMapper<User, UserReadViewModel>
     {
         private readonly UserManager<User> _userManager;
 
-        public UserToUserReadViewModelMapper(UserManager<User> userManager)
+        public UserReadMapper(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
@@ -25,6 +25,7 @@ namespace WebApi.AutoMapper.UserMappers
                 LastName = source.LastName,
                 Email = source.Email,
                 PhoneNumber = source.PhoneNumber,
+                BirthDate = source.BirthDate,
                 Role = role
             };
         }

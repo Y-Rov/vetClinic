@@ -20,21 +20,25 @@ namespace DataAccess.Repositories
             return createResult;
         }
 
-        public async Task<IdentityResult> DeleteAsync(User user)
+        public void Delete(User user)
         {
-            var deleteResult = await _userManager.DeleteAsync(user);
-            return deleteResult;
+            user.IsActive = false;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users
+                .Where(u => u.IsActive == true)
+                .ToListAsync();
+
             return users;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
-            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == id);
+            var user = await _userManager.Users
+                .SingleOrDefaultAsync(u => (u.Id == id) && (u.IsActive == true));
+
             return user;
         }
 

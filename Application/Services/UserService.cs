@@ -49,20 +49,15 @@ namespace Application.Services
 
         public async Task DeleteAsync(User user)
         {
-            var deleteResult = await _userRepository.DeleteAsync(user);
-
-            if (!deleteResult.Succeeded)
-            {
-                _loggerManager.LogWarn($"Failed to delete the user with id {user.Id}");
-                throw new BadRequestException(deleteResult.Errors);
-            }
+            _userRepository.Delete(user);
+            await _userRepository.UpdateAsync(user);
 
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            var users = await _userRepository.GetAllUsersAsync();
+            var users = await _userRepository.GetAllAsync();
             _loggerManager.LogInfo("Successfully retrieved all users");
 
             return users;
@@ -70,7 +65,7 @@ namespace Application.Services
 
         public async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetUserByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
 
             if (user is null)
             {
