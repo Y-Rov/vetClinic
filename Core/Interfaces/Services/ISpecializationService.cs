@@ -5,9 +5,10 @@ namespace Core.Interfaces.Services
     public interface ISpecializationService
     {
         Task<IEnumerable<Specialization>> GetAllSpecializationsAsync();
-        Task<Specialization> GetSpecializationByIdAsync(int id);
+        Task<Specialization> GetSpecializationById(int id);
+        Task<IEnumerable<Procedure>> GetSpecializationProcedures(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
-        Task UpdateSpecializationAsync(Specialization updated);
+        Task UpdateSpecializationAsync(int id,Specialization updated);
         Task DeleteSpecializationAsync(int id);
     }
 }

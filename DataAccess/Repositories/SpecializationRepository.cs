@@ -17,6 +17,10 @@ namespace DataAccess.Repositories
         {
            return await _context.Specializations
                 .Include(specialization => specialization.UserSpecializations)
+                    .ThenInclude(us => us.User)
+                .Include(specialization => specialization.ProcedureSpecializations)
+                    .ThenInclude(ps => ps.Procedure)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -24,8 +28,12 @@ namespace DataAccess.Repositories
         {
             Specialization result = await _context.Specializations
                 .Include(specialization => specialization.UserSpecializations)
+                    .ThenInclude(us => us.User)
+                .Include(specialization => specialization.ProcedureSpecializations)
+                    .ThenInclude(ps => ps.Procedure)
+                .AsNoTracking()
                 .FirstAsync(specialization => specialization.Id == id);
-            return result ?? throw new Exception("Specialization not found");
+            return result;
         }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
