@@ -19,6 +19,11 @@ using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SalaryMappers;
 using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
+using WebApi.AutoMapper.SalaryMappers;
+using Core.ViewModels.AppointmentsViewModel;
+using WebApi.AutoMapper.AppointmentMapper;
+using Core.ViewModels;
+
 
 namespace WebApi.AutoMapper.Configurations;
 
@@ -47,9 +52,11 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<AnimalViewModel, Animal>, AnimalViewModelMapper>();
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>, AnimalListToListMapper>();
 
         services.AddScoped<IViewModelMapper<Salary,SalaryViewModel>, SalaryMapper>();
         services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();
+        services.AddScoped<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>, SalariesMapper>();
 
         services.AddScoped<IViewModelMapper<Portfolio, PortfolioViewModel>, PortfolioViewModelMapper>();
         services.AddScoped<IViewModelMapper<PortfolioViewModel, Portfolio>, PortfolioMapper>();

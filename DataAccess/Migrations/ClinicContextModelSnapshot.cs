@@ -340,15 +340,15 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "e65eb1c9-59a0-43fb-8418-5345b163752b",
+                            ConcurrencyStamp = "2c03eb91-f53b-4169-bfae-02ab75ce452c",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAECeLRKeY2M9SudqJvg/856Gem7sJ66gERtgdTYaMfhDbBF330qOVz1odlmpoMBlSjw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIhwL1k0PvJ3hyJ0B3DfgBHAUi190ds3TMsAB8NS1OkjjV/d15oBHWi2Bvjrtb+dFA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "86f0a14d-3877-40bc-850b-6ff086b1cb8b",
+                            SecurityStamp = "fc31edef-ec50-45f2-96f8-c16a53770ebe",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -402,28 +402,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "e79eb2a7-c05c-4235-9486-94fd7282c0ad",
+                            ConcurrencyStamp = "f55bc062-eda5-474e-ac20-c2020adb96eb",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "d7d0ec9c-adad-418d-a7f8-41aee21d4dc7",
+                            ConcurrencyStamp = "7570ffe4-07eb-48fc-a37c-211dbdb893a4",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "7937889e-e652-42e0-9a92-df6d9c377a67",
+                            ConcurrencyStamp = "73d43bf3-b8e5-4c69-9251-a55b28a4e4af",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "c15fefcf-ddea-42ad-b54f-96877d3e60c4",
+                            ConcurrencyStamp = "07bed065-25d1-4533-b779-79ede1fd3536",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });

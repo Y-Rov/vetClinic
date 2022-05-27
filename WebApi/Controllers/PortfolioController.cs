@@ -24,16 +24,16 @@ namespace WebApi.Controllers
             _portfolioMapper = portfolioMapper;
         }
 
-        [HttpGet("/api/portfolios/")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<PortfolioViewModel>>> GetAsync()
         {
             var portfolios = await _portfolioService.GetAllPortfoliosAsync();
 
-            var viewModels = portfolios.Select(p => _portfolioViewModelMapper.Map(p)).ToList();
+            var viewModels = portfolios.Select(p => _portfolioViewModelMapper.Map(p));
             return Ok(viewModels);
         }
 
-        [HttpGet("/api/portfolios/{id:int:min(1)}")]
+        [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult<PortfolioViewModel>> GetAsync([FromRoute] int id)
         {
             var portfolio = await _portfolioService.GetPortfolioByUserIdAsync(id);
@@ -42,21 +42,25 @@ namespace WebApi.Controllers
             return Ok(viewModel);
         }
 
-        [HttpPost("/api/portfolios/")]
-        public async Task<ActionResult> CreateAsync(PortfolioViewModel portfolio)
+        [HttpPost]
+        public async Task<ActionResult> CreateAsync(PortfolioViewModel portfolioViewModel)
         {
-            await _portfolioService.CreatePortfolioAsync(_portfolioMapper.Map(portfolio));
+            var portfolio = _portfolioMapper.Map(portfolioViewModel);
+
+            await _portfolioService.CreatePortfolioAsync(portfolio);
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateAsync(PortfolioViewModel portfolioViewModel)
+        {
+            var portfolio = _portfolioMapper.Map(portfolioViewModel);
+
+            await _portfolioService.UpdatePortfolioAsync(portfolio);
             return NoContent();
         }
 
-        [HttpPatch("/api/portfolios/")]
-        public async Task<ActionResult> UpdateAsync(PortfolioViewModel newPortfolio)
-        {
-            await _portfolioService.UpdatePortfolioAsync(_portfolioMapper.Map(newPortfolio));
-            return NoContent();
-        }
-
-        [HttpDelete("/api/portfolios/{id:int:min(1)}")]
+        [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteAsync([FromRoute] int id)
         {
             await _portfolioService.DeletePortfolioByUserIdAsync(id);
