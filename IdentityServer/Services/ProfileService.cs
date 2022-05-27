@@ -14,8 +14,7 @@ public class ProfileService : IProfileService
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole<int>> _roleManager;
     private readonly IUserClaimsPrincipalFactory<User> _claimsFactory;
-
-
+    
     public ProfileService(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IUserClaimsPrincipalFactory<User> claimsFactory)
     {
         _userManager = userManager;
