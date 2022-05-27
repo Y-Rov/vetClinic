@@ -38,6 +38,7 @@ namespace Application.Services
 
             _logger.LogInfo("Appointment was getted by appointmentId in method DeleteAsync");
             await _appointmentRepository.DeleteAsync(appointment);
+            await _appointmentRepository.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
@@ -78,6 +79,7 @@ namespace Application.Services
             existingAppointment.AppointmentProcedures = appointment.AppointmentProcedures;
 
             _appointmentRepository.UpdateAsync(existingAppointment);
+            await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
         }
     }

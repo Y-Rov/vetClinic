@@ -26,17 +26,19 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
-            return await _clinicContext.Appointments
+            var appointment = await _clinicContext.Appointments
                 .Include(appointment => appointment.AppointmentProcedures)
                 .Include(appointment => appointment.AppointmentUsers).ToListAsync();
+            return appointment;
         }
 
         public async Task<Appointment> GetAsync(int appointmentId)
         {
-            return await _clinicContext.Appointments
+            var appointment = await _clinicContext.Appointments
                 .Include(appointment => appointment.AppointmentProcedures)
                 .Include(appointment => appointment.AppointmentUsers)
                 .FirstOrDefaultAsync(app => app.Id == appointmentId);
+            return appointment;
         }
 
         public async Task UpdateAsync(Appointment appointment)

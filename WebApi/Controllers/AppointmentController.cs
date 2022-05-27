@@ -38,7 +38,7 @@ namespace WebApi.Controllers
             return appointmentsViewModel;
         }
 
-        [HttpGet("{AppointmentId:int:min(1)}")]
+        [HttpGet("{appointmentId:int:min(1)}")]
         public async Task<AppointmentViewModel> GetAsync([FromRoute] int appointmentId)
         {
            var appointment = await _appointmentService.GetAsync(appointmentId);
@@ -68,7 +68,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{AppointmentId:int:min(1)}")]
+        [HttpDelete("{appointmentId:int:min(1)}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int appointmentId)
         {
             await _appointmentService.DeleteAsync(appointmentId);
