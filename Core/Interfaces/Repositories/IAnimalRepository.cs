@@ -4,7 +4,7 @@ namespace Core.Interfaces.Repositories
 {
     public interface IAnimalRepository
     {
-        Task AddNewAnimalAsync(Animal animal);
+        Task<Animal> AddNewAnimalAsync(Animal animal);
         Task DeleteAnimalAsync(Animal animal);
         Task UpdateAnimalAsync(Animal animal);
         Task<IEnumerable<Animal>> GetAllAnimalsAsync();
