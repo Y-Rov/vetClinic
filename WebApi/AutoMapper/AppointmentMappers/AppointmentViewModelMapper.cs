@@ -2,7 +2,7 @@
 using Core.ViewModels;
 using WebApi.AutoMapper.Interface;
 
-namespace WebApi.AutoMapper.AppointmentMapper
+namespace WebApi.AutoMapper.AppointmentMappers
 {
     public class AppointmentViewModelMapper : IViewModelMapper<AppointmentViewModel, Appointment>
     {
@@ -13,7 +13,8 @@ namespace WebApi.AutoMapper.AppointmentMapper
                     Id = appointmentViewModel.Id,
                     Date = appointmentViewModel.Date,
                     Disease = appointmentViewModel.Disease,
-                    MeetHasOccureding = appointmentViewModel.MeetHasOccureding
+                    MeetHasOccureding = appointmentViewModel.MeetHasOccureding,
+                    AnimalId = appointmentViewModel.AnimalId
                 };
 
                 return appointment;

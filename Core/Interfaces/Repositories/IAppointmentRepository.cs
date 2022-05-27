@@ -9,5 +9,6 @@ namespace Core.Interfaces.Repositories
         Task CreateAsync(Appointment appointment);
         Task UpdateAsync(Appointment appointment);
         Task DeleteAsync(Appointment appointmentId);
+        Task SaveChangesAsync();
     }
 }

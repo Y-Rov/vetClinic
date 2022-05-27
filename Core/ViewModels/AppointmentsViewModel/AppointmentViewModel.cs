@@ -10,5 +10,7 @@ namespace Core.ViewModels
         public bool MeetHasOccureding { get; set; }
 
         public string Disease { get; set; }
+
+        public int AnimalId { get; set; }
     }
 }

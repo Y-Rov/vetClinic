@@ -17,28 +17,39 @@ namespace DataAccess.Repositories
         public async Task CreateAsync(Appointment appointment)
         {
             await _clinicContext.AddAsync(appointment);
-            await _clinicContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Appointment appointment)
         {
             _clinicContext.Remove(appointment);
-            await _clinicContext.SaveChangesAsync();    
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
-            return await _clinicContext.Appointments.ToListAsync();
+            var appointment = await _clinicContext.Appointments
+                .Include(appointment => appointment.AppointmentProcedures)
+                .ThenInclude(appointment => appointment.Procedure)
+                .Include(appointment => appointment.AppointmentUsers).ToListAsync();
+            return appointment;
         }
 
         public async Task<Appointment> GetAsync(int appointmentId)
         {
-            return await _clinicContext.Appointments.FirstOrDefaultAsync(app => app.Id == appointmentId);
+            var appointment = await _clinicContext.Appointments
+                .Include(appointment => appointment.AppointmentProcedures)
+                .ThenInclude(appointment => appointment.Procedure)
+                .Include(appointment => appointment.AppointmentUsers)
+                .FirstOrDefaultAsync(app => app.Id == appointmentId);
+            return appointment;
         }
 
         public async Task UpdateAsync(Appointment appointment)
         {
-             _clinicContext.Appointments.Update(appointment);
+             _clinicContext.Appointments.Update(appointment); 
+        }
+
+        public async Task SaveChangesAsync()
+        {
             await _clinicContext.SaveChangesAsync();
         }
     }
