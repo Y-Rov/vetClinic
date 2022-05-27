@@ -42,7 +42,7 @@ namespace WebApi.Controllers
         [HttpGet("/{id:int:min(1)}")]
         public async Task<ActionResult> GetSpecializationById([FromRoute] int id)
         {
-            return Ok(_viewModelMapper.Map(await _service.GetSpecializationById(id)));
+            return Ok(_viewModelMapper.Map(await _service.GetSpecializationByIdAsync(id)));
         }
 
         [HttpGet("{id:int:min(1)}/procedures")]

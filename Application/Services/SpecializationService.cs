@@ -21,7 +21,7 @@ namespace Application.Services
             return await _repository.GetAllSpecializationsAsync();
         }
 
-        public async Task<Specialization> GetSpecializationById(int id)
+        public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
             Specialization specialization =
                 await _repository.GetSpecializationByIdAsync(id);
@@ -43,7 +43,7 @@ namespace Application.Services
                 _logger.LogWarn($"Specialization with id: {id} not found");
                 throw new NotFoundException($"Specialization with id: {id} not found");
             }
-            _logger.LogInfo($"Specialization with id: {id} found");
+            _logger.LogInfo($"Specialization's procedures found");
             return specialization.ProcedureSpecializations.Select(ps => ps.Procedure);
         }
 
