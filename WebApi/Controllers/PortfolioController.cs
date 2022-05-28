@@ -13,7 +13,8 @@ namespace WebApi.Controllers
         private readonly IPortfolioService _portfolioService;
         private readonly IViewModelMapper<Portfolio, PortfolioViewModel> _portfolioViewModelMapper;
         private readonly IViewModelMapper<PortfolioViewModel, Portfolio> _portfolioMapper;
-        private readonly IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>> _portfolioViewModelEnumerableViewModelMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>>
+            _portfolioViewModelEnumerableViewModelMapper;
 
         public PortfolioController(
             IPortfolioService portfolioService,

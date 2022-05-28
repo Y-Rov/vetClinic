@@ -46,20 +46,20 @@ namespace Application.Services
 
         public async Task CreatePortfolioAsync(Portfolio portfolio)
         {
-            var user = await _userRepository.GetByIdAsync(portfolio.UserId);
-
-            if (user == null)
-            {
-                _loggerManager.LogWarn($"User with ID = {portfolio.UserId} doesn't exist");
-                throw new NotFoundException("Portfolio can't be added to non-existent user");
-            }
-
             var possiblyExistingPortfolio = await _portfolioRepository.GetPortfolioByUserIdAsync(portfolio.UserId);
 
             if (possiblyExistingPortfolio != null)
             {
                 _loggerManager.LogWarn($"User with ID = {portfolio.UserId} has already a portfolio");
                 throw new BadRequestException($"User with ID = {portfolio.UserId} has already a portfolio");
+            }
+
+            var user = await _userRepository.GetByIdAsync(portfolio.UserId);
+
+            if (user == null)
+            {
+                _loggerManager.LogWarn($"User with ID = {portfolio.UserId} doesn't exist");
+                throw new NotFoundException("Portfolio can't be added to non-existent user");
             }
 
             portfolio.User = user;

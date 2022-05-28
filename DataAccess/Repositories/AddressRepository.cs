@@ -40,11 +40,13 @@ namespace DataAccess.Repositories
         public async Task UpdateAddressAsync(Address address)
         {
             _clinicContext.Addresses.Update(address);
+            await Task.CompletedTask;
         }
 
         public async Task DeleteAddressAsync(Address address)
         {
             _clinicContext.Addresses.Remove(address);
+            await Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()

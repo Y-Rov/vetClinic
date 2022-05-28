@@ -46,20 +46,20 @@ namespace Application.Services
 
         public async Task CreateAddressAsync(Address address)
         {
-            var user = await _userRepository.GetByIdAsync(address.UserId);
-
-            if (user == null)
-            {
-                _loggerManager.LogWarn($"User with ID = {address.UserId} doesn't exist");
-                throw new NotFoundException("Address can't be added to non-existent user");
-            }
-
             var possiblyExistingAddress = await _addressRepository.GetAddressByUserIdAsync(address.UserId);
             
             if (possiblyExistingAddress != null)
             {
                 _loggerManager.LogWarn($"User with ID = {address.UserId} has already an address");
                 throw new BadRequestException($"User with ID = {address.UserId} has already an address");
+            }
+
+            var user = await _userRepository.GetByIdAsync(address.UserId);
+
+            if (user == null)
+            {
+                _loggerManager.LogWarn($"User with ID = {address.UserId} doesn't exist");
+                throw new NotFoundException("Address can't be added to non-existent user");
             }
 
             address.User = user;
