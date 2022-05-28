@@ -60,9 +60,13 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<Portfolio, PortfolioViewModel>, PortfolioViewModelMapper>();
         services.AddScoped<IViewModelMapper<PortfolioViewModel, Portfolio>, PortfolioMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>>,
+            EnumerablePortfolioViewModelMapper>();
 
         services.AddScoped<IViewModelMapper<Address, AddressViewModel>, AddressViewModelMapper>();
-        services.AddScoped<IViewModelMapper<AddressViewModel, Address>, AddressModelMapper>();
+        services.AddScoped<IViewModelMapper<AddressViewModel, Address>, AddressMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>>,
+            EnumerableAddressViewModelMapper>();
 
         services.AddScoped<IViewModelMapper<Appointment, AppointmentViewModel>, AppointmentMapper>();
         services.AddScoped<IViewModelMapper<AppointmentViewModel, Appointment>, AppointmentViewModelMapper>();

@@ -13,15 +13,19 @@ namespace WebApi.Controllers
         private readonly IAddressService _addressService;
         private readonly IViewModelMapper<Address, AddressViewModel> _addressViewModelMapper;
         private readonly IViewModelMapper<AddressViewModel, Address> _addressMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>>
+            _enumerableAddressViewModelViewModelMapper;
 
         public AddressController(
             IAddressService addressService,
             IViewModelMapper<Address, AddressViewModel> addressViewModelMapper,
-            IViewModelMapper<AddressViewModel, Address> addressMapper)
+            IViewModelMapper<AddressViewModel, Address> addressMapper,
+            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>> enumerableAddressViewModelViewModelMapper)
         {
             _addressService = addressService;
             _addressViewModelMapper = addressViewModelMapper;
             _addressMapper = addressMapper;
+            _enumerableAddressViewModelViewModelMapper = enumerableAddressViewModelViewModelMapper;
         }
 
         [HttpGet]
@@ -29,7 +33,7 @@ namespace WebApi.Controllers
         {
             var addresses = await _addressService.GetAllAddressesAsync();
 
-            var viewModels = addresses.Select(p => _addressViewModelMapper.Map(p));
+            var viewModels = _enumerableAddressViewModelViewModelMapper.Map(addresses);
             return Ok(viewModels);
         }
 
@@ -48,7 +52,7 @@ namespace WebApi.Controllers
             var address = _addressMapper.Map(addressViewModel);
 
             await _addressService.CreateAddressAsync(address);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]

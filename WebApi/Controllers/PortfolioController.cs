@@ -13,15 +13,18 @@ namespace WebApi.Controllers
         private readonly IPortfolioService _portfolioService;
         private readonly IViewModelMapper<Portfolio, PortfolioViewModel> _portfolioViewModelMapper;
         private readonly IViewModelMapper<PortfolioViewModel, Portfolio> _portfolioMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>> _portfolioViewModelEnumerableViewModelMapper;
 
         public PortfolioController(
             IPortfolioService portfolioService,
             IViewModelMapper<Portfolio, PortfolioViewModel> portfolioViewModelMapper,
-            IViewModelMapper<PortfolioViewModel, Portfolio> portfolioMapper)
+            IViewModelMapper<PortfolioViewModel, Portfolio> portfolioMapper,
+            IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>> portfolioViewModelEnumerableViewModelMapper)
         {
             _portfolioService = portfolioService;
             _portfolioViewModelMapper = portfolioViewModelMapper;
             _portfolioMapper = portfolioMapper;
+            _portfolioViewModelEnumerableViewModelMapper = portfolioViewModelEnumerableViewModelMapper;
         }
 
         [HttpGet]
@@ -29,7 +32,7 @@ namespace WebApi.Controllers
         {
             var portfolios = await _portfolioService.GetAllPortfoliosAsync();
 
-            var viewModels = portfolios.Select(p => _portfolioViewModelMapper.Map(p));
+            var viewModels = _portfolioViewModelEnumerableViewModelMapper.Map(portfolios);
             return Ok(viewModels);
         }
 
@@ -48,7 +51,7 @@ namespace WebApi.Controllers
             var portfolio = _portfolioMapper.Map(portfolioViewModel);
 
             await _portfolioService.CreatePortfolioAsync(portfolio);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
