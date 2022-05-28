@@ -2,7 +2,6 @@
 using Core.Exceptions;
 using Core.Models;
 using DataAccess.Context;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 

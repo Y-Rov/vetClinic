@@ -22,16 +22,14 @@ namespace Application.Services
 
         public async Task<IEnumerable<ExceptionEntity>> GetAsync()
         {
-
-            var excpetions = _exceptionEntityRepository.GetAsync();
+            var excpetions = await _exceptionEntityRepository.GetAsync();
 
             _loggerManager.LogInfo("Got all exceptions from ExceptionEntityService method GetAsync()");
-            return await excpetions;
+            return excpetions;
         }
 
         public async Task<ExceptionEntity> GetAsync(int id)
         {
-          
             var exception = await _exceptionEntityRepository.GetAsync(id);
 
             if (exception is null)
