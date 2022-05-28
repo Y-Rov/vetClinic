@@ -30,7 +30,7 @@ namespace Application.Services
         {
             Appointment? appointment = await GetAsync(appointmentId);
 
-            _logger.LogInfo("Appointment was getted by appointmentId in method DeleteAsync");
+            _logger.LogInfo($"Appointment was getted by Id {appointmentId} in method DeleteAsync");
             await _appointmentRepository.DeleteAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
         }
@@ -61,7 +61,7 @@ namespace Application.Services
             var existingAppointment = await GetAsync(appointment.Id);
 
             existingAppointment.Date = appointment.Date;
-            existingAppointment.MeetHasOccureding = appointment.MeetHasOccureding;
+            existingAppointment.MeetHasOccured = appointment.MeetHasOccured;
             existingAppointment.Disease = appointment.Disease;
             existingAppointment.AnimalId = appointment.AnimalId;
             existingAppointment.AppointmentUsers = appointment.AppointmentUsers;

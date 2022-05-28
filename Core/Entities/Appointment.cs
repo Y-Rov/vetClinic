@@ -6,7 +6,7 @@
 
         public DateTime Date { get; set; }
 
-        public bool MeetHasOccureding { get; set; }
+        public bool MeetHasOccured { get; set; }
 
         public string Disease { get; set; }
         

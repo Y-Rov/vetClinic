@@ -13,7 +13,7 @@ namespace WebApi.AutoMapper.AppointmentMappers
                     Id = appointmentViewModel.Id,
                     Date = appointmentViewModel.Date,
                     Disease = appointmentViewModel.Disease,
-                    MeetHasOccureding = appointmentViewModel.MeetHasOccureding,
+                    MeetHasOccured = appointmentViewModel.MeetHasOccureding,
                     AnimalId = appointmentViewModel.AnimalId
                 };
 

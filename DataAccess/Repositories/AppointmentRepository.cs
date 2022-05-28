@@ -44,11 +44,6 @@ namespace DataAccess.Repositories
             return appointment;
         }
 
-        public async Task UpdateAsync(Appointment appointment)
-        {
-             _clinicContext.Appointments.Update(appointment);
-             await Task.CompletedTask;
-        }
 
         public async Task SaveChangesAsync()
         {
