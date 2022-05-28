@@ -4,7 +4,8 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.PortfolioMappers
 {
-    public class EnumerablePortfolioViewModelMapper : IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>>
+    public class EnumerablePortfolioViewModelMapper 
+        : IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioViewModel>>
     {
         private readonly IViewModelMapper<Portfolio, PortfolioViewModel> _readMapper;
 

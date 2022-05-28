@@ -14,18 +14,18 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<Address, AddressViewModel> _addressViewModelMapper;
         private readonly IViewModelMapper<AddressViewModel, Address> _addressMapper;
         private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>>
-            _enumerableAddressViewModelViewModelMapper;
+            _enumerableAddressViewModelMapper;
 
         public AddressController(
             IAddressService addressService,
             IViewModelMapper<Address, AddressViewModel> addressViewModelMapper,
             IViewModelMapper<AddressViewModel, Address> addressMapper,
-            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>> enumerableAddressViewModelViewModelMapper)
+            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>> enumerableAddressViewModelMapper)
         {
             _addressService = addressService;
             _addressViewModelMapper = addressViewModelMapper;
             _addressMapper = addressMapper;
-            _enumerableAddressViewModelViewModelMapper = enumerableAddressViewModelViewModelMapper;
+            _enumerableAddressViewModelMapper = enumerableAddressViewModelMapper;
         }
 
         [HttpGet]
@@ -33,7 +33,7 @@ namespace WebApi.Controllers
         {
             var addresses = await _addressService.GetAllAddressesAsync();
 
-            var viewModels = _enumerableAddressViewModelViewModelMapper.Map(addresses);
+            var viewModels = _enumerableAddressViewModelMapper.Map(addresses);
             return Ok(viewModels);
         }
 
