@@ -61,7 +61,7 @@ namespace Application.Services
             var existingAppointment = await GetAsync(appointment.Id);
 
             existingAppointment.Date = appointment.Date;
-            existingAppointment.MeetHasOccured = appointment.MeetHasOccured;
+            existingAppointment.MeetHasOccureding = appointment.MeetHasOccureding;
             existingAppointment.Disease = appointment.Disease;
             existingAppointment.AnimalId = appointment.AnimalId;
             existingAppointment.AppointmentUsers = appointment.AppointmentUsers;
