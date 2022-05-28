@@ -23,7 +23,7 @@ namespace DataAccess.Repositories
             return errors;
         }
 
-        public async Task<ExceptionEntity> GetAsync(int id)
+        public async Task<ExceptionEntity?> GetAsync(int id)
         {
             var error = await _clinicContext.Exceptions.SingleOrDefaultAsync(ex => ex.Id == id);
 
