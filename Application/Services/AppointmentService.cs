@@ -30,9 +30,9 @@ namespace Application.Services
         {
             Appointment? appointment = await GetAsync(appointmentId);
 
-            _logger.LogInfo($"Appointment was getted by Id {appointmentId} in method DeleteAsync");
             await _appointmentRepository.DeleteAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
+            _logger.LogInfo($"Appointment was deleted with Id {appointmentId} in method DeleteAsync");
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
