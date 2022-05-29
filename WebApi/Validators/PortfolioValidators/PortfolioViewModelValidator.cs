@@ -13,9 +13,9 @@ namespace WebApi.Validators.PortfolioValidators
 
             RuleFor(viewModel => viewModel.Description)
                 .MinimumLength(64)
-                .WithMessage("Portfolio description must be greater or equal than 64 symbols")
+                .WithMessage("Portfolio description must be greater than or equal to 64 symbols")
                 .MaximumLength(2048)
-                .WithMessage("Portfolio description must be less or equal than 2048 symbols");
+                .WithMessage("Portfolio description must be less than or equal to 2048 symbols");
         }
     }
 }

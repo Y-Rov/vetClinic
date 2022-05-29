@@ -9,16 +9,16 @@ namespace Application.Services
     public class PortfolioService : IPortfolioService
     {
         private readonly IPortfolioRepository _portfolioRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly ILoggerManager _loggerManager;
 
         public PortfolioService(
             IPortfolioRepository portfolioRepository,
-            IUserRepository userRepository,
+            IUserService userService,
             ILoggerManager loggerManager)
         {
             _portfolioRepository = portfolioRepository;
-            _userRepository = userRepository;
+            _userService = userService;
             _loggerManager = loggerManager;
         }
         
@@ -46,14 +46,6 @@ namespace Application.Services
 
         public async Task CreatePortfolioAsync(Portfolio portfolio)
         {
-            var user = await _userRepository.GetByIdAsync(portfolio.UserId);
-
-            if (user == null)
-            {
-                _loggerManager.LogWarn($"User with ID = {portfolio.UserId} doesn't exist");
-                throw new NotFoundException("Portfolio can't be added to non-existent user");
-            }
-
             var possiblyExistingPortfolio = await _portfolioRepository.GetPortfolioByUserIdAsync(portfolio.UserId);
 
             if (possiblyExistingPortfolio != null)
@@ -61,6 +53,8 @@ namespace Application.Services
                 _loggerManager.LogWarn($"User with ID = {portfolio.UserId} has already a portfolio");
                 throw new BadRequestException($"User with ID = {portfolio.UserId} has already a portfolio");
             }
+
+            var user = await _userService.GetUserByIdAsync(portfolio.UserId);
 
             portfolio.User = user;
             await _portfolioRepository.CreatePortfolioAsync(portfolio);
