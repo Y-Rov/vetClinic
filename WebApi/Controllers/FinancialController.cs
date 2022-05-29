@@ -3,8 +3,6 @@ using Core.Interfaces.Services;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators;
-using Core.Exceptions;
 
 namespace WebApi.Controllers
 {
