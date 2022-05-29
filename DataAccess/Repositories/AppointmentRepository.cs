@@ -22,6 +22,7 @@ namespace DataAccess.Repositories
         public async Task DeleteAsync(Appointment appointment)
         {
             _clinicContext.Remove(appointment);
+            await Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
@@ -43,10 +44,6 @@ namespace DataAccess.Repositories
             return appointment;
         }
 
-        public async Task UpdateAsync(Appointment appointment)
-        {
-             _clinicContext.Appointments.Update(appointment); 
-        }
 
         public async Task SaveChangesAsync()
         {

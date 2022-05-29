@@ -19,10 +19,6 @@ using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SalaryMappers;
 using WebApi.AutoMapper.SpecializationMappers;
 using WebApi.AutoMapper.UserMappers;
-using WebApi.AutoMapper.SalaryMappers;
-using Core.ViewModels.AppointmentsViewModel;
-using WebApi.AutoMapper.AppointmentMappers;
-using Core.ViewModels;
 
 
 namespace WebApi.AutoMapper.Configurations;

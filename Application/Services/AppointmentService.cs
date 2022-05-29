@@ -30,19 +30,14 @@ namespace Application.Services
         {
             Appointment? appointment = await GetAsync(appointmentId);
 
-            _logger.LogInfo("Appointment was getted by appointmentId in method DeleteAsync");
             await _appointmentRepository.DeleteAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
+            _logger.LogInfo($"Appointment was deleted with Id {appointmentId} in method DeleteAsync");
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
             var appointments = await _appointmentRepository.GetAsync();
-            if (appointments is null)
-            {
-                _logger.LogWarn("Appointments is null");
-                throw new NotFoundException("Appointments is null");
-            }
             _logger.LogInfo("Appointments were getted in method GetAsync");
             return appointments;
         }
@@ -72,7 +67,6 @@ namespace Application.Services
             existingAppointment.AppointmentUsers = appointment.AppointmentUsers;
             existingAppointment.AppointmentProcedures = appointment.AppointmentProcedures;
 
-            _appointmentRepository.UpdateAsync(existingAppointment);
             await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
         }
