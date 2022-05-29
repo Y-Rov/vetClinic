@@ -3,14 +3,12 @@ using Core.Interfaces.Services;
 using Core.ViewModels.AnimalViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators;
-using Core.Exceptions;
 using Core.ViewModels;
 
 namespace WebApi.Controllers
 {
     [ApiController]
-    [Route("api/animal")]
+    [Route("api/animals")]
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalService _animalService;
@@ -36,7 +34,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AnimalViewModel>>> GetAsync()
         {
-            var animals = await _animalService.GetAllAnimalsAsync();
+            var animals = await _animalService.GetAsync();
             var map = _mapperAnimalListToList.Map(animals);
             return Ok(map);
         }
@@ -52,7 +50,7 @@ namespace WebApi.Controllers
         [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult<AnimalViewModel>> GetAsync([FromRoute]int id)
         {
-            var animal = await _animalService.GetAnimalByIdAsync(id);
+            var animal = await _animalService.GetAsync(id);
             var map = _mapperMtoVM.Map(animal);
             return Ok(map);
         }
@@ -61,26 +59,23 @@ namespace WebApi.Controllers
         public async Task<ActionResult> CreateAsync([FromBody]AnimalViewModel model)
         {
             var map = _mapperVMtoM.Map(model);
-            var newAnimal =  await _animalService.AddNewAnimalAsync(map);
-            return Created(nameof(GetAsync),newAnimal);
+            var newAnimal =  await _animalService.CreateAsync(map);
+            return Created(nameof(GetAsync),model);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteAsync([FromRoute]int id)
         {
-            await _animalService.DeleteAnimalAsync(id);
+            await _animalService.DeleteAsync(id);
             return NoContent();
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateAsync(AnimalViewModel model)
+        public async Task<ActionResult> UpdateAsync([FromBody]AnimalViewModel model)
         {
-
             var map = _mapperVMtoM.Map(model);
-            await _animalService.UpdateAnimalAsync(map);
+            await _animalService.UpdateAsync(map);
             return NoContent();
         }
-        
-
     }
 }

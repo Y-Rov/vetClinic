@@ -19,33 +19,32 @@ namespace Application.Services
             _loggerManager = loggerManager;
         }
 
-        public async Task<Animal> AddNewAnimalAsync(Animal animal)
+        public async Task<Animal> CreateAsync(Animal animal)
         {
-            var newAnimal =  await _animalRepository.AddNewAnimalAsync(animal);
+            var newAnimal =  await _animalRepository.CreateAsync(animal);
             await _animalRepository.SaveChangesAsync();
             _loggerManager.LogInfo("Animal created");
             return newAnimal;
         }
 
-        public async Task DeleteAnimalAsync(int animalId)
+        public async Task DeleteAsync(int animalId)
         {
-            var animalToDelete = await GetAnimalByIdAsync(animalId);
-            await _animalRepository.DeleteAnimalAsync(animalToDelete);
+            Animal? animalToDelete = await GetAsync(animalId);
+            await _animalRepository.DeleteAsync(animalToDelete);
             await _animalRepository.SaveChangesAsync();
             _loggerManager.LogInfo("Animal deleted");
         }
 
-        public async Task UpdateAnimalAsync(Animal animal)
+        public async Task UpdateAsync(Animal animal)
         {
-            var animalToUpdate = await GetAnimalByIdAsync(animal.Id);
-            await _animalRepository.UpdateAnimalAsync(animal);
+            await _animalRepository.UpdateAsync(animal);
             await _animalRepository.SaveChangesAsync();
             _loggerManager.LogInfo("Animal info is up-to-date");
         }
 
-        public async Task<IEnumerable<Animal>> GetAllAnimalsAsync()
+        public async Task<IEnumerable<Animal>> GetAsync()
         {
-            var animals = await _animalRepository.GetAllAnimalsAsync();
+            var animals = await _animalRepository.GetAsync();
             _loggerManager.LogInfo($"A list of animals with lenght = {animals.Count()} is been returned");
             return animals;
         }
@@ -57,9 +56,9 @@ namespace Application.Services
             return appointments;
         }
 
-        public async Task<Animal> GetAnimalByIdAsync(int id)
+        public async Task<Animal> GetAsync(int id)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id);
+            var animal = await _animalRepository.GetAsync(id);
             if (animal == null)
             {
                 _loggerManager.LogWarn($"Animal with Id = {id} does not exist");
