@@ -54,8 +54,9 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> AddSpecialization([FromBody]SpecializationViewModel specialization)
         {
-               return Ok(_viewModelMapper.Map(
-                    await _service.AddSpecializationAsync(_mapper.Map(specialization))));
+            var specializationRaw = _mapper.Map(specialization);
+            await _service.AddSpecializationAsync(specializationRaw);
+            return Ok(specialization);
         }
 
         [HttpPut("/{id:int:min(1)}")]

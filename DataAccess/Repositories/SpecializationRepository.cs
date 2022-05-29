@@ -21,18 +21,19 @@ namespace DataAccess.Repositories
                 .Include(specialization => specialization.ProcedureSpecializations)
                     .ThenInclude(ps => ps.Procedure)
                 .AsNoTracking()
+                .AsSplitQuery()
                 .ToListAsync();
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization result = await _context.Specializations
+            Specialization? result = await _context.Specializations
                 .Include(specialization => specialization.UserSpecializations)
                     .ThenInclude(us => us.User)
                 .Include(specialization => specialization.ProcedureSpecializations)
                     .ThenInclude(ps => ps.Procedure)
-                .AsNoTracking()
-                .FirstAsync(specialization => specialization.Id == id);
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(specialization => specialization.Id == id);
             return result;
         }
 
@@ -44,8 +45,10 @@ namespace DataAccess.Repositories
 
         public async Task DeleteSpecializationAsync(Specialization specialization)
         {
-            _context.Specializations
+             _context.Specializations
                 .Remove(specialization);
+
+            await Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()

@@ -23,8 +23,7 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization =
-                await _repository.GetSpecializationByIdAsync(id);
+            Specialization specialization = await _repository.GetSpecializationByIdAsync(id);
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");
@@ -36,13 +35,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<Procedure>> GetSpecializationProcedures(int id)
         {
-            Specialization specialization = 
-                await _repository.GetSpecializationByIdAsync(id);
-            if (specialization is null)
-            {
-                _logger.LogWarn($"Specialization with id: {id} not found");
-                throw new NotFoundException($"Specialization with id: {id} not found");
-            }
+            Specialization specialization = await GetSpecializationByIdAsync(id);
             _logger.LogInfo($"Specialization's procedures found");
             return specialization.ProcedureSpecializations.Select(ps => ps.Procedure);
         }
@@ -57,12 +50,7 @@ namespace Application.Services
 
         public async Task DeleteSpecializationAsync(int id) 
         {
-            var specialization = await _repository.GetSpecializationByIdAsync(id);
-            if (specialization == null)
-            {
-                _logger.LogWarn($"Specialization with id: {id} not found");
-                throw new NotFoundException($"Specialization with id: {id} not found");
-            }
+            var specialization = await GetSpecializationByIdAsync(id);
             await _repository.DeleteSpecializationAsync(specialization);
             _logger.LogInfo($"Specialization with id: {id} deleted");
             await _repository.SaveChangesAsync();
@@ -70,12 +58,7 @@ namespace Application.Services
 
         public async Task UpdateSpecializationAsync(int id, Specialization updated)
         {
-            Specialization specialization = await _repository.GetSpecializationByIdAsync(id);
-            if (specialization == null)
-            {
-                _logger.LogWarn($"Specialization with id: {updated.Id} not found");
-                throw new NotFoundException($"Specialization with id: {updated.Id} not found");
-            }
+            Specialization specialization = await GetSpecializationByIdAsync(id);
             specialization.Name = updated.Name;
             _logger.LogInfo($"Specialization with id: {updated.Id} updated");
             await _repository.SaveChangesAsync();
