@@ -9,7 +9,10 @@ public static class Config
         => new List<IdentityResource>()
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile()
+            new IdentityResource(
+                name: "profile",
+                userClaims: new []{"name"},
+                displayName: "Profile data about user")
         };
 
     public static IEnumerable<ApiResource> GetApiResources()
@@ -36,9 +39,8 @@ public static class Config
                 RequireConsent = false,
                 ClientId = "postman_client",
                 ClientName = "Postman Client",
-                AllowedScopes = {"apiAccess", "profile"},
+                AllowedScopes = {"apiAccess", "openid", "profile"},
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                AllowAccessTokensViaBrowser = true,
                 AllowOfflineAccess = true, // enable refresh tokens
                 RefreshTokenUsage = TokenUsage.OneTimeOnly,
                 ClientSecrets = {new Secret("tests_client_secret".ToSha256())},
@@ -50,7 +52,7 @@ public static class Config
             {
                 ClientId = "angular_client",
                 ClientName = "Angular Client",
-                AllowedScopes = {"apiAccess", "profile"},
+                AllowedScopes = {"apiAccess", "openid", "profile"},
                 RequireConsent = false,
                 RequireClientSecret = false,
                 AllowOfflineAccess = true, // enable refresh tokens
