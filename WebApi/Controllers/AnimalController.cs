@@ -3,8 +3,6 @@ using Core.Interfaces.Services;
 using Core.ViewModels.AnimalViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators;
-using Core.Exceptions;
 using Core.ViewModels;
 
 namespace WebApi.Controllers
