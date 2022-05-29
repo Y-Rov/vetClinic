@@ -14,18 +14,19 @@ namespace DataAccess.Repositories
             _clinicContext = clinicContext;
         }
 
-        public async Task<Animal> AddNewAnimalAsync(Animal animal)
+        public async Task<Animal> CreateAsync(Animal animal)
         {
             var newAnimal =  await _clinicContext.Animals.AddAsync(animal);
             return newAnimal.Entity;
         }
 
-        public async Task DeleteAnimalAsync(Animal animal)
+        public async Task DeleteAsync(Animal animal)
         {
             _clinicContext.Animals.Remove(animal);
+            await Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<Animal>> GetAllAnimalsAsync()
+        public async Task<IEnumerable<Animal>> GetAsync()
         {
             var result = await _clinicContext.Animals
                 .Include(pet => pet.Owner)
@@ -41,17 +42,19 @@ namespace DataAccess.Repositories
             return result;
         }
 
-        public async Task<Animal?> GetAnimalByIdAsync(int animalId)
+        public async Task<Animal?> GetAsync(int animalId)
         {
             var animal = await _clinicContext.Animals
+                .Include(pet => pet.Owner)
                 .AsNoTracking()
-                .SingleOrDefaultAsync(animal => animal.Id == animalId);
+                .FirstOrDefaultAsync(animal => animal.Id == animalId);
             return animal;
         }
 
-        public async Task UpdateAnimalAsync(Animal animal)
+        public async Task UpdateAsync(Animal animal)
         {
             _clinicContext.Animals.Update(animal);
+            await Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()
