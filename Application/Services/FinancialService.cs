@@ -11,7 +11,9 @@ namespace Application.Services
         private readonly ISalaryRepository _salaryRepository;
         private readonly ILoggerManager _logger;
 
-        public FinancialService(ISalaryRepository salaryRepository, ILoggerManager logger)
+        public FinancialService(
+            ISalaryRepository salaryRepository, 
+            ILoggerManager logger)
         {
             _salaryRepository = salaryRepository;
             _logger = logger;
@@ -26,12 +28,7 @@ namespace Application.Services
 
         public async Task DeleteSalaryByUserIdAsync(int id)
         {
-            Salary? salary = await _salaryRepository.GetSalaryByUserIdAsync(id);
-
-            if (salary == null)
-            {
-                throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
-            }
+            Salary salary = await GetSalaryByUserIdAsync(id);
 
             await _salaryRepository.DeleteSalaryAsync(salary);
             await _salaryRepository.SaveChangesAsync();
@@ -43,6 +40,7 @@ namespace Application.Services
             Salary? salary = await _salaryRepository.GetSalaryByUserIdAsync(id);
             if (salary == null)
             {
+                _logger.LogWarn($"Salary with EmployeeId = {id} does not exist");
                 throw new NotFoundException($"Salary with EmployeeId {id} does not exist");
             }
             _logger.LogInfo("Salary was getted by EmployeeId in method GetSalaryByUserIdAsync");
