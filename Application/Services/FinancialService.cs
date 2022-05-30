@@ -21,6 +21,13 @@ namespace Application.Services
 
         public async Task CreateSalaryAsync(Salary salary)
         {
+            var model = await _salaryRepository.GetSalaryByUserIdAsync(salary.EmployeeId);
+            if(model != null)
+            {
+                _logger.LogWarn($"User with Id: {model.EmployeeId} already has salary");
+                throw new BadRequestException($"User with Id: {model.EmployeeId} already has salary");
+            }
+
             await _salaryRepository.CreateSalaryAsync(salary);
             await _salaryRepository.SaveChangesAsync();
             _logger.LogInfo("Salary was created in method CreateSalaryAsync");
@@ -56,6 +63,8 @@ namespace Application.Services
 
         public async Task UpdateSalaryAsync(Salary salary)
         {
+            await GetSalaryByUserIdAsync(salary.EmployeeId); ;
+
             await _salaryRepository.UpdateSalaryAsync(salary);
             await _salaryRepository.SaveChangesAsync();
             _logger.LogInfo("Salary was updated in method UpdateSalaryAsync");
