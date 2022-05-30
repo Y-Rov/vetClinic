@@ -35,7 +35,6 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
             var result = await _clinicContext.Salaries
-                .AsNoTracking()
                 .ToListAsync();
             return result;
         }
