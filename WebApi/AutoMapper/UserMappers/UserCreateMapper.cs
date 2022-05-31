@@ -12,7 +12,7 @@ namespace WebApi.AutoMapper.UserMappers
             {
                 FirstName = source.FirstName,
                 LastName = source.LastName,
-                UserName = $"{source.Email}_{Guid.NewGuid()}",
+                UserName = source.Email,
                 Email = source.Email,
                 PhoneNumber = source.PhoneNumber,
                 BirthDate = source.BirthDate

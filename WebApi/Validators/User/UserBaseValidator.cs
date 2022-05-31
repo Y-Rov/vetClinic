@@ -20,12 +20,6 @@ namespace WebApi.Validators.User
                 .MaximumLength(50)
                 .WithMessage("Last name must be less than 50 characters");
 
-            RuleFor(vm => vm.Email)
-                .NotEmpty()
-                .WithMessage("Email is required")
-                .EmailAddress()
-                .WithMessage("Incorrect Email format");
-
             RuleFor(vm => vm.PhoneNumber)
                 .NotEmpty()
                 .WithMessage("Phone number is required")

@@ -12,7 +12,6 @@ namespace WebApi.AutoMapper.UserMappers
             {
                 FirstName = source.FirstName,
                 LastName = source.LastName,
-                Email = source.Email,
                 PhoneNumber = source.PhoneNumber,
                 BirthDate = source.BirthDate
             };
@@ -22,8 +21,6 @@ namespace WebApi.AutoMapper.UserMappers
         {
             dest.FirstName = source.FirstName;
             dest.LastName = source.LastName;
-            dest.UserName = source.Email;
-            dest.Email = source.Email;
             dest.PhoneNumber = source.PhoneNumber;
             dest.BirthDate = source.BirthDate;
         }
