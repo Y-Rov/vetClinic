@@ -1,9 +1,9 @@
 ﻿using Core.ViewModels.SalaryViewModel;
 using FluentValidation;
 
-namespace WebApi.Validators
+namespace WebApi.Validators.SalaryValidators
 {
-    public class SalaryViewModelValidator: AbstractValidator<SalaryViewModel>
+    public class SalaryViewModelValidator : AbstractValidator<SalaryViewModel>
     {
         public SalaryViewModelValidator()
         {

@@ -8,7 +8,6 @@
         public DateTime BirthDate { get; set; }
 
         public User Owner { get; set; }
-
         public IEnumerable<Appointment>? Appointments { get; set; }
     }
 }

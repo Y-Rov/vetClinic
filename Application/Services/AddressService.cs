@@ -9,16 +9,16 @@ namespace Application.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly ILoggerManager _loggerManager;
 
         public AddressService(
             IAddressRepository addressRepository,
-            IUserRepository userRepository,
+            IUserService userService,
             ILoggerManager loggerManager)
         {
             _addressRepository = addressRepository;
-            _userRepository = userRepository;
+            _userService = userService;
             _loggerManager = loggerManager;
         }
 
@@ -46,14 +46,6 @@ namespace Application.Services
 
         public async Task CreateAddressAsync(Address address)
         {
-            var user = await _userRepository.GetByIdAsync(address.UserId);
-
-            if (user == null)
-            {
-                _loggerManager.LogWarn($"User with ID = {address.UserId} doesn't exist");
-                throw new NotFoundException("Address can't be added to non-existent user");
-            }
-
             var possiblyExistingAddress = await _addressRepository.GetAddressByUserIdAsync(address.UserId);
             
             if (possiblyExistingAddress != null)
@@ -61,6 +53,8 @@ namespace Application.Services
                 _loggerManager.LogWarn($"User with ID = {address.UserId} has already an address");
                 throw new BadRequestException($"User with ID = {address.UserId} has already an address");
             }
+
+            var user = await _userService.GetUserByIdAsync(address.UserId);
 
             address.User = user;
             await _addressRepository.CreateAddressAsync(address);

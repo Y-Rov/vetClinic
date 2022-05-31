@@ -3,8 +3,6 @@ using Core.Interfaces.Services;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
-using WebApi.Validators;
-using Core.Exceptions;
 
 namespace WebApi.Controllers
 {
@@ -33,24 +31,24 @@ namespace WebApi.Controllers
         public async Task<ActionResult<IEnumerable<SalaryViewModel>>> GetAsync()
         {
             var salaries = await _financialService.GetSalaryAsync();
-            var map = _readSalaryList.Map(salaries);
-            return Ok(map);
+            var readSalary = _readSalaryList.Map(salaries);
+            return Ok(readSalary);
         }
 
         [HttpGet("/api/[controller]/{id:int:min(1)}")]
         public async Task<ActionResult<SalaryViewModel>> GetAsync([FromRoute]int id)
         {
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
-            var map = _readSalary.Map(salary);
-            return Ok(map);
+            var readSalaries = _readSalary.Map(salary);
+            return Ok(readSalaries);
         }
 
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody]SalaryViewModel model)
         {
-            var salary = _writeSalary.Map(model);
-            await _financialService.CreateSalaryAsync(salary);
-            return Ok();
+            var writeSalary = _writeSalary.Map(model);
+            await _financialService.CreateSalaryAsync(writeSalary);
+            return NoContent();
         }
 
         [HttpDelete("{id:int:min(1)}")]
@@ -63,9 +61,9 @@ namespace WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult> PutAsync([FromBody]SalaryViewModel model)
         {
-            var salary = _writeSalary.Map(model);
-            await _financialService.UpdateSalaryAsync(salary);
-            return Ok();
+            var writeSalary = _writeSalary.Map(model);
+            await _financialService.UpdateSalaryAsync(writeSalary);
+            return NoContent();
         }
     }
 
