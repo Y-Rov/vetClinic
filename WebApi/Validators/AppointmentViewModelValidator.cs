@@ -25,8 +25,9 @@ namespace WebApi.Validators
 
         private bool IsNotLessNow(DateTime date)
         { 
-            var result = DateTime.Now.AddMinutes(30).CompareTo(date);
-            return result == -1 ? true : false ;
+            var result = (DateTime.Now.AddMinutes(30).CompareTo(date)) == -1;
+
+                return result;
         }
     }
 }
