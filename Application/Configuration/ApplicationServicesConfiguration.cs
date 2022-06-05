@@ -1,0 +1,22 @@
+﻿using Application.Services;
+using Core.Interfaces.Services;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Application.Configuration
+{
+    public static class ApplicationServicesConfiguration
+    {
+        public static void AddApplicationServices(this IServiceCollection services)
+        {
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAnimalService, AnimalService>();
+            services.AddScoped<IPortfolioService, PortfolioService>();
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<ISpecializationService, SpecializationService>();
+            services.AddScoped<IExceptionEntityService, ExceptionEntityService>();
+            services.AddScoped<IProcedureService, ProcedureService>();
+            services.AddScoped<IFinancialService, FinancialService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
+        }
+    }
+}
