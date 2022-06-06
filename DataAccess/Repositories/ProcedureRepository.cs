@@ -51,7 +51,7 @@ public class ProcedureRepository : IProcedureRepository
         
         foreach (var specializationId in specializationIds)
         {
-            await _specializationRepository.GetSpecializationByIdAsync(specializationId);
+            await _specializationRepository.GetById(specializationId);
             await _clinicContext.ProcedureSpecializations.AddAsync(new ProcedureSpecialization()
             {
                 ProcedureId = procedure.Id,
