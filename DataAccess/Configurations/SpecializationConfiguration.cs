@@ -15,10 +15,6 @@ namespace DataAccess.Configurations
                 .Property(spec => spec.Name)
                 .HasMaxLength(50);
 
-            builder.
-                Navigation(spec => spec.ProcedureSpecializations)
-                .AutoInclude();            
-
             builder.ToTable("Specializations");
         }
     }

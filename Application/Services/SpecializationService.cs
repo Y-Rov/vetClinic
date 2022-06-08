@@ -23,7 +23,7 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization = await _repository.GetById(id);
+            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure");
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");

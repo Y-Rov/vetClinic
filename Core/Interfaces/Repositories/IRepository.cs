@@ -16,7 +16,7 @@ namespace Core.Interfaces.Repositories
              string includeProperties = "",
              bool asNoTracking = false);
 
-        Task<T> GetById(int id, bool ignoreIncludes = false);
+        Task<T> GetById(int id, string includeProperties = "");
 
         Task<T> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>> filter = null,

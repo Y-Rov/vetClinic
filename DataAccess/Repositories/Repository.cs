@@ -70,14 +70,19 @@ namespace DataAccess.Repositories
             return await result.FirstOrDefaultAsync();
         }
 
-        public async Task<T?> GetById(int id, bool ignoreIncludes = false)
+        public async Task<T?> GetById(int id, string includeProperties = "")
         {
-            if (ignoreIncludes)
-            {
-                context.Set<T>().IgnoreAutoIncludes();
+            if(string.IsNullOrEmpty(includeProperties))
                 return await context.Set<T>().FindAsync(id);
-            }
-            return await context.Set<T>().FindAsync(id);        
+
+            var result = await context.Set<T>().FindAsync(id);
+
+            IQueryable<T> set = context.Set<T>();
+
+            set = includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Aggregate(set, (current, includeProperty)
+                        => current.Include(includeProperty));
+            return await set.FirstOrDefaultAsync(entity => entity == result);
         }
 
         public void Delete(T entity)
