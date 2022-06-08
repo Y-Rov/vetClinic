@@ -18,12 +18,12 @@ namespace Application.Services
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAllSpecializationsAsync();
+            return await _repository.GetAsync(asNoTracking: true, includeProperties:  "ProcedureSpecializations.Procedure");
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization = await _repository.GetSpecializationByIdAsync(id);
+            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure");
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");
@@ -37,12 +37,12 @@ namespace Application.Services
         {
             Specialization specialization = await GetSpecializationByIdAsync(id);
             _logger.LogInfo($"Specialization's procedures found");
-            return specialization.ProcedureSpecializations.Select(ps => ps.Procedure);
+            return specialization.ProcedureSpecializations?.Select(ps => ps.Procedure);
         }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)
         {
-            await _repository.AddSpecializationAsync(specialization);
+            await _repository.InsertAsync(specialization);
             await _repository.SaveChangesAsync();
             _logger.LogInfo("Specialization added");
             return specialization;
@@ -51,7 +51,7 @@ namespace Application.Services
         public async Task DeleteSpecializationAsync(int id) 
         {
             var specialization = await GetSpecializationByIdAsync(id);
-            await _repository.DeleteSpecializationAsync(specialization);
+            _repository.Delete(specialization);
             _logger.LogInfo($"Specialization with id: {id} deleted");
             await _repository.SaveChangesAsync();
         }
