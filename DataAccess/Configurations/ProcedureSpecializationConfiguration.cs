@@ -25,6 +25,10 @@ public class ProcedureSpecializationConfiguration : IEntityTypeConfiguration<Pro
             .WithMany(specialization => specialization.ProcedureSpecializations)
             .HasForeignKey(ps => ps.SpecializationId);
 
+        builder.
+            Navigation(ps => ps.Procedure)
+            .AutoInclude();
+
         builder.ToTable("ProcedureSpecializations");
     }
 }

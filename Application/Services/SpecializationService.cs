@@ -18,7 +18,7 @@ namespace Application.Services
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure");
+            return await _repository.GetAsync(asNoTracking: true, includeProperties:  "ProcedureSpecializations.Procedure");
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
@@ -37,7 +37,7 @@ namespace Application.Services
         {
             Specialization specialization = await GetSpecializationByIdAsync(id);
             _logger.LogInfo($"Specialization's procedures found");
-            return specialization.ProcedureSpecializations.Select(ps => ps.Procedure);
+            return specialization.ProcedureSpecializations?.Select(ps => ps.Procedure);
         }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)

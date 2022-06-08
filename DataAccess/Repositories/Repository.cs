@@ -16,18 +16,6 @@ namespace DataAccess.Repositories
     {
         readonly ClinicContext context;
 
-        PropertyInfo GetIdProperty()
-        {
-            var type = typeof(T);
-
-            var properties = type.GetProperties();
-            //context.Find(id)
-
-            return type.GetProperties()
-                .FirstOrDefault(property => property.Name.Contains("Id")
-                    && property.PropertyType == typeof(int));
-        }
-
         public Repository(ClinicContext context)
         {
             this.context = context;
@@ -64,22 +52,32 @@ namespace DataAccess.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetFirstOrDefaultAsync(
+        public async Task<T?> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>> filter,
             string includeProperties = "",
             bool asNoTracking = false)
         {
-            return await GetQuery(filter: filter, 
-                includeProperties: includeProperties, 
-                asNoTracking: asNoTracking)
-                .FirstOrDefaultAsync();
+            var result = GetQuery(
+                filter: filter,
+                includeProperties: includeProperties,
+                orderBy: null);
+
+            if (asNoTracking)
+                return await result
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+            return await result.FirstOrDefaultAsync();
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T?> GetById(int id, bool ignoreIncludes = false)
         {
-            var desiredProperty = GetIdProperty();
-            return GetQuery().AsEnumerable()
-                .FirstOrDefault(entity => (int)desiredProperty.GetValue(entity) == id);
+            if (ignoreIncludes)
+            {
+                context.Set<T>().IgnoreAutoIncludes();
+                return await context.Set<T>().FindAsync(id);
+            }
+            return await context.Set<T>().FindAsync(id);        
         }
 
         public void Delete(T entity)
