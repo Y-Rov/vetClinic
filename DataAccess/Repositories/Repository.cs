@@ -89,6 +89,7 @@ namespace DataAccess.Repositories
         {
             if (context.Entry(entity).State == EntityState.Detached)
                 context.Attach(entity);
+
             context.Entry(entity).State = EntityState.Deleted;
         }
 
