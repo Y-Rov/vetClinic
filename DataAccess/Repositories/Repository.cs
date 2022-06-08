@@ -91,6 +91,7 @@ namespace DataAccess.Repositories
                 context.Attach(entity);
             context.Entry(entity).State = EntityState.Deleted;
         }
+
         public void Update(T entity)
         {
             context.Attach(entity);
