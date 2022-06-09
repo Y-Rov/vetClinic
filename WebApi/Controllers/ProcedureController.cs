@@ -46,11 +46,10 @@ public class ProcedureController : ControllerBase
     
     [HttpPost]
     public async Task<ActionResult> CreateAsync([FromBody]ProcedureViewModelBase procedure)
-    {
-        var result =
-            await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
-        
-        return Created(nameof(GetAsync), result);
+    { 
+        await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
+
+        return Created(nameof(GetAsync), procedure);
     }
     
     [HttpDelete("{id:int:min(1)}")]

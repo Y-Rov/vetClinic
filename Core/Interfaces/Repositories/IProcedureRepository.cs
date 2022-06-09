@@ -2,14 +2,7 @@
 
 namespace Core.Interfaces.Repositories;
 
-public interface IProcedureRepository
+public interface IProcedureRepository : IRepository<Procedure>
 {
-    Task<IEnumerable<Procedure>> GetAllProceduresAsync();
-    Task<Procedure?> GetProcedureByIdAsync(int procedureId);
-    Task<Procedure> AddProcedureAsync(Procedure procedure);
     Task UpdateProcedureSpecializationsAsync(Procedure procedure, IEnumerable<int> specializationIds);
-    Task DeleteProcedureAsync(Procedure procedure);
-    Task UpdateProcedureAsync(Procedure procedure);
-
-    Task SaveChangesAsync();
 }
