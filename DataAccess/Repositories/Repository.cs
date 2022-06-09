@@ -89,7 +89,9 @@ namespace DataAccess.Repositories
 
         public void Update(T entity)
         {
-            context.Attach(entity);
+            if (context.Entry(entity).State == EntityState.Detached)
+                context.Attach(entity);
+
             context.Entry(entity).State = EntityState.Modified;
         }
 
