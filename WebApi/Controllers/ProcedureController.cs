@@ -49,7 +49,7 @@ public class ProcedureController : ControllerBase
     { 
         await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
 
-        return Created(nameof(GetAsync), procedure);
+        return Ok();
     }
     
     [HttpDelete("{id:int:min(1)}")]
