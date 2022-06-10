@@ -6,30 +6,35 @@ namespace DataAccess.Repositories;
 
 public class ProcedureRepository : Repository<Procedure>, IProcedureRepository
 {
-    private readonly ClinicContext _clinicContext;
-    private readonly ISpecializationRepository _specializationRepository;
+    private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
 
     public ProcedureRepository(
         ClinicContext clinicContext, 
-        ISpecializationRepository specializationRepository) : base(clinicContext)
+        IProcedureSpecializationRepository procedureSpecializationRepository) 
+        : base(clinicContext)
     {
-        _clinicContext = clinicContext;
-        _specializationRepository = specializationRepository;
+        _procedureSpecializationRepository = procedureSpecializationRepository;
     }
 
-    public async Task UpdateProcedureSpecializationsAsync(Procedure procedure, IEnumerable<int> specializationIds)
+    public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
     {
-        _clinicContext.ProcedureSpecializations.RemoveRange(procedure.ProcedureSpecializations);
-        await SaveChangesAsync();
-        
+        var existing = await _procedureSpecializationRepository.GetAsync(
+            filter: pr => pr.ProcedureId == procedureId);
+        foreach (var ps in existing)
+        {
+            _procedureSpecializationRepository.Delete(ps);
+        }
+        await _procedureSpecializationRepository.SaveChangesAsync();
+
         foreach (var specializationId in specializationIds)
         {
-            await _specializationRepository.GetById(specializationId);
-            await _clinicContext.ProcedureSpecializations.AddAsync(new ProcedureSpecialization()
+            await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
             {
-                ProcedureId = procedure.Id,
+                ProcedureId = procedureId,
                 SpecializationId = specializationId
             });
         }
+        await SaveChangesAsync();
     }
+
 }

@@ -28,8 +28,6 @@ public class ProcedureService : IProcedureService
 
     public async Task UpdateProcedureAsync(Procedure newProcedure)
     {
-        var oldProcedure = await GetByIdAsync(newProcedure.Id);
-
         _procedureRepository.Update(newProcedure);
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
@@ -37,10 +35,9 @@ public class ProcedureService : IProcedureService
 
     public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
     {
-        var procedureToUpdate = await GetByIdAsync(procedureId);
         try
         {
-            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureToUpdate, specializationIds);
+            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
         }
         catch (InvalidOperationException)
         {
@@ -64,10 +61,9 @@ public class ProcedureService : IProcedureService
 
     public async Task<Procedure> GetByIdAsync(int procedureId)
     {
-        var procedure = await _procedureRepository.GetFirstOrDefaultAsync(
-            filter: pr => pr.Id == procedureId,
-            includeProperties: "ProcedureSpecializations.Specialization",
-            asNoTracking: true);
+        var procedure = await _procedureRepository.GetById(
+            procedureId,
+            "ProcedureSpecializations.Specialization");
         
         if (procedure is null)
         {
@@ -82,8 +78,7 @@ public class ProcedureService : IProcedureService
     public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
     {
         var procedures = await _procedureRepository.GetAsync(
-            includeProperties:"ProcedureSpecializations.Specialization",
-            asNoTracking: true);
+            includeProperties: "ProcedureSpecializations.Specialization");
         _loggerManager.LogInfo("Found all procedures");
         return procedures;
     }
