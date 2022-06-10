@@ -37,7 +37,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
-            var appointments = await _appointmentRepository.GetAsync(asNoTracking: true, includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
+            var appointments = await _appointmentRepository.GetAsync(includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
             _logger.LogInfo("Appointments were getted in method GetAsync");
             return appointments;
         }
