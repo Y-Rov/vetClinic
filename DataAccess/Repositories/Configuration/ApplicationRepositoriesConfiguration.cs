@@ -1,4 +1,5 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.Entities;
+using Core.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.Repositories.Configuration
@@ -11,6 +12,7 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<IPortfolioRepository, PortfolioRepository>();
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<ISpecializationRepository, SpecializationRepository>();
+            services.AddScoped<IProcedureSpecializationRepository, ProcedureSpecializationRepository>();
             services.AddScoped<IProcedureRepository, ProcedureRepository>();
             services.AddScoped<IExceptionEntityRepository, ExceptionEntityRepository>();
             services.AddScoped<IAnimalRepository, AnimalRepository>();
