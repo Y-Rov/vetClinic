@@ -19,8 +19,26 @@ namespace Application.Services
             _logger = logger;
         }
 
+        private async Task GenerateUpdateSalary(Salary salary, decimal wage)
+        {
+            var result = new Salary();
+            result.EmployeeId = salary.EmployeeId;
+            result.Employee = salary.Employee;
+            result.Date = DateTime.Now;
+            result.Value = wage;
+            await _repository.InsertAsync(result);
+            await _repository.SaveChangesAsync();
+        }
+
         public async Task CreateSalaryAsync(Salary salary)
         {
+            var result = await _repository.GetById(salary.EmployeeId);
+
+            if((result != null)&&(result.Value !=0))
+            {
+                _logger.LogWarn($"Employee with Id: { result.EmployeeId } has already had a salary");
+                throw new BadRequestException();
+            }
             await _repository.InsertAsync(salary);
             await _repository.SaveChangesAsync();
             _logger.LogInfo("Salary added");
@@ -34,12 +52,7 @@ namespace Application.Services
                 _logger.LogWarn($"There is no salary with id: {id}");
                 throw new NotFoundException($"Salary with id: {id} not found");
             }
-            var salary = new Salary();
-            salary.EmployeeId = id;
-            salary.Employee = res.Employee;
-            salary.Value = 0;
-            salary.Date = DateTime.Now;
-            await CreateSalaryAsync(salary);
+            await GenerateUpdateSalary(res, 0);
             _logger.LogInfo($"Salary with id: {id} deleted");
         }
 
@@ -52,10 +65,13 @@ namespace Application.Services
 
             foreach (var salary in allSalary)
             {
-                if(id!=salary.EmployeeId)
+                if((id!=salary.EmployeeId))
                 {
                     id = salary.EmployeeId;
-                    result.Add(salary);
+                    if(salary.Value !=0)
+                    {
+                        result.Add(salary);
+                    }
                 }
             }
             return result;
@@ -64,7 +80,7 @@ namespace Application.Services
         public async Task<Salary> GetSalaryByUserIdAsync(int id)
         {
             Salary salary = await _repository.GetById(id);
-            if (salary is null)
+            if ((salary == null)||(salary.Value == 0))
             {
                 _logger.LogWarn($"Salary with id: {id} not found");
                 throw new NotFoundException($"Salary with id: {id} not found");
@@ -76,12 +92,9 @@ namespace Application.Services
         public async Task UpdateSalaryAsync(Salary salary)
         {
             var res = await GetSalaryByUserIdAsync(salary.EmployeeId);
-            var _salary = new Salary();
-            _salary.EmployeeId = res.EmployeeId;
-            _salary.Employee = res.Employee;
-            _salary.Value = salary.Value;
-            _salary.Date = DateTime.Now;
-            await CreateSalaryAsync(_salary);
+
+            await GenerateUpdateSalary(res, salary.Value);
+
             _logger.LogInfo($"Salary with id: {res.EmployeeId} updated");
         }
     }
