@@ -43,6 +43,7 @@ namespace DataAccess.Repositories
             var query = GetQuery(filter, orderBy, includeProperties);
             if (asNoTracking)
                 return await query.AsNoTracking().ToListAsync();
+
             return await query.ToListAsync();
         }
 

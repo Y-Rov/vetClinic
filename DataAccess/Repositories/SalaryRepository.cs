@@ -12,7 +12,8 @@ namespace DataAccess.Repositories
         {
             this.context = context;
         }
-        public async Task<Salary?> GetById(int id, string includeProperties = "")
+
+        public new async Task<Salary?> GetById(int id, string includeProperties = "")
         {
             if (string.IsNullOrEmpty(includeProperties))
                 return await context.Set<Salary>()

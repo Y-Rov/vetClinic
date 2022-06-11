@@ -46,7 +46,19 @@ namespace Application.Services
         public async Task<IEnumerable<Salary>> GetSalaryAsync()
         {
             _logger.LogInfo($"salaries were recieved");
-            return await _repository.GetAsync(asNoTracking: true);
+            var allSalary = await _repository.GetAsync(filter: null, x => x.OrderBy(y => y.EmployeeId).ThenByDescending(y => y.Date));
+            var result = new List<Salary>();
+            int? id = null;
+
+            foreach (var salary in allSalary)
+            {
+                if(id!=salary.EmployeeId)
+                {
+                    id = salary.EmployeeId;
+                    result.Add(salary);
+                }
+            }
+            return result;
         }
 
         public async Task<Salary> GetSalaryByUserIdAsync(int id)
