@@ -4,7 +4,7 @@ namespace Core.Interfaces.Services;
 
 public interface IProcedureService
 {
-    Task<Procedure> CreateNewProcedureAsync(Procedure procedure);
+    Task CreateNewProcedureAsync(Procedure procedure);
     Task UpdateProcedureAsync(Procedure newProcedure);
     Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds);
 

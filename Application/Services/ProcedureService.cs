@@ -19,29 +19,25 @@ public class ProcedureService : IProcedureService
         _loggerManager = loggerManager;
     }
 
-    public async Task<Procedure> CreateNewProcedureAsync(Procedure procedure)    
+    public async Task CreateNewProcedureAsync(Procedure procedure)
     {
-        var createdProcedure = await _procedureRepository.AddProcedureAsync(procedure);
+        await _procedureRepository.InsertAsync(procedure);
         await _procedureRepository.SaveChangesAsync();
-        _loggerManager.LogInfo($"Created new procedure with Id: {createdProcedure.Id}");
-        return createdProcedure;
+        _loggerManager.LogInfo($"Created new procedure with name: {procedure.Name}");
     }
 
     public async Task UpdateProcedureAsync(Procedure newProcedure)
     {
-        var oldProcedure = await GetByIdAsync(newProcedure.Id);
-
-        await _procedureRepository.UpdateProcedureAsync(newProcedure);
+        _procedureRepository.Update(newProcedure);
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
     }
 
     public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
     {
-        var procedureToUpdate = await GetByIdAsync(procedureId);
         try
         {
-            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureToUpdate, specializationIds);
+            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
         }
         catch (InvalidOperationException)
         {
@@ -57,7 +53,7 @@ public class ProcedureService : IProcedureService
     {
         var procedureToRemove = await GetByIdAsync(procedureId);
         
-        await _procedureRepository.DeleteProcedureAsync(procedureToRemove);
+        _procedureRepository.Delete(procedureToRemove);
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Deleted procedure with Id {procedureId}");
     }
@@ -65,7 +61,9 @@ public class ProcedureService : IProcedureService
 
     public async Task<Procedure> GetByIdAsync(int procedureId)
     {
-        var procedure = await _procedureRepository.GetProcedureByIdAsync(procedureId);
+        var procedure = await _procedureRepository.GetById(
+            procedureId,
+            "ProcedureSpecializations.Specialization");
         
         if (procedure is null)
         {
@@ -79,7 +77,8 @@ public class ProcedureService : IProcedureService
 
     public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
     {
-        var procedures = await _procedureRepository.GetAllProceduresAsync();
+        var procedures = await _procedureRepository.GetAsync(
+            includeProperties: "ProcedureSpecializations.Specialization");
         _loggerManager.LogInfo("Found all procedures");
         return procedures;
     }
