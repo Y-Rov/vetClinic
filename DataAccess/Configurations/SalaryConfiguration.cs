@@ -9,7 +9,7 @@ namespace DataAccess.Configurations
         public void Configure(EntityTypeBuilder<Salary> builder)
         {
             builder.
-                HasKey(salary => salary.EmployeeId);
+                HasKey(salary=> salary.Id);
 
             builder
                 .Property(salary => salary.Value)
@@ -17,10 +17,15 @@ namespace DataAccess.Configurations
                 .HasPrecision(10,2)
                 .IsRequired();
 
+            builder
+                .Property(salary => salary.Date)
+                .HasColumnType("DATETIME")
+                .IsRequired();
+
             builder.
                 HasOne<User>(salary => salary.Employee)
-                .WithOne(user => user.Salary)
-                .HasForeignKey<Salary>(salary => salary.EmployeeId);
+                .WithMany(user => user.Salaries)
+                .HasForeignKey(salary => salary.EmployeeId);
 
             builder.ToTable("Salaries");
         }

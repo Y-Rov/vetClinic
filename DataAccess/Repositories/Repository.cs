@@ -47,6 +47,7 @@ namespace DataAccess.Repositories
             var query = GetQuery(filter, orderBy, includeProperties);
             
             if (asNoTracking)
+
             {
                 var noTrackingResult = await query.AsNoTracking()
                     .ToListAsync();
@@ -56,6 +57,7 @@ namespace DataAccess.Repositories
 
             var trackingResult = await query.ToListAsync();
             return trackingResult;
+
         }
 
         public async Task<T?> GetFirstOrDefaultAsync(

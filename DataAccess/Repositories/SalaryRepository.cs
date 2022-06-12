@@ -5,48 +5,33 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class SalaryRepository : ISalaryRepository
+    public class SalaryRepository : Repository<Salary>, ISalaryRepository
     {
-        private readonly ClinicContext _clinicContext;
-
-        public SalaryRepository(ClinicContext clinicContext)
+        readonly ClinicContext context;
+        public SalaryRepository(ClinicContext context): base(context) 
         {
-            _clinicContext = clinicContext;
+            this.context = context;
         }
 
-        public async Task CreateSalaryAsync(Salary salary)
+        public new async Task<Salary?> GetById(int id, string includeProperties = "")
         {
-            await _clinicContext.Salaries.AddAsync(salary);
-        }
+            if (string.IsNullOrEmpty(includeProperties))
+                return await context.Set<Salary>()
+                    .Where(s => s.EmployeeId == id)
+                    .OrderByDescending(s => s.Date)
+                    .FirstOrDefaultAsync();
 
-        public async Task<Salary?> GetSalaryByUserIdAsync(int id)
-        {
-            var result = await _clinicContext.Salaries
-                .AsNoTracking()
-                .SingleOrDefaultAsync(salary => salary.EmployeeId == id);
-            return result;
-        }
-        public async Task DeleteSalaryAsync(Salary salary)
-        {
-            _clinicContext.Salaries.Remove(salary);
-            await Task.CompletedTask;
-        }
+            var result = await context.Set<Salary>()
+                                    .Where(s => s.EmployeeId == id)
+                                    .OrderByDescending(s => s.Date)
+                                    .FirstOrDefaultAsync();
 
-        public async Task<IEnumerable<Salary>> GetSalaryAsync()
-        {
-            var result = await _clinicContext.Salaries
-                .ToListAsync();
-            return result;
-        }
+            IQueryable<Salary> set = context.Set<Salary>();
 
-        public async Task UpdateSalaryAsync(Salary salary)
-        {
-            _clinicContext.Salaries.Update(salary);
-            await Task.CompletedTask;
-        }
-        public async Task SaveChangesAsync()
-        {
-            await _clinicContext.SaveChangesAsync();
+            set = includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Aggregate(set, (current, includeProperty)
+                        => current.Include(includeProperty));
+            return await set.FirstOrDefaultAsync(entity => entity == result);
         }
 
     }

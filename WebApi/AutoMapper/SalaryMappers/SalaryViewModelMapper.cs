@@ -11,7 +11,8 @@ namespace WebApi.AutoMapper.SalaryMappers
             var salaryViewModel = new Salary
             {
                 EmployeeId = source.EmployeeId,
-                Value = source.Value
+                Value = source.Value,
+                Date = DateTime.Now
             };
             return salaryViewModel;
         }
