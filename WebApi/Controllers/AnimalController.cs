@@ -50,7 +50,7 @@ namespace WebApi.Controllers
         [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult<AnimalViewModel>> GetAsync([FromRoute]int id)
         {
-            var animal = await _animalService.GetAsync(id);
+            var animal = await _animalService.GetByIdAsync(id);
             var map = _mapperMtoVM.Map(animal);
             return Ok(map);
         }
@@ -59,8 +59,8 @@ namespace WebApi.Controllers
         public async Task<ActionResult> CreateAsync([FromBody]AnimalViewModel model)
         {
             var map = _mapperVMtoM.Map(model);
-            var newAnimal =  await _animalService.CreateAsync(map);
-            return Created(nameof(GetAsync),model);
+            await _animalService.CreateAsync(map);
+            return Ok();
         }
 
         [HttpDelete("{id:int:min(1)}")]
