@@ -6,7 +6,8 @@ namespace DataAccess.Repositories
 {
     public class AddressRepository : Repository<Address>, IAddressRepository
     {
-        public AddressRepository(ClinicContext clinicContext) : base(clinicContext)
+        public AddressRepository(ClinicContext clinicContext) 
+            : base(clinicContext)
         {
             
         }

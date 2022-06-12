@@ -6,8 +6,8 @@ namespace Core.Interfaces.Services
     {
         Task<Portfolio> GetPortfolioByUserIdAsync(int id);
         Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync();
-        Task CreatePortfolioAsync(Portfolio portfolio);
-        Task UpdatePortfolioAsync(Portfolio portfolio);
+        Task CreatePortfolioAsync(Portfolio newPortfolio);
+        Task UpdatePortfolioAsync(Portfolio updatedPortfolio);
         Task DeletePortfolioByUserIdAsync(int id);
     }
 }

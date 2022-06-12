@@ -38,29 +38,29 @@ namespace Application.Services
 
         public async Task<IEnumerable<Address>> GetAllAddressesAsync()
         {
-            var addresses = await _addressRepository.GetAsync(asNoTracking: true);
+            var addresses = await _addressRepository.GetAsync();
 
             _loggerManager.LogInfo("Getting all available addresses");
             return addresses;
         }
 
-        public async Task CreateAddressAsync(Address address)
+        public async Task CreateAddressAsync(Address newAddress)
         {
-            var possiblyExistingAddress = await _addressRepository.GetById(address.UserId);
+            var possiblyExistingAddress = await _addressRepository.GetById(newAddress.UserId);
             
             if (possiblyExistingAddress != null)
             {
-                _loggerManager.LogWarn($"User with ID = {address.UserId} has already an address");
-                throw new BadRequestException($"User with ID = {address.UserId} has already an address");
+                _loggerManager.LogWarn($"User with ID = {newAddress.UserId} has already an address");
+                throw new BadRequestException($"User with ID = {newAddress.UserId} has already an address");
             }
 
-            var user = await _userService.GetUserByIdAsync(address.UserId);
-            user.Address = address;
-            address.User = user;
+            var user = await _userService.GetUserByIdAsync(newAddress.UserId);
+            user.Address = newAddress;
+            newAddress.User = user;
 
-            await _addressRepository.InsertAsync(address);
+            await _addressRepository.InsertAsync(newAddress);
             await _addressRepository.SaveChangesAsync();
-            _loggerManager.LogInfo($"Address for user with ID = {address.UserId} was created");
+            _loggerManager.LogInfo($"Address for user with ID = {newAddress.UserId} was created");
         }
 
         public async Task UpdateAddressAsync(Address updatedAddress)
