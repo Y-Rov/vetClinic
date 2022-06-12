@@ -24,7 +24,7 @@ namespace Application.Services
 
         public async Task<Address> GetAddressByUserIdAsync(int id)
         {
-            var address = await _addressRepository.GetAddressByUserIdAsync(id);
+            var address = await _addressRepository.GetById(id);
 
             if (address == null)
             {
@@ -38,7 +38,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<Address>> GetAllAddressesAsync()
         {
-            var addresses = await _addressRepository.GetAllAddressesAsync();
+            var addresses = await _addressRepository.GetAsync(asNoTracking: true);
 
             _loggerManager.LogInfo("Getting all available addresses");
             return addresses;
@@ -46,7 +46,7 @@ namespace Application.Services
 
         public async Task CreateAddressAsync(Address address)
         {
-            var possiblyExistingAddress = await _addressRepository.GetAddressByUserIdAsync(address.UserId);
+            var possiblyExistingAddress = await _addressRepository.GetById(address.UserId);
             
             if (possiblyExistingAddress != null)
             {
@@ -55,27 +55,33 @@ namespace Application.Services
             }
 
             var user = await _userService.GetUserByIdAsync(address.UserId);
-
+            user.Address = address;
             address.User = user;
-            await _addressRepository.CreateAddressAsync(address);
+
+            await _addressRepository.InsertAsync(address);
             await _addressRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Address for user with ID = {address.UserId} was created");
         }
 
-        public async Task UpdateAddressAsync(Address address)
+        public async Task UpdateAddressAsync(Address updatedAddress)
         {
-            await GetAddressByUserIdAsync(address.UserId);
-            
-            await _addressRepository.UpdateAddressAsync(address);
+            var address = await GetAddressByUserIdAsync(updatedAddress.UserId);
+
+            address.City = updatedAddress.City;
+            address.Street = updatedAddress.Street;
+            address.House = updatedAddress.House;
+            address.ApartmentNumber = updatedAddress.ApartmentNumber;
+            address.ZipCode = updatedAddress.ZipCode;
+
             await _addressRepository.SaveChangesAsync();
-            _loggerManager.LogInfo($"Address for user with ID = {address.UserId} was updated");
+            _loggerManager.LogInfo($"Address for user with ID = {updatedAddress.UserId} was updated");
         }
 
         public async Task DeleteAddressByUserIdAsync(int id)
         {
             var address = await GetAddressByUserIdAsync(id);
 
-            await _addressRepository.DeleteAddressAsync(address);
+            _addressRepository.Delete(address);
             await _addressRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Address for user with ID = {id} was deleted");
         }
