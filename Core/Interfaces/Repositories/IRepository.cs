@@ -6,15 +6,15 @@ namespace Core.Interfaces.Repositories
         where T : class
     {
         Task<IList<T>> GetAsync(
-             Expression<Func<T, bool>> filter = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+             Expression<Func<T, bool>>? filter = null,
+             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
              string includeProperties = "",
              bool asNoTracking = false);
 
-        Task<T> GetById(int id, string includeProperties = "");
+        Task<T?> GetById(int id, string includeProperties = "");
 
-        Task<T> GetFirstOrDefaultAsync(
-            Expression<Func<T, bool>> filter = null,
+        Task<T?> GetFirstOrDefaultAsync(
+            Expression<Func<T, bool>>? filter = null,
             string includeProperties = "",
             bool asNoTracking = false);
 

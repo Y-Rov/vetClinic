@@ -2,13 +2,8 @@
 
 namespace Core.Interfaces.Repositories
 {
-    public interface IPortfolioRepository
+    public interface IPortfolioRepository : IRepository<Portfolio>
     {
-        Task<Portfolio?> GetPortfolioByUserIdAsync(int id);
-        Task<IEnumerable<Portfolio>> GetAllPortfoliosAsync();
-        Task CreatePortfolioAsync(Portfolio portfolio);
-        Task UpdatePortfolioAsync(Portfolio portfolio);
-        Task DeletePortfolioAsync(Portfolio portfolio);
-        Task SaveChangesAsync();
+       
     }
 }
