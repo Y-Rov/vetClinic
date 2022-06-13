@@ -9,11 +9,16 @@ namespace Application.Services
     public class SpecializationService : ISpecializationService
     {
         readonly ISpecializationRepository _repository;
+        readonly IProcedureRepository _procedureRepository;
         readonly ILoggerManager _logger;
-        public SpecializationService(ISpecializationRepository repository, ILoggerManager logger)
+        public SpecializationService(
+            ISpecializationRepository repository, 
+            ILoggerManager logger,
+            IProcedureRepository procedureRepository)
         {
             _repository = repository;
             _logger = logger;
+            _procedureRepository = procedureRepository;
         }
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
@@ -23,7 +28,7 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure");
+            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations");
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");
@@ -46,6 +51,22 @@ namespace Application.Services
             await _repository.SaveChangesAsync();
             _logger.LogInfo("Specialization added");
             return specialization;
+        }
+
+        public async Task AddProcedureToSpecialization(int specializationId, int procedureId)
+        {
+            var specialization = 
+                await GetSpecializationByIdAsync(specializationId);
+            
+            specialization.ProcedureSpecializations.Add(new ProcedureSpecialization 
+            { 
+                ProcedureId = procedureId, 
+                SpecializationId = specializationId 
+            });
+
+            await UpdateSpecializationAsync(specializationId, specialization);
+
+            await _repository.SaveChangesAsync();
         }
 
         public async Task DeleteSpecializationAsync(int id) 

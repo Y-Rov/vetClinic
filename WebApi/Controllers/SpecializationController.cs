@@ -59,6 +59,13 @@ namespace WebApi.Controllers
             return Ok(specialization);
         }
 
+        [HttpPut("/{specId:int:min(1)}/{procId:int:min(1)}")]
+        public async Task<IActionResult> AddProcedureToSpecialization([FromRoute] int specId, [FromRoute] int procId)
+        {
+            await _service.AddProcedureToSpecialization(specId, procId);
+            return Ok();
+        }
+
         [HttpPut("/{id:int:min(1)}")]
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, [FromBody]SpecializationViewModel updated)
         {
