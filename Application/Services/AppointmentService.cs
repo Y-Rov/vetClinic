@@ -21,7 +21,7 @@ namespace Application.Services
 
         public async Task CreateAsync(Appointment appointment)
         {
-            await _appointmentRepository.CreateAsync(appointment);
+            await _appointmentRepository.InsertAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo("Appointment was created in method CreateAsync");
         }
@@ -30,21 +30,21 @@ namespace Application.Services
         {
             Appointment? appointment = await GetAsync(appointmentId);
 
-            await _appointmentRepository.DeleteAsync(appointment);
+             _appointmentRepository.Delete(appointment);
             await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo($"Appointment was deleted with Id {appointmentId} in method DeleteAsync");
         }
 
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
-            var appointments = await _appointmentRepository.GetAsync();
+            var appointments = await _appointmentRepository.GetAsync(includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
             _logger.LogInfo("Appointments were getted in method GetAsync");
             return appointments;
         }
 
         public async Task<Appointment> GetAsync(int appointmentId)
         {
-            var appointment = await _appointmentRepository.GetAsync(appointmentId);
+            var appointment = await _appointmentRepository.GetById(appointmentId, "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
            
             if (appointment is null)
             {

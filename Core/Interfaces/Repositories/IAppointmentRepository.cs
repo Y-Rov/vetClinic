@@ -2,12 +2,8 @@
 
 namespace Core.Interfaces.Repositories
 {
-    public interface IAppointmentRepository
+    public interface IAppointmentRepository : IRepository<Appointment>
     {
-        Task<IEnumerable<Appointment>> GetAsync();
-        Task<Appointment> GetAsync(int appointmentId);
-        Task CreateAsync(Appointment appointment);
-        Task DeleteAsync(Appointment appointmentId);
-        Task SaveChangesAsync();
+        
     }
 }
