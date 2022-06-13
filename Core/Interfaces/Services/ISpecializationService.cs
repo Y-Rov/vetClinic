@@ -9,6 +9,7 @@ namespace Core.Interfaces.Services
         Task<IEnumerable<Procedure>> GetSpecializationProcedures(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
         Task AddProcedureToSpecialization(int specializationId, int procedureId);
+        Task RemoveProcedureFromSpecialization(int specializationId, int procedureId);
         Task UpdateSpecializationAsync(int id,Specialization updated);
         Task DeleteSpecializationAsync(int id);
     }

@@ -9,16 +9,13 @@ namespace Application.Services
     public class SpecializationService : ISpecializationService
     {
         readonly ISpecializationRepository _repository;
-        readonly IProcedureRepository _procedureRepository;
         readonly ILoggerManager _logger;
         public SpecializationService(
             ISpecializationRepository repository, 
-            ILoggerManager logger,
-            IProcedureRepository procedureRepository)
+            ILoggerManager logger)
         {
             _repository = repository;
             _logger = logger;
-            _procedureRepository = procedureRepository;
         }
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
@@ -63,6 +60,22 @@ namespace Application.Services
                 ProcedureId = procedureId, 
                 SpecializationId = specializationId 
             });
+
+            await UpdateSpecializationAsync(specializationId, specialization);
+
+            await _repository.SaveChangesAsync();
+        }
+
+        public async Task RemoveProcedureFromSpecialization(int specializationId, int procedureId)
+        {
+            var specialization =
+                await GetSpecializationByIdAsync(specializationId);
+
+            var procedure = specialization.ProcedureSpecializations
+                .FirstOrDefault(ps => ps.ProcedureId == procedureId && ps.SpecializationId == specializationId)
+                    ?? throw new NotFoundException($"Specialization's procedure with id: {procedureId} not found");
+
+            specialization.ProcedureSpecializations.Remove(procedure);
 
             await UpdateSpecializationAsync(specializationId, specialization);
 
