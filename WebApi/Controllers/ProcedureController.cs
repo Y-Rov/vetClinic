@@ -11,19 +11,22 @@ namespace WebApi.Controllers;
 public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
-    private readonly IViewModelMapper<ProcedureViewModelBase, Procedure> _procedureMapper;
+    private readonly IViewModelMapper<ProcedureViewModelBase, Procedure> _procedureCreateMapper;
+    private readonly IViewModelMapper<ProcedureUpdateViewModel, Procedure> _procedureUpdateMapper;
     private readonly IViewModelMapper<Procedure, ProcedureReadViewModel> _procedureViewModelMapper;
 
     private readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
         _procedureEnumerableViewModelMapper;
 
     public ProcedureController(IProcedureService procedureService, 
-        IViewModelMapper<ProcedureViewModelBase, Procedure> procedureMapper,
+        IViewModelMapper<ProcedureViewModelBase, Procedure> procedureCreateMapper,
+        IViewModelMapper<ProcedureUpdateViewModel, Procedure> procedureUpdateMapper,
         IViewModelMapper<Procedure, ProcedureReadViewModel> procedureViewModelMapper, 
         IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> procedureEnumerableViewModelMapper)
     {
         _procedureService = procedureService;
-        _procedureMapper = procedureMapper;
+        _procedureCreateMapper = procedureCreateMapper;
+        _procedureUpdateMapper = procedureUpdateMapper;
         _procedureViewModelMapper = procedureViewModelMapper;
         _procedureEnumerableViewModelMapper = procedureEnumerableViewModelMapper;
     }
@@ -47,8 +50,7 @@ public class ProcedureController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateAsync([FromBody]ProcedureViewModelBase procedure)
     { 
-        await _procedureService.CreateNewProcedureAsync(_procedureMapper.Map(procedure));
-
+        await _procedureService.CreateNewProcedureAsync(_procedureCreateMapper.Map(procedure));
         return Ok();
     }
     
@@ -60,18 +62,12 @@ public class ProcedureController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync([FromBody]ProcedureViewModelBase newProcedure)
+    public async Task<ActionResult> UpdateAsync([FromBody]ProcedureUpdateViewModel newProcedure)
     {
-        await _procedureService.UpdateProcedureAsync(_procedureMapper.Map(newProcedure));
-        return NoContent();
-    }
-
-    [HttpPatch("{id:int:min(1)}")]
-    public async Task<ActionResult> UpdateProcedureSpecializationsAsync(
-        [FromRoute]int id, 
-        [FromBody]IEnumerable<int> specializationIds)
-    { 
-        await _procedureService.UpdateProcedureSpecializationsAsync(id, specializationIds);
+        await _procedureService.UpdateProcedureAsync(_procedureUpdateMapper.Map(newProcedure));
+        await _procedureService.UpdateProcedureSpecializationsAsync(
+            newProcedure.Id,
+            newProcedure.SpecializationIds);
         return NoContent();
     }
 }

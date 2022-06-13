@@ -35,6 +35,7 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
 
+        services.AddScoped<IViewModelMapper<ProcedureUpdateViewModel, Procedure>, ProcedureUpdateMapper>();
         services.AddScoped<IViewModelMapper<ProcedureViewModelBase, Procedure>, ProcedureCreateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>,
             ProcedureReadEnumerableMapper>();
