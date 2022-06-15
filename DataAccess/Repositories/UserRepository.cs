@@ -35,7 +35,6 @@ namespace DataAccess.Repositories
                 _userManager.Users.Where(filter))
                 .Where(u => u.IsActive)
                 .Include(u => u.Address)
-                .Include(u => u.Salary)
                 .Include(u => u.Portfolio);
 
             if (orderBy is not null)
@@ -54,33 +53,11 @@ namespace DataAccess.Repositories
             return users;
         }
 
-        //public async Task<IEnumerable<User>> GetAllAsync()
-        //{
-        //    var users = await _userManager.Users
-        //        .Include(u => u.Address)
-        //        .Include(u => u.Salary)
-        //        .Include(u => u.Portfolio)
-        //        .Where(u => u.IsActive)
-        //        .ToListAsync();
-
-        //    return users;
-        //}
-
         public async Task<User?> GetByIdAsync(int id)
         {
             var user = await GetQuery().SingleOrDefaultAsync(u => u.Id == id);
             return user;
         }
-        //public async Task<User?> GetByIdAsync(int id)
-        //{
-        //    var user = await _userManager.Users
-        //        .Include(u => u.Address)
-        //        .Include(u => u.Salary)
-        //        .Include(u => u.Portfolio)
-        //        .SingleOrDefaultAsync(u => (u.Id == id) && u.IsActive);
-
-        //    return user;
-        //}
 
         public async Task<IdentityResult> UpdateAsync(User user)
         {
