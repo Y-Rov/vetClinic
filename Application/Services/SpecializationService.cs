@@ -62,8 +62,6 @@ namespace Application.Services
             });
 
             await UpdateSpecializationAsync(specializationId, specialization);
-
-            await _repository.SaveChangesAsync();
         }
 
         public async Task RemoveProcedureFromSpecialization(int specializationId, int procedureId)
@@ -78,8 +76,6 @@ namespace Application.Services
             specialization.ProcedureSpecializations.Remove(procedure);
 
             await UpdateSpecializationAsync(specializationId, specialization);
-
-            await _repository.SaveChangesAsync();
         }
 
         public async Task DeleteSpecializationAsync(int id) 

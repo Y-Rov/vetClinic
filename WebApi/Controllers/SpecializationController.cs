@@ -10,7 +10,6 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
 {
-    //[EnableCors("frontend")]
     [Route("api/specialization")]
     [ApiController]
     public class SpecializationController : ControllerBase
