@@ -2,6 +2,7 @@
 using Core.Interfaces.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DataAccess.Repositories
 {
@@ -25,20 +26,36 @@ namespace DataAccess.Repositories
             user.IsActive = false;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        private IQueryable<User> GetQuery(
+            Expression<Func<User, bool>>? filter = null,
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
         {
-            var users = await _userManager.Users
-                .Where(u => u.IsActive == true)
-                .ToListAsync();
+            IQueryable<User> usersQuery = (filter is null ? 
+                _userManager.Users : 
+                _userManager.Users.Where(filter))
+                .Where(u => u.IsActive)
+                .Include(u => u.Address)
+                .Include(u => u.Portfolio);
 
+            if (orderBy is not null)
+            {
+                usersQuery = orderBy(usersQuery);
+            }
+
+            return usersQuery;
+        }
+
+        public async Task<IEnumerable<User>> GetAllAsync(
+            Expression<Func<User, bool>>? filter = null,
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
+        {
+            var users = await GetQuery(filter, orderBy).ToListAsync();
             return users;
         }
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            var user = await _userManager.Users
-                .SingleOrDefaultAsync(u => (u.Id == id) && (u.IsActive == true));
-
+            var user = await GetQuery().SingleOrDefaultAsync(u => u.Id == id);
             return user;
         }
 
