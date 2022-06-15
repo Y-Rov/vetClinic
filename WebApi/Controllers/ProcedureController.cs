@@ -49,8 +49,9 @@ public class ProcedureController : ControllerBase
     
     [HttpPost]
     public async Task<ActionResult> CreateAsync([FromBody]ProcedureViewModelBase procedure)
-    { 
-        await _procedureService.CreateNewProcedureAsync(_procedureCreateMapper.Map(procedure));
+    {
+        var newProcedure = _procedureCreateMapper.Map(procedure);
+        await _procedureService.CreateNewProcedureAsync(newProcedure);
         return Ok();
     }
     
@@ -64,7 +65,8 @@ public class ProcedureController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> UpdateAsync([FromBody]ProcedureUpdateViewModel newProcedure)
     {
-        await _procedureService.UpdateProcedureAsync(_procedureUpdateMapper.Map(newProcedure));
+        var updatedProcedure = _procedureUpdateMapper.Map(newProcedure);
+        await _procedureService.UpdateProcedureAsync(updatedProcedure);
         await _procedureService.UpdateProcedureSpecializationsAsync(
             newProcedure.Id,
             newProcedure.SpecializationIds);
