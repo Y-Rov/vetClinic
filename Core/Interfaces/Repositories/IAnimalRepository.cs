@@ -2,14 +2,8 @@
 
 namespace Core.Interfaces.Repositories
 {
-    public interface IAnimalRepository
+    public interface IAnimalRepository : IRepository<Animal>
     {
-        Task<Animal> CreateAsync(Animal animal);
-        Task DeleteAsync(Animal animal);
-        Task UpdateAsync(Animal animal);
-        Task<IEnumerable<Animal>> GetAsync();
-        Task<Animal?> GetAsync(int animalId);
         Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id);
-        Task SaveChangesAsync();
     }
 }
