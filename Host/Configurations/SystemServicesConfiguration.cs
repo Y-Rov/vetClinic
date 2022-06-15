@@ -9,6 +9,8 @@ namespace Host.Configurations
 {
     public static class SystemServicesConfiguration
     {
+        static public string AllowedOrigins = "frontend";
+
         public static void AddSystemServices(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
@@ -16,6 +18,17 @@ namespace Host.Configurations
             services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssemblyContaining<ProcedureViewModelBaseValidator>();
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowedOrigins,
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200");
+                    policy.WithHeaders("*");
+                    policy.WithMethods("*");
+                });
             });
         }
     }

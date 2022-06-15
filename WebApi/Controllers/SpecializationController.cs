@@ -4,11 +4,13 @@ using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
 {
+    //[EnableCors("frontend")]
     [Route("api/specialization")]
     [ApiController]
     public class SpecializationController : ControllerBase

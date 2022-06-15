@@ -97,5 +97,15 @@ namespace Application.Services
             _logger.LogInfo($"Specialization with id: {updated.Id} updated");
             await _repository.SaveChangesAsync();
         }
+
+        public Task AddUserToSpecialization(int specializationId, int procedureId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveUserFromSpecialization(int specializationId, int procedureId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
