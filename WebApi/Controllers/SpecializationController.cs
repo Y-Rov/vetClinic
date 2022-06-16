@@ -4,6 +4,7 @@ using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -57,6 +58,20 @@ namespace WebApi.Controllers
             var specializationRaw = _mapper.Map(specialization);
             await _service.AddSpecializationAsync(specializationRaw);
             return Ok(specialization);
+        }
+
+        [HttpPut("/addProc/{specId:int:min(1)}/{procId:int:min(1)}")]
+        public async Task<IActionResult> AddProcedureToSpecialization([FromRoute] int specId, [FromRoute] int procId)
+        {
+            await _service.AddProcedureToSpecialization(specId, procId);
+            return Ok();
+        }
+
+        [HttpPut("/removeProc/{specId:int:min(1)}/{procId:int:min(1)}")]
+        public async Task<IActionResult> RemoveProcedureFromSpecialization([FromRoute] int specId, [FromRoute] int procId)
+        {
+            await _service.RemoveProcedureFromSpecialization(specId, procId);
+            return Ok();
         }
 
         [HttpPut("/{id:int:min(1)}")]

@@ -9,7 +9,7 @@ namespace DataAccess.Repositories
     {
         public SpecializationRepository(ClinicContext context) : base(context)
         {
-
+            
         }
     }
 }
