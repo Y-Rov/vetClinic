@@ -20,7 +20,7 @@ namespace Application.Services
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAsync(asNoTracking: true, includeProperties:  "ProcedureSpecializations.Procedure");
+            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations.User");
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
