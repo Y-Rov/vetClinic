@@ -81,6 +81,13 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        [HttpPut("/deleteUser/{specId:int:min(1)}/{userId:int:min(1)}")]
+        public async Task<IActionResult> DeleteUserFromSpecialization([FromRoute] int specId, [FromRoute] int userId)
+        {
+            await _service.RemoveUserFromSpecialization(specId, userId);
+            return Ok();
+        }
+
         [HttpPut("/{id:int:min(1)}")]
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, [FromBody]SpecializationViewModel updated)
         {
