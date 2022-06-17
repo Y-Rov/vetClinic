@@ -10,7 +10,7 @@ namespace WebApi.AutoMapper.AddressMappers
         {
             return new AddressViewModel
             {
-                UserId = source.UserId,
+                Id = source.UserId,
                 City = source.City,
                 Street = source.Street,
                 House = source.House,
