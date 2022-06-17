@@ -36,7 +36,8 @@ namespace WebApi.AutoMapper.UserMappers
                 BirthDate = source.BirthDate,
                 Role = role,
                 Address = address,
-                Portfolio = source.Portfolio?.Description
+                Portfolio = source.Portfolio?.Description,
+                UserSpecializations = source.UserSpecializations
             };
         }
     }

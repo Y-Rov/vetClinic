@@ -1,4 +1,6 @@
-﻿namespace Core.ViewModels.User
+﻿using Core.Entities;
+
+namespace Core.ViewModels.User
 {
     public record UserReadViewModel : UserBaseViewModel
     {
@@ -7,5 +9,6 @@
         public string? Email { get; init; }
         public string? Address { get; init; }
         public string? Portfolio { get; init; }
+        public IEnumerable<UserSpecialization>? UserSpecializations { get; init; }
     }
 }

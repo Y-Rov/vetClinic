@@ -35,7 +35,8 @@ namespace DataAccess.Repositories
                 _userManager.Users.Where(filter))
                 .Where(u => u.IsActive)
                 .Include(u => u.Address)
-                .Include(u => u.Portfolio);
+                .Include(u => u.Portfolio)
+                .Include(u => u.UserSpecializations);
 
             if (orderBy is not null)
             {
