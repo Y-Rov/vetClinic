@@ -55,7 +55,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPut]
+        [HttpPut("{id:int:min(1)}")]
         public async Task<ActionResult> UpdateAsync(AddressViewModel addressViewModel)
         {
             var address = _addressMapper.Map(addressViewModel);

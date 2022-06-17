@@ -8,7 +8,7 @@ namespace WebApi.Validators.AddressValidators
     {
         public AddressViewModelValidator()
         {
-            RuleFor(viewModel => viewModel.UserId)
+            RuleFor(viewModel => viewModel.Id)
                 .GreaterThan(0)
                 .WithMessage("User ID must be greater than 0");
 
