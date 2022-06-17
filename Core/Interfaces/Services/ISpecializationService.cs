@@ -10,8 +10,8 @@ namespace Core.Interfaces.Services
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
         Task AddProcedureToSpecialization(int specializationId, int procedureId);
         Task RemoveProcedureFromSpecialization(int specializationId, int procedureId);
-        Task AddUserToSpecialization(int specializationId, int procedureId);
-        Task RemoveUserFromSpecialization(int specializationId, int procedureId);
+        Task AddUserToSpecialization(int specializationId, int userId);
+        Task RemoveUserFromSpecialization(int specializationId, int userId);
         Task UpdateSpecializationAsync(int id,Specialization updated);
         Task DeleteSpecializationAsync(int id);
     }

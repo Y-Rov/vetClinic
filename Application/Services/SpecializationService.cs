@@ -94,14 +94,32 @@ namespace Application.Services
             await _repository.SaveChangesAsync();
         }
 
-        public Task AddUserToSpecialization(int specializationId, int procedureId)
+        public async Task AddUserToSpecialization(int specializationId, int userId)
         {
-            throw new NotImplementedException();
+            var specialization =
+                await GetSpecializationByIdAsync(specializationId);
+            specialization.UserSpecializations.Add(new UserSpecialization
+            {
+                SpecializationId = specializationId,
+                UserId = userId
+            });
+            await UpdateSpecializationAsync(specializationId, specialization);
         }
 
-        public Task RemoveUserFromSpecialization(int specializationId, int procedureId)
+        public async Task RemoveUserFromSpecialization(int specializationId, int userId)
         {
-            throw new NotImplementedException();
+            var specialization =
+                await GetSpecializationByIdAsync(specializationId);
+
+            var user = specialization.UserSpecializations
+                .FirstOrDefault(
+                us => us.UserId == userId 
+                && us.SpecializationId == specializationId)
+                    ?? throw new NotFoundException($"Specialization's user with id: {userId} not found");
+
+            specialization.UserSpecializations.Remove(user);
+
+            await UpdateSpecializationAsync(specializationId, specialization);
         }
     }
 }

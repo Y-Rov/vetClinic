@@ -74,6 +74,13 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        [HttpPut("/addUser/{specId:int:min(1)}/{userId:int:min(1)}")]
+        public async Task<IActionResult> AddUserToSpecialization([FromRoute] int specId, [FromRoute] int userId)
+        {
+            await _service.AddUserToSpecialization(specId, userId);
+            return Ok();
+        }
+
         [HttpPut("/{id:int:min(1)}")]
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, [FromBody]SpecializationViewModel updated)
         {
@@ -87,5 +94,6 @@ namespace WebApi.Controllers
             await _service.DeleteSpecializationAsync(id);
             return NoContent();
         }
+
     }
 }

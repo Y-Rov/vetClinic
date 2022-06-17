@@ -1,25 +1,48 @@
 ﻿using Core.Entities;
+using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
+using Core.ViewModels.User;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.SpecializationMappers
 {
     public class SpecializationViewModelMapper : IViewModelMapper<Specialization, SpecializationViewModel>
     {
+        private ProcedureViewModelBase MapProcedure(Procedure procedure)
+        {
+            return new ProcedureViewModelBase
+            {
+                Name = procedure.Name,
+                DurationInMinutes = procedure.DurationInMinutes,
+                Cost = procedure.Cost,
+                Description = procedure.Description
+            };
+        }
+
+        private UserBaseViewModel MapUser(User user)
+        {
+            return new UserBaseViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                BirthDate = user.BirthDate
+            };
+        }
+
         public SpecializationViewModel Map(Specialization source)
         {
             return new SpecializationViewModel()
             {
                 Id = source.Id,
-                Name = source.Name
+                Name = source.Name,
+                Procedures =
+                    source.ProcedureSpecializations
+                    .Select(ps => MapProcedure(ps.Procedure)).ToList(),
+                Users =
+                    source.UserSpecializations?
+                    .Select(us => MapUser(us.User)).ToList()
             };
         }
-        //public IEnumerable<SpecializationReadViewModel> Map(IEnumerable<Specialization> source)
-        //{
-        //    List<SpecializationReadViewModel> specializations = new();
-        //    foreach (var spec in source)
-        //        specializations.Add(Map(spec));
-        //    return specializations;
-        //}
     }
 }
