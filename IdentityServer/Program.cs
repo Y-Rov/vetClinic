@@ -11,7 +11,9 @@ var config = builder.Configuration;
 builder.Services.AddServices(config);
 builder.Services.AddCors(config =>
 {
-    config.AddDefaultPolicy(config => config.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+    config.AddDefaultPolicy(config => 
+        config.WithOrigins("http://localhost:4200", "https://localhost:5001", "http://localhost:5283")
+        .AllowAnyHeader().AllowAnyMethod());
 }
 );
 
