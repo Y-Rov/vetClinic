@@ -25,7 +25,7 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations");
+            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations");
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");
@@ -98,7 +98,7 @@ namespace Application.Services
         {
             var specialization =
                 await GetSpecializationByIdAsync(specializationId);
-            specialization.UserSpecializations.Add(new UserSpecialization
+            specialization.UserSpecializations?.Add(new UserSpecialization
             {
                 SpecializationId = specializationId,
                 UserId = userId
