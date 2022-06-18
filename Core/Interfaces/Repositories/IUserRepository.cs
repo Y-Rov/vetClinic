@@ -9,7 +9,11 @@ namespace Core.Interfaces.Repositories
         Task<IEnumerable<User>> GetAllAsync(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null);
-        Task<IEnumerable<User>> GetByRoleAsync(string role);
+
+        Task<IEnumerable<User>> GetByRoleAsync(
+            string role,
+            string includeProperties = "");
+
         Task<User?> GetByIdAsync(int id);
         Task<IdentityResult> CreateAsync(User user, string password);
         Task<IdentityResult> AssignRoleAsync(User user, string role);

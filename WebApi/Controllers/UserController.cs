@@ -53,7 +53,7 @@ namespace WebApi.Controllers
         [HttpGet("doctors")]
         public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetDoctors()
         {
-            var users = await _userService.GetByRoleAsync("Doctor");
+            var users = await _userService.GetDoctorsAsync();
             var readModels = _readEnumerableMapper.Map(users);
 
             return Ok(readModels);
