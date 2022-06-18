@@ -10,7 +10,7 @@ public class Procedure
     public IEnumerable<AppointmentProcedure> AppointmentProcedures { get; set; } = 
         new List<AppointmentProcedure>();
 
-    public IEnumerable<ProcedureSpecialization> ProcedureSpecializations { get; set; } =
+    public ICollection<ProcedureSpecialization> ProcedureSpecializations { get; set; } =
         new List<ProcedureSpecialization>();
 }
 

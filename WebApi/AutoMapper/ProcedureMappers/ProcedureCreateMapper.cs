@@ -4,9 +4,9 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ProcedureMappers;
 
-public class ProcedureCreateMapper : IViewModelMapper<ProcedureViewModelBase, Procedure>
+public class ProcedureCreateMapper : IViewModelMapper<ProcedureCreateViewModel, Procedure>
 {
-    public Procedure Map(ProcedureViewModelBase source)
+    public Procedure Map(ProcedureCreateViewModel source)
     {
         return new Procedure()
         {

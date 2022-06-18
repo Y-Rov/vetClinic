@@ -9,18 +9,29 @@ namespace Application.Services;
 public class ProcedureService : IProcedureService
 {
     private readonly IProcedureRepository _procedureRepository;
+    private readonly ISpecializationService _specializationService;
     private readonly ILoggerManager _loggerManager;
 
     public ProcedureService(
         IProcedureRepository procedureRepository,
+        ISpecializationService specializationService , 
         ILoggerManager loggerManager)
     {
         _procedureRepository = procedureRepository;
+        _specializationService = specializationService;
         _loggerManager = loggerManager;
     }
 
-    public async Task CreateNewProcedureAsync(Procedure procedure)
+    public async Task CreateNewProcedureAsync(Procedure procedure, IEnumerable<int> specializationIds)
     {
+        foreach (var specializationId in specializationIds)
+        {
+            procedure.ProcedureSpecializations.Add( new ProcedureSpecialization()
+            {
+                Procedure = procedure,
+                Specialization = await _specializationService.GetSpecializationByIdAsync(specializationId)
+            });
+        }
         await _procedureRepository.InsertAsync(procedure);
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Created new procedure with name: {procedure.Name}");
