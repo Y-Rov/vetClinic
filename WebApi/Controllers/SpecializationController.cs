@@ -40,7 +40,7 @@ namespace WebApi.Controllers
             return Ok(_listMapper.Map(await _service.GetAllSpecializationsAsync()));
         }
 
-        [HttpGet("/{id:int:min(1)}")]
+        [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult> GetSpecializationById([FromRoute] int id)
         {
             return Ok(_viewModelMapper.Map(await _service.GetSpecializationByIdAsync(id)));
@@ -88,14 +88,14 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [HttpPut("/{id:int:min(1)}")]
+        [HttpPut("{id:int:min(1)}")]
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, [FromBody]SpecializationViewModel updated)
         {
             await _service.UpdateSpecializationAsync(id,_mapper.Map(updated));
             return NoContent();
         }
 
-        [HttpDelete("/{id:int:min(1)}")]
+        [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteSpecialization([FromRoute] int id)
         {
             await _service.DeleteSpecializationAsync(id);

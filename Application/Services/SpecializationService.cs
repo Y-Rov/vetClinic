@@ -54,14 +54,21 @@ namespace Application.Services
         {
             var specialization = 
                 await GetSpecializationByIdAsync(specializationId);
-            
-            specialization.ProcedureSpecializations.Add(new ProcedureSpecialization 
-            { 
-                ProcedureId = procedureId, 
-                SpecializationId = specializationId 
-            });
 
-            await UpdateSpecializationAsync(specializationId, specialization);
+            var relationship = new ProcedureSpecialization
+            {
+                ProcedureId = procedureId,
+                SpecializationId = specializationId
+            };
+
+            if (!specialization.ProcedureSpecializations
+                .Any(pair => pair.SpecializationId == specializationId && pair.ProcedureId == procedureId))
+            {
+                specialization.ProcedureSpecializations.Add(relationship);
+                await UpdateSpecializationAsync(specializationId, specialization);
+            }
+            else
+                throw new ArgumentException($"There already procedure with id: {procedureId}");
         }
 
         public async Task RemoveProcedureFromSpecialization(int specializationId, int procedureId)
@@ -98,12 +105,21 @@ namespace Application.Services
         {
             var specialization =
                 await GetSpecializationByIdAsync(specializationId);
-            specialization.UserSpecializations?.Add(new UserSpecialization
+
+            var relationship = new UserSpecialization
             {
-                SpecializationId = specializationId,
-                UserId = userId
-            });
-            await UpdateSpecializationAsync(specializationId, specialization);
+                UserId = userId,
+                SpecializationId = specializationId
+            };
+
+            if (!specialization.UserSpecializations
+                .Any(pair => pair.SpecializationId == specializationId && pair.UserId == userId))
+            {
+                specialization.UserSpecializations.Add(relationship);
+                await UpdateSpecializationAsync(specializationId, specialization);
+            }
+            else
+                throw new ArgumentException($"There already user with id: {userId}");
         }
 
         public async Task RemoveUserFromSpecialization(int specializationId, int userId)
