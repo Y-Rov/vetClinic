@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -47,6 +48,7 @@ public class ProcedureController : ControllerBase
         return Ok(viewModel);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> CreateAsync([FromBody]ProcedureCreateViewModel procedure)
     {
@@ -55,6 +57,7 @@ public class ProcedureController : ControllerBase
         return Ok();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int:min(1)}")]
     public async Task<ActionResult> DeleteAsync([FromRoute]int id)
     {
@@ -62,6 +65,7 @@ public class ProcedureController : ControllerBase
         return NoContent();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<ActionResult> UpdateAsync([FromBody]ProcedureUpdateViewModel newProcedure)
     {
