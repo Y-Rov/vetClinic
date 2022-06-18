@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
+using DataAccess.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -9,10 +10,12 @@ namespace DataAccess.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
+        private readonly ClinicContext _context;
 
-        public UserRepository(UserManager<User> userManager)
+        public UserRepository(UserManager<User> userManager, ClinicContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
         public async Task<IdentityResult> CreateAsync(User user, string password)
@@ -35,7 +38,8 @@ namespace DataAccess.Repositories
                 _userManager.Users.Where(filter))
                 .Where(u => u.IsActive)
                 .Include(u => u.Address)
-                .Include(u => u.Portfolio);
+                .Include(u => u.Portfolio)
+                .Include(u => u.UserSpecializations);
 
             if (orderBy is not null)
             {
@@ -69,6 +73,24 @@ namespace DataAccess.Repositories
         {
             var assignResult = await _userManager.AddToRoleAsync(user, role);
             return assignResult;
+        }
+
+        public async Task<IEnumerable<User>> GetByRoleAsync(string role)
+        {
+            var users = await (
+                from user in _context.Users
+                join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                join r in _context.Roles on userRole.RoleId equals r.Id
+                where r.Id == 2
+                select user
+            )
+            .Where(u => u.IsActive)
+            .Include(u => u.Address)
+            .Include(u => u.Portfolio)
+            .Include(u => u.UserSpecializations)
+            .ToListAsync();
+
+            return users;
         }
     }
 }

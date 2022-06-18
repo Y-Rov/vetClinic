@@ -53,15 +53,11 @@ public static class Config
                 ClientId = "angular_client",
                 ClientName = "Angular Client",
                 AllowedScopes = {"apiAccess", "openid", "profile"},
-                RequireConsent = false,
-                RequireClientSecret = false,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowOfflineAccess = true, // enable refresh tokens
-                AllowedGrantTypes = GrantTypes.Code,
-                RequirePkce = true,
-                RedirectUris =           { "http://localhost:4200" },
-                PostLogoutRedirectUris = { "http://localhost:4200" },
-                AllowedCorsOrigins =     { "http://localhost:4200" },
-                AccessTokenLifetime = 3600,
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                ClientSecrets = {new Secret("angular_client_secret".ToSha256())},
+                AccessTokenLifetime = 600,
             }
         };
 }
