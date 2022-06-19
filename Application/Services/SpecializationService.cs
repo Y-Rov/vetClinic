@@ -158,5 +158,10 @@ namespace Application.Services
             }
             await _repository.SaveChangesAsync();
         }
+
+        public Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace DataAccess.Repositories
     public class SpecializationRepository : Repository<Specialization>, ISpecializationRepository
     {
         private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
-
+        //private readonly IUser
         public SpecializationRepository(ClinicContext context,
             IProcedureSpecializationRepository procedureSpecializationRepository) : base(context)
         {
@@ -35,6 +35,11 @@ namespace DataAccess.Repositories
             }
 
             await SaveChangesAsync();
+        }
+
+        public async Task UpdateUsersAsync(int specializationId, IEnumerable<int> userIds)
+        {
+
         }
     }
 }

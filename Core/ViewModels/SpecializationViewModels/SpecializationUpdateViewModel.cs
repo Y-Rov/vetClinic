@@ -8,7 +8,7 @@ namespace Core.ViewModels.SpecializationViewModels
 {
     public class SpecializationUpdateViewModel : SpecializationBaseViewModel
     {
-        public IEnumerable<int> ProcedureIds { get; set; } 
-//            new List<int>();
+        public IEnumerable<int>? ProcedureIds { get; set; }
+        public IEnumerable<int>? UsersIds { get; set; }
     }
 }

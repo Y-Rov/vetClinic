@@ -60,14 +60,14 @@ namespace WebApi.Controllers
             return Ok(specialization);
         }
 
-        [HttpPut("addProc/{specId:int:min(1)}/{procId:int:min(1)}")]
+        [HttpPut("addProcedure/{specId:int:min(1)}/{procId:int:min(1)}")]
         public async Task<IActionResult> AddProcedureToSpecialization([FromRoute] int specId, [FromRoute] int procId)
         {
             await _service.AddProcedureToSpecialization(specId, procId);
             return NoContent();
         }
 
-        [HttpPut("removeProc/{specId:int:min(1)}/{procId:int:min(1)}")]
+        [HttpPut("removeProcedure/{specId:int:min(1)}/{procId:int:min(1)}")]
         public async Task<IActionResult> RemoveProcedureFromSpecialization([FromRoute] int specId, [FromRoute] int procId)
         {
             await _service.RemoveProcedureFromSpecialization(specId, procId);
@@ -81,7 +81,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPut("deleteUser/{specId:int:min(1)}/{userId:int:min(1)}")]
+        [HttpPut("removeUser/{specId:int:min(1)}/{userId:int:min(1)}")]
         public async Task<IActionResult> DeleteUserFromSpecialization([FromRoute] int specId, [FromRoute] int userId)
         {
             await _service.RemoveUserFromSpecialization(specId, userId);
@@ -94,6 +94,14 @@ namespace WebApi.Controllers
             [FromBody]SpecializationUpdateViewModel specialization)
         {
             await _service.UpdateSpecializationProceduresAsync(id, specialization.ProcedureIds);
+            return NoContent();
+        }
+
+        [HttpPut("addUsers/{id:int:min(1)}")]
+        public async Task<ActionResult> AddUsersToSpecialization(
+            [FromRoute]int id,
+            [FromBody]SpecializationUpdateViewModel specialization)
+        {
             return NoContent();
         }
 
