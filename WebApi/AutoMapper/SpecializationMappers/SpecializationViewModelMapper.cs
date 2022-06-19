@@ -20,10 +20,11 @@ namespace WebApi.AutoMapper.SpecializationMappers
             };
         }
 
-        private UserBaseViewModel MapUser(User user)
+        private UserReadViewModel MapUser(User user)
         {
-            return new UserBaseViewModel
+            return new UserReadViewModel
             {
+                Id=user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,

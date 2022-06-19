@@ -8,6 +8,6 @@ namespace Core.ViewModels.SpecializationViewModels
         public int Id { get; set; }
         public string Name { get; set; }
         public IEnumerable<ProcedureReadViewModel>? Procedures { get; set; }
-        public IEnumerable<UserBaseViewModel>? Users { get; set; }
+        public IEnumerable<UserReadViewModel>? Users { get; set; }
     }
 }
