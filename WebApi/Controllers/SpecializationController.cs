@@ -64,28 +64,37 @@ namespace WebApi.Controllers
         public async Task<IActionResult> AddProcedureToSpecialization([FromRoute] int specId, [FromRoute] int procId)
         {
             await _service.AddProcedureToSpecialization(specId, procId);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut("removeProc/{specId:int:min(1)}/{procId:int:min(1)}")]
         public async Task<IActionResult> RemoveProcedureFromSpecialization([FromRoute] int specId, [FromRoute] int procId)
         {
             await _service.RemoveProcedureFromSpecialization(specId, procId);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut("addUser/{specId:int:min(1)}/{userId:int:min(1)}")]
         public async Task<IActionResult> AddUserToSpecialization([FromRoute] int specId, [FromRoute] int userId)
         {
             await _service.AddUserToSpecialization(specId, userId);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut("deleteUser/{specId:int:min(1)}/{userId:int:min(1)}")]
         public async Task<IActionResult> DeleteUserFromSpecialization([FromRoute] int specId, [FromRoute] int userId)
         {
             await _service.RemoveUserFromSpecialization(specId, userId);
-            return Ok();
+            return NoContent();
+        }
+
+        [HttpPut("addProcedures/{id:int:min(1)}")]
+        public async Task<ActionResult> AddProceduresToSpecialization(
+            [FromRoute]int id, 
+            [FromBody]SpecializationUpdateViewModel specialization)
+        {
+            await _service.UpdateSpecializationProceduresAsync(id, specialization.ProcedureIds);
+            return NoContent();
         }
 
         [HttpPut("{id:int:min(1)}")]
@@ -95,12 +104,12 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
+
         [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteSpecialization([FromRoute] int id)
         {
             await _service.DeleteSpecializationAsync(id);
             return NoContent();
         }
-
     }
 }
