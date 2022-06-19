@@ -33,7 +33,7 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<ExceptionEntity>> GetTodayAsync()
         {
             var todayErors = await _clinicContext.Exceptions
-                .Where(ex => ex.DateTime.Day == DateTime.Today.Day)
+                .Where(ex => ex.DateTime.Date == DateTime.Today.Date)
                 .ToListAsync();
 
             return todayErors;
@@ -51,7 +51,7 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync()
         {
-            var todayErrorStats = await _clinicContext.Exceptions.Where(ex => ex.DateTime.Day == DateTime.Today.Day)
+            var todayErrorStats = await _clinicContext.Exceptions.Where(ex => ex.DateTime.Date == DateTime.Today.Date)
                 .GroupBy(ex => ex.Name)
                 .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() })
                 .ToListAsync();
