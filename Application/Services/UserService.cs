@@ -58,15 +58,17 @@ namespace Application.Services
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllAsync();
-            _loggerManager.LogInfo("Successfully retrieved all doctors");
+            _loggerManager.LogInfo("Successfully retrieved all users");
 
             return users;
         }
 
-        public async Task<IEnumerable<User>> GetByRoleAsync(string role)
+        public async Task<IEnumerable<User>> GetDoctorsAsync()
         {
-            var doctors = await _userRepository.GetByRoleAsync(role);
-            _loggerManager.LogInfo($"Successfully retrieved all {role}s");
+            var doctors = await _userRepository.GetByRoleAsync("Doctor", 
+                "Address,Portfolio,UserSpecializations.Specialization");
+
+            _loggerManager.LogInfo("Successfully retrieved all doctors");
 
             return doctors;
         }

@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using NLog;
 using WebApi.AutoMapper.Configurations;
 
-
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
 

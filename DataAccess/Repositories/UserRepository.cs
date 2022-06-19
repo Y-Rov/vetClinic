@@ -12,7 +12,9 @@ namespace DataAccess.Repositories
         private readonly UserManager<User> _userManager;
         private readonly ClinicContext _context;
 
-        public UserRepository(UserManager<User> userManager, ClinicContext context)
+        public UserRepository(
+            UserManager<User> userManager, 
+            ClinicContext context)
         {
             _userManager = userManager;
             _context = context;
@@ -27,26 +29,6 @@ namespace DataAccess.Repositories
         public void Delete(User user)
         {
             user.IsActive = false;
-        }
-
-        private IQueryable<User> GetQuery(
-            Expression<Func<User, bool>>? filter = null,
-            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
-        {
-            IQueryable<User> usersQuery = (filter is null ? 
-                _userManager.Users : 
-                _userManager.Users.Where(filter))
-                .Where(u => u.IsActive)
-                .Include(u => u.Address)
-                .Include(u => u.Portfolio)
-                .Include(u => u.UserSpecializations);
-
-            if (orderBy is not null)
-            {
-                usersQuery = orderBy(usersQuery);
-            }
-
-            return usersQuery;
         }
 
         public async Task<IEnumerable<User>> GetAllAsync(
@@ -75,22 +57,45 @@ namespace DataAccess.Repositories
             return assignResult;
         }
 
-        public async Task<IEnumerable<User>> GetByRoleAsync(string role)
+        public async Task<IEnumerable<User>> GetByRoleAsync(
+            string role,
+            string includeProperties = "")
         {
-            var users = await (
+            var users = (
                 from user in _context.Users
                 join userRole in _context.UserRoles on user.Id equals userRole.UserId
                 join r in _context.Roles on userRole.RoleId equals r.Id
-                where r.Id == 2
+                where r.Name == role
                 select user
             )
-            .Where(u => u.IsActive)
-            .Include(u => u.Address)
-            .Include(u => u.Portfolio)
-            .Include(u => u.UserSpecializations)
-            .ToListAsync();
+            .Where(u => u.IsActive);
 
-            return users;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                users = includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Aggregate(users, (current, includeProperty) => current.Include(includeProperty));
+            }
+
+            return await users.ToListAsync();
+        }
+
+        private IQueryable<User> GetQuery(
+            Expression<Func<User, bool>>? filter = null,
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
+        {
+            IQueryable<User> usersQuery = (filter is null ?
+                _userManager.Users :
+                _userManager.Users.Where(filter))
+                .Where(u => u.IsActive)
+                .Include(u => u.Address)
+                .Include(u => u.Portfolio);
+
+            if (orderBy is not null)
+            {
+                usersQuery = orderBy(usersQuery);
+            }
+
+            return usersQuery;
         }
     }
 }
