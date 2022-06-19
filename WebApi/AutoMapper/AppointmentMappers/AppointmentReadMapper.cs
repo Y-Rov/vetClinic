@@ -11,19 +11,19 @@ namespace WebApi.AutoMapper.AppointmentMappers
     {
         private readonly IViewModelMapper<Animal, AnimalViewModel> _animalMapper;
 
-        private readonly IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> _procedureMapper;
+        //private readonly IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> _procedureMapper;
 
-        private readonly IViewModelMapper<IEnumerable<AppointmentUser>, IEnumerable<UserReadViewModel>> _userMapper;
+        //private readonly IViewModelMapper<IEnumerable<AppointmentUser>, IEnumerable<UserReadViewModel>> _userMapper;
 
         public AppointmentReadMapper(
-           IViewModelMapper<Animal, AnimalViewModel> animalMapper,
-           IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> procedureMapper,
-           IViewModelMapper<IEnumerable<AppointmentUser>, IEnumerable<UserReadViewModel>> userMapper
+           IViewModelMapper<Animal, AnimalViewModel> animalMapper
+           //IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> procedureMapper,
+          // IViewModelMapper<IEnumerable<AppointmentUser>, IEnumerable<UserReadViewModel>> userMapper
             )
         {
             _animalMapper=animalMapper;
-            _procedureMapper=procedureMapper;
-            _userMapper=userMapper;
+            //_procedureMapper=procedureMapper;
+            //_userMapper=userMapper;
         }
 
         public AppointmentReadViewModel Map(Appointment appointment)
@@ -37,8 +37,8 @@ namespace WebApi.AutoMapper.AppointmentMappers
                
             };
 
-            appointmentViewModel.Procedures = _procedureMapper.Map(appointment.AppointmentProcedures);
-            appointmentViewModel.Users = _userMapper.Map(appointment.AppointmentUsers);
+            //appointmentViewModel.Procedures = _procedureMapper.Map(appointment.AppointmentProcedures);
+            //appointmentViewModel.Users = _userMapper.Map(appointment.AppointmentUsers);
             appointmentViewModel.AnimalViewModel = _animalMapper.Map(appointment.Animal);
 
             return appointmentViewModel;
