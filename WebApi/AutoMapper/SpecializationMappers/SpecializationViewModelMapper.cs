@@ -8,10 +8,11 @@ namespace WebApi.AutoMapper.SpecializationMappers
 {
     public class SpecializationViewModelMapper : IViewModelMapper<Specialization, SpecializationViewModel>
     {
-        private ProcedureViewModelBase MapProcedure(Procedure procedure)
+        private ProcedureReadViewModel MapProcedure(Procedure procedure)
         {
-            return new ProcedureViewModelBase
+            return new ProcedureReadViewModel
             {
+                Id = procedure.Id,  
                 Name = procedure.Name,
                 DurationInMinutes = procedure.DurationInMinutes,
                 Cost = procedure.Cost,
