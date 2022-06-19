@@ -4,11 +4,11 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.SpecializationMappers
 {
-    public class SpecializationListViewModel : IViewModelMapper<IEnumerable<Specialization>, IEnumerable<SpecializationViewModel>>
+    public class SpecializationListViewModelMapper : IViewModelMapper<IEnumerable<Specialization>, IEnumerable<SpecializationViewModel>>
     {
         IViewModelMapper<Specialization, SpecializationViewModel> _entityMapper;
 
-        public SpecializationListViewModel(IViewModelMapper<Specialization, SpecializationViewModel> entityMapper)
+        public SpecializationListViewModelMapper(IViewModelMapper<Specialization, SpecializationViewModel> entityMapper)
         {
             _entityMapper = entityMapper;
         }
