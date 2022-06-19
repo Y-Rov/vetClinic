@@ -40,7 +40,7 @@ namespace WebApi.Controllers
             var readSalary = _readSalaryList.Map(salaries);
             foreach(var res in readSalary)
             {
-                var user = await _userService.GetUserByIdAsync(res.EmployeeId);
+                var user = await _userService.GetUserByIdAsync(res.Id);
                 res.Name = user.FirstName + " " + user.LastName;
             }
             return Ok(readSalary);
@@ -52,7 +52,7 @@ namespace WebApi.Controllers
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
             var readSalary = _readSalary.Map(salary);
 
-            var user = await _userService.GetUserByIdAsync(readSalary.EmployeeId);
+            var user = await _userService.GetUserByIdAsync(readSalary.Id);
             readSalary.Name = user.FirstName + " " + user.LastName;
 
             return Ok(readSalary);
@@ -67,7 +67,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody]SalaryViewModel model)
+        public async Task<ActionResult> PostAsync(SalaryViewModel model)
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.CreateSalaryAsync(writeSalary);
@@ -82,7 +82,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync([FromBody]SalaryViewModel model)
+        public async Task<ActionResult> PutAsync(SalaryViewModel model)
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.UpdateSalaryAsync(writeSalary);
