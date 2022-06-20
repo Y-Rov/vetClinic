@@ -102,10 +102,11 @@ namespace WebApi.Controllers
             [FromRoute]int id,
             [FromBody]SpecializationUpdateViewModel specialization)
         {
+            await _service.UpdateSpecializationUsersAsync(id, specialization.UsersIds);
             return NoContent();
         }
 
-        [HttpPut("{id:int:min(1)}")]
+        [HttpPut("{id:int:min(1)}")]   
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, [FromBody]SpecializationViewModel updated)
         {
             await _service.UpdateSpecializationAsync(id,_mapper.Map(updated));

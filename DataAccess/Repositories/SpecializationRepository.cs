@@ -8,11 +8,14 @@ namespace DataAccess.Repositories
     public class SpecializationRepository : Repository<Specialization>, ISpecializationRepository
     {
         private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
-        //private readonly IUser
+        private readonly IUserSpecializationRepository _usrerSpecializationRepository;
         public SpecializationRepository(ClinicContext context,
-            IProcedureSpecializationRepository procedureSpecializationRepository) : base(context)
+            IProcedureSpecializationRepository procedureSpecializationRepository,
+            IUserSpecializationRepository userSpecializationRepository)
+            : base(context)
         {
             _procedureSpecializationRepository = procedureSpecializationRepository;
+            _usrerSpecializationRepository = userSpecializationRepository;
         }
 
         public async Task UpdateProceduresAsync(int specializationId, IEnumerable<int> proceduresIds)
@@ -39,7 +42,22 @@ namespace DataAccess.Repositories
 
         public async Task UpdateUsersAsync(int specializationId, IEnumerable<int> userIds)
         {
+            var related = await _usrerSpecializationRepository.GetAsync(
+                filter: relationship => relationship.SpecializationId == specializationId);
 
+            foreach (var relationship in related)
+                _usrerSpecializationRepository.Delete(relationship);
+
+            await _usrerSpecializationRepository.SaveChangesAsync();
+
+            foreach (var userId in userIds)
+                await _usrerSpecializationRepository.InsertAsync(new UserSpecialization
+                {
+                    UserId = userId,
+                    SpecializationId = specializationId
+                });
+
+            await SaveChangesAsync();
         }
     }
 }

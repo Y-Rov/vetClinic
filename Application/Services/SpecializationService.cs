@@ -28,7 +28,7 @@ namespace Application.Services
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations.User");
+            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
@@ -159,9 +159,10 @@ namespace Application.Services
             await _repository.SaveChangesAsync();
         }
 
-        public Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds)
+        public async Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds)
         {
-            throw new NotImplementedException();
+            await _repository.UpdateUsersAsync(specializationId, userIds);
+            await _repository.SaveChangesAsync();
         }
     }
 }
