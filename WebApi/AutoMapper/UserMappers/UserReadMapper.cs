@@ -27,7 +27,7 @@ namespace WebApi.AutoMapper.UserMappers
                 LastName = source.LastName,
                 Email = source.Email,
                 PhoneNumber = source.PhoneNumber,
-                BirthDate = source.BirthDate,
+                BirthDate = source.BirthDate.ToLocalTime(),
                 Role = role,
                 Address = address,
                 Portfolio = source.Portfolio?.Description,
