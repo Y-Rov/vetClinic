@@ -4,6 +4,6 @@ namespace Core.Interfaces.Repositories
 {
     public interface ISalaryRepository: IRepository<Salary>
     {
-
+        Task<IEnumerable<int>> GetEmployees();
     }
 }

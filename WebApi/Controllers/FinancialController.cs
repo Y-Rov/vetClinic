@@ -11,20 +11,26 @@ namespace WebApi.Controllers
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
+        private readonly IUserService _userService;
         private readonly IViewModelMapper<Salary, SalaryViewModel> _readSalary;
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
         private readonly IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> _readSalaryList;
+        private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
 
         public FinancialController(
             IFinancialService financialService,
+            IUserService userService,
             IViewModelMapper<Salary, SalaryViewModel> readSalary,
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
-            IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList)
+            IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
+            IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList)
         {
             _financialService = financialService;
+            _userService = userService;
             _readSalary = readSalary;
             _writeSalary = writeSalary;
             _readSalaryList = readSalaryList;
+            _readEmployeesList = readEmployeesList;
         }
 
         [HttpGet("/api/[controller]/")]
@@ -32,6 +38,11 @@ namespace WebApi.Controllers
         {
             var salaries = await _financialService.GetSalaryAsync();
             var readSalary = _readSalaryList.Map(salaries);
+            foreach(var res in readSalary)
+            {
+                var user = await _userService.GetUserByIdAsync(res.Id);
+                res.Name = user.FirstName + " " + user.LastName;
+            }
             return Ok(readSalary);
         }
 
@@ -39,12 +50,24 @@ namespace WebApi.Controllers
         public async Task<ActionResult<SalaryViewModel>> GetAsync([FromRoute]int id)
         {
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
-            var readSalaries = _readSalary.Map(salary);
-            return Ok(readSalaries);
+            var readSalary = _readSalary.Map(salary);
+
+            var user = await _userService.GetUserByIdAsync(readSalary.Id);
+            readSalary.Name = user.FirstName + " " + user.LastName;
+
+            return Ok(readSalary);
+        }
+
+        [HttpGet("/api/employees/")]
+        public async Task<ActionResult<IEnumerable<EmployeeViewModel>>> GetEmployeesAsync()
+        {
+            var employees = await _financialService.GetEmployeesWithoutSalary();
+            var readEmployee = _readEmployeesList.Map(employees);
+            return Ok(readEmployee);
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody]SalaryViewModel model)
+        public async Task<ActionResult> PostAsync(SalaryViewModel model)
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.CreateSalaryAsync(writeSalary);
@@ -59,7 +82,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync([FromBody]SalaryViewModel model)
+        public async Task<ActionResult> PutAsync(SalaryViewModel model)
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.UpdateSalaryAsync(writeSalary);

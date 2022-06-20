@@ -1,9 +1,8 @@
 ﻿namespace Core.ViewModels.SalaryViewModel
 {
-    public class SalaryViewModel
+    public class EmployeeViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public decimal Value { get; set; }
     }
 }
