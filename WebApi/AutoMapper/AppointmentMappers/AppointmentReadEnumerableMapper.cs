@@ -6,16 +6,16 @@ namespace WebApi.AutoMapper.AppointmentMappers
 {
     public class AppointmentReadEnumerableMapper : IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>
     {
-        //private readonly IViewModelMapper<Appointment, AppointmentReadViewModel> _readMapper;
-
-        //public AppointmentReadEnumerableMapper(IViewModelMapper<Appointment, AppointmentReadViewModel> readMapper)
-        //{
-        //    _readMapper = readMapper;
-        //}
+        private readonly IViewModelMapper<Appointment, AppointmentReadViewModel> _readMapper;
+        
+        public AppointmentReadEnumerableMapper(IViewModelMapper<Appointment, AppointmentReadViewModel> readMapper)
+        {
+            _readMapper = readMapper;
+        }
 
         public IEnumerable<AppointmentReadViewModel> Map(IEnumerable<Appointment> source)
         {
-            var appointmentViewModels = source.Select(GetAppointmentViewModel).ToList();
+            var appointmentViewModels = source.Select(app => _readMapper.Map(app)).ToList();
             return appointmentViewModels;
         }
 
