@@ -39,7 +39,7 @@ namespace WebApi.Controllers
             return Ok(map);
         }
 
-        [HttpGet("/medcard/{id:int:min(1)}")]
+        [HttpGet("medcard/{id:int:min(1)}")]
         public async Task<ActionResult<IEnumerable<AppointmentViewModel>>> GetMedCardAsync([FromRoute] int id)
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(id);
