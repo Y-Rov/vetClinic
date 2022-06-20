@@ -12,6 +12,8 @@ namespace Core.Interfaces.Services
         Task RemoveProcedureFromSpecialization(int specializationId, int procedureId);
         Task AddUserToSpecialization(int specializationId, int userId);
         Task RemoveUserFromSpecialization(int specializationId, int userId);
+        Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> procedureIds);
+        Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds);
         Task UpdateSpecializationAsync(int id,Specialization updated);
         Task DeleteSpecializationAsync(int id);
     }

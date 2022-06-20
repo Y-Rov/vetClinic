@@ -3,11 +3,9 @@ using Core.ViewModels.User;
 
 namespace Core.ViewModels.SpecializationViewModels
 {
-    public class SpecializationViewModel
+    public class SpecializationViewModel : SpecializationBaseViewModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public IEnumerable<ProcedureViewModelBase>? Procedures { get; set; }
-        public IEnumerable<UserBaseViewModel>? Users { get; set; }
+        public IEnumerable<ProcedureReadViewModel>? Procedures { get; set; }
+        public IEnumerable<UserReadViewModel>? Users { get; set; }
     }
 }
