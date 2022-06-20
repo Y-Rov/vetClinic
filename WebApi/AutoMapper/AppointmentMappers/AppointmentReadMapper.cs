@@ -13,17 +13,21 @@ namespace WebApi.AutoMapper.AppointmentMappers
 
         //private readonly IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> _procedureMapper;
 
-        //private readonly IViewModelMapper<IEnumerable<AppointmentUser>, IEnumerable<UserReadViewModel>> _userMapper;
+        private readonly IViewModelMapper<User, UserReadViewModel> _userMapper;
+
+        private readonly IViewModelMapper<Procedure, ProcedureReadViewModel> _pMapper;
 
         public AppointmentReadMapper(
-           IViewModelMapper<Animal, AnimalViewModel> animalMapper
+           IViewModelMapper<Animal, AnimalViewModel> animalMapper,
            //IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> procedureMapper,
-          // IViewModelMapper<IEnumerable<AppointmentUser>, IEnumerable<UserReadViewModel>> userMapper
+           IViewModelMapper<User, UserReadViewModel> userMapper,
+            IViewModelMapper<Procedure, ProcedureReadViewModel> pMapper
             )
         {
             _animalMapper=animalMapper;
-            //_procedureMapper=procedureMapper;
-            //_userMapper=userMapper;
+            //_procedureMapper = procedureMapper;
+            _userMapper = userMapper;
+            _pMapper=pMapper;   
         }
 
         public AppointmentReadViewModel Map(Appointment appointment)
@@ -36,6 +40,10 @@ namespace WebApi.AutoMapper.AppointmentMappers
                 MeetHasOccureding = appointment.MeetHasOccureding,
                
             };
+
+
+            appointmentViewModel.Procedures = appointment.AppointmentProcedures.Select(p => _pMapper.Map(p.Procedure));
+            appointmentViewModel.Users = appointment.AppointmentUsers.Select(p => _userMapper.Map(p.User));
 
             //appointmentViewModel.Procedures = _procedureMapper.Map(appointment.AppointmentProcedures);
             //appointmentViewModel.Users = _userMapper.Map(appointment.AppointmentUsers);

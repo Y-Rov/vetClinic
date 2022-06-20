@@ -70,5 +70,12 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<AppointmentCreateViewModel, Appointment>, AppointmentCreateMapper>();
         services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();
         services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
+
+
+        //services.AddScoped<IEnumerableViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>>, ProcedureReadEnumerableMapper > ();
+
+
+        //IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> procedureMapper,
+        //  IViewModelMapper< IEnumerable<AppointmentUser>, IEnumerable < UserReadViewModel >> userMapper
     }
 }
