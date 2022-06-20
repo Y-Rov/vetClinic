@@ -1,8 +1,8 @@
 ﻿namespace Core.ViewModels.PortfolioViewModels
 {
-    public class PortfolioViewModel
+    public class PortfolioBaseViewModel
     {
-        public int UserId { get; set; }
         public string Description { get; set; }
     }
 }
+
