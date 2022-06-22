@@ -14,6 +14,10 @@ namespace Core.Interfaces.Repositories
             string role,
             string includeProperties = "");
 
+        Task<IEnumerable<User>> FilterBySpecializationAsync(
+            IEnumerable<User> users,
+            string specialization);
+
         Task<User?> GetByIdAsync(int id);
         Task<IdentityResult> CreateAsync(User user, string password);
         Task<IdentityResult> AssignRoleAsync(User user, string role);
