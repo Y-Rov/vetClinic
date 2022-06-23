@@ -123,6 +123,8 @@ namespace Application.Services
             existingAppointment.AppointmentUsers = appointment.AppointmentUsers;
             existingAppointment.AppointmentProcedures = appointment.AppointmentProcedures;
 
+
+
             await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
         }
