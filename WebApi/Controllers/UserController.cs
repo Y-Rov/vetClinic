@@ -65,7 +65,7 @@ namespace WebApi.Controllers
         {
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
-            await _userService.AssignToRoleAsync(user, "Client");
+            await _userService.AssignRoleAsync(user, "Client");
 
             var readModel = _readMapper.Map(user);
 
@@ -79,7 +79,7 @@ namespace WebApi.Controllers
         {
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
-            await _userService.AssignToRoleAsync(user, role);
+            await _userService.AssignRoleAsync(user, role);
 
             var readDto = _readMapper.Map(user);
 

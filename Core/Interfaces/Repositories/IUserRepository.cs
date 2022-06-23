@@ -14,7 +14,7 @@ namespace Core.Interfaces.Repositories
             string role,
             string includeProperties = "");
 
-        Task<IEnumerable<User>> FilterBySpecializationAsync(
+        IEnumerable<User> FilterBySpecialization(
             IEnumerable<User> users,
             string specialization);
 

@@ -19,7 +19,7 @@ namespace Application.Services
             _loggerManager = loggerManager;
         }
 
-        public async Task AssignToRoleAsync(User user, string role)
+        public async Task AssignRoleAsync(User user, string role)
         {
             var assignResult = await _userRepository.AssignRoleAsync(user, role);
 
@@ -70,7 +70,7 @@ namespace Application.Services
 
             if (!string.IsNullOrEmpty(specialization))
             {
-                doctors = await _userRepository.FilterBySpecializationAsync(doctors, specialization);
+                doctors = _userRepository.FilterBySpecialization(doctors, specialization);
             }
 
             _loggerManager.LogInfo("Successfully retrieved all doctors");

@@ -15,22 +15,22 @@ namespace WebApi.Test.Fixtures
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            MockService = fixture.Freeze<Mock<IUserService>>();
+            MockUserService = fixture.Freeze<Mock<IUserService>>();
             MockReadMapper = fixture.Freeze<Mock<IViewModelMapper<User, UserReadViewModel>>>();
             MockCreateMapper = fixture.Freeze<Mock<IViewModelMapper<UserCreateViewModel, User>>>();
             MockUpdateMapper = fixture.Freeze<Mock<IViewModelMapperUpdater<UserUpdateViewModel, User>>>();
             MockReadEnumerableMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>>>();
 
-            MockController = new UserController(
-                MockService.Object,
+            MockUserController = new UserController(
+                MockUserService.Object,
                 MockReadMapper.Object,
                 MockCreateMapper.Object,
                 MockUpdateMapper.Object,
                 MockReadEnumerableMapper.Object);
         }
 
-        public UserController MockController { get; }
-        public Mock<IUserService> MockService { get; }
+        public UserController MockUserController { get; }
+        public Mock<IUserService> MockUserService { get; }
         public Mock<IViewModelMapper<User, UserReadViewModel>> MockReadMapper { get; }
         public Mock<IViewModelMapper<UserCreateViewModel, User>> MockCreateMapper { get; }
         public Mock<IViewModelMapperUpdater<UserUpdateViewModel, User>> MockUpdateMapper { get; }

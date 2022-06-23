@@ -79,7 +79,7 @@ namespace DataAccess.Repositories
             return await users.ToListAsync();
         }
         
-        public async Task<IEnumerable<User>> FilterBySpecializationAsync(IEnumerable<User> users, string specialization)
+        public IEnumerable<User> FilterBySpecialization(IEnumerable<User> users, string specialization)
         {
             var filteredUsers = users.Where(u => u.UserSpecializations.Any(us =>
                 us.Specialization?.Name.ToLower().Contains(specialization.Trim().ToLower()) ?? false));

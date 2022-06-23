@@ -39,11 +39,11 @@ namespace WebApi.Test
                 }
             };
 
-            _fixture.MockService.Setup(s => s.GetAllUsersAsync()).ReturnsAsync(users);
+            _fixture.MockUserService.Setup(s => s.GetAllUsersAsync()).ReturnsAsync(users);
             _fixture.MockReadEnumerableMapper.Setup(m => m.Map(It.IsAny<IEnumerable<User>>())).Returns(readViewModels);
 
             // Act
-            var result = await _fixture.MockController.GetAsync();
+            var result = await _fixture.MockUserController.GetAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -70,15 +70,46 @@ namespace WebApi.Test
                 LastName = "Amamiya"
             };
 
-            _fixture.MockService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
+            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
             _fixture.MockReadMapper.Setup(m => m.Map(It.IsAny<User>())).Returns(readViewModel);
 
             // Act
-            var result = await _fixture.MockController.GetAsync(id);
+            var result = await _fixture.MockUserController.GetAsync(id);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal((result.Result as OkObjectResult)!.Value, readViewModel);
+        }
+
+        [Fact]
+        public async Task GetAsync_NonexistingUser_ReturnsUserReadViewModel()
+        {
+            // Arrange
+            int id = 1;
+
+            User user = new()
+            {
+                Id = id,
+                FirstName = "Ren",
+                LastName = "Amamiya"
+            };
+
+            UserReadViewModel readViewModel = new()
+            {
+                Id = id,
+                FirstName = "Ren",
+                LastName = "Amamiya"
+            };
+
+            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
+            _fixture.MockReadMapper.Setup(m => m.Map(It.IsAny<User>())).Returns((UserReadViewModel)null!);
+
+            // Act
+            var result = await _fixture.MockUserController.GetAsync(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotEqual((result.Result as OkObjectResult)!.Value, readViewModel);
         }
 
         [Fact]
@@ -105,11 +136,11 @@ namespace WebApi.Test
                 }
             };
 
-            _fixture.MockService.Setup(s => s.GetDoctorsAsync(It.IsAny<string>())).ReturnsAsync(users);
+            _fixture.MockUserService.Setup(s => s.GetDoctorsAsync(It.IsAny<string>())).ReturnsAsync(users);
             _fixture.MockReadEnumerableMapper.Setup(m => m.Map(It.IsAny<IEnumerable<User>>())).Returns(readViewModels);
 
             // Act
-            var result = await _fixture.MockController.GetDoctorsAsync(string.Empty);
+            var result = await _fixture.MockUserController.GetDoctorsAsync(string.Empty);
 
             // Assert
             Assert.NotNull(result);
@@ -147,7 +178,7 @@ namespace WebApi.Test
             _fixture.MockReadMapper.Setup(m => m.Map(It.IsAny<User>())).Returns(readViewModel);
 
             // Act
-            var result = await _fixture.MockController.CreateAsync(createViewModel);
+            var result = await _fixture.MockUserController.CreateAsync(createViewModel);
 
             // Assert
             Assert.NotNull(result);
@@ -173,15 +204,15 @@ namespace WebApi.Test
                 LastName = "Amamiya"
             };
 
-            _fixture.MockService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
+            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
             _fixture.MockUpdateMapper.Setup(m => m.Map(It.IsAny<UserUpdateViewModel>())).Returns(user);
 
             // Act
-            var result = await _fixture.MockController.UpdateAsync(id, updateViewModel);
+            var result = await _fixture.MockUserController.UpdateAsync(id, updateViewModel);
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockService.Verify();
+            _fixture.MockUserService.Verify();
         }
 
         [Fact]
@@ -197,14 +228,14 @@ namespace WebApi.Test
                 LastName = "Amamiya"
             };
 
-            _fixture.MockService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
+            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
 
             // Act
-            var result = await _fixture.MockController.DeleteAsync(id);
+            var result = await _fixture.MockUserController.DeleteAsync(id);
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockService.Verify();
+            _fixture.MockUserService.Verify();
         }
     }
 }
