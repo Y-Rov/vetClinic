@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("doctors")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetDoctors(
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetDoctorsAsync(
             [FromQuery(Name = "specialization")] string? specialization)
         {
             var users = await _userService.GetDoctorsAsync(specialization!);
