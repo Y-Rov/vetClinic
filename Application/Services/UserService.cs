@@ -63,10 +63,15 @@ namespace Application.Services
             return users;
         }
 
-        public async Task<IEnumerable<User>> GetDoctorsAsync()
+        public async Task<IEnumerable<User>> GetDoctorsAsync(string specialization = "")
         {
-            var doctors = await _userRepository.GetByRoleAsync("Doctor", 
+            var doctors = await _userRepository.GetByRoleAsync("Doctor",
                 "Address,Portfolio,UserSpecializations.Specialization");
+
+            if (!string.IsNullOrEmpty(specialization))
+            {
+                doctors = await _userRepository.FilterBySpecializationAsync(doctors, specialization);
+            }
 
             _loggerManager.LogInfo("Successfully retrieved all doctors");
 

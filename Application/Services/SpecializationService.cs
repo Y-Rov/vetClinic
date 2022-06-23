@@ -10,17 +10,25 @@ namespace Application.Services
     {
         readonly ISpecializationRepository _repository;
         readonly ILoggerManager _logger;
+
+        bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
+        {
+            return specialization.ProcedureSpecializations
+                .Any(pair => pair.SpecializationId == specialization.Id && pair.ProcedureId == procedureId);
+        }
+
         public SpecializationService(
-            ISpecializationRepository repository, 
+            ISpecializationRepository repository,
             ILoggerManager logger)
         {
             _repository = repository;
             _logger = logger;
         }
+
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations.User");
+            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
@@ -61,8 +69,7 @@ namespace Application.Services
                 SpecializationId = specializationId
             };
 
-            if (!specialization.ProcedureSpecializations
-                .Any(pair => pair.SpecializationId == specializationId && pair.ProcedureId == procedureId))
+            if (!IsProcedureExistsInSpecialization(specialization, procedureId))
             {
                 specialization.ProcedureSpecializations.Add(relationship);
                 await UpdateSpecializationAsync(specializationId, specialization);
@@ -97,6 +104,7 @@ namespace Application.Services
         {
             Specialization specialization = await GetSpecializationByIdAsync(id);
             specialization.Name = updated.Name;
+            _repository.Update(specialization);
             _logger.LogInfo($"Specialization with id: {updated.Id} updated");
             await _repository.SaveChangesAsync();
         }
@@ -136,6 +144,25 @@ namespace Application.Services
             specialization.UserSpecializations.Remove(user);
 
             await UpdateSpecializationAsync(specializationId, specialization);
+        }
+
+        public async Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> procedureIds)
+        {
+            try
+            {
+                await _repository.UpdateProceduresAsync(specializationId, procedureIds);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            await _repository.SaveChangesAsync();
+        }
+
+        public async Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds)
+        {
+            await _repository.UpdateUsersAsync(specializationId, userIds);
+            await _repository.SaveChangesAsync();
         }
     }
 }
