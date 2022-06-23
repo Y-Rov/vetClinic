@@ -18,24 +18,24 @@ public class ProcedureControllerFixture
             new Fixture().Customize(new AutoMoqCustomization());
 
         MockProcedureService = fixture.Freeze<Mock<IProcedureService>>();
-        MockCreateSpecializationMapper = fixture.Freeze<Mock<IViewModelMapper<ProcedureCreateViewModel, Procedure>>>();
-        MockUpdateSpecializationMapper = fixture.Freeze<Mock<IViewModelMapper<ProcedureUpdateViewModel, Procedure>>>();
+        MockCreateProcedureMapper = fixture.Freeze<Mock<IViewModelMapper<ProcedureCreateViewModel, Procedure>>>();
+        MockUpdateProcedureMapper = fixture.Freeze<Mock<IViewModelMapper<ProcedureUpdateViewModel, Procedure>>>();
         MockProcedureReadViewModelMapper = fixture.Freeze<Mock<IViewModelMapper<Procedure, ProcedureReadViewModel>>>();
         MockProcedureReadViewModelListMapper = fixture
             .Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>>>();
 
         MockProcedureController = new ProcedureController(
             MockProcedureService.Object,
-            MockCreateSpecializationMapper.Object,
-            MockUpdateSpecializationMapper.Object,
+            MockCreateProcedureMapper.Object,
+            MockUpdateProcedureMapper.Object,
             MockProcedureReadViewModelMapper.Object,
             MockProcedureReadViewModelListMapper.Object);
     }
     
     public ProcedureController MockProcedureController { get; }
     public Mock<IProcedureService> MockProcedureService { get; }
-    public Mock<IViewModelMapper<ProcedureCreateViewModel, Procedure>> MockCreateSpecializationMapper { get; }
-    public Mock<IViewModelMapper<ProcedureUpdateViewModel, Procedure>> MockUpdateSpecializationMapper { get; }
+    public Mock<IViewModelMapper<ProcedureCreateViewModel, Procedure>> MockCreateProcedureMapper { get; }
+    public Mock<IViewModelMapper<ProcedureUpdateViewModel, Procedure>> MockUpdateProcedureMapper { get; }
     public Mock<IViewModelMapper<Procedure, ProcedureReadViewModel>> MockProcedureReadViewModelMapper { get; }
     public Mock<IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>> MockProcedureReadViewModelListMapper { get; }
 }
