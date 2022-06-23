@@ -74,7 +74,8 @@ namespace WebApi.Controllers
 
         [HttpPost("register/{role}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromRoute] string role,
+        public async Task<ActionResult<UserReadViewModel>> CreateAsync(
+            [FromRoute] string role,
             [FromBody] UserCreateViewModel createModel)
         {
             var user = _createMapper.Map(createModel);
@@ -87,7 +88,8 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public async Task<ActionResult> UpdateAsync([FromRoute] int id, 
+        public async Task<ActionResult> UpdateAsync(
+            [FromRoute] int id, 
             [FromBody] UserUpdateViewModel updateModel)
         {
             var user = await _userService.GetUserByIdAsync(id);

@@ -10,6 +10,18 @@ namespace Application.Test
     public class UserServiceTests : IClassFixture<UserServiceFixture>
     {
         private readonly UserServiceFixture _fixture;
+        private static readonly int _id = 1;
+        private static readonly string _password = "test_pass";
+        private static readonly string _role = "Client";
+
+        private static readonly User _user = new()
+        {
+            Id = _id,
+            FirstName = "Ren",
+            LastName = "Amamiya"
+        };
+
+        private static readonly List<User> _users = new() { _user };
 
         public UserServiceTests(UserServiceFixture fixture)
         {
@@ -20,62 +32,46 @@ namespace Application.Test
         public async Task GetAllUsersAsync_AllUsers_ReturnsIEnumerableOfUser()
         {
             // Arrange
-            var users = new List<User>()
-            {
-                new User()
-                {
-                    Id = 1,
-                    FirstName = "Ren",
-                    LastName = "Amamiya"
-                }
-            };
-
-            _fixture.MockUserRepository.Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>()))
-                    .ReturnsAsync(users);
+            _fixture.MockUserRepository
+                .Setup(r => r.GetAllAsync(
+                    It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>()))
+                .ReturnsAsync(_users);
 
             // Act
             var result = await _fixture.MockUserService.GetAllUsersAsync();
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, users);
+            Assert.Equal(result, _users);
         }
 
         [Fact]
         public async Task GetUserByIdAsync_ExistingUser_ReturnsUser()
         {
             // Arrange
-            int id = 1;
-
-            User user = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            _fixture.MockUserRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
+            _fixture.MockUserRepository
+                .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(_user);
 
             // Act
-            var result = await _fixture.MockUserService.GetUserByIdAsync(id);
+            var result = await _fixture.MockUserService.GetUserByIdAsync(_id);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, user);
+            Assert.Equal(result, _user);
         }
 
         [Fact]
         public async Task GetUserByIdAsync_NonexistingUser_ThrowsNotFoundException()
         {
             // Arrange
-            int id = 1;
-
-            _fixture.MockUserRepository.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((User)null!);
+            _fixture.MockUserRepository
+                .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((User)null!);
 
             // Act
-            var result = _fixture.MockUserService.GetUserByIdAsync(id);
+            var result = _fixture.MockUserService.GetUserByIdAsync(_id);
 
             // Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -85,45 +81,28 @@ namespace Application.Test
         public async Task GetDoctorsAsync_ValidData_ReturnsIEnumerableOfUser()
         {
             // Arrange
-            int id = 1;
-
-            var users = new List<User>()
-            {
-                new User()
-                {
-                    Id = id,
-                    FirstName = "Ren",
-                    LastName = "Amamiya"
-                }
-            };
-
-            _fixture.MockUserRepository.Setup(r => r.GetByRoleAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(users);
+            _fixture.MockUserRepository
+                .Setup(r => r.GetByRoleAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(_users);
 
             // Act
             var result = await _fixture.MockUserService.GetDoctorsAsync();
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, users);
+            Assert.Equal(result, _users);
         }
 
         [Fact]
         public void CreateAsync_ValidData_ReturnsVoid()
         {
             // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
-            string password = "test_pass";
-
-            _fixture.MockUserRepository.Setup(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+            _fixture.MockUserRepository
+                .Setup(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
             // Act
-            var result = _fixture.MockUserService.CreateAsync(user, password);
+            var result = _fixture.MockUserService.CreateAsync(_user, _password);
 
             // Assert
             Assert.NotNull(result);
@@ -133,19 +112,12 @@ namespace Application.Test
         public async Task CreateAsync_InvalidData_ThrowsBadRequestException()
         {
             // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
-            string password = "test_pass";
-
-            _fixture.MockUserRepository.Setup(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+            _fixture.MockUserRepository
+                .Setup(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             // Act
-            var result = _fixture.MockUserService.CreateAsync(user, password);
+            var result = _fixture.MockUserService.CreateAsync(_user, _password);
 
             // Assert
             await Assert.ThrowsAsync<BadRequestException>(() => result);
@@ -155,19 +127,12 @@ namespace Application.Test
         public void AssignRoleAsync_ValidData_ReturnsVoid()
         {
             // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
-            string role = "Client";
-
-            _fixture.MockUserRepository.Setup(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+            _fixture.MockUserRepository
+                .Setup(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
             // Act
-            var result = _fixture.MockUserService.AssignRoleAsync(user, role);
+            var result = _fixture.MockUserService.AssignRoleAsync(_user, _role);
 
             // Assert
             Assert.NotNull(result);
@@ -177,19 +142,12 @@ namespace Application.Test
         public async Task AssignRoleAsync_InvalidData_ThrowsBadRequestException()
         {
             // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
-            string role = "Client";
-
-            _fixture.MockUserRepository.Setup(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+            _fixture.MockUserRepository
+                .Setup(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             // Act
-            var result = _fixture.MockUserService.AssignRoleAsync(user, role);
+            var result = _fixture.MockUserService.AssignRoleAsync(_user, _role);
 
             // Assert
             await Assert.ThrowsAsync<BadRequestException>(() => result);
@@ -199,17 +157,12 @@ namespace Application.Test
         public void UpdateAsync_ValidData_ReturnsVoid()
         {
             // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
-            _fixture.MockUserRepository.Setup(r => r.UpdateAsync(It.IsAny<User>()))
+            _fixture.MockUserRepository
+                .Setup(r => r.UpdateAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Success);
 
             // Act
-            var result = _fixture.MockUserService.UpdateAsync(user);
+            var result = _fixture.MockUserService.UpdateAsync(_user);
 
             // Assert
             Assert.NotNull(result);
@@ -219,17 +172,12 @@ namespace Application.Test
         public async Task UpdateAsync_InvalidData_ThrowsBadRequestException()
         {
             // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
-            _fixture.MockUserRepository.Setup(r => r.UpdateAsync(It.IsAny<User>()))
+            _fixture.MockUserRepository
+                .Setup(r => r.UpdateAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
 
             // Act
-            var result = _fixture.MockUserService.UpdateAsync(user);
+            var result = _fixture.MockUserService.UpdateAsync(_user);
 
             // Assert
             await Assert.ThrowsAsync<BadRequestException>(() => result);
@@ -238,15 +186,8 @@ namespace Application.Test
         [Fact]
         public void DeleteAsync_ValidData_ReturnsVoid()
         {
-            // Arrange
-            User user = new()
-            {
-                FirstName = "Ren",
-                LastName = "Amamiya",
-            };
-
             // Act
-            var result = _fixture.MockUserService.DeleteAsync(user);
+            var result = _fixture.MockUserService.DeleteAsync(_user);
 
             // Assert
             Assert.NotNull(result);

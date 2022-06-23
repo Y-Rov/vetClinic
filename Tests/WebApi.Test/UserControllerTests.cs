@@ -9,6 +9,24 @@ namespace WebApi.Test
     public class UserControllerTests : IClassFixture<UserControllerFixture>
     {
         private readonly UserControllerFixture _fixture;
+        private static readonly int _id = 1;
+
+        private static readonly User _user = new()
+        {
+            Id = _id,
+            FirstName = "Ren",
+            LastName = "Amamiya"
+        };
+
+        private static readonly UserReadViewModel _readViewModel = new()
+        {
+            Id = _id,
+            FirstName = "Ren",
+            LastName = "Amamiya"
+        };
+
+        private static readonly List<User> _users = new() { _user };
+        private static readonly List<UserReadViewModel> _readViewModels = new() { _readViewModel };
 
         public UserControllerTests(UserControllerFixture fixture)
         {
@@ -16,143 +34,69 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task GetAsync_AllUsers_ReturnsIEnumerableOfUserReadViewModel()
+        public async Task GetAsync_AllUsers_ReturnsOkObjectResult()
         {
             // Arrange
-            var users = new List<User>()
-            {
-                new User()
-                {
-                    Id = 1,
-                    FirstName = "Ren",
-                    LastName = "Amamiya"
-                }
-            };
+            _fixture.MockUserService
+                .Setup(s => s.GetAllUsersAsync())
+                .ReturnsAsync(_users);
 
-            var readViewModels = new List<UserReadViewModel>()
-            {
-                new UserReadViewModel()
-                {
-                    Id = 1,
-                    FirstName = "Ren",
-                    LastName = "Amamiya"
-                }
-            };
-
-            _fixture.MockUserService.Setup(s => s.GetAllUsersAsync()).ReturnsAsync(users);
-            _fixture.MockReadEnumerableMapper.Setup(m => m.Map(It.IsAny<IEnumerable<User>>())).Returns(readViewModels);
+            _fixture.MockReadEnumerableMapper
+                .Setup(m => m.Map(It.IsAny<IEnumerable<User>>()))
+                .Returns(_readViewModels);
 
             // Act
             var result = await _fixture.MockUserController.GetAsync();
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, readViewModels);
+            Assert.Equal((result.Result as OkObjectResult)!.Value, _readViewModels);
         }
 
         [Fact]
-        public async Task GetAsync_ExistingUser_ReturnsUserReadViewModel()
+        public async Task GetAsync_ExistingUser_ReturnsOkObjectResult()
         {
             // Arrange
-            int id = 1;
+            _fixture.MockUserService
+                .Setup(s => s.GetUserByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(_user);
 
-            User user = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            UserReadViewModel readViewModel = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
-            _fixture.MockReadMapper.Setup(m => m.Map(It.IsAny<User>())).Returns(readViewModel);
+            _fixture.MockReadMapper
+                .Setup(m => m.Map(It.IsAny<User>()))
+                .Returns(_readViewModel);
 
             // Act
-            var result = await _fixture.MockUserController.GetAsync(id);
+            var result = await _fixture.MockUserController.GetAsync(_id);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, readViewModel);
+            Assert.Equal((result.Result as OkObjectResult)!.Value, _readViewModel);
         }
 
         [Fact]
-        public async Task GetAsync_NonexistingUser_ReturnsUserReadViewModel()
+        public async Task GetDoctorsAsync_AllDoctors_ReturnsOkObjectResult()
         {
             // Arrange
-            int id = 1;
+            _fixture.MockUserService
+                .Setup(s => s.GetDoctorsAsync(It.IsAny<string>()))
+                .ReturnsAsync(_users);
 
-            User user = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            UserReadViewModel readViewModel = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
-            _fixture.MockReadMapper.Setup(m => m.Map(It.IsAny<User>())).Returns((UserReadViewModel)null!);
-
-            // Act
-            var result = await _fixture.MockUserController.GetAsync(id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotEqual((result.Result as OkObjectResult)!.Value, readViewModel);
-        }
-
-        [Fact]
-        public async Task GetDoctorsAsync_AllDoctors_ReturnsIEnumerableOfUserReadViewModel()
-        {
-            // Arrange
-            List<User> users = new()
-            {
-                new User()
-                {
-                    Id = 1,
-                    FirstName = "Ren",
-                    LastName = "Amamiya"
-                }
-            };
-
-            List<UserReadViewModel> readViewModels = new()
-            {
-                new UserReadViewModel()
-                {
-                    Id = 1,
-                    FirstName = "Ren",
-                    LastName = "Amamiya"
-                }
-            };
-
-            _fixture.MockUserService.Setup(s => s.GetDoctorsAsync(It.IsAny<string>())).ReturnsAsync(users);
-            _fixture.MockReadEnumerableMapper.Setup(m => m.Map(It.IsAny<IEnumerable<User>>())).Returns(readViewModels);
+            _fixture.MockReadEnumerableMapper
+                .Setup(m => m.Map(It.IsAny<IEnumerable<User>>()))
+                .Returns(_readViewModels);
 
             // Act
             var result = await _fixture.MockUserController.GetDoctorsAsync(string.Empty);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, readViewModels);
+            Assert.Equal((result.Result as OkObjectResult)!.Value, _readViewModels);
         }
 
         [Fact]
-        public async Task CreateAsync_ValidData_ReturnsActionResultOfUserReadViewModel()
+        public async Task CreateAsync_ValidData_ReturnsCreatedAtActionObjectResult()
         {
             // Arrange
-            int id = 1;
-
             UserCreateViewModel createViewModel = new()
             {
                 FirstName = "Ren",
@@ -160,55 +104,42 @@ namespace WebApi.Test
                 Password = "test_pass"
             };
 
-            User user = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
+            _fixture.MockCreateMapper
+                .Setup(m => m.Map(It.IsAny<UserCreateViewModel>()))
+                .Returns(_user);
 
-            UserReadViewModel readViewModel = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            _fixture.MockCreateMapper.Setup(m => m.Map(It.IsAny<UserCreateViewModel>())).Returns(user);
-            _fixture.MockReadMapper.Setup(m => m.Map(It.IsAny<User>())).Returns(readViewModel);
+            _fixture.MockReadMapper
+                .Setup(m => m.Map(It.IsAny<User>()))
+                .Returns(_readViewModel);
 
             // Act
             var result = await _fixture.MockUserController.CreateAsync(createViewModel);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as CreatedAtActionResult)!.Value, readViewModel);
+            Assert.Equal((result.Result as CreatedAtActionResult)!.Value, _readViewModel);
         }
 
         [Fact]
-        public async Task UpdateAsync_ExistingUser_ReturnsActionResult()
+        public async Task UpdateAsync_ExistingUser_ReturnsNoContentObjectResult()
         {
             // Arrange
-            int id = 1;
-
             UserUpdateViewModel updateViewModel = new()
             {
                 FirstName = "Ren",
                 LastName = "Amamiya"
             };
 
-            User user = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
+            _fixture.MockUserService
+                .Setup(s => s.GetUserByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(_user);
 
-            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
-            _fixture.MockUpdateMapper.Setup(m => m.Map(It.IsAny<UserUpdateViewModel>())).Returns(user);
+            _fixture.MockUpdateMapper
+                .Setup(m => m.Map(It.IsAny<UserUpdateViewModel>()))
+                .Returns(_user);
 
             // Act
-            var result = await _fixture.MockUserController.UpdateAsync(id, updateViewModel);
+            var result = await _fixture.MockUserController.UpdateAsync(_id, updateViewModel);
 
             // Assert
             Assert.NotNull(result);
@@ -216,22 +147,15 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task DeleteAsync_ExistingUser_ReturnsActionResult()
+        public async Task DeleteAsync_ExistingUser_ReturnsNoContentObjectResult()
         {
             // Arrange
-            int id = 1;
-
-            User user = new()
-            {
-                Id = id,
-                FirstName = "Ren",
-                LastName = "Amamiya"
-            };
-
-            _fixture.MockUserService.Setup(s => s.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync(user);
+            _fixture.MockUserService
+                .Setup(s => s.GetUserByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(_user);
 
             // Act
-            var result = await _fixture.MockUserController.DeleteAsync(id);
+            var result = await _fixture.MockUserController.DeleteAsync(_id);
 
             // Assert
             Assert.NotNull(result);
