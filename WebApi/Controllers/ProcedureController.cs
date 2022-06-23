@@ -68,9 +68,6 @@ public class ProcedureController : ControllerBase
     public async Task UpdateAsync([FromBody]ProcedureUpdateViewModel newProcedure)
     {
         var updatedProcedure = _procedureUpdateMapper.Map(newProcedure);
-        await _procedureService.UpdateProcedureAsync(updatedProcedure);
-        await _procedureService.UpdateProcedureSpecializationsAsync(
-            newProcedure.Id,
-            newProcedure.SpecializationIds);
+        await _procedureService.UpdateProcedureAsync(updatedProcedure, newProcedure.SpecializationIds);
     }
 }

@@ -390,16 +390,10 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockProcedureService
             .Setup(service =>
                 service.UpdateProcedureAsync(
-                    It.IsAny<Procedure>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        _fixture.MockProcedureService
-            .Setup(service =>
-                service.UpdateProcedureSpecializationsAsync(
-                    It.IsAny<int>(),
+                    It.IsAny<Procedure>(),
                     It.IsAny<IEnumerable<int>>()))
             .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
+
         //  Act
         await _fixture.MockProcedureController.UpdateAsync(procedureUpdateViewModel);
 
@@ -439,16 +433,10 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockProcedureService
             .Setup(service =>
                 service.UpdateProcedureAsync(
-                    It.IsAny<Procedure>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        _fixture.MockProcedureService
-            .Setup(service =>
-                service.UpdateProcedureSpecializationsAsync(
-                    It.IsAny<int>(),
+                    It.IsAny<Procedure>(),
                     It.IsAny<IEnumerable<int>>()))
             .Throws<NotFoundException>();
-        
+
         //  Act
         var result =  _fixture.MockProcedureController.UpdateAsync(procedureUpdateViewModel);
 
@@ -488,21 +476,15 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockProcedureService
             .Setup(service =>
                 service.UpdateProcedureAsync(
-                    It.IsAny<Procedure>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        _fixture.MockProcedureService
-            .Setup(service =>
-                service.UpdateProcedureSpecializationsAsync(
-                    It.IsAny<int>(),
+                    It.IsAny<Procedure>(),
                     It.IsAny<IEnumerable<int>>()))
-            .Throws<DbUpdateConcurrencyException>();
+            .Throws<NotFoundException>();
         
         //  Act
         var result =  _fixture.MockProcedureController.UpdateAsync(procedureUpdateViewModel);
 
         //  Assert
-        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => result);
+        await Assert.ThrowsAsync<NotFoundException>(() => result);
     }
     
     [Fact]
