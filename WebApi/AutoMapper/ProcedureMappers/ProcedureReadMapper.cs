@@ -7,10 +7,10 @@ namespace WebApi.AutoMapper.ProcedureMappers;
 
 public class ProcedureReadMapper : IViewModelMapper<Procedure, ProcedureReadViewModel>
 {
-    private readonly IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> _internalMapper;
+    private readonly IViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationBaseViewModel>> _internalMapper;
 
     public ProcedureReadMapper(
-        IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>> internalMapper)
+        IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationBaseViewModel>> internalMapper)
     {
         _internalMapper = internalMapper;
     }
