@@ -3,6 +3,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
@@ -10,15 +11,18 @@ public class ProcedureService : IProcedureService
 {
     private readonly IProcedureRepository _procedureRepository;
     private readonly ISpecializationService _specializationService;
+    private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
     private readonly ILoggerManager _loggerManager;
 
     public ProcedureService(
         IProcedureRepository procedureRepository,
-        ISpecializationService specializationService , 
+        ISpecializationService specializationService, 
+        IProcedureSpecializationRepository procedureSpecializationRepository, 
         ILoggerManager loggerManager)
     {
         _procedureRepository = procedureRepository;
         _specializationService = specializationService;
+        _procedureSpecializationRepository = procedureSpecializationRepository;
         _loggerManager = loggerManager;
     }
 
@@ -37,27 +41,46 @@ public class ProcedureService : IProcedureService
         _loggerManager.LogInfo($"Created new procedure with name: {procedure.Name}");
     }
 
-    public async Task UpdateProcedureAsync(Procedure newProcedure)
+    private async Task UpdateProcedureSpecializationsAsync(int newProcedureId, IEnumerable<int> specializationIds)
     {
-        _procedureRepository.Update(newProcedure);
-        await _procedureRepository.SaveChangesAsync();
-        _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
-    }
+        var existing = await _procedureSpecializationRepository.GetAsync(
+            filter: pr => pr.ProcedureId == newProcedureId);
+        foreach (var ps in existing)
+        {
+            _procedureSpecializationRepository.Delete(ps);
+        }
 
-    public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
+        foreach (var specializationId in specializationIds)
+        {
+            await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
+            {
+                ProcedureId = newProcedureId,
+                SpecializationId = specializationId
+            });
+        }
+        await _procedureSpecializationRepository.SaveChangesAsync();
+    }
+    
+    public async Task UpdateProcedureAsync(Procedure newProcedure, IEnumerable<int> specializationIds)
     {
         try
         {
-            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
+            await UpdateProcedureSpecializationsAsync(newProcedure.Id, specializationIds);
         }
         catch (InvalidOperationException)
         {
             _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
             throw new NotFoundException("At least one of the specializations from the given list does not exist");
         }
+        catch (DbUpdateException)
+        {
+            _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
+            throw new NotFoundException("At least one of the specializations from the given list does not exist");
+        }
 
+        _procedureRepository.Update(newProcedure);
         await _procedureRepository.SaveChangesAsync();
-        _loggerManager.LogInfo($"Updated specializations list of the procedure with Id {procedureId}");
+        _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
     }
 
     public async Task DeleteProcedureAsync(int procedureId)

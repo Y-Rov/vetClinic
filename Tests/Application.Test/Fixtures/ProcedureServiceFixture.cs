@@ -18,14 +18,17 @@ public class ProcedureServiceFixture
         MockProcedureRepository = fixture.Freeze<Mock<IProcedureRepository>>();
         MockSpecializationService = fixture.Freeze<Mock<ISpecializationService>>();
         MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
+        MockProcedureSpecializationRepository = fixture.Freeze<Mock<IProcedureSpecializationRepository>>();
         MockProcedureService = new ProcedureService(
             MockProcedureRepository.Object,
             MockSpecializationService.Object,
+            MockProcedureSpecializationRepository.Object,
             MockLoggerManager.Object);
     }
     
     public IProcedureService MockProcedureService { get; }
     public Mock<IProcedureRepository> MockProcedureRepository { get; }
     public Mock<ISpecializationService> MockSpecializationService { get; }
+    public Mock<IProcedureSpecializationRepository> MockProcedureSpecializationRepository { get; }
     public Mock<ILoggerManager> MockLoggerManager { get; }
 }
