@@ -90,6 +90,44 @@ namespace WebApi.Test
         }
 
         [Fact]
+        public async Task GetSpecializationById_whenIdIsInvalid_thenStatusCodeErrorReturned()
+        {
+            //  Arrange
+
+            int id = -2;
+            var specialization = new Specialization()
+            {
+                Id = 4,
+                Name = "surgeon"
+            };
+
+            var specializationViewModel = new SpecializationViewModel()
+            {
+                Id = 4,
+                Name = "surgeon"
+            };
+
+            _fixture.MockSpecializationService
+                .Setup(service =>
+                    service.GetSpecializationByIdAsync
+                        (It.Is<int>(id => specialization.Id == id)))
+                .ReturnsAsync(specialization);
+
+            _fixture.MockMapperSpecializationViewModel
+                .Setup(mapper =>
+                    mapper.Map(It.Is<Specialization>(spec => spec == specialization)))
+                .Returns(specializationViewModel);
+
+            //  Act
+
+            var result = await _fixture.MockController.GetSpecializationById(id);
+
+            //  Assert
+            Assert.NotNull(result);
+            Assert.NotEqual(result.Name, specializationViewModel.Name);
+        }
+
+        [Fact]
         public async Task GetAllSpecializations_whenResultIsNotEmpty_thenStatusCodeOk ()
         {
             var expected = new List<SpecializationViewModel>
@@ -98,7 +136,7 @@ namespace WebApi.Test
                 new SpecializationViewModel() {Id = 1, Name = "worker"}
             };
 
-            var actual = new List<Specialization>()
+            var returnedSpecializations = new List<Specialization>()
             {
                 new Specialization {Id = 0, Name = "surgeon"},
                 new Specialization {Id = 1, Name = "worker"}
@@ -106,18 +144,47 @@ namespace WebApi.Test
 
             _fixture.MockSpecializationService.Setup(service =>
                 service.GetAllSpecializationsAsync())
-            .ReturnsAsync(actual);
+            .ReturnsAsync(returnedSpecializations);
 
             _fixture.MockMapperListSpecializationViewModel.Setup(
                 mapper
                     => mapper.Map(It.IsAny<IEnumerable<Specialization>>()))
-                .Returns(expected);
+                .Returns(new List<SpecializationViewModel>
+            {
+                new SpecializationViewModel() {Id = 0, Name = "surgeon"},
+                new SpecializationViewModel() {Id = 1, Name = "worker"}
+            });
 
             var specializations = 
                 await _fixture.MockController.GetSpecializations();
-            
+
             Assert.NotNull(specializations);
             Assert.Equal(expected, specializations);
+        }
+
+        [Fact]
+        public async Task GetAllSpecializations_whenResultIsEmpty_thenStatusCodeOk()
+        {
+            var expected = new List<SpecializationViewModel>();
+
+            var empty = new List<Specialization>();
+
+            var emptyViewModels = new List<SpecializationViewModel>();
+
+            _fixture.MockSpecializationService.Setup(service =>
+                service.GetAllSpecializationsAsync())
+            .ReturnsAsync(empty);
+
+            _fixture.MockMapperListSpecializationViewModel.Setup(
+                mapper
+                    => mapper.Map(empty))
+                .Returns(emptyViewModels);
+
+            var specializations =
+                await _fixture.MockController.GetSpecializations();
+
+            Assert.NotNull(specializations);
+            Assert.Empty(specializations);
         }
     }
 }
