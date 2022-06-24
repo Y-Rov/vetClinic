@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Models;
+using Core.Pagginator;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +17,11 @@ namespace DataAccess.Repositories
             _clinicContext = clinicContext;
         }
 
-        public async Task<IEnumerable<ExceptionEntity>> GetAsync()
+        public async Task<PagedList<ExceptionEntity>> GetAsync(PaggingParameters paggingParameters)
         {
-            var errors = await _clinicContext.Exceptions.ToListAsync();
-
+            var errors =  PagedList<ExceptionEntity>
+                .ToPagedList(_clinicContext.Exceptions, paggingParameters.PageNumber, paggingParameters.PageSize);
+            await Task.CompletedTask;
             return errors;
         }
 

@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Pagginator;
 using Core.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace WebApi.Controllers
 {
     [Route("api/exceptions")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     public class ExceptionController : ControllerBase
     {
         private readonly IExceptionEntityService _exceptionEntityService;
@@ -25,9 +26,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAsync()
+        public async Task<ActionResult<PagedList<ExceptionEntityReadViewModel>>> GetAsync([FromQuery] PaggingParameters paggingParameters)
         {
-            var allExceptions = await _exceptionEntityService.GetAsync();
+            var allExceptions = await _exceptionEntityService.GetAsync(paggingParameters);
 
             var readDtos = _exceptionModel.Map(allExceptions);
 

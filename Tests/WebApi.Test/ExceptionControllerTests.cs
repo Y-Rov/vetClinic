@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Models;
+using Core.Pagginator;
 using Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -40,25 +41,26 @@ namespace WebApi.Test
         private static readonly List<ExceptionStats> _exceptionStats = new() { _exceptionStat };
         private static readonly List<ExceptionEntity> _exceptionEntities = new() { _exceptionEntity };
         private static readonly List<ExceptionEntityReadViewModel> _exceptionEntityReadViewModels = new() { _exceptionEntityReadViewModel };
-
+        private static readonly PagedList<ExceptionEntity> _paggedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
+        private static readonly PagedList<ExceptionEntityReadViewModel> _paggedListViewModelsExceptions = PagedList<ExceptionEntityReadViewModel>.ToPagedList(_exceptionEntityReadViewModels.AsQueryable(), 1, 10);
         [Fact]
         public async Task GetAsync_Exceptions_ReturnsOkObjectResult()
         {
             // Arrange
             _exceptionControllerFixture.MockExceptionService
-                .Setup(s => s.GetAsync())
-                .ReturnsAsync(_exceptionEntities);
+                .Setup(s => s.GetAsync(new PaggingParameters()))
+                .ReturnsAsync(_paggedListExceptions);
 
             _exceptionControllerFixture.MockMapperException
                 .Setup(m => m.Map(It.IsAny<IEnumerable<ExceptionEntity>>()))
-                .Returns(_exceptionEntityReadViewModels);
+                .Returns(_paggedListViewModelsExceptions);
 
             // Act
-            var result = await _exceptionControllerFixture.MockExceptionController.GetAsync();
+            var result = await _exceptionControllerFixture.MockExceptionController.GetAsync(new PaggingParameters());
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, _exceptionEntityReadViewModels);
+            Assert.Equal((result.Result as OkObjectResult)!.Value, _paggedListViewModelsExceptions);
         }
 
         [Fact]

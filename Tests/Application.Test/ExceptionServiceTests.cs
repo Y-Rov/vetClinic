@@ -2,6 +2,7 @@
 using Core.Entities;
 using Core.Exceptions;
 using Core.Models;
+using Core.Pagginator;
 using Moq;
 
 namespace Application.Test
@@ -33,21 +34,27 @@ namespace Application.Test
 
         private static readonly List<ExceptionStats> _exceptionStats = new() { _exceptionStat };
         private static readonly List<ExceptionEntity> _exceptionEntities = new() { _exceptionEntity };
+        private static readonly PagedList<ExceptionEntity> _paggedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
+        private static readonly PaggingParameters paggingParameters = new()
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
 
         [Fact]
         public async Task GetExceptionsAsync_Exceptions_ReturnsIEnumerableOfException()
         {
             // Arrange
             _exceptionServiceFixture.MockExceptionRepository
-                .Setup(r => r.GetAsync())
-                .ReturnsAsync(_exceptionEntities);
+                .Setup(r => r.GetAsync(paggingParameters))
+                .ReturnsAsync(_paggedListExceptions);
 
             // Act
-            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetAsync();
+            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetAsync(paggingParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _exceptionEntities);
+            Assert.Equal(result, _paggedListExceptions);
         }
 
         [Fact]
@@ -75,7 +82,7 @@ namespace Application.Test
                 .Throws<NotFoundException>();
 
             // Act
-            var result =  _exceptionServiceFixture.MockExceptionEntityService.GetAsync(_id);
+            var result = _exceptionServiceFixture.MockExceptionEntityService.GetAsync(_id);
 
             // Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);

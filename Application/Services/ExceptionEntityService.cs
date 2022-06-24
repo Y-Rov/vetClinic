@@ -4,6 +4,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Pagginator;
 
 namespace Application.Services
 {
@@ -20,9 +21,9 @@ namespace Application.Services
             _loggerManager = loggerManager;
         }
 
-        public async Task<IEnumerable<ExceptionEntity>> GetAsync()
+        public async Task<PagedList<ExceptionEntity>> GetAsync(PaggingParameters paggingParameters)
         {
-            var excpetions = await _exceptionEntityRepository.GetAsync();
+            var excpetions = await _exceptionEntityRepository.GetAsync(paggingParameters);
 
             _loggerManager.LogInfo("Got all exceptions from ExceptionEntityService method GetAsync()");
             return excpetions;
