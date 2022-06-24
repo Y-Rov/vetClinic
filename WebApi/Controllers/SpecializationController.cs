@@ -35,9 +35,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetSpecializations()
+        public async Task<IEnumerable<SpecializationViewModel>> GetSpecializations()
         {
-            return Ok(_listMapper.Map(await _service.GetAllSpecializationsAsync()));
+            var specializations = await _service.GetAllSpecializationsAsync();
+            var mappedSpecializations = _listMapper.Map(specializations);
+            return mappedSpecializations;
         }
 
         [HttpGet("{id:int:min(1)}")]
