@@ -72,7 +72,7 @@ namespace Application.Test
             // Arrange
             _exceptionServiceFixture.MockExceptionRepository
                 .Setup(r => r.GetAsync(It.IsAny<int>()))
-                .ReturnsAsync((ExceptionEntity)null!);
+                .Throws<NotFoundException>();
 
             // Act
             var result =  _exceptionServiceFixture.MockExceptionEntityService.GetAsync(_id);
