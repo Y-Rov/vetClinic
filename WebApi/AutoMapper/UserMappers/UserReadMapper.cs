@@ -18,7 +18,7 @@ namespace WebApi.AutoMapper.UserMappers
         {
             string? role = _userManager.GetRolesAsync(source).Result.SingleOrDefault();
             string? address = GetAddress(source);
-            var specializations = source.UserSpecializations.Select(s => s.Specialization?.Name!);
+            var specializations = source.UserSpecializations.Select(s => s.Specialization);
 
             return new UserReadViewModel()
             {
@@ -30,7 +30,7 @@ namespace WebApi.AutoMapper.UserMappers
                 BirthDate = source.BirthDate.ToLocalTime(),
                 Role = role,
                 Address = address,
-                Portfolio = source.Portfolio?.Description,
+                Portfolio = source.Portfolio,
                 Specializations = specializations
             };
         }
@@ -41,8 +41,12 @@ namespace WebApi.AutoMapper.UserMappers
 
             if (user.Address is not null)
             {
-                address = $"{user.Address.City}, {user.Address.Street}, {user.Address.House}, " +
-                    $"{user.Address.ApartmentNumber}, {user.Address.ZipCode}";
+                address = $"{user.Address.City}, " +
+                    $"{user.Address.Street}, " +
+                    $"{user.Address.House}, " +
+                    $"{user.Address.ApartmentNumber}, " +
+                    $"{user.Address.ZipCode}";
+
                 address = address.Trim(new char[] { ',', ' ' });
             }
 
