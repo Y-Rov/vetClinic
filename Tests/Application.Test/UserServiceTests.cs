@@ -102,7 +102,7 @@ namespace Application.Test
             // Arrange
             _fixture.MockUserRepository
                 .Setup(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
+                .Throws<BadRequestException>();
 
             // Act
             var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Passowrd);
@@ -132,7 +132,7 @@ namespace Application.Test
             // Arrange
             _fixture.MockUserRepository
                 .Setup(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
+                .Throws<BadRequestException>();
 
             // Act
             var result = _fixture.MockUserService.AssignRoleAsync(_fixture.User, _fixture.Role);
@@ -162,7 +162,7 @@ namespace Application.Test
             // Arrange
             _fixture.MockUserRepository
                 .Setup(r => r.UpdateAsync(It.IsAny<User>()))
-                .ReturnsAsync(IdentityResult.Failed(new IdentityError()));
+                .Throws<BadRequestException>();
 
             // Act
             var result = _fixture.MockUserService.UpdateAsync(_fixture.User);
