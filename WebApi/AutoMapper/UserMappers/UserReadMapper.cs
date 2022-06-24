@@ -35,7 +35,7 @@ namespace WebApi.AutoMapper.UserMappers
             };
         }
 
-        private string? GetAddress(User user)
+        private static string? GetAddress(User user)
         {
             string? address = null;
 

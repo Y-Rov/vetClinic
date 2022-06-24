@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("doctors")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetDoctors(
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetDoctorsAsync(
             [FromQuery(Name = "specialization")] string? specialization)
         {
             var users = await _userService.GetDoctorsAsync(specialization!);
@@ -65,7 +65,7 @@ namespace WebApi.Controllers
         {
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
-            await _userService.AssignToRoleAsync(user, "Client");
+            await _userService.AssignRoleAsync(user, "Client");
 
             var readModel = _readMapper.Map(user);
 
@@ -74,12 +74,13 @@ namespace WebApi.Controllers
 
         [HttpPost("register/{role}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromRoute] string role,
+        public async Task<ActionResult<UserReadViewModel>> CreateAsync(
+            [FromRoute] string role,
             [FromBody] UserCreateViewModel createModel)
         {
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
-            await _userService.AssignToRoleAsync(user, role);
+            await _userService.AssignRoleAsync(user, role);
 
             var readDto = _readMapper.Map(user);
 
@@ -87,7 +88,8 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public async Task<ActionResult> UpdateAsync([FromRoute] int id, 
+        public async Task<ActionResult> UpdateAsync(
+            [FromRoute] int id, 
             [FromBody] UserUpdateViewModel updateModel)
         {
             var user = await _userService.GetUserByIdAsync(id);
