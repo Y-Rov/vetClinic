@@ -79,10 +79,14 @@ namespace DataAccess.Repositories
             return await users.ToListAsync();
         }
         
-        public async Task<IEnumerable<User>> FilterBySpecializationAsync(IEnumerable<User> users, string specialization)
+        public IEnumerable<User> FilterBySpecialization(IEnumerable<User> users, string specialization)
         {
-            var filteredUsers = users.Where(u => u.UserSpecializations.Any(us =>
-                us.Specialization?.Name.ToLower().Contains(specialization.Trim().ToLower()) ?? false));
+            var filteredUsers = users.Where(
+                u => u.UserSpecializations.Any(
+                    us => us.Specialization?.Name
+                        .ToLower()
+                        .Contains(specialization.Trim().ToLower()) 
+                        ?? false));
 
             return filteredUsers;
         }
@@ -91,12 +95,14 @@ namespace DataAccess.Repositories
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
         {
-            IQueryable<User> usersQuery = (filter is null ?
-                _userManager.Users :
-                _userManager.Users.Where(filter))
-                .Where(u => u.IsActive)
-                .Include(u => u.Address)
-                .Include(u => u.Portfolio);
+            IQueryable<User> usersQuery = (
+                filter is null 
+                ? _userManager.Users 
+                : _userManager.Users.Where(filter)
+            )
+            .Where(u => u.IsActive)
+            .Include(u => u.Address)
+            .Include(u => u.Portfolio);
 
             if (orderBy is not null)
             {
