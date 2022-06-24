@@ -3,8 +3,8 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Pagginator;
 using Core.ViewModel;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
@@ -32,6 +32,7 @@ namespace WebApi.Controllers
 
             var readDtos = _exceptionModel.Map(allExceptions);
 
+            SentPagginationInfo(allExceptions);
             return Ok(readDtos);
         }
 
@@ -71,6 +72,19 @@ namespace WebApi.Controllers
 
             return Ok(exceptionsStats);
 
+        }
+        private void SentPagginationInfo(PagedList<ExceptionEntity> paggedList)
+        {
+            var metadata = new
+            {
+                paggedList.TotalCount,
+                paggedList.PageSize,
+                paggedList.CurrentPage,
+                paggedList.TotalPages,
+                paggedList.HasNext,
+                paggedList.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
         }
     }
 }
