@@ -91,8 +91,7 @@ public class ProcedureService : IProcedureService
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Deleted procedure with Id {procedureId}");
     }
-
-
+    
     public async Task<Procedure> GetByIdAsync(int procedureId)
     {
         var procedure = await _procedureRepository.GetById(
