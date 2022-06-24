@@ -52,7 +52,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>, AnimalListToListMapper>();
 
-        services.AddScoped<IViewModelMapper<Salary,SalaryViewModel>, SalaryMapper>();
+        services.AddScoped<IViewModelMapper<Salary, SalaryViewModel>, SalaryMapper>();
         services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>, SalariesMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>, EmployeesMapper>();
@@ -63,21 +63,15 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio>, PortfolioUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateViewModel>>, PortfolioReadEnumerableViewModelMapper>();
 
-        services.AddScoped<IViewModelMapper<Address, AddressViewModel>, AddressViewModelMapper>();
-        services.AddScoped<IViewModelMapper<AddressViewModel, Address>, AddressMapper>();
-        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>>,
-            EnumerableAddressViewModelMapper>();
-        
+        services.AddScoped<IViewModelMapper<Address, AddressBaseViewModel>, AddressViewModelMapper>();
+        services.AddScoped<IViewModelMapper<Address, AddressCreateViewModel>, AddressCreateViewModelMapper>();
+        services.AddScoped<IViewModelMapper<AddressCreateViewModel, Address>, AddressCreateMapper>();
+        services.AddScoped<IViewModelMapperUpdater<AddressBaseViewModel, Address>, AddressUpdateMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateViewModel>>, AddressReadEnumerableViewModelMapper>();
+
         services.AddScoped<IViewModelMapper<Appointment, AppointmentReadViewModel>, AppointmentReadMapper>();
         services.AddScoped<IViewModelMapper<AppointmentCreateViewModel, Appointment>, AppointmentCreateMapper>();
         services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();
         services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
-
-
-        //services.AddScoped<IEnumerableViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>>, ProcedureReadEnumerableMapper > ();
-
-
-        //IViewModelMapper<IEnumerable<AppointmentProcedure>, IEnumerable<ProcedureReadViewModel>> procedureMapper,
-        //  IViewModelMapper< IEnumerable<AppointmentUser>, IEnumerable < UserReadViewModel >> userMapper
     }
 }

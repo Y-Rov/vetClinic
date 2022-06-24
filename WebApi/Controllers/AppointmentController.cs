@@ -2,6 +2,7 @@
 using Core.Interfaces.Services;
 using Core.ViewModels;
 using Core.ViewModels.AppointmentsViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -52,6 +53,7 @@ namespace WebApi.Controllers
             return appointmentViewModel;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> PostAsync(AppointmentCreateViewModel appointmentViewModel)
         {
@@ -62,6 +64,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> PutAsync(AppointmentUpdateViewModel appointmentViewModel) 
         {
@@ -74,6 +77,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{appointmentId:int:min(1)}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int appointmentId)
         {
