@@ -57,7 +57,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync(includeProperties: "Address,Portfolio");
             _loggerManager.LogInfo("Successfully retrieved all users");
 
             return users;
@@ -65,8 +65,9 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetDoctorsAsync(string specialization = "")
         {
-            var doctors = await _userRepository.GetByRoleAsync("Doctor",
-                "Address,Portfolio,UserSpecializations.Specialization");
+            var doctors = await _userRepository.GetByRoleAsync(
+                roleName: "Doctor",
+                includeProperties: "Address,Portfolio,UserSpecializations.Specialization");
 
             if (!string.IsNullOrEmpty(specialization))
             {
@@ -80,7 +81,7 @@ namespace Application.Services
 
         public async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id, "Address,Portfolio");
 
             if (user is null)
             {
