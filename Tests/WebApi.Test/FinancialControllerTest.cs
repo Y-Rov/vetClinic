@@ -397,7 +397,7 @@ namespace WebApi.Test
                     service.CreateSalaryAsync(It.IsAny<Salary>()))
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
             //Act
-            _fixture.MockFinancialController.PostAsync(salaryViewModel);
+            await _fixture.MockFinancialController.PostAsync(salaryViewModel);
             //Assert
 
             _fixture.MockFinancialService.Verify();
@@ -431,7 +431,7 @@ namespace WebApi.Test
                 .Throws(new BadRequestException());
             //Act
             //Assert
-            Assert.ThrowsAsync<BadRequestException>(async ()=> await _fixture.MockFinancialController.PostAsync(salaryViewModel));      
+            await Assert.ThrowsAsync<BadRequestException>(async ()=> await _fixture.MockFinancialController.PostAsync(salaryViewModel));      
             
         }
 
@@ -461,7 +461,7 @@ namespace WebApi.Test
                 .Throws(new NotFoundException());
             //Act
             //Assert
-            Assert.ThrowsAsync<NotFoundException>(async ()=> await _fixture.MockFinancialController.DeleteAsync(id));
+            await Assert.ThrowsAsync<NotFoundException>(async ()=> await _fixture.MockFinancialController.DeleteAsync(id));
         }
 
         [Fact]
@@ -522,7 +522,7 @@ namespace WebApi.Test
 
             //Act
             //Assert
-            Assert.ThrowsAsync<NotFoundException>(async()=> await _fixture.MockFinancialController.PutAsync(salaryViewModel));
+            await Assert.ThrowsAsync<NotFoundException>(async()=> await _fixture.MockFinancialController.PutAsync(salaryViewModel));
         }
 
         [Fact]
@@ -552,7 +552,7 @@ namespace WebApi.Test
 
             //Act
             //Assert
-            Assert.ThrowsAsync<BadRequestException>(async () => await _fixture.MockFinancialController.PutAsync(salaryViewModel));
+            await Assert.ThrowsAsync<BadRequestException>(async () => await _fixture.MockFinancialController.PutAsync(salaryViewModel));
         }
     }
 }
