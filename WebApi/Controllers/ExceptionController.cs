@@ -3,6 +3,7 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Pagginator;
 using Core.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WebApi.AutoMapper.Interface;
@@ -11,7 +12,7 @@ namespace WebApi.Controllers
 {
     [Route("api/exceptions")]
     [ApiController]
-   // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class ExceptionController : ControllerBase
     {
         private readonly IExceptionEntityService _exceptionEntityService;
