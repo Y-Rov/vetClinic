@@ -63,7 +63,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.GetUserByIdAsync(_fixture.Id);
 
             // Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => result);
+            await Assert.ThrowsAsync<NotFoundException>(async () => await result);
         }
 
         [Fact]
@@ -113,7 +113,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Passowrd);
 
             // Assert
-            await Assert.ThrowsAsync<BadRequestException>(() => result);
+            await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.AssignRoleAsync(_fixture.User, _fixture.Role);
 
             // Assert
-            await Assert.ThrowsAsync<BadRequestException>(() => result);
+            await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.UpdateAsync(_fixture.User);
 
             // Assert
-            await Assert.ThrowsAsync<BadRequestException>(() => result);
+            await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
         [Fact]
