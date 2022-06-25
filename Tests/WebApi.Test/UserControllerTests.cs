@@ -16,7 +16,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task GetAsync_AllUsers_ReturnsOkObjectResult()
+        public async Task GetAsync_whenUsersListIsNotEmpty_thenOkObjectResultReturned()
         {
             // Arrange
             _fixture.MockUserService
@@ -36,7 +36,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task GetAsync_ExistingUser_ReturnsOkObjectResult()
+        public async Task GetAsync_whenUserExists_thenOkObjectResultReturned()
         {
             // Arrange
             _fixture.MockUserService
@@ -56,7 +56,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task GetDoctorsAsync_AllDoctors_ReturnsOkObjectResult()
+        public async Task GetDoctorsAsync_whenDoctorsListIsNotEmpty_thenOkObjectResultReturned()
         {
             // Arrange
             _fixture.MockUserService
@@ -76,7 +76,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task CreateAsync_ValidData_ReturnsCreatedAtActionObjectResult()
+        public async Task CreateAsync_whenDataIsValid_thenCreatedAtActionResultReturned()
         {
             // Arrange
             _fixture.MockCreateMapper
@@ -96,7 +96,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task UpdateAsync_ExistingUser_ReturnsNoContentObjectResult()
+        public async Task UpdateAsync_whenUserExists_thenNoContentResultReturned()
         {
             // Arrange
             _fixture.MockUserService
@@ -116,7 +116,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task DeleteAsync_ExistingUser_ReturnsNoContentObjectResult()
+        public async Task DeleteAsync_whenUserExists_thenNoContentResultReturned()
         {
             // Arrange
             _fixture.MockUserService
