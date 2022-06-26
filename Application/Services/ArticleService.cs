@@ -38,7 +38,12 @@ public class ArticleService : IArticleService
 
     public async Task UpdateArticleAsync(Article article)
     {
-        _articleRepository.Update(article);
+        var updatingArticle = await GetByIdAsync(article.Id);
+        updatingArticle.Title = article.Title;
+        updatingArticle.Body = article.Body;
+        updatingArticle.Published = article.Published;
+        updatingArticle.Edited = true;
+
         await _articleRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Updated article with id {article.Id}");
     }

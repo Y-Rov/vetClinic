@@ -6,4 +6,5 @@ public class ReadArticleViewModel : ArticleViewModelBase
     public bool Edited { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? AuthorName { get; set; }
+    public int AuthorId { get; set; }
 }

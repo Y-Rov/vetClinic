@@ -18,9 +18,5 @@ public class ArticleBaseValidator<T> : AbstractValidator<T> where T : ArticleVie
             .WithMessage("Article body length must be greater than 5")
             .MaximumLength(6000)
             .WithMessage("Article body length must be lower than 6000");
-
-        RuleFor(art => art.AuthorId)
-            .GreaterThan(0)
-            .WithMessage("Invalid author id");
     }
 }

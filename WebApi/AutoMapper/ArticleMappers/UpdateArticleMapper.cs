@@ -14,7 +14,6 @@ public class UpdateArticleMapper : IViewModelMapper<UpdateArticleViewModel, Arti
             Edited = true,
             Title = source.Title,
             Body = source.Body,
-            AuthorId = source.AuthorId,
             Published = source.Published,
         };
     }
