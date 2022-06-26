@@ -19,17 +19,20 @@ public class ArticlesController : ControllerBase
     private readonly IArticleService _articleService;
     private readonly IViewModelMapper<CreateArticleViewModel, Article>  _createMapper;
     private readonly IViewModelMapper<UpdateArticleViewModel, Article> _updateMapper;
+    private readonly IViewModelMapper<Article, ReadArticleViewModel> _readMapper;
 
     public ArticlesController(
         IArticleService articleService,
         IViewModelMapper<CreateArticleViewModel, Article> createMapper,
         IViewModelMapper<UpdateArticleViewModel, Article> updateMapper,
+        IViewModelMapper<Article, ReadArticleViewModel> readMapper,
         IEnumerableViewModelMapper<IEnumerable<Article>, IEnumerable<ReadArticleViewModel>> enumerableViewModelMapper)
     {
         _enumerableViewModelMapper = enumerableViewModelMapper;
         _articleService = articleService;
         _createMapper = createMapper;
         _updateMapper = updateMapper;
+        _readMapper = readMapper;
     }
 
     [HttpGet]
@@ -48,6 +51,15 @@ public class ArticlesController : ControllerBase
         return viewModels;
     }
 
+        
+    [HttpGet("{id:int:min(1)}")]
+    public async Task<ReadArticleViewModel> GetByIdAsync([FromBody]int id)
+    {
+        var article = await _articleService.GetByIdAsync(id);
+        var viewModel = _readMapper.Map(article);
+        return viewModel;
+    }
+    
     //[Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task CreateAsync([FromBody] CreateArticleViewModel viewModel)

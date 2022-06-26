@@ -38,7 +38,9 @@ public class CommentService : ICommentService
 
     public async Task UpdateCommentAsync(Comment comment)
     {
-        _commentRepository.Update(comment);
+        var updatingComment = await GetByIdAsync(comment.Id);
+        updatingComment.Content = comment.Content;
+        updatingComment.Edited = true;
         await _commentRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Updated comment with id {comment.Id}");
     }
