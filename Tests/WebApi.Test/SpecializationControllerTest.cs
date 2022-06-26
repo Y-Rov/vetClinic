@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
 using Core.ViewModels.SpecializationViewModels;
+using FluentAssertions;
 using Moq;
 using WebApi.Test.Fixtures;
 
@@ -129,13 +130,13 @@ namespace WebApi.Test
         [Fact]
         public async Task GetAllSpecializations_whenResultIsNotEmpty_thenStatusCodeOk ()
         {
-            var expected = new List<SpecializationViewModel>
+            IEnumerable<SpecializationViewModel> expected = new List<SpecializationViewModel>
             {
                 new SpecializationViewModel() {Id = 0, Name = "surgeon"},
                 new SpecializationViewModel() {Id = 1, Name = "worker"}
             };
 
-            var returnedSpecializations = new List<Specialization>()
+            IEnumerable<Specialization> returnedSpecializations = new List<Specialization>()
             {
                 new Specialization {Id = 0, Name = "surgeon"},
                 new Specialization {Id = 1, Name = "worker"}
@@ -158,7 +159,8 @@ namespace WebApi.Test
                 await _fixture.MockController.GetSpecializations();
 
             Assert.NotNull(specializations);
-            Assert.Equal(expected, specializations);
+            specializations.Should().BeEquivalentTo(expected);
+            //Assert.Equal(expected,specializations);
         }
 
         [Fact]
