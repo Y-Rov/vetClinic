@@ -57,11 +57,11 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddSpecialization([FromBody]SpecializationViewModel specialization)
+        public async Task<Specialization> AddSpecialization([FromBody]SpecializationViewModel specialization)
         {
             var specializationRaw = _mapper.Map(specialization);
-            await _service.AddSpecializationAsync(specializationRaw);
-            return Ok(specialization);
+            var result = await _service.AddSpecializationAsync(specializationRaw);
+            return result;
         }
 
         [HttpPut("addProcedure/{specId:int:min(1)}/{procId:int:min(1)}")]
