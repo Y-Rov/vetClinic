@@ -15,5 +15,6 @@ public class ReadEnumerableArticleMapper : IEnumerableViewModelMapper<IEnumerabl
     public IEnumerable<ReadArticleViewModel> Map(IEnumerable<Article> source)
     {
         var readViewModels = source.Select(pr => _readMapper.Map(pr));
-        return readViewModels;    }
+        return readViewModels;    
+    }
 }

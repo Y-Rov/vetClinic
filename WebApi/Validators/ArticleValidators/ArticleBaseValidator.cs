@@ -9,9 +9,9 @@ public class ArticleBaseValidator<T> : AbstractValidator<T> where T : ArticleVie
     {
         RuleFor(art => art.Title)
             .MinimumLength(5)
-            .WithMessage("Article title description length must be greater than 5")
+            .WithMessage("Article title length must be greater than 5")
             .MaximumLength(200)
-            .WithMessage("Article title description length must be lower than 200");
+            .WithMessage("Article title length must be lower than 200");
         
         RuleFor(art => art.Body)
             .MinimumLength(5)
