@@ -19,6 +19,8 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<ISalaryRepository, SalaryRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IUserSpecializationRepository, UserSpecializationRepository>();
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
         }
     }
 }
