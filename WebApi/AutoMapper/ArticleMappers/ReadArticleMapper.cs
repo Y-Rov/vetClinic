@@ -17,6 +17,7 @@ public class ReadArticleMapper : IViewModelMapper<Article, ReadArticleViewModel>
             AuthorId = source.AuthorId,
             CreatedAt = source.CreatedAt,
             Published = source.Published,
+            AuthorName = source.Author!.FirstName + " " + source.Author!.LastName
         };
     }
 }
