@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.ViewModels.User;
+using System.Text.Json;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.UserMappers
@@ -19,10 +20,13 @@ namespace WebApi.AutoMapper.UserMappers
 
         public void Map(UserUpdateViewModel source, User dest)
         {
+            var profilePicture = Convert.FromBase64String(source.ProfilePicture);
+
             dest.FirstName = source.FirstName;
             dest.LastName = source.LastName;
             dest.PhoneNumber = source.PhoneNumber;
             dest.BirthDate = source.BirthDate;
+            dest.ProfilePicture = profilePicture;
         }
     }
 }
