@@ -10,13 +10,13 @@ public class ArticleBaseValidator<T> : AbstractValidator<T> where T : ArticleVie
         RuleFor(art => art.Title)
             .MinimumLength(5)
             .WithMessage("Article title description length must be greater than 5")
-            .MinimumLength(200)
+            .MaximumLength(200)
             .WithMessage("Article title description length must be lower than 200");
         
         RuleFor(art => art.Body)
             .MinimumLength(5)
             .WithMessage("Article body length must be greater than 5")
-            .MinimumLength(6000)
+            .MaximumLength(6000)
             .WithMessage("Article body length must be lower than 6000");
 
         RuleFor(art => art.AuthorId)

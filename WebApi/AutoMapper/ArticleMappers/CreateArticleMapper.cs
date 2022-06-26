@@ -13,7 +13,7 @@ public class CreateArticleMapper : IViewModelMapper<CreateArticleViewModel, Arti
             Title =  source.Title,
             Body = source.Body,
             AuthorId = source.AuthorId,
-            CreatedAt = source.CreatedAt,
+            CreatedAt = DateTime.Now,
             Published = source.Published,
         };
     }
