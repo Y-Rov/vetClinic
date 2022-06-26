@@ -3,6 +3,7 @@ using Core.ViewModel;
 using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
+using Core.ViewModels.ArticleViewModels;
 using Core.ViewModels.PortfolioViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SalaryViewModel;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WebApi.AutoMapper.AddressMappers;
 using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.AppointmentMappers;
+using WebApi.AutoMapper.ArticleMappers;
 using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.PortfolioMappers;
@@ -71,5 +73,10 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Appointment, AppointmentViewModel>, AppointmentMapper>();
         services.AddScoped<IViewModelMapper<AppointmentViewModel, Appointment>, AppointmentViewModelMapper>();
         services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>>, AppointmentsMapper>();
+
+        services.AddScoped<IViewModelMapper<Article, ReadArticleViewModel>, ReadArticleMapper>();
+        services.AddScoped<IViewModelMapper<CreateArticleViewModel, Article>, CreateArticleMapper>();
+        services.AddScoped<IViewModelMapper<UpdateArticleViewModel, Article>, UpdateArticleMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Article>, IEnumerable<ReadArticleViewModel>>, ReadEnumerableArticleMapper>();
     }
 }
