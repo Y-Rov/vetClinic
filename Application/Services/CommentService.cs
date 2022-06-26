@@ -36,8 +36,15 @@ public class CommentService : ICommentService
         _loggerManager.LogInfo($"Created new comment with content {comment.Content}");
     }
 
-    public async Task UpdateCommentAsync(Comment comment)
+    public async Task UpdateCommentAsync(Comment comment, User requestUser)
     {
+        if (/*REMOVE*/requestUser is not null && /*REMOVE*/comment.AuthorId != requestUser.Id)
+        {
+            var message =
+                $"Editing comment with different author: user id: {requestUser.Id}, author id: {comment.AuthorId}, comment id: {comment.Id}";
+            _loggerManager.LogWarn(message);
+            throw new BadRequestException(message);
+        }
         var updatingComment = await GetByIdAsync(comment.Id);
         updatingComment.Content = comment.Content;
         updatingComment.Edited = true;
@@ -45,9 +52,16 @@ public class CommentService : ICommentService
         _loggerManager.LogInfo($"Updated comment with id {comment.Id}");
     }
 
-    public async Task DeleteCommentAsync(int commentId)
+    public async Task DeleteCommentAsync(int commentId, User requestUser)
     {
         var commentToRemove = await GetByIdAsync(commentId);
+        if (/*REMOVE*/requestUser is not null && /*REMOVE*/commentToRemove.AuthorId != requestUser.Id)
+        {
+            var message =
+                $"Editing comment with different author: user id: {requestUser.Id}, author id: {commentToRemove.AuthorId}, comment id: {commentToRemove.Id}";
+            _loggerManager.LogWarn(message);
+            throw new BadRequestException(message);
+        }
 
         _commentRepository.Delete(commentToRemove);
         await _commentRepository.SaveChangesAsync();

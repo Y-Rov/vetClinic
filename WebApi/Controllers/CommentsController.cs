@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.CommentViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -15,19 +16,22 @@ public class CommentsController : ControllerBase
     private readonly IViewModelMapper<UpdateCommentViewModel, Comment> _updateMapper;
     private readonly IViewModelMapper<Comment, ReadCommentViewModel> _readMapper;
     private readonly IEnumerableViewModelMapper<IEnumerable<Comment>, IEnumerable<ReadCommentViewModel>> _readEnumMapper;
+    private readonly UserManager<User> _userManager;
 
     public CommentsController(
         ICommentService commentService,
         IViewModelMapper<CreateCommentViewModel, Comment> createMapper,
         IViewModelMapper<UpdateCommentViewModel, Comment> updateMapper,
         IViewModelMapper<Comment, ReadCommentViewModel> readMapper,
-        IEnumerableViewModelMapper<IEnumerable<Comment>, IEnumerable<ReadCommentViewModel>> readEnumMapper)
+        IEnumerableViewModelMapper<IEnumerable<Comment>, IEnumerable<ReadCommentViewModel>> readEnumMapper,
+        UserManager<User> userManager)
     {
         _commentService = commentService;
         _createMapper = createMapper;
         _updateMapper = updateMapper;
         _readMapper = readMapper;
         _readEnumMapper = readEnumMapper;
+        _userManager = userManager;
     }
     
     [HttpGet]
@@ -54,7 +58,7 @@ public class CommentsController : ControllerBase
         return viewModel;
     }
     
-    //[Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Client")]
     [HttpPost]
     public async Task CreateAsync([FromBody] CreateCommentViewModel viewModel)
     {
@@ -62,18 +66,20 @@ public class CommentsController : ControllerBase
         await _commentService.CreateCommentAsync(newArticle);
     }
 
-    //[Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Client")]
     [HttpDelete("{id:int:min(1)}")]
     public async Task DeleteAsync([FromRoute] int id)
     {
-        await _commentService.DeleteCommentAsync(id);
+        var requestUser = await _userManager.GetUserAsync(HttpContext.User);
+        await _commentService.DeleteCommentAsync(id, requestUser);
     }
     
-    //[Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Client")]
     [HttpPut]
     public async Task UpdateAsync([FromBody] UpdateCommentViewModel viewModel)
     {
+        var requestUser = await _userManager.GetUserAsync(HttpContext.User);
         var updatedArticle = _updateMapper.Map(viewModel);
-        await _commentService.UpdateCommentAsync(updatedArticle);
+        await _commentService.UpdateCommentAsync(updatedArticle, requestUser);
     }
 }
