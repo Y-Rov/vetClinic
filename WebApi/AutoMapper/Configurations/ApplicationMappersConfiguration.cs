@@ -4,6 +4,7 @@ using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.ArticleViewModels;
+using Core.ViewModels.CommentViewModels;
 using Core.ViewModels.PortfolioViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SalaryViewModel;
@@ -14,6 +15,7 @@ using WebApi.AutoMapper.AddressMappers;
 using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.AppointmentMappers;
 using WebApi.AutoMapper.ArticleMappers;
+using WebApi.AutoMapper.CommentMappers;
 using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.PortfolioMappers;
@@ -78,5 +80,10 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<CreateArticleViewModel, Article>, CreateArticleMapper>();
         services.AddScoped<IViewModelMapper<UpdateArticleViewModel, Article>, UpdateArticleMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Article>, IEnumerable<ReadArticleViewModel>>, ReadEnumerableArticleMapper>();
+
+        services.AddScoped<IViewModelMapper<Comment, ReadCommentViewModel>, ReadCommentMapper>();
+        services.AddScoped<IViewModelMapper<CreateCommentViewModel, Comment>, CreateCommentMapper>();
+        services.AddScoped<IViewModelMapper<UpdateCommentViewModel, Comment>, UpdateCommentMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Comment>, IEnumerable<ReadCommentViewModel>>, ReadEnumerableCommentMapper>();
     }
 }
