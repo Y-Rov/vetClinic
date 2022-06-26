@@ -2,5 +2,6 @@
 {
     public record UserUpdateViewModel : UserBaseViewModel
     {
+        public string ProfilePicture { get; init; } = string.Empty;
     }
 }

@@ -8,6 +8,7 @@ namespace Core.ViewModels.User
         public string? Role { get; init; }
         public string? Email { get; init; }
         public string? Address { get; init; }
+        public byte[]? ProfilePicture { get; init; }
         public Portfolio? Portfolio { get; init; }
         public IEnumerable<Specialization?>? Specializations { get; init; }
     }
