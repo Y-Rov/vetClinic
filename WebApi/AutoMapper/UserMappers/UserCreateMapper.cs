@@ -22,7 +22,7 @@ namespace WebApi.AutoMapper.UserMappers
             };
         }
 
-        private byte[] GetProfilePicture(string sourcePicture)
+        private static byte[] GetProfilePicture(string sourcePicture)
         {
             byte[] profilePicture;
 
