@@ -51,9 +51,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}/procedures")]
-        public async Task<ActionResult> GetSpecializationProcedures([FromRoute] int id)
+        public async Task<IEnumerable<ProcedureReadViewModel>> GetSpecializationProcedures([FromRoute] int id)
         {
-            return Ok(_procedureEnumerableViewModelMapper.Map(await _service.GetSpecializationProcedures(id)));
+            var procedures = await _service.GetSpecializationProcedures(id);
+            var mappedProcedures = _procedureEnumerableViewModelMapper.Map(procedures);
+            return mappedProcedures;
         }
 
         [HttpPost]
