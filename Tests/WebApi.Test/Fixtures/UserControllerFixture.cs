@@ -27,6 +27,14 @@ namespace WebApi.Test.Fixtures
                 MockCreateMapper.Object,
                 MockUpdateMapper.Object,
                 MockReadEnumerableMapper.Object);
+            
+            Id = 1;
+            User = new() { Id = Id, FirstName = "Ren", LastName = "Amamiya" };
+            ReadViewModel = new() { Id = Id, FirstName = "Ren", LastName = "Amamiya" };
+            CreateViewModel = new() { FirstName = "Ren", LastName = "Amamiya", Password = "test_pass" };
+            UpdateViewModel = new() { FirstName = "Ren", LastName = "Amamiya" };
+            Users = new List<User>() { User };
+            ReadViewModels = new List<UserReadViewModel>() { ReadViewModel };
         }
 
         public UserController MockUserController { get; }
@@ -35,5 +43,13 @@ namespace WebApi.Test.Fixtures
         public Mock<IViewModelMapper<UserCreateViewModel, User>> MockCreateMapper { get; }
         public Mock<IViewModelMapperUpdater<UserUpdateViewModel, User>> MockUpdateMapper { get; }
         public Mock<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>> MockReadEnumerableMapper { get; }
+
+        public int Id { get; set; }
+        public User User { get; set; }
+        public UserReadViewModel ReadViewModel { get; set; }
+        public UserCreateViewModel CreateViewModel { get; set; }
+        public UserUpdateViewModel UpdateViewModel { get; set; }
+        public IEnumerable<User> Users { get; set; }
+        public IEnumerable<UserReadViewModel> ReadViewModels { get; set; }
     }
 }

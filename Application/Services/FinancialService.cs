@@ -95,6 +95,11 @@ namespace Application.Services
         public async Task UpdateSalaryAsync(Salary salary)
         {
             var res = await GetSalaryByUserIdAsync(salary.EmployeeId);
+            if(res.Value == salary.Value)
+            {
+                _logger.LogError($"You try to update Salary with id: {res.EmployeeId} with the same value");
+                throw new BadRequestException();
+            }
 
             await GenerateUpdateSalary(res, salary.Value);
 
