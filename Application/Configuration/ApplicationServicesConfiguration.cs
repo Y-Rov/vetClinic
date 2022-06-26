@@ -18,6 +18,7 @@ namespace Application.Configuration
             services.AddScoped<IFinancialService, FinancialService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IArticleService, ArticleService>();
+            services.AddScoped<ICommentService, CommentService>();
         }
     }
 }
