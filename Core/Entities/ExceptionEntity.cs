@@ -15,8 +15,8 @@
             StackTrace = stackTrace;
             Path = path;
         }
-        public ExceptionEntity(string name, DateTime dateTime,
-            string stackTrace, string path, int id) :
+        public ExceptionEntity(
+            string name, DateTime dateTime, string stackTrace, string path, int id) :
                 this(name, dateTime, stackTrace, path)
         {
             Id = id;

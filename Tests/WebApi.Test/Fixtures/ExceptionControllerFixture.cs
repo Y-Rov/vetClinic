@@ -26,10 +26,8 @@ namespace WebApi.Test.Fixtures
                 MockMapperException.Object);
         }
 
-        public ExceptionController MockExceptionController { get; set; }
-        public Mock<IExceptionEntityService> MockExceptionService { get; }
-        public Mock<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>> MockMapperException { get; }
 
+        public ExceptionController MockExceptionController { get; set; }
         public static readonly int _id = 1;
         public static readonly ExceptionEntity _exceptionEntity = new()
         {
@@ -59,5 +57,7 @@ namespace WebApi.Test.Fixtures
         public static readonly PagedList<ExceptionEntity> _paggedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
         public static readonly PagedList<ExceptionEntityReadViewModel> _paggedListViewModelsExceptions = PagedList<ExceptionEntityReadViewModel>.ToPagedList(_exceptionEntityReadViewModels.AsQueryable(), 1, 10);
         public static readonly ExceptionParameters paggingParameters = new();
+        public Mock<IExceptionEntityService> MockExceptionService { get; }
+        public Mock<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>> MockMapperException { get; }
     }
 }

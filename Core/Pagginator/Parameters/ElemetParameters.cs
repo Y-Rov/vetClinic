@@ -1,6 +1,6 @@
 ﻿namespace Core.Pagginator.Parameters
 {
-    public abstract class ElemetParameters
+    public abstract class ElementParameters
     {
         const int maxPageSize = 10;
         public int PageNumber { get; set; } = 1;

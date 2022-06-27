@@ -1,6 +1,6 @@
 ﻿namespace Core.Pagginator.Parameters
 {
-    public class ExceptionParameters : ElemetParameters
+    public class ExceptionParameters : ElementParameters
     {
         public string Name { get; set; } = string.Empty;
 
