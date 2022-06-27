@@ -317,6 +317,27 @@ namespace Application.Test
         }
 
         [Fact]
+        public async Task UpdateSalary_whenNewValueIsEqualOld_thanBadRequestException()
+        {
+            //Arrange
+
+            var salary = new Salary
+            {
+                Id = 1,
+                EmployeeId = 1,
+                Value = 10
+            };
+
+            _fixture.MockSalaryRepository
+                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(salary);
+
+            //Act
+            //Assert
+            await Assert.ThrowsAsync<BadRequestException>(async () => await _fixture.MockFinancialService.UpdateSalaryAsync(salary));
+        }
+
+        [Fact]
         public async Task UpdateSalary_whenSalaryValueIsZero_thanNotFoundException()
         {
             //Arrange
