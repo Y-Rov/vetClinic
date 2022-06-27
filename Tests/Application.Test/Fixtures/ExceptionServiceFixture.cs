@@ -48,9 +48,9 @@ namespace Application.Test.Fixtures
 
         public static readonly List<ExceptionStats> _exceptionStats = new() { _exceptionStat };
         public static readonly List<ExceptionEntity> _exceptionEntities = new() { _exceptionEntity };
-        public static readonly PagedList<ExceptionStats> _paggedListExceptionStats = PagedList<ExceptionStats>.ToPagedList(_exceptionStats.AsQueryable(), 1, 10);
-        public static readonly PagedList<ExceptionEntity> _paggedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
-        public static readonly ExceptionParameters paggingParameters = new()
+        public static readonly PagedList<ExceptionStats> _pagedListExceptionStats = PagedList<ExceptionStats>.ToPagedList(_exceptionStats.AsQueryable(), 1, 10);
+        public static readonly PagedList<ExceptionEntity> _pagedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
+        public static readonly ExceptionParameters pagingParameters = new()
         {
             PageNumber = 1,
             PageSize = 10,

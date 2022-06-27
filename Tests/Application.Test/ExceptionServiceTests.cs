@@ -23,15 +23,15 @@ namespace Application.Test
         {
             // Arrange
             _exceptionServiceFixture.MockExceptionRepository
-                .Setup(r => r.GetAsync(ExceptionServiceFixture.paggingParameters))
-                .ReturnsAsync(ExceptionServiceFixture._paggedListExceptions);
+                .Setup(r => r.GetAsync(It.IsAny<ExceptionParameters>()))
+                .ReturnsAsync(ExceptionServiceFixture._pagedListExceptions);
 
             // Act
-            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetAsync(ExceptionServiceFixture.paggingParameters);
+            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetAsync(ExceptionServiceFixture.pagingParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._paggedListExceptions);
+            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptions);
         }
 
         [Fact]
@@ -70,15 +70,15 @@ namespace Application.Test
         {
             // Arrange
             _exceptionServiceFixture.MockExceptionRepository
-                .Setup(r => r.GetTodayAsync(ExceptionServiceFixture.paggingParameters))
-                .ReturnsAsync(ExceptionServiceFixture._paggedListExceptions);
+                .Setup(r => r.GetTodayAsync(It.IsAny<ExceptionParameters>()))
+                .ReturnsAsync(ExceptionServiceFixture._pagedListExceptions);
 
             // Act
-            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetTodayAsync(ExceptionServiceFixture.paggingParameters);
+            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetTodayAsync(ExceptionServiceFixture.pagingParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._paggedListExceptions);
+            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptions);
 
             var resultAndExpect = result!.Zip(ExceptionServiceFixture._exceptionEntities, (result, expect) => new { Result = result, Expect = expect });
             foreach (var item in resultAndExpect)
@@ -92,15 +92,15 @@ namespace Application.Test
         {
             // Arrange
             _exceptionServiceFixture.MockExceptionRepository
-                .Setup(r => r.GetStatsAsync(ExceptionServiceFixture.paggingParameters))
-                .ReturnsAsync(ExceptionServiceFixture._paggedListExceptionStats);
+                .Setup(r => r.GetStatsAsync(It.IsAny<ExceptionParameters>()))
+                .ReturnsAsync(ExceptionServiceFixture._pagedListExceptionStats);
 
             // Act
-            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetStatsAsync(ExceptionServiceFixture.paggingParameters);
+            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetStatsAsync(ExceptionServiceFixture.pagingParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._paggedListExceptionStats);
+            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptionStats);
         }
 
         [Fact]
@@ -108,15 +108,15 @@ namespace Application.Test
         {
             // Arrange
             _exceptionServiceFixture.MockExceptionRepository
-                .Setup(r => r.GetTodayStatsAsync(ExceptionServiceFixture.paggingParameters))
-                .ReturnsAsync(ExceptionServiceFixture._paggedListExceptionStats);
+                .Setup(r => r.GetTodayStatsAsync(It.IsAny<ExceptionParameters>()))
+                .ReturnsAsync(ExceptionServiceFixture._pagedListExceptionStats);
 
             // Act
-            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetTodayStatsAsync(ExceptionServiceFixture.paggingParameters);
+            var result = await _exceptionServiceFixture.MockExceptionEntityService.GetTodayStatsAsync(ExceptionServiceFixture.pagingParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._paggedListExceptionStats);
+            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptionStats);
         }
     }
 }

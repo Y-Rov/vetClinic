@@ -53,10 +53,10 @@ namespace WebApi.Test.Fixtures
         public static readonly List<ExceptionStats> _exceptionStats = new() { _exceptionStat };
         public static readonly List<ExceptionEntity> _exceptionEntities = new() { _exceptionEntity };
         public static readonly List<ExceptionEntityReadViewModel> _exceptionEntityReadViewModels = new() { _exceptionEntityReadViewModel };
-        public static readonly PagedList<ExceptionStats> _paggedListExceptionStats = PagedList<ExceptionStats>.ToPagedList(_exceptionStats.AsQueryable(), 1, 10);
-        public static readonly PagedList<ExceptionEntity> _paggedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
-        public static readonly PagedList<ExceptionEntityReadViewModel> _paggedListViewModelsExceptions = PagedList<ExceptionEntityReadViewModel>.ToPagedList(_exceptionEntityReadViewModels.AsQueryable(), 1, 10);
-        public static readonly ExceptionParameters paggingParameters = new();
+        public static readonly PagedList<ExceptionStats> _pagedListExceptionStats = PagedList<ExceptionStats>.ToPagedList(_exceptionStats.AsQueryable(), 1, 10);
+        public static readonly PagedList<ExceptionEntity> _pagedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
+        public static readonly PagedList<ExceptionEntityReadViewModel> _pagedListViewModelsExceptions = PagedList<ExceptionEntityReadViewModel>.ToPagedList(_exceptionEntityReadViewModels.AsQueryable(), 1, 10);
+        public static readonly ExceptionParameters pagingParameters = new();
         public Mock<IExceptionEntityService> MockExceptionService { get; }
         public Mock<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>> MockMapperException { get; }
     }
