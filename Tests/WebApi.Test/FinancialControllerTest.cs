@@ -127,7 +127,7 @@ namespace WebApi.Test
                 .ReturnsAsync(employee);
 
             //Act
-            Assert.ThrowsAsync<NotFoundException>(async () => await _fixture.MockFinancialController.GetAsync(id));
+            await Assert.ThrowsAsync<NotFoundException>(async () => await _fixture.MockFinancialController.GetAsync(id));
 
         }
 
