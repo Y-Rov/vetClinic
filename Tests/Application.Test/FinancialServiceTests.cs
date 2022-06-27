@@ -292,6 +292,13 @@ namespace Application.Test
                 Value = 10
             };
 
+            var oldSalary = new Salary 
+            { 
+               Id = 1, 
+               EmployeeId = 1,
+               Value = 20
+            };
+
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(salary);
@@ -302,7 +309,7 @@ namespace Application.Test
                 .Setup(repo => repo.SaveChangesAsync())
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
             //Act
-            await _fixture.MockFinancialService.UpdateSalaryAsync(salary);
+            await _fixture.MockFinancialService.UpdateSalaryAsync(oldSalary);
 
             //Assert
 
