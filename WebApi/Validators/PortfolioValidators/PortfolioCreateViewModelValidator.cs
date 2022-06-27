@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace WebApi.Validators.PortfolioValidators
 {
-    public class PortfolioCreateViewModelValidator : PortfolioBaseViewModelValidator<PortfolioCreateViewModel>
+    public class PortfolioCreateViewModelValidator : PortfolioBaseViewModelValidator<PortfolioCreateReadViewModel>
     {
         public PortfolioCreateViewModelValidator()
         {
