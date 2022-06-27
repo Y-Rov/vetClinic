@@ -28,9 +28,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAsync([FromQuery] ExceptionParameters paggingParameters)
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var allExceptions = await _exceptionEntityService.GetAsync(paggingParameters);
+            var allExceptions = await _exceptionEntityService.GetAsync(exceptionParameters);
 
             var readDtos = _exceptionModel.Map(allExceptions);
 
@@ -39,9 +39,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("stats")]
-        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetStatsAsync([FromQuery] ExceptionParameters paggingParameters)
+        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetStatsAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var exceptionsStats = await _exceptionEntityService.GetStatsAsync(paggingParameters);
+            var exceptionsStats = await _exceptionEntityService.GetStatsAsync(exceptionParameters);
             SentPagginationInfo(exceptionsStats);
             return Ok(exceptionsStats);
 
@@ -56,9 +56,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("today")]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetTodayAsync([FromQuery] ExceptionParameters paggingParameters)
+        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetTodayAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var allExceptions = await _exceptionEntityService.GetTodayAsync(paggingParameters);
+            var allExceptions = await _exceptionEntityService.GetTodayAsync(exceptionParameters);
 
             var readDtos = _exceptionModel.Map(allExceptions);
             SentPagginationInfo(allExceptions);
@@ -67,9 +67,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("stats/today")]
-        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetTodayStatsAsync([FromQuery] ExceptionParameters paggingParameters)
+        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetTodayStatsAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync(paggingParameters);
+            var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync(exceptionParameters);
             SentPagginationInfo(exceptionsStats);
             return Ok(exceptionsStats);
 
