@@ -63,10 +63,10 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateViewModel>>, PortfolioReadEnumerableViewModelMapper>();
 
         services.AddScoped<IViewModelMapper<Address, AddressBaseViewModel>, AddressViewModelMapper>();
-        services.AddScoped<IViewModelMapper<Address, AddressCreateViewModel>, AddressCreateViewModelMapper>();
-        services.AddScoped<IViewModelMapper<AddressCreateViewModel, Address>, AddressCreateMapper>();
+        services.AddScoped<IViewModelMapper<Address, AddressCreateReadViewModel>, AddressCreateViewModelMapper>();
+        services.AddScoped<IViewModelMapper<AddressCreateReadViewModel, Address>, AddressCreateMapper>();
         services.AddScoped<IViewModelMapperUpdater<AddressBaseViewModel, Address>, AddressUpdateMapper>();
-        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateViewModel>>, AddressReadEnumerableViewModelMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>, AddressReadEnumerableViewModelMapper>();
 
         services.AddScoped<IViewModelMapper<Appointment, AppointmentViewModel>, AppointmentMapper>();
         services.AddScoped<IViewModelMapper<AppointmentViewModel, Appointment>, AppointmentViewModelMapper>();

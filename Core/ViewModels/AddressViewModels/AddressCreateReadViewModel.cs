@@ -1,6 +1,6 @@
 ﻿namespace Core.ViewModels.AddressViewModels
 {
-    public class AddressCreateViewModel : AddressBaseViewModel
+    public class AddressCreateReadViewModel : AddressBaseViewModel
     {
         public int Id { get; set; }
     }

@@ -12,18 +12,18 @@ namespace WebApi.Controllers
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;
-        private readonly IViewModelMapper<AddressCreateViewModel, Address> _addressCreateMapper;
+        private readonly IViewModelMapper<AddressCreateReadViewModel, Address> _addressCreateMapper;
         private readonly IViewModelMapper<Address, AddressBaseViewModel> _addressReadViewModelMapper;
         private readonly IViewModelMapperUpdater<AddressBaseViewModel, Address> _addressUpdateMapper;
-        private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateViewModel>>
+        private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>
             _addressReadEnumerableViewModelMapper;
 
         public AddressController(
             IAddressService addressService,
             IViewModelMapper<Address, AddressBaseViewModel> addressReadViewModelMapper,
-            IViewModelMapper<AddressCreateViewModel, Address> addressCreateMapper,
+            IViewModelMapper<AddressCreateReadViewModel, Address> addressCreateMapper,
             IViewModelMapperUpdater<AddressBaseViewModel, Address> addressUpdateMapper,
-            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateViewModel>> addressReadEnumerableViewModelMapper)
+            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>> addressReadEnumerableViewModelMapper)
         {
             _addressService = addressService;
             _addressCreateMapper = addressCreateMapper;
@@ -34,7 +34,7 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<AddressCreateViewModel>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<AddressCreateReadViewModel>>> GetAsync()
         {
             var addresses = await _addressService.GetAllAddressesAsync();
 
@@ -52,9 +52,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] AddressCreateViewModel addressCreateViewModel)
+        public async Task<ActionResult> CreateAsync([FromBody] AddressCreateReadViewModel addressCreateReadViewModel)
         {
-            var address = _addressCreateMapper.Map(addressCreateViewModel);
+            var address = _addressCreateMapper.Map(addressCreateReadViewModel);
 
             await _addressService.CreateAddressAsync(address);
             return NoContent();
