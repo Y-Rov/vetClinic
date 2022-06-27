@@ -57,7 +57,7 @@ namespace WebApi.Test
         public async Task GetSpecializationById_whenIdIsIncorrect_thenStatusCodeErrorReturned()
         {
             //  Arrange
-            int id = 20;
+            int wrongId = 20;
             var specialization = new Specialization
             {
                 Id = 4,
@@ -73,8 +73,8 @@ namespace WebApi.Test
             _fixture.MockSpecializationService
                 .Setup(service =>
                     service.GetSpecializationByIdAsync
-                        (It.Is<int>(id => specialization.Id == id)))
-                .ReturnsAsync(specialization);
+                        (It.Is<int>(id => wrongId == id)))
+                .Throws<NotFoundException>();
 
             _fixture.MockMapperSpecializationViewModel
                 .Setup(mapper =>
@@ -82,50 +82,13 @@ namespace WebApi.Test
                 .Returns(specializationViewModel);
 
             //  Act
-            var result = await _fixture.MockController.GetSpecializationById(id);
+            var result = _fixture.MockController.GetSpecializationById(wrongId);
 
             //  Assert
             Assert.NotNull(result);
-            Assert.NotEqual(result.Name, specializationViewModel.Name);
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
 
-        [Fact]
-        public async Task GetSpecializationById_whenIdIsInvalid_thenStatusCodeErrorReturned()
-        {
-            //  Arrange
-
-            int id = -2;
-            var specialization = new Specialization()
-            {
-                Id = 4,
-                Name = "surgeon"
-            };
-
-            var specializationViewModel = new SpecializationViewModel()
-            {
-                Id = 4,
-                Name = "surgeon"
-            };
-
-            _fixture.MockSpecializationService
-                .Setup(service =>
-                    service.GetSpecializationByIdAsync
-                        (It.Is<int>(id => specialization.Id == id)))
-                .ReturnsAsync(specialization);
-
-            _fixture.MockMapperSpecializationViewModel
-                .Setup(mapper =>
-                    mapper.Map(It.Is<Specialization>(spec => spec == specialization)))
-                .Returns(specializationViewModel);
-
-            //  Act
-
-            var result = await _fixture.MockController.GetSpecializationById(id);
-
-            //  Assert
-            Assert.NotNull(result);
-            Assert.NotEqual(result.Name, specializationViewModel.Name);
-        }
 
         [Fact]
         public async Task GetAllSpecializations_whenResultIsNotEmpty_thenStatusCodeOk ()
