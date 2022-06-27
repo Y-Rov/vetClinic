@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.Pagginator
+﻿namespace Core.Pagginator.Parameters
 {
-    public class PaggingParameters
+    public abstract class ElemetParameters
     {
         const int maxPageSize = 10;
         public int PageNumber { get; set; } = 1;

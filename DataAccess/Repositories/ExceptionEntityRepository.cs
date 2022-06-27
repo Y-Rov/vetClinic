@@ -2,6 +2,7 @@
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Pagginator;
+using Core.Pagginator.Parameters;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +18,11 @@ namespace DataAccess.Repositories
             _clinicContext = clinicContext;
         }
 
-        public async Task<PagedList<ExceptionEntity>> GetAsync(PaggingParameters paggingParameters)
+        public async Task<PagedList<ExceptionEntity>> GetAsync(ExceptionParameters exceptionParameters)
         {
-            var errors =  PagedList<ExceptionEntity>
-                .ToPagedList(_clinicContext.Exceptions, paggingParameters.PageNumber, paggingParameters.PageSize);
+            var searchByName = SearchByNameExceptions(_clinicContext.Exceptions, exceptionParameters.Name);
+            var errors = PagedList<ExceptionEntity>
+                .ToPagedList(searchByName, exceptionParameters.PageNumber, exceptionParameters.PageSize);
             await Task.CompletedTask;
             return errors;
         }
@@ -32,33 +34,46 @@ namespace DataAccess.Repositories
             return error;
         }
 
-        public async Task<IEnumerable<ExceptionEntity>> GetTodayAsync()
+        public async Task<PagedList<ExceptionEntity>> GetTodayAsync(ExceptionParameters exceptionParameters)
         {
-            var todayErors = await _clinicContext.Exceptions
-                .Where(ex => ex.DateTime.Date == DateTime.Today.Date)
-                .ToListAsync();
+            var searchByName = SearchByNameExceptions(_clinicContext.Exceptions, exceptionParameters.Name);
+            var todayErors = PagedList<ExceptionEntity>
+                .ToPagedList(searchByName
+                    .Where(ex => ex.DateTime.Date == DateTime.Today.Date), exceptionParameters.PageNumber, exceptionParameters.PageSize);
+            await Task.CompletedTask;
 
             return todayErors;
         }
 
-        public async Task<IEnumerable<ExceptionStats>> GetStatsAsync()
+        public async Task<PagedList<ExceptionStats>> GetStatsAsync(ExceptionParameters exceptionParameters)
         {
-            var statsErrors = await _clinicContext.Exceptions
-                .GroupBy(ex => ex.Name)
-                .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() })
-                .ToListAsync();
-
+            var searchByName = SearchByNameExceptions(_clinicContext.Exceptions, exceptionParameters.Name);
+            var statsErrors = PagedList<ExceptionStats>
+              .ToPagedList(searchByName
+                    .GroupBy(ex => ex.Name)
+                    .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() }), exceptionParameters.PageNumber, exceptionParameters.PageSize);
+            await Task.CompletedTask;
             return statsErrors;
         }
 
-        public async Task<IEnumerable<ExceptionStats>> GetTodayStatsAsync()
+        public async Task<PagedList<ExceptionStats>> GetTodayStatsAsync(ExceptionParameters exceptionParameters)
         {
-            var todayErrorStats = await _clinicContext.Exceptions.Where(ex => ex.DateTime.Date == DateTime.Today.Date)
-                .GroupBy(ex => ex.Name)
-                .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() })
-                .ToListAsync();
-
+            var searchByName = SearchByNameExceptions(_clinicContext.Exceptions, exceptionParameters.Name);
+            var todayErrorStats = PagedList<ExceptionStats>
+                .ToPagedList(searchByName
+                    .Where(ex => ex.DateTime.Date == DateTime.Today.Date)
+                    .GroupBy(ex => ex.Name)
+                    .Select(g => new ExceptionStats { Name = g.Key, Count = g.Count() }), exceptionParameters.PageNumber, exceptionParameters.PageSize);
+            await Task.CompletedTask;
             return todayErrorStats;
+        }
+        private IQueryable<ExceptionEntity> SearchByNameExceptions(IQueryable<ExceptionEntity> exceptions, string exceptionName)
+        {
+            if (exceptions.Any() || !string.IsNullOrWhiteSpace(exceptionName))
+            {
+                return exceptions.Where(o => o.Name!.ToLower().Contains(exceptionName.Trim().ToLower()));
+            }
+            return exceptions;
         }
     }
 }
