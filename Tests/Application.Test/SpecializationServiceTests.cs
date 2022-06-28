@@ -1,6 +1,9 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
+using Core.Exceptions;
+using FluentAssertions;
 using Moq;
+using System.Linq.Expressions;
 
 namespace Application.Test
 {
@@ -25,7 +28,7 @@ namespace Application.Test
             _fixture.MockRepository
                 .Setup(repository =>
                     repository.GetById(
-                        It.Is<int>(id => id == id),
+                        It.Is<int>(specId => specId == id),
                         It.IsAny<string>()))
                 .ReturnsAsync(new Specialization
                 {
@@ -43,9 +46,54 @@ namespace Application.Test
         }
 
         [Fact]
+        public async Task GetSpecializationById_whenIdIsInvalid_thenThrowException()
+        {
+            int id = -1;
+
+            Specialization returned = null;
+
+            _fixture.MockRepository
+                .Setup(repository =>
+                    repository.GetById(
+                        It.Is<int>(specId => specId == id),
+                        It.IsAny<string>()))
+                .ReturnsAsync(returned);
+
+
+            var result =
+                 _fixture.MockService.GetSpecializationByIdAsync(id);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
+        }
+
+
+        [Fact]
         public async Task GetAllSpecializations_whenResultNotEmpty_thenReturnSpecializations()
         {
-               
+            var expected = new List<Specialization>()
+            {
+                new Specialization() { Id = 0, Name = "Surgeon"},
+                new Specialization() { Id = 1, Name = "Cleaner"}
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetAsync(
+                    It.IsAny<Expression<Func<Specialization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Specialization>, IOrderedQueryable<Specialization>>?>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()))
+            .ReturnsAsync(new List<Specialization>()
+            {
+                new Specialization() { Id = 0, Name = "Surgeon"},
+                new Specialization() { Id = 1, Name = "Cleaner"}
+            });
+
+
+            var result = await _fixture.MockService.GetAllSpecializationsAsync();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            result.Should().BeEquivalentTo(expected);
         }
     }
 }
