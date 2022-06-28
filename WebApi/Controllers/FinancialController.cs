@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Accountant")]
+    //[Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
@@ -38,7 +39,7 @@ namespace WebApi.Controllers
         [HttpGet("/api/[controller]/")]
         public async Task<IEnumerable<SalaryViewModel>> GetAsync()
         {
-            var salaries = await _financialService.GetSalaryAsync();
+            var salaries = await _financialService.GetSalaryAsync(null);
             var readSalary = _readSalaryList.Map(salaries);
             foreach(var res in readSalary)
             {
@@ -86,6 +87,13 @@ namespace WebApi.Controllers
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.UpdateSalaryAsync(writeSalary);
+        }
+
+        [HttpPut("/api/financialStatements")]
+        public async Task<FinancialStatement> GetFinancialStatementAsync(DateTime startDate)
+        {
+            var result = await _financialService.GetFinancialStatement(startDate);
+            return result;
         }
     }
 
