@@ -138,6 +138,76 @@ namespace DataAccess.Migrations
                     b.ToTable("AppointmentUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(6000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Articles", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Comments", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.ExceptionEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -351,15 +421,15 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "5787d213-be1a-4674-9b26-7ff3ad1ca450",
+                            ConcurrencyStamp = "18d72ba1-6fcc-4c3a-9409-5e2943f4024c",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIkywEvc0IX1R4uKhvfpNC7d7Up2cUkd1fY+8kWmSRHR5iTd+pm+Jaw84CDaz4eQNA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGrAEeJrUcozhWb8CFrOcQdod1b1NwAFewL73m5/wG1Loe1TmJ2WL/wRT1iMccHj+Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a9cb6b4a-42be-4f20-8a21-c922a2455258",
+                            SecurityStamp = "96be6a8e-4a78-45c0-a716-ce97dae49bc6",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -413,28 +483,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "c5bd58fb-8ffc-4d0d-a0e6-6984341f953b",
+                            ConcurrencyStamp = "ce190904-0473-4d33-b1eb-ce43da4ab82f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5b648256-e392-4229-8342-1823c71f220d",
+                            ConcurrencyStamp = "e827d62c-c93b-4a7e-9c09-c10e2d96114e",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "66c9f11a-a0a8-497c-b479-2cf0b532299d",
+                            ConcurrencyStamp = "fadb90a3-54ff-4d07-9827-67908aa9d553",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "04ca866f-b124-4224-bef7-1d59f32fcd92",
+                            ConcurrencyStamp = "20eb71e2-1b64-4dfe-a67b-408dd9771c95",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -621,6 +691,36 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.HasOne("Core.Entities.User", "Author")
+                        .WithMany("Articles")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Core.Entities.Comment", b =>
+                {
+                    b.HasOne("Core.Entities.Article", "Article")
+                        .WithMany("Comments")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.User", "Author")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Core.Entities.Portfolio", b =>
                 {
                     b.HasOne("Core.Entities.User", "User")
@@ -744,6 +844,11 @@ namespace DataAccess.Migrations
                     b.Navigation("AppointmentUsers");
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
             modelBuilder.Entity("Core.Entities.Procedure", b =>
                 {
                     b.Navigation("AppointmentProcedures");
@@ -765,6 +870,10 @@ namespace DataAccess.Migrations
                     b.Navigation("Animals");
 
                     b.Navigation("AppointmentUsers");
+
+                    b.Navigation("Articles");
+
+                    b.Navigation("Comments");
 
                     b.Navigation("Portfolio");
 
