@@ -19,13 +19,18 @@ public static class DataSeeder
 
     public static void SeedAdmin(this ModelBuilder modelBuilder)
     {
+        const string userName = "Admin";
+        const string email = "admin.mail@gmail.com";
         var hasher = new PasswordHasher<User>();
         var admin = new User()
         {
             Id = 1,
-            UserName = "Admin",
-            NormalizedUserName = "Admin".ToUpper(),
+            UserName = userName,
+            NormalizedUserName = userName.ToUpper(),
             FirstName = "AdminFirstName",
+            LastName = "AdminLastName",
+            Email = email,
+            NormalizedEmail = email.ToUpper(),
             SecurityStamp = Guid.NewGuid().ToString()
         };
         admin.PasswordHash = hasher.HashPassword(admin, "Admin_password123");
