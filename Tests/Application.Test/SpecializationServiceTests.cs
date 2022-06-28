@@ -95,5 +95,140 @@ namespace Application.Test
             Assert.NotEmpty(result);
             result.Should().BeEquivalentTo(expected);
         }
+
+        [Fact]
+        public async Task GetAllSpecializations_whenResultIsEmpty_thenReturnNothing()
+        {
+            var emptyList = new List<Specialization>();
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetAsync(
+                    It.IsAny<Expression<Func<Specialization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Specialization>, IOrderedQueryable<Specialization>>?>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()))
+            .ReturnsAsync(emptyList);
+
+            var result = await _fixture.MockService.GetAllSpecializationsAsync();
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task AddSpecialization_whenDataIsCorrect_thenReturnCreated()
+        {
+            var specialization = new Specialization()
+            {
+                Id = 1,
+                Name = "doctor"
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.InsertAsync(It.IsAny<Specialization>()))
+            .Returns(Task.FromResult<object?>(null));
+
+            var result = await _fixture.MockService.AddSpecializationAsync(specialization);
+
+            Assert.NotNull(result);
+            Assert.Equal(specialization, result);
+        }
+
+        [Fact]
+        public async Task UpdateSpecialization_whenIdIsCorrect_thenExecute()
+        {
+            int id = 0;
+
+            string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
+
+            var updatedSpecialization = new Specialization()
+            {
+                Id = 0,
+                Name = "updatedName"
+            };
+
+            var specialization = new Specialization
+            {
+                Id = 0,
+                Name = "oldName"
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(
+                    It.Is<int>(specId => specId == id),
+                    It.Is<string>(properties => properties == includeProperties)))
+            .ReturnsAsync(specialization)
+            .Verifiable();
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.Update(It.IsAny<Specialization>()))
+            .Verifiable();
+
+            await _fixture.MockService.UpdateSpecializationAsync(id, updatedSpecialization);
+
+            _fixture.MockRepository.Verify(
+                repo => repo.GetById(id, includeProperties), Times.Once);
+
+            _fixture.MockRepository.Verify(
+                repo => repo.Update(specialization), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateSpecialization_whenIdIsIncorrect_thenThrowException()
+        {
+            int id = 40;
+
+            string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
+
+            var updatedSpecialization = new Specialization()
+            {
+                Id = 40,
+                Name = "updatedName"
+            };
+
+            Specialization specialization = null;
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(
+                    It.Is<int>(specId => specId == id),
+                    It.Is<string>(properties => properties == includeProperties)))
+            .ReturnsAsync(specialization);
+
+            var result = _fixture.MockService.UpdateSpecializationAsync(id, updatedSpecialization);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
+        }
+
+        [Fact]
+        public async Task DeleteSpecialization_whenSpecializationExists_thenExecute()
+        {
+            int id = 4;
+
+            string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
+
+            var specializationToDelete = new Specialization
+            {
+                Id = id,
+                Name = "cleaner"
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.Delete(It.Is<Specialization>(spec => specializationToDelete == spec)))
+            .Verifiable();
+
+            _fixture.MockRepository.Setup(repository => 
+                repository.GetById(
+                    It.Is<int>(specId => specId == id),
+                    It.Is<string>(props => props == includeProperties)))
+            .ReturnsAsync(specializationToDelete);
+
+            await _fixture.MockService.DeleteSpecializationAsync(id);
+
+            _fixture.MockRepository.Verify(
+                method => method.GetById(id, includeProperties), Times.Once);
+
+            _fixture.MockRepository.Verify(
+                method => method.Delete(specializationToDelete), Times.Once); ;
+        }
     }
 }
