@@ -7,13 +7,19 @@
         public DateTime DateTime { get; set; }
         public string? StackTrace { get; set; }
         public string? Path { get; set; }
-        public ExceptionEntity() {}
+        public ExceptionEntity() { }
         public ExceptionEntity(string name, DateTime dateTime, string stackTrace, string path)
         {
             Name = name;
             DateTime = dateTime;
             StackTrace = stackTrace;
             Path = path;
+        }
+        public ExceptionEntity(
+            string name, DateTime dateTime, string stackTrace, string path, int id) :
+                this(name, dateTime, stackTrace, path)
+        {
+            Id = id;
         }
     }
 }
