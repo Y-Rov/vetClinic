@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.CommentViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
@@ -37,8 +38,8 @@ public class CommentsController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<ReadCommentViewModel>> GetAsync()
     {
-        var articles = await _commentService.GetAllCommentsAsync();
-        var viewModels = _readEnumMapper.Map(articles);
+        var comments = await _commentService.GetAllCommentsAsync();
+        var viewModels = _readEnumMapper.Map(comments);
         return viewModels;
     }
     
@@ -58,15 +59,16 @@ public class CommentsController : ControllerBase
         return viewModel;
     }
     
-    //[Authorize(Roles = "Client")]
+    [Authorize(Roles = "Client,Accountant,Admin,Doctor")]
     [HttpPost]
     public async Task CreateAsync([FromBody] CreateCommentViewModel viewModel)
     {
-        var newArticle = _createMapper.Map(viewModel);
-        await _commentService.CreateCommentAsync(newArticle);
+        var newComment = _createMapper.Map(viewModel);
+        newComment.AuthorId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
+        await _commentService.CreateCommentAsync(newComment);
     }
 
-    //[Authorize(Roles = "Client")]
+    [Authorize(Roles = "Client,Accountant,Admin,Doctor")]
     [HttpDelete("{id:int:min(1)}")]
     public async Task DeleteAsync([FromRoute] int id)
     {
@@ -74,7 +76,7 @@ public class CommentsController : ControllerBase
         await _commentService.DeleteCommentAsync(id, requestUser);
     }
     
-    //[Authorize(Roles = "Client")]
+    [Authorize(Roles = "Client,Accountant,Admin,Doctor")]
     [HttpPut]
     public async Task UpdateAsync([FromBody] UpdateCommentViewModel viewModel)
     {

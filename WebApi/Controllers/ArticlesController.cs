@@ -53,7 +53,7 @@ public class ArticlesController : ControllerBase
 
         
     [HttpGet("{id:int:min(1)}")]
-    public async Task<ReadArticleViewModel> GetByIdAsync([FromBody]int id)
+    public async Task<ReadArticleViewModel> GetByIdAsync([FromRoute]int id)
     {
         var article = await _articleService.GetByIdAsync(id);
         var viewModel = _readMapper.Map(article);

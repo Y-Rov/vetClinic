@@ -38,14 +38,14 @@ public class CommentService : ICommentService
 
     public async Task UpdateCommentAsync(Comment comment, User requestUser)
     {
-        if (/*REMOVE*/requestUser is not null && /*REMOVE*/comment.AuthorId != requestUser.Id)
+        var updatingComment = await GetByIdAsync(comment.Id);
+        if (updatingComment.AuthorId != requestUser.Id)
         {
             var message =
                 $"Editing comment with different author: user id: {requestUser.Id}, author id: {comment.AuthorId}, comment id: {comment.Id}";
             _loggerManager.LogWarn(message);
             throw new BadRequestException(message);
         }
-        var updatingComment = await GetByIdAsync(comment.Id);
         updatingComment.Content = comment.Content;
         updatingComment.Edited = true;
         await _commentRepository.SaveChangesAsync();
@@ -55,7 +55,7 @@ public class CommentService : ICommentService
     public async Task DeleteCommentAsync(int commentId, User requestUser)
     {
         var commentToRemove = await GetByIdAsync(commentId);
-        if (/*REMOVE*/requestUser is not null && /*REMOVE*/commentToRemove.AuthorId != requestUser.Id)
+        if (commentToRemove.AuthorId != requestUser.Id)
         {
             var message =
                 $"Editing comment with different author: user id: {requestUser.Id}, author id: {commentToRemove.AuthorId}, comment id: {commentToRemove.Id}";
