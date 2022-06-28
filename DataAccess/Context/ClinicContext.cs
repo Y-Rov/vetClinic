@@ -19,6 +19,9 @@ namespace DataAccess.Context
         public DbSet<Portfolio> Portfolios { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Salary> Salaries { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<UserChatRoom> UserChatRooms { get; set; }
 
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }
