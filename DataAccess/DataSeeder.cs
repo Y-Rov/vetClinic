@@ -31,6 +31,7 @@ public static class DataSeeder
             LastName = "AdminLastName",
             Email = email,
             NormalizedEmail = email.ToUpper(),
+            PhoneNumber = "00 000 000 0000",
             SecurityStamp = Guid.NewGuid().ToString()
         };
         admin.PasswordHash = hasher.HashPassword(admin, "Admin_password123");

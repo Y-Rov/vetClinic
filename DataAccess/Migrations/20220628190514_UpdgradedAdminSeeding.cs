@@ -4,7 +4,7 @@
 
 namespace DataAccess.Migrations
 {
-    public partial class UpdatedAdminSeeding : Migration
+    public partial class UpdgradedAdminSeeding : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,35 +13,35 @@ namespace DataAccess.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "ConcurrencyStamp",
-                value: "4e4d6ea7-9024-4945-8607-917db171ac0e");
+                value: "b771c2bb-df75-464d-9465-3415274b17e3");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "ConcurrencyStamp",
-                value: "11dcc865-0d9b-406a-9569-8094dc2bd47f");
+                value: "967fe632-cda2-4256-9372-83dd2a6e3dfe");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "ConcurrencyStamp",
-                value: "01cfaac9-4411-42a0-95dc-621036542238");
+                value: "e5c6ec60-544e-4f02-b395-aed8fdd33b22");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 4,
                 column: "ConcurrencyStamp",
-                value: "0e5be9d8-9510-4b54-9135-45398e70caae");
+                value: "9007621e-b681-4494-8251-a819e12c82a2");
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: 1,
-                columns: new[] { "ConcurrencyStamp", "Email", "LastName", "NormalizedEmail", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "37de0cc4-629f-467b-bd2d-9f5046355ff2", "admin.mail@gmail.com", "AdminLastName", "ADMIN.MAIL@GMAIL.COM", "AQAAAAEAACcQAAAAEAELkWoSX6FUrJBWeY/0rTActcHmJRAdVmCaWb7++7Si7cpA3PUIpnNK39TtZUQLhg==", "cfefc117-da9f-45c8-838c-ea80f83aee22" });
+                columns: new[] { "ConcurrencyStamp", "Email", "LastName", "NormalizedEmail", "PasswordHash", "PhoneNumber", "SecurityStamp" },
+                values: new object[] { "f29f9b4c-7d86-4b49-92dc-31b3b74840ca", "admin.mail@gmail.com", "AdminLastName", "ADMIN.MAIL@GMAIL.COM", "AQAAAAEAACcQAAAAEHvCVgw0h624ljAuZsJeg1uFXDM/i+yJVvmDp9WenYmsZFBoEBuT3lhagVryM8kZTQ==", "00 000 000 0000", "ab4bdded-8336-4337-858c-5fa15ff26b01" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -51,35 +51,35 @@ namespace DataAccess.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "ConcurrencyStamp",
-                value: "c5bd58fb-8ffc-4d0d-a0e6-6984341f953b");
+                value: "72f880d7-60de-4cb7-9828-389a443f4a36");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "ConcurrencyStamp",
-                value: "5b648256-e392-4229-8342-1823c71f220d");
+                value: "23df42e9-ebf9-4707-8a95-d6e6ca163824");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "ConcurrencyStamp",
-                value: "66c9f11a-a0a8-497c-b479-2cf0b532299d");
+                value: "4f636c4a-6c54-40b5-960b-f7e69d2fe72f");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 4,
                 column: "ConcurrencyStamp",
-                value: "04ca866f-b124-4224-bef7-1d59f32fcd92");
+                value: "b968f4be-f2e5-40d1-96f5-d8f87aa13371");
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: 1,
-                columns: new[] { "ConcurrencyStamp", "Email", "LastName", "NormalizedEmail", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "5787d213-be1a-4674-9b26-7ff3ad1ca450", null, null, null, "AQAAAAEAACcQAAAAEIkywEvc0IX1R4uKhvfpNC7d7Up2cUkd1fY+8kWmSRHR5iTd+pm+Jaw84CDaz4eQNA==", "a9cb6b4a-42be-4f20-8a21-c922a2455258" });
+                columns: new[] { "ConcurrencyStamp", "Email", "LastName", "NormalizedEmail", "PasswordHash", "PhoneNumber", "SecurityStamp" },
+                values: new object[] { "270a9998-361f-4ede-b59f-3ed2c45834d4", null, null, null, "AQAAAAEAACcQAAAAEKRkq7I0qLFP5ORAY8OUJAjgQSo4bELnkha8DXwN2FwoEW2/7CmMnt6bSTRBwxMhDA==", null, "07d066eb-727c-423b-97cf-b663bf90d8a8" });
         }
     }
 }
