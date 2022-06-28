@@ -1,8 +1,7 @@
 ﻿namespace Core.ViewModels.AddressViewModels
 {
-    public class AddressViewModel
+    public class AddressBaseViewModel
     {
-        public int UserId { get; set; }
         public string City { get; set; }
         public string Street { get; set; }
         public string House { get; set; }

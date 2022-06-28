@@ -19,7 +19,7 @@ namespace Application.Services
             _loggerManager = loggerManager;
         }
 
-        public async Task AssignToRoleAsync(User user, string role)
+        public async Task AssignRoleAsync(User user, string role)
         {
             var assignResult = await _userRepository.AssignRoleAsync(user, role);
 
@@ -57,15 +57,31 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync(includeProperties: "Address,Portfolio");
             _loggerManager.LogInfo("Successfully retrieved all users");
 
             return users;
         }
 
+        public async Task<IEnumerable<User>> GetDoctorsAsync(string specialization = "")
+        {
+            var doctors = await _userRepository.GetByRoleAsync(
+                roleName: "Doctor",
+                includeProperties: "Address,Portfolio,UserSpecializations.Specialization");
+
+            if (!string.IsNullOrEmpty(specialization))
+            {
+                doctors = _userRepository.FilterBySpecialization(doctors, specialization);
+            }
+
+            _loggerManager.LogInfo("Successfully retrieved all doctors");
+
+            return doctors;
+        }
+
         public async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id, "Address,Portfolio");
 
             if (user is null)
             {

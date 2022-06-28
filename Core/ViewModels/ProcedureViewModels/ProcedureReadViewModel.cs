@@ -5,6 +5,6 @@ namespace Core.ViewModels.ProcedureViewModels;
 public class ProcedureReadViewModel : ProcedureViewModelBase
 {
     public int Id { get; set; }
-    public IEnumerable<SpecializationViewModel> Specializations { get; set; }
-        = new List<SpecializationViewModel>();
+    public IEnumerable<SpecializationBaseViewModel> Specializations { get; set; }
+        = new List<SpecializationBaseViewModel>();
 }

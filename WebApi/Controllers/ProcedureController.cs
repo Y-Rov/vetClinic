@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.ProcedureViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -11,7 +12,7 @@ namespace WebApi.Controllers;
 public class ProcedureController : ControllerBase
 {
     private readonly IProcedureService _procedureService;
-    private readonly IViewModelMapper<ProcedureViewModelBase, Procedure> _procedureCreateMapper;
+    private readonly IViewModelMapper<ProcedureCreateViewModel, Procedure> _procedureCreateMapper;
     private readonly IViewModelMapper<ProcedureUpdateViewModel, Procedure> _procedureUpdateMapper;
     private readonly IViewModelMapper<Procedure, ProcedureReadViewModel> _procedureViewModelMapper;
 
@@ -19,7 +20,7 @@ public class ProcedureController : ControllerBase
         _procedureEnumerableViewModelMapper;
 
     public ProcedureController(IProcedureService procedureService, 
-        IViewModelMapper<ProcedureViewModelBase, Procedure> procedureCreateMapper,
+        IViewModelMapper<ProcedureCreateViewModel, Procedure> procedureCreateMapper,
         IViewModelMapper<ProcedureUpdateViewModel, Procedure> procedureUpdateMapper,
         IViewModelMapper<Procedure, ProcedureReadViewModel> procedureViewModelMapper, 
         IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> procedureEnumerableViewModelMapper)
@@ -32,44 +33,41 @@ public class ProcedureController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProcedureReadViewModel>>> GetAsync()
+    public async Task<IEnumerable<ProcedureReadViewModel>> GetAsync()
     {
         var procedures = await _procedureService.GetAllProceduresAsync();
         var viewModels = _procedureEnumerableViewModelMapper.Map(procedures);
-        return Ok(viewModels);
+        return viewModels;
     }
     
     [HttpGet("{id:int:min(1)}")]
-    public async Task<ActionResult<ProcedureReadViewModel>> GetAsync([FromRoute]int id)
+    public async Task<ProcedureReadViewModel> GetAsync([FromRoute]int id)
     {
         var result = await _procedureService.GetByIdAsync(id);
         var viewModel = _procedureViewModelMapper.Map(result);
-        return Ok(viewModel);
+        return viewModel;
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult> CreateAsync([FromBody]ProcedureViewModelBase procedure)
+    public async Task CreateAsync([FromBody]ProcedureCreateViewModel procedure)
     {
-        var newProcedure = _procedureCreateMapper.Map(procedure);
-        await _procedureService.CreateNewProcedureAsync(newProcedure);
-        return Ok();
+        var newProcedure = _procedureCreateMapper.Map(procedure);        
+        await _procedureService.CreateNewProcedureAsync(newProcedure, procedure.SpecializationIds);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int:min(1)}")]
-    public async Task<ActionResult> DeleteAsync([FromRoute]int id)
+    public async Task DeleteAsync([FromRoute]int id)
     {
         await _procedureService.DeleteProcedureAsync(id);
-        return NoContent();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync([FromBody]ProcedureUpdateViewModel newProcedure)
+    public async Task UpdateAsync([FromBody]ProcedureUpdateViewModel newProcedure)
     {
         var updatedProcedure = _procedureUpdateMapper.Map(newProcedure);
-        await _procedureService.UpdateProcedureAsync(updatedProcedure);
-        await _procedureService.UpdateProcedureSpecializationsAsync(
-            newProcedure.Id,
-            newProcedure.SpecializationIds);
-        return NoContent();
+        await _procedureService.UpdateProcedureAsync(updatedProcedure, newProcedure.SpecializationIds);
     }
 }

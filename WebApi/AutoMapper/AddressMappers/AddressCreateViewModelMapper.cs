@@ -4,13 +4,13 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AddressMappers
 {
-    public class AddressMapper : IViewModelMapper<AddressViewModel, Address>
+    public class AddressCreateViewModelMapper : IViewModelMapper<Address, AddressCreateViewModel>
     {
-        public Address Map(AddressViewModel source)
+        public AddressCreateViewModel Map(Address source)
         {
-            return new Address
+            return new AddressCreateViewModel
             {
-                UserId = source.UserId,
+                Id = source.UserId,
                 City = source.City,
                 Street = source.Street,
                 House = source.House,

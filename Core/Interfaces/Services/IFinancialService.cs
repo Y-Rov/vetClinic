@@ -12,5 +12,7 @@ namespace Core.Interfaces.Services
         Task CreateSalaryAsync(Salary salary);
         Task UpdateSalaryAsync(Salary salary);
         Task DeleteSalaryByUserIdAsync(int id);
+        Task CleanOldSalariesAsync();
+        Task<IEnumerable<User>> GetEmployeesWithoutSalary();
     }
 }

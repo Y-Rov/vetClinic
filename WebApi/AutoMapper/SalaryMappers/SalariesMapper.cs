@@ -16,7 +16,7 @@ namespace WebApi.AutoMapper.SalaryMappers
         {
             var salaryViewModel = new SalaryViewModel()
             {
-                EmployeeId = salary.EmployeeId,
+                Id = salary.EmployeeId,
                 Value = salary.Value
             };
 

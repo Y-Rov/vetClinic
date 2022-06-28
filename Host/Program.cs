@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
+using System.Text.Json.Serialization;
 using WebApi.AutoMapper.Configurations;
-
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
@@ -19,7 +19,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nl
 builder.Services.AddControllers(options =>
 {
     options.SuppressAsyncSuffixInActionNames = false;
-});
+}).AddJsonOptions(jsonOptions =>
+                jsonOptions.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();

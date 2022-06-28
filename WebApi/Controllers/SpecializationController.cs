@@ -35,53 +35,92 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetSpecializations()
+        public async Task<IEnumerable<SpecializationViewModel>> GetSpecializations()
         {
-            return Ok(_listMapper.Map(await _service.GetAllSpecializationsAsync()));
+            var specializations = await _service.GetAllSpecializationsAsync();
+            var mappedSpecializations = _listMapper.Map(specializations);
+            return mappedSpecializations;
         }
 
-        [HttpGet("/{id:int:min(1)}")]
-        public async Task<ActionResult> GetSpecializationById([FromRoute] int id)
+        [HttpGet("{id:int:min(1)}")]
+        public async Task<SpecializationViewModel> GetSpecializationById([FromRoute] int id)
         {
-            return Ok(_viewModelMapper.Map(await _service.GetSpecializationByIdAsync(id)));
+            var specialization = await _service.GetSpecializationByIdAsync(id);
+            var mappedSpecialization = _viewModelMapper.Map(specialization);
+            return mappedSpecialization;
         }
 
         [HttpGet("{id:int:min(1)}/procedures")]
-        public async Task<ActionResult> GetSpecializationProcedures([FromRoute] int id)
+        public async Task<IEnumerable<ProcedureReadViewModel>> GetSpecializationProcedures([FromRoute] int id)
         {
-            return Ok(_procedureEnumerableViewModelMapper.Map(await _service.GetSpecializationProcedures(id)));
+            var procedures = await _service.GetSpecializationProcedures(id);
+            var mappedProcedures = _procedureEnumerableViewModelMapper.Map(procedures);
+            return mappedProcedures;
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddSpecialization([FromBody]SpecializationViewModel specialization)
+        public async Task<Specialization> AddSpecialization([FromBody]SpecializationViewModel specialization)
         {
             var specializationRaw = _mapper.Map(specialization);
-            await _service.AddSpecializationAsync(specializationRaw);
-            return Ok(specialization);
+            var result = await _service.AddSpecializationAsync(specializationRaw);
+            return result;
         }
 
-        [HttpPut("/addProc/{specId:int:min(1)}/{procId:int:min(1)}")]
+        [HttpPut("addProcedure/{specId:int:min(1)}/{procId:int:min(1)}")]
         public async Task<IActionResult> AddProcedureToSpecialization([FromRoute] int specId, [FromRoute] int procId)
         {
             await _service.AddProcedureToSpecialization(specId, procId);
-            return Ok();
+            return NoContent();
         }
 
-        [HttpPut("/removeProc/{specId:int:min(1)}/{procId:int:min(1)}")]
+        [HttpPut("removeProcedure/{specId:int:min(1)}/{procId:int:min(1)}")]
         public async Task<IActionResult> RemoveProcedureFromSpecialization([FromRoute] int specId, [FromRoute] int procId)
         {
             await _service.RemoveProcedureFromSpecialization(specId, procId);
-            return Ok();
+            return NoContent();
         }
 
-        [HttpPut("/{id:int:min(1)}")]
+        [HttpPut("addUser/{specId:int:min(1)}/{userId:int:min(1)}")]
+        public async Task<IActionResult> AddUserToSpecialization([FromRoute] int specId, [FromRoute] int userId)
+        {
+            await _service.AddUserToSpecialization(specId, userId);
+            return NoContent();
+        }
+
+        [HttpPut("removeUser/{specId:int:min(1)}/{userId:int:min(1)}")]
+        public async Task<IActionResult> DeleteUserFromSpecialization([FromRoute] int specId, [FromRoute] int userId)
+        {
+            await _service.RemoveUserFromSpecialization(specId, userId);
+            return NoContent();
+        }
+
+        [HttpPut("addProcedures/{id:int:min(1)}")]
+        public async Task<ActionResult> AddProceduresToSpecialization(
+            [FromRoute]int id, 
+            [FromBody]SpecializationUpdateViewModel specialization)
+        {
+            await _service.UpdateSpecializationProceduresAsync(id, specialization.ProcedureIds);
+            return NoContent();
+        }
+
+        [HttpPut("addUsers/{id:int:min(1)}")]
+        public async Task<ActionResult> AddUsersToSpecialization(
+            [FromRoute]int id,
+            [FromBody]SpecializationUpdateViewModel specialization)
+        {
+            await _service.UpdateSpecializationUsersAsync(id, specialization.UsersIds);
+            return NoContent();
+        }
+
+        [HttpPut("{id:int:min(1)}")]   
         public async Task<ActionResult> UpdateSpecialization([FromRoute]int id, [FromBody]SpecializationViewModel updated)
         {
             await _service.UpdateSpecializationAsync(id,_mapper.Map(updated));
             return NoContent();
         }
 
-        [HttpDelete("/{id:int:min(1)}")]
+
+        [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteSpecialization([FromRoute] int id)
         {
             await _service.DeleteSpecializationAsync(id);

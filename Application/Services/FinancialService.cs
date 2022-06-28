@@ -9,13 +9,16 @@ namespace Application.Services
     public class FinancialService : IFinancialService
     {
         private readonly ISalaryRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
 
         public FinancialService(
             ISalaryRepository repository,
+            IUserRepository userRepository,
             ILoggerManager logger)
         {
             _repository = repository;
+            _userRepository = userRepository;
             _logger = logger;
         }
 
@@ -47,11 +50,6 @@ namespace Application.Services
         public async Task DeleteSalaryByUserIdAsync(int id)
         {
             var res = await GetSalaryByUserIdAsync(id);
-            if(res.Value == 0)
-            {
-                _logger.LogWarn($"There is no salary with id: {id}");
-                throw new NotFoundException($"Salary with id: {id} not found");
-            }
             await GenerateUpdateSalary(res, 0);
             _logger.LogInfo($"Salary with id: {id} deleted");
         }
@@ -92,10 +90,40 @@ namespace Application.Services
         public async Task UpdateSalaryAsync(Salary salary)
         {
             var res = await GetSalaryByUserIdAsync(salary.EmployeeId);
+            if(res.Value == salary.Value)
+            {
+                _logger.LogError($"You try to update Salary with id: {res.EmployeeId} with the same value");
+                throw new BadRequestException();
+            }
 
             await GenerateUpdateSalary(res, salary.Value);
 
             _logger.LogInfo($"Salary with id: {res.EmployeeId} updated");
+        }
+
+        public async Task CleanOldSalariesAsync()
+        {
+            var salaries = await _repository.GetAsync(x => x.Date.Year >= (DateTime.Now.Year - 2));
+            foreach(var salary in salaries)
+            {
+                _repository.Delete(salary);
+            }
+        }
+
+        public async Task<IEnumerable<User>> GetEmployeesWithoutSalary()
+        {
+            var salaries = await GetSalaryAsync();
+            var employeesId = await _repository.GetEmployees();
+            var employees = await _userRepository.GetAllAsync(filter: x=> employeesId.Contains(x.Id));
+
+            var res = from salary in salaries
+                      join employee in employees on salary.EmployeeId equals employee.Id
+                      select employee;
+            var result = from employee in employees
+                         where !res.Contains(employee)
+                         select employee;
+
+            return result;
         }
     }
     

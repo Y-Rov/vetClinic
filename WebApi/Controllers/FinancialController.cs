@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.SalaryViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -8,62 +9,83 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
+        private readonly IUserService _userService;
         private readonly IViewModelMapper<Salary, SalaryViewModel> _readSalary;
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
         private readonly IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> _readSalaryList;
+        private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
 
         public FinancialController(
             IFinancialService financialService,
+            IUserService userService,
             IViewModelMapper<Salary, SalaryViewModel> readSalary,
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
-            IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList)
+            IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
+            IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList)
         {
             _financialService = financialService;
+            _userService = userService;
             _readSalary = readSalary;
             _writeSalary = writeSalary;
             _readSalaryList = readSalaryList;
+            _readEmployeesList = readEmployeesList;
         }
 
         [HttpGet("/api/[controller]/")]
-        public async Task<ActionResult<IEnumerable<SalaryViewModel>>> GetAsync()
+        public async Task<IEnumerable<SalaryViewModel>> GetAsync()
         {
             var salaries = await _financialService.GetSalaryAsync();
             var readSalary = _readSalaryList.Map(salaries);
-            return Ok(readSalary);
+            foreach(var res in readSalary)
+            {
+                var user = await _userService.GetUserByIdAsync(res.Id);
+                res.Name = user.FirstName + " " + user.LastName;
+            }
+            return readSalary;
         }
 
         [HttpGet("/api/[controller]/{id:int:min(1)}")]
-        public async Task<ActionResult<SalaryViewModel>> GetAsync([FromRoute]int id)
+        public async Task<SalaryViewModel> GetAsync([FromRoute]int id)
         {
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
-            var readSalaries = _readSalary.Map(salary);
-            return Ok(readSalaries);
+            var readSalary = _readSalary.Map(salary);
+
+            var user = await _userService.GetUserByIdAsync(readSalary.Id);
+            readSalary.Name = user.FirstName + " " + user.LastName;
+
+            return readSalary;
+        }
+
+        [HttpGet("/api/employees/")]
+        public async Task<IEnumerable<EmployeeViewModel>> GetEmployeesAsync()
+        {
+            var employees = await _financialService.GetEmployeesWithoutSalary();
+            var readEmployee = _readEmployeesList.Map(employees);
+            return readEmployee;
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody]SalaryViewModel model)
+        public async Task PostAsync(SalaryViewModel model)
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.CreateSalaryAsync(writeSalary);
-            return NoContent();
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public async Task<ActionResult> DeleteAsync([FromRoute] int id)
+        public async Task DeleteAsync([FromRoute] int id)
         {
             await _financialService.DeleteSalaryByUserIdAsync(id);
-            return NoContent();
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync([FromBody]SalaryViewModel model)
+        public async Task PutAsync(SalaryViewModel model)
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.UpdateSalaryAsync(writeSalary);
-            return NoContent();
         }
     }
 

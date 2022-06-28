@@ -17,14 +17,8 @@ namespace WebApi.AutoMapper.UserMappers
         public UserReadViewModel Map(User source)
         {
             string? role = _userManager.GetRolesAsync(source).Result.SingleOrDefault();
-            string? address = null;
-
-            if (source.Address is not null)
-            {
-                address = $"{source.Address.City}, {source.Address.Street}, {source.Address.House}, " +
-                    $"{source.Address.ApartmentNumber}, {source.Address.ZipCode}";
-                address = address.Trim(new char[] { ',', ' ' });
-            }
+            string? address = GetAddress(source);
+            var specializations = source.UserSpecializations.Select(s => s.Specialization);
 
             return new UserReadViewModel()
             {
@@ -33,11 +27,31 @@ namespace WebApi.AutoMapper.UserMappers
                 LastName = source.LastName,
                 Email = source.Email,
                 PhoneNumber = source.PhoneNumber,
-                BirthDate = source.BirthDate,
+                BirthDate = source.BirthDate.ToLocalTime(),
+                ProfilePicture = source.ProfilePicture,
                 Role = role,
                 Address = address,
-                Portfolio = source.Portfolio?.Description
+                Portfolio = source.Portfolio,
+                Specializations = specializations
             };
+        }
+
+        private static string? GetAddress(User user)
+        {
+            string? address = null;
+
+            if (user.Address is not null)
+            {
+                address = $"{user.Address.City}, " +
+                    $"{user.Address.Street}, " +
+                    $"{user.Address.House}, " +
+                    $"{user.Address.ApartmentNumber}, " +
+                    $"{user.Address.ZipCode}";
+
+                address = address.Trim(new char[] { ',', ' ' });
+            }
+
+            return address;
         }
     }
 }

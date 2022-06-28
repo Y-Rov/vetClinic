@@ -34,5 +34,17 @@ namespace DataAccess.Repositories
             return await set.FirstOrDefaultAsync(entity => entity == result);
         }
 
+        public async Task<IEnumerable<int>> GetEmployees()
+        {
+
+            var allEmployeesId = await context.UserRoles
+                .Where(x => x.RoleId!=4)
+                .Select(x => x.UserId)
+                .ToListAsync();
+           
+
+            return allEmployeesId;
+        }
+
     }
 }

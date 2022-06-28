@@ -4,14 +4,10 @@ using System.Text.RegularExpressions;
 
 namespace WebApi.Validators.AddressValidators
 {
-    public class AddressViewModelValidator : AbstractValidator<AddressViewModel>
+    public class AddressBaseViewModelValidator<T> : AbstractValidator<T> where T : AddressBaseViewModel
     {
-        public AddressViewModelValidator()
+        public AddressBaseViewModelValidator()
         {
-            RuleFor(viewModel => viewModel.UserId)
-                .GreaterThan(0)
-                .WithMessage("User ID must be greater than 0");
-
             RuleFor(viewModel => viewModel.City)
                 .NotEmpty()
                 .WithMessage("City name must be non-empty")

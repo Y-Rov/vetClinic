@@ -10,22 +10,30 @@ namespace Application.Services
     {
         readonly ISpecializationRepository _repository;
         readonly ILoggerManager _logger;
+
+        bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
+        {
+            return specialization.ProcedureSpecializations
+                .Any(pair => pair.SpecializationId == specialization.Id && pair.ProcedureId == procedureId);
+        }
+
         public SpecializationService(
-            ISpecializationRepository repository, 
+            ISpecializationRepository repository,
             ILoggerManager logger)
         {
             _repository = repository;
             _logger = logger;
         }
+
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAsync(asNoTracking: true, includeProperties:  "ProcedureSpecializations.Procedure");
+            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations");
+            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User");
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");
@@ -54,14 +62,20 @@ namespace Application.Services
         {
             var specialization = 
                 await GetSpecializationByIdAsync(specializationId);
-            
-            specialization.ProcedureSpecializations.Add(new ProcedureSpecialization 
-            { 
-                ProcedureId = procedureId, 
-                SpecializationId = specializationId 
-            });
 
-            await UpdateSpecializationAsync(specializationId, specialization);
+            var relationship = new ProcedureSpecialization
+            {
+                ProcedureId = procedureId,
+                SpecializationId = specializationId
+            };
+
+            if (!IsProcedureExistsInSpecialization(specialization, procedureId))
+            {
+                specialization.ProcedureSpecializations.Add(relationship);
+                await UpdateSpecializationAsync(specializationId, specialization);
+            }
+            else
+                throw new ArgumentException($"There already procedure with id: {procedureId}");
         }
 
         public async Task RemoveProcedureFromSpecialization(int specializationId, int procedureId)
@@ -90,18 +104,65 @@ namespace Application.Services
         {
             Specialization specialization = await GetSpecializationByIdAsync(id);
             specialization.Name = updated.Name;
+            _repository.Update(specialization);
             _logger.LogInfo($"Specialization with id: {updated.Id} updated");
             await _repository.SaveChangesAsync();
         }
 
-        public Task AddUserToSpecialization(int specializationId, int procedureId)
+        public async Task AddUserToSpecialization(int specializationId, int userId)
         {
-            throw new NotImplementedException();
+            var specialization =
+                await GetSpecializationByIdAsync(specializationId);
+
+            var relationship = new UserSpecialization
+            {
+                UserId = userId,
+                SpecializationId = specializationId
+            };
+
+            if (!specialization.UserSpecializations
+                .Any(pair => pair.SpecializationId == specializationId && pair.UserId == userId))
+            {
+                specialization.UserSpecializations.Add(relationship);
+                await UpdateSpecializationAsync(specializationId, specialization);
+            }
+            else
+                throw new ArgumentException($"There already user with id: {userId}");
         }
 
-        public Task RemoveUserFromSpecialization(int specializationId, int procedureId)
+        public async Task RemoveUserFromSpecialization(int specializationId, int userId)
         {
-            throw new NotImplementedException();
+            var specialization =
+                await GetSpecializationByIdAsync(specializationId);
+
+            var user = specialization.UserSpecializations
+                .FirstOrDefault(
+                us => us.UserId == userId 
+                && us.SpecializationId == specializationId)
+                    ?? throw new NotFoundException($"Specialization's user with id: {userId} not found");
+
+            specialization.UserSpecializations.Remove(user);
+
+            await UpdateSpecializationAsync(specializationId, specialization);
+        }
+
+        public async Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> procedureIds)
+        {
+            try
+            {
+                await _repository.UpdateProceduresAsync(specializationId, procedureIds);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            await _repository.SaveChangesAsync();
+        }
+
+        public async Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds)
+        {
+            await _repository.UpdateUsersAsync(specializationId, userIds);
+            await _repository.SaveChangesAsync();
         }
     }
 }
