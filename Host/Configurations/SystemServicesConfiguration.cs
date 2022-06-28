@@ -13,6 +13,7 @@ namespace Host.Configurations
 
         public static void AddSystemServices(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddSingleton<ILoggerManager, LoggerManager>();
 
             services.AddFluentValidation(fv =>
@@ -28,6 +29,7 @@ namespace Host.Configurations
                     policy.WithOrigins("http://localhost:4200");
                     policy.WithHeaders("*");
                     policy.WithMethods("*");
+                    policy.WithExposedHeaders("X-Pagination");
                 });
             });
         }
