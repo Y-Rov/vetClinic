@@ -35,9 +35,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetSpecializations()
+        public async Task<IEnumerable<SpecializationViewModel>> GetSpecializations()
         {
-            return Ok(_listMapper.Map(await _service.GetAllSpecializationsAsync()));
+            var specializations = await _service.GetAllSpecializationsAsync();
+            var mappedSpecializations = _listMapper.Map(specializations);
+            return mappedSpecializations;
         }
 
         [HttpGet("{id:int:min(1)}")]
@@ -49,17 +51,19 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}/procedures")]
-        public async Task<ActionResult> GetSpecializationProcedures([FromRoute] int id)
+        public async Task<IEnumerable<ProcedureReadViewModel>> GetSpecializationProcedures([FromRoute] int id)
         {
-            return Ok(_procedureEnumerableViewModelMapper.Map(await _service.GetSpecializationProcedures(id)));
+            var procedures = await _service.GetSpecializationProcedures(id);
+            var mappedProcedures = _procedureEnumerableViewModelMapper.Map(procedures);
+            return mappedProcedures;
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddSpecialization([FromBody]SpecializationViewModel specialization)
+        public async Task<Specialization> AddSpecialization([FromBody]SpecializationViewModel specialization)
         {
             var specializationRaw = _mapper.Map(specialization);
-            await _service.AddSpecializationAsync(specializationRaw);
-            return Ok(specialization);
+            var result = await _service.AddSpecializationAsync(specializationRaw);
+            return result;
         }
 
         [HttpPut("addProcedure/{specId:int:min(1)}/{procId:int:min(1)}")]

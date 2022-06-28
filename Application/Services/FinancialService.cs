@@ -50,11 +50,6 @@ namespace Application.Services
         public async Task DeleteSalaryByUserIdAsync(int id)
         {
             var res = await GetSalaryByUserIdAsync(id);
-            if(res.Value == 0)
-            {
-                _logger.LogWarn($"There is no salary with id: {id}");
-                throw new NotFoundException($"Salary with id: {id} not found");
-            }
             await GenerateUpdateSalary(res, 0);
             _logger.LogInfo($"Salary with id: {id} deleted");
         }
