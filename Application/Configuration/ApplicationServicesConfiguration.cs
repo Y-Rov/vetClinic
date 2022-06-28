@@ -1,5 +1,7 @@
 ﻿using Application.Services;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using DataAccess.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Configuration
@@ -17,6 +19,9 @@ namespace Application.Configuration
             services.AddScoped<IProcedureService, ProcedureService>();
             services.AddScoped<IFinancialService, FinancialService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+            services.AddScoped<IUserChatRoomRepository, UserChatRoomRepository>();
         }
     }
 }
