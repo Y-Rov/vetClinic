@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -10,16 +12,22 @@ namespace Application.Services
     {
         private readonly ISalaryRepository _repository;
         private readonly IUserRepository _userRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IProcedureRepository _procedureRepository;
         private readonly ILoggerManager _logger;
 
         public FinancialService(
             ISalaryRepository repository,
             IUserRepository userRepository,
-            ILoggerManager logger)
+            ILoggerManager logger,
+            IAppointmentRepository appointmentRepository,
+            IProcedureRepository procedureRepository)
         {
             _repository = repository;
             _userRepository = userRepository;
             _logger = logger;
+            _appointmentRepository = appointmentRepository;
+            _procedureRepository = procedureRepository;
         }
 
         private async Task GenerateUpdateSalary(Salary salary, decimal wage)
@@ -54,10 +62,10 @@ namespace Application.Services
             _logger.LogInfo($"Salary with id: {id} deleted");
         }
 
-        public async Task<IEnumerable<Salary>> GetSalaryAsync()
+        public async Task<IEnumerable<Salary>> GetSalaryAsync(Expression<Func<Salary, bool>>? filter)
         {
             _logger.LogInfo($"salaries were recieved");
-            var allSalary = await _repository.GetAsync(filter: null, x => x.OrderBy(y => y.EmployeeId).ThenByDescending(y => y.Date));
+            var allSalary = await _repository.GetAsync(filter, x => x.OrderBy(y => y.EmployeeId).ThenByDescending(y => y.Date));
             var result = new List<Salary>();
             int? id = null;
 
@@ -112,7 +120,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetEmployeesWithoutSalary()
         {
-            var salaries = await GetSalaryAsync();
+            var salaries = await GetSalaryAsync(null);
             var employeesId = await _repository.GetEmployees();
             var employees = await _userRepository.GetAllAsync(filter: x=> employeesId.Contains(x.Id));
 
@@ -124,6 +132,107 @@ namespace Application.Services
                          select employee;
 
             return result;
+        }
+
+        public async Task<FinancialStatement> GetFinancialStatement(DateTime _startDate)
+        {
+            decimal procent = 0.1M;
+            decimal allIncome =0;
+            decimal allExpence = 0;
+            var date = new Date()
+            {
+                startDate = _startDate,
+                endDate = _startDate.AddMonths(1)
+            };
+
+            //Dictionary<EmployeeId, EmployeePremiums>
+            IDictionary<int, decimal> premiums = new Dictionary<int,decimal>();
+
+            //Get all Appoinments in Period
+            var appointments = await _appointmentRepository.GetAsync(x=>
+                (x.Date >= date.startDate)&&
+                (x.Date < date.endDate)&&
+                (x.MeetHasOccureding == true));
+            var _incomes = new List<Income>();
+
+            //Dictionary<Appoinment.Id, AppointmentCost>
+            IDictionary<int, decimal> appCosts = new Dictionary<int, decimal>();
+
+            var listProcedures = new List<Procedure>();
+
+            foreach(var appointment in appointments)
+            {
+                appCosts.Add(appointment.Id, 0);
+            //Count cost of every Appointment
+                foreach(var procedures in appointment.AppointmentProcedures)
+                {
+                    var procedure = await _procedureRepository.GetById(procedures.ProcedureId);
+                    listProcedures.Add(procedure);
+                    appCosts[appointment.Id] += procedure.Cost;
+                }
+            //Create Income 
+                var income = new Income
+                {
+                    AppointmenId = appointment.Id,
+                    ListOfProcedures = listProcedures,
+                    Cost = appCosts[appointment.Id]
+                };
+            //Add previous to list
+                _incomes.Add(income);
+
+                var doctorsCount = appointment.AppointmentUsers.Count();
+
+            //Count all doctors Premiums
+                foreach(var doctors in appointment.AppointmentUsers)
+                {
+                    if(!premiums.ContainsKey(doctors.UserId))
+                    {
+                        premiums.Add(doctors.UserId, appCosts[appointment.Id]*procent / doctorsCount);
+                    }
+                    else
+                    {
+                        premiums[doctors.UserId] += appCosts[appointment.Id]*procent / doctorsCount;
+                    }
+                }
+
+            }
+
+            //Get all Salaries where we need to pay in Period
+            var salaries = await GetSalaryAsync(x => x.Date < date.startDate);
+
+            var _expences = new List<Expences>();
+            foreach(var salary in salaries)
+            {
+                var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
+                var expence = new Expences()
+                {
+                    EmployeeName = employee.FirstName + " " + employee.LastName,
+                    SalaryValue = salary.Value,
+                    Premium = premiums[employee.Id]
+                };
+                _expences.Add(expence);
+            }
+
+            foreach(var res in appCosts)
+            {
+                allIncome += res.Value*(1-procent);
+            }    
+
+            foreach(var expence in _expences)
+            {
+                allExpence += (expence.SalaryValue + expence.Premium);
+            }
+
+            var financialStatement = new FinancialStatement()
+            {
+                Period = date,
+                expences = _expences,
+                incomes = _incomes,
+                TotalExpences = allExpence,
+                TotalIncomes = allIncome
+            };
+
+            return financialStatement;
         }
     }
     
