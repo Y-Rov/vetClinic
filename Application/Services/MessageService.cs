@@ -61,13 +61,6 @@ public class MessageService : IMessageService
             ).ToListAsync();
     }
 
-    public async Task<IEnumerable<Message>> GetUnrepliedQuestionsAsync()
-    {
-        return await _messageRepository.Query(
-            filter: m => m.ChatRoomId == 1 && m.IsReplied == false
-        ).ToListAsync();
-    }
-
     public async Task CreateAsync(Message message)
     {
         if (!await _chatRoomRepository.ExistsAsync(message.ChatRoomId))
