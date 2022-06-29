@@ -1,6 +1,7 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Linq.Expressions;
 
@@ -16,7 +17,7 @@ namespace Application.Test
         private  readonly AppointmentServiceFixture _appointmentServiceFixture;
         
 
-        private readonly Appointment _appointmentEntity = new()
+        private readonly Appointment _appointmentEntity = new Appointment()
         {
             Id = 1,
             Disease = "Pain",
@@ -26,7 +27,7 @@ namespace Application.Test
 
         };
 
-        private readonly Procedure _procedureEntity = new()
+        private readonly Procedure _procedureEntity = new Procedure()
         {
             Id = 1,
             Name = "haircut",
@@ -37,7 +38,7 @@ namespace Application.Test
         };
 
 
-        private readonly User _userEntity = new()
+        private readonly User _userEntity = new User()
         {
             FirstName = "Tom",
             LastName = "Smith",
@@ -349,5 +350,163 @@ namespace Application.Test
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
 
+
+        [Fact]
+        public async Task UpdateAsync_whenNormal_thanSuccess()
+        {
+            //Arrange
+
+            var appointment = new Appointment
+            {
+                Date = DateTime.Now,
+                MeetHasOccureding = true,
+                Disease = "Broke a leg",
+                AnimalId = 3,
+                AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+                AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser() 
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+            };
+
+            var existingAppointment = new Appointment
+            {
+                Date = DateTime.Now,
+                MeetHasOccureding = true,
+                Disease = "Broke a tail",
+                AnimalId = 3,
+                AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+                AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+
+            };
+
+
+        _appointmentServiceFixture.MockAppointmentRepository
+           .Setup(repo => repo.GetById(
+                    It.IsAny<int>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(existingAppointment);
+
+            _appointmentServiceFixture.MockAppointmentRepository
+            .Setup(repo => repo.Update(It.IsAny<Appointment>()))
+            .Verifiable();
+
+        _appointmentServiceFixture.MockAppointmentRepository
+            .Setup(repo => repo.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null))
+            .Verifiable();
+
+        //Act
+        var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(appointment);
+
+            //Assert
+            Assert.NotNull(result);
+        }
+    }
+
+
+    [Fact]
+    public async Task UpdateAsync_whenSomeAppointmentDontExist_thanThrowNotFound()
+    {
+        //Arrange
+
+        var appointment = new Appointment
+        {
+            Date = DateTime.Now,
+            MeetHasOccureding = true,
+            Disease = "Broke a leg",
+            AnimalId = 3,
+            AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+            AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+        };
+
+        var existingAppointment = new Appointment
+        {
+            Date = DateTime.Now,
+            MeetHasOccureding = true,
+            Disease = "Broke a tail",
+            AnimalId = 3,
+            AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+            AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+
+        };
+
+
+        _appointmentServiceFixture.MockAppointmentRepository
+           .Setup(repo => repo.GetById(
+                    It.IsAny<int>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(existingAppointment);
+
+        _appointmentServiceFixture.MockAppointmentRepository
+        .Setup(repo => repo.Update(It.IsAny<Appointment>()))
+        .Throws<DbUpdateException>();
+
+        _appointmentServiceFixture.MockAppointmentRepository
+            .Setup(repo => repo.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null))
+            .Verifiable();
+
+        //Act
+        var result = await _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(appointment);
+
+        //Assert
+       await Assert.NotNull(result);
     }
 }
+
+
+ 
