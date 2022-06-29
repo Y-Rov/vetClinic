@@ -34,12 +34,12 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<AddressCreateReadViewModel>>> GetAsync()
+        public async Task<IEnumerable<AddressCreateReadViewModel>> GetAsync()
         {
             var addresses = await _addressService.GetAllAddressesAsync();
 
             var mappedAddresses = _addressReadEnumerableViewModelMapper.Map(addresses);
-            return Ok(mappedAddresses);
+            return mappedAddresses;
         }
 
         [HttpGet("{id:int:min(1)}")]

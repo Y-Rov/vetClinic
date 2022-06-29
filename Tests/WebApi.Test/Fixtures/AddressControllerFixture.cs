@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Services;
 using Core.ViewModels.AddressViewModels;
 using Moq;
@@ -36,8 +37,10 @@ namespace WebApi.Test.Fixtures
                 MockAddressReadEnumerableViewModelMapper.Object
                 );
 
-            Addresses = new List<Address> { BaseAddress, FullAddress };
-            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> { BaseAddressCreateReadViewModel, FullAddressCreateReadViewModel };
+            Addresses = new List<Address> { BaseAddress, BaseAddressWithApartmentNumber, BaseAddressWithZipCode, FullAddress };
+            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> 
+                { BaseAddressCreateReadViewModel, BaseAddressCreateReadViewModelWithApartmentNumber,
+                    BaseAddressCreateReadViewModelWithZipCode, FullAddressCreateReadViewModel };
         }
 
         public enum AddressType
@@ -73,6 +76,31 @@ namespace WebApi.Test.Fixtures
             return baseAddressWithBaseViewModelTuple;
         }
 
+        public (Address, AddressCreateReadViewModel) GetAddressAndAddressCreateReadViewModel(AddressType type)
+        {
+            (Address, AddressCreateReadViewModel) baseAddressWithCreateReadViewModelTuple;
+            switch (type)
+            {
+                case AddressType.Base:
+                    baseAddressWithCreateReadViewModelTuple = (BaseAddress, BaseAddressCreateReadViewModel);
+                    break;
+                case AddressType.BaseWithApartment:
+                    baseAddressWithCreateReadViewModelTuple = (BaseAddressWithApartmentNumber, BaseAddressCreateReadViewModelWithApartmentNumber);
+                    break;
+                case AddressType.BaseWithZipCode:
+                    baseAddressWithCreateReadViewModelTuple = (BaseAddressWithZipCode, BaseAddressCreateReadViewModelWithZipCode);
+                    break;
+                case AddressType.Full:
+                    baseAddressWithCreateReadViewModelTuple = (FullAddress, FullAddressCreateReadViewModel);
+                    break;
+                default:
+                    baseAddressWithCreateReadViewModelTuple = (BaseAddress, BaseAddressCreateReadViewModel);
+                    break;
+            }
+
+            return baseAddressWithCreateReadViewModelTuple;
+        }
+
         public AddressController MockController { get; }
         public Mock<IAddressService> MockAddressService { get; }
         public Mock<IViewModelMapper<AddressCreateReadViewModel, Address>> MockAddressCreateMapper { get; }
@@ -84,6 +112,7 @@ namespace WebApi.Test.Fixtures
         }
 
         public int UserId { get; set; }
+        public int WrongUserId { get; set; } = 0;
         public Address BaseAddress { get; set; } = null!;
         public Address BaseAddressWithApartmentNumber { get; set; } = null!;
         public Address BaseAddressWithZipCode { get; set; } = null!;
@@ -98,6 +127,9 @@ namespace WebApi.Test.Fixtures
         public AddressCreateReadViewModel FullAddressCreateReadViewModel { get; set; } = null!;
         public IEnumerable<Address> Addresses { get; set; }
         public IEnumerable<AddressCreateReadViewModel> AddressCreateReadViewModels { get; set; }
+        public IEnumerable<Address> EmptyAddresses { get; } = new List<Address>();
+        public IEnumerable<AddressCreateReadViewModel> EmptyAddressesCreateReadViewModels { get; } = new List<AddressCreateReadViewModel>();
+        public NotFoundException NotFoundException { get; } = new();
 
         private void InitBaseAddresses()
         {
