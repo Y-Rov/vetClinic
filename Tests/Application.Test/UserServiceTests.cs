@@ -32,7 +32,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.Users);
+            Assert.NotEmpty(result);
+            Assert.IsType<List<User>>(result);
         }
 
         [Fact]
@@ -48,7 +49,7 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.User);
+            Assert.IsType<User>(result);
         }
 
         [Fact]
@@ -63,6 +64,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.GetUserByIdAsync(_fixture.Id);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<NotFoundException>(async () => await result);
         }
 
@@ -82,7 +84,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.Users);
+            Assert.NotEmpty(result);
+            Assert.IsType<List<User>>(result);
         }
 
         [Fact]
@@ -113,6 +116,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Passowrd);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
@@ -144,6 +148,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.AssignRoleAsync(_fixture.User, _fixture.Role);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
@@ -160,7 +165,7 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockUserRepository.Verify();
+            _fixture.MockUserRepository.Verify(r => r.UpdateAsync(It.IsAny<User>()), Times.AtLeastOnce());
         }
 
         [Fact]
@@ -175,6 +180,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.UpdateAsync(_fixture.User);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
