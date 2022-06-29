@@ -23,11 +23,11 @@ namespace Core.Interfaces.Repositories
 
         Task<T?> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>>? filter = null,
-            string includeProperties = "",
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             bool asNoTracking = false);
 
         Task InsertAsync(T entity);
-
+        
         void Update(T entity);
 
         void Delete(T entity);
