@@ -33,7 +33,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.IsAssignableFrom<IEnumerable<User>>(result);
+            Assert.IsType<List<User>>(result);
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.IsAssignableFrom<IEnumerable<User>>(result);
+            Assert.IsType<List<User>>(result);
         }
 
         [Fact]
