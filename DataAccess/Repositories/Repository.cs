@@ -11,7 +11,7 @@ namespace DataAccess.Repositories
         where T : class
     {
         private readonly ClinicContext _clinicContext;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
 
         public Repository(ClinicContext clinicContext)
         {
@@ -93,24 +93,16 @@ namespace DataAccess.Repositories
 
         public async Task<T?> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>>? filter = null,
-            string includeProperties = "",
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             bool asNoTracking = false)
         {
-            var query = GetQuery(
+            var query = Query(
                 filter: filter,
-                includeProperties: includeProperties,
-                orderBy: null);
-
-            if (asNoTracking)
-            {
-                var noTrackingResult = await query.AsNoTracking()
-                    .FirstOrDefaultAsync();
-
-                return noTrackingResult;
-            }
-               
-            var trackingResult = await query.FirstOrDefaultAsync();
-            return trackingResult;
+                include: include,
+                asNoTracking: asNoTracking
+                );
+            
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task<T?> GetById(int id, string includeProperties = "")
