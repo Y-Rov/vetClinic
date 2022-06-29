@@ -1,10 +1,8 @@
-﻿using Application.Services;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.ArticleViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.AutoMapper.ArticleMappers;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers;
@@ -60,7 +58,7 @@ public class ArticlesController : ControllerBase
         return viewModel;
     }
     
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task CreateAsync([FromBody] CreateArticleViewModel viewModel)
     {
@@ -68,14 +66,14 @@ public class ArticlesController : ControllerBase
         await _articleService.CreateArticleAsync(newArticle);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int:min(1)}")]
     public async Task DeleteAsync([FromRoute] int id)
     {
         await _articleService.DeleteArticleAsync(id);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task UpdateAsync([FromBody] UpdateArticleViewModel viewModel)
     {

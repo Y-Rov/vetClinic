@@ -58,7 +58,7 @@ public class CommentService : ICommentService
         if (commentToRemove.AuthorId != requestUser.Id)
         {
             var message =
-                $"Editing comment with different author: user id: {requestUser.Id}, author id: {commentToRemove.AuthorId}, comment id: {commentToRemove.Id}";
+                $"Deleting comment with different author: user id: {requestUser.Id}, author id: {commentToRemove.AuthorId}, comment id: {commentToRemove.Id}";
             _loggerManager.LogWarn(message);
             throw new BadRequestException(message);
         }

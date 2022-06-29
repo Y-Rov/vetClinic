@@ -7,7 +7,6 @@ public class CreateArticleViewModelValidator : ArticleBaseValidator<CreateArticl
 {
     public CreateArticleViewModelValidator()
     {
-        
         RuleFor(art => art.AuthorId)
             .GreaterThan(0)
             .WithMessage("Invalid author id");
