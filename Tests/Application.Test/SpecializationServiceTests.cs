@@ -10,6 +10,9 @@ namespace Application.Test
     public class SpecializationServiceTests : IClassFixture<SpecializationServiceFixture>
     {
         private readonly SpecializationServiceFixture _fixture;
+
+        const string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
+
         public SpecializationServiceTests(SpecializationServiceFixture fixture)
         {
             _fixture = fixture;            
@@ -229,6 +232,60 @@ namespace Application.Test
 
             _fixture.MockRepository.Verify(
                 method => method.Delete(specializationToDelete), Times.Once); ;
+        }
+
+        [Fact]
+        public async Task DeleteSpecialization_whenSpecializationIsntExists_thenThrowException()
+        {
+            int id = 40;
+
+            Specialization notFound = null; 
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(
+                    It.Is<int>(specId => specId == id),
+                    It.Is<string>(props => props == includeProperties)))
+            .ReturnsAsync(notFound);
+
+            var result = _fixture.MockService.DeleteSpecializationAsync(id);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
+        }
+
+        [Fact]
+        public async Task RemoveProcedureFromSpecialization_whenSpecializationExists_thenExecute()
+        {
+            int specializationId = 2;
+            int procedureId = 1;
+
+            var relationshipToRemove =
+                new ProcedureSpecialization { ProcedureId = procedureId, SpecializationId = specializationId };
+
+            Specialization specialization = new Specialization
+            {
+                Id = specializationId,
+                Name = "doctor",
+                ProcedureSpecializations = new List<ProcedureSpecialization>()
+                {
+                    relationshipToRemove,
+                    new ProcedureSpecialization { ProcedureId = 0, SpecializationId = specializationId }
+                }
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(It.Is<int>(specId => specId == specializationId),
+                    It.Is<string>(props => props == includeProperties)))
+                .ReturnsAsync(specialization);
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.Update(
+                    It.Is<Specialization>(spec => spec == specialization)))
+                .Verifiable();
+
+            await _fixture.MockService.RemoveProcedureFromSpecialization(specializationId,procedureId);
+
+            Assert.DoesNotContain(relationshipToRemove, specialization.ProcedureSpecializations);
+            _fixture.MockRepository.Verify(method => method.Update(specialization), Times.Once);
         }
     }
 }
