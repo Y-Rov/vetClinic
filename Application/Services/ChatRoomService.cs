@@ -1,32 +1,64 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
 public class ChatRoomService : IChatRoomService
 {
-    public Task Create(ChatRoom chatRoom)
+    private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IUserChatRoomRepository _userChatRoomRepository;
+    private readonly IUserService _userService;
+
+    public ChatRoomService(
+        IChatRoomRepository chatRoomRepository, 
+        IUserChatRoomRepository userChatRoomRepository,
+        IUserService userService)
     {
-        throw new NotImplementedException();
+        _chatRoomRepository = chatRoomRepository;
+        _userChatRoomRepository = userChatRoomRepository;
+        _userService = userService;
+    }
+    
+    public async Task CreateAsync(ChatRoom chatRoom)
+    {
+        await _chatRoomRepository.InsertAsync(chatRoom);
     }
 
-    public Task<IEnumerable<User>> GetParticipants()
+    public async Task<IEnumerable<User>> GetParticipantsAsync(int chatRoomId)
     {
-        throw new NotImplementedException();
+        return await _userChatRoomRepository.Query(
+                filter: ur => ur.ChatRoomId == chatRoomId,
+                include: q => q.Include(ur => ur.User),
+                asNoTracking: true)
+            .Select(ur => ur.User)
+            .ToListAsync();
     }
 
-    public Task AddMember(User user)
+    public async Task AddMemberAsync(int roomId, int userId)
     {
-        throw new NotImplementedException();
+        if (!await _chatRoomRepository.ExistsAsync(roomId))
+            throw new NotFoundException($"Chatroom with id {roomId} does not exist");
+
+        var userChatRoom = new UserChatRoom()
+        {
+            UserId = userId,
+            ChatRoomId = roomId
+        };
+        await _userChatRoomRepository.InsertAsync(userChatRoom);
     }
 
-    public Task KickMember(int userId)
+    public async Task KickMemberAsync(int roomId, int userId)
     {
-        throw new NotImplementedException();
-    }
+        var userChatRoom = await _userChatRoomRepository.GetFirstOrDefaultAsync(
+            filter: ur => ur.ChatRoomId == roomId && ur.UserId == userId);
 
-    public Task Deactivate()
-    {
-        throw new NotImplementedException();
+        if (userChatRoom is null)
+            throw new NotFoundException($"User {userId} is not a chat member");
+
+        _userChatRoomRepository.Delete(userChatRoom);
+        await _userChatRoomRepository.SaveChangesAsync();
     }
 }
