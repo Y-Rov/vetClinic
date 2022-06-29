@@ -59,7 +59,7 @@ public class CommentsController : ControllerBase
         return viewModel;
     }
     
-    [Authorize(Roles = "Client,Accountant,Admin,Doctor")]
+    [Authorize]
     [HttpPost]
     public async Task CreateAsync([FromBody] CreateCommentViewModel viewModel)
     {
@@ -68,7 +68,7 @@ public class CommentsController : ControllerBase
         await _commentService.CreateCommentAsync(newComment);
     }
 
-    [Authorize(Roles = "Client,Accountant,Admin,Doctor")]
+    [Authorize]
     [HttpDelete("{id:int:min(1)}")]
     public async Task DeleteAsync([FromRoute] int id)
     {
@@ -76,7 +76,7 @@ public class CommentsController : ControllerBase
         await _commentService.DeleteCommentAsync(id, requestUser);
     }
     
-    [Authorize(Roles = "Client,Accountant,Admin,Doctor")]
+    [Authorize]
     [HttpPut]
     public async Task UpdateAsync([FromBody] UpdateCommentViewModel viewModel)
     {
