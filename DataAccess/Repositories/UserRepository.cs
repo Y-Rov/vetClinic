@@ -3,6 +3,7 @@ using Core.Interfaces.Repositories;
 using DataAccess.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace DataAccess.Repositories
@@ -34,13 +35,15 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<User>> GetAllAsync(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            string includeProperties = "")
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             var users = await GetQuery(filter, orderBy, includeProperties).ToListAsync();
             return users;
         }
 
-        public async Task<User?> GetByIdAsync(int id, string includeProperties = "")
+        public async Task<User?> GetByIdAsync(
+            int id, 
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             var user = await GetQuery(includeProperties: includeProperties)
                 .SingleOrDefaultAsync(u => u.Id == id);
@@ -63,7 +66,7 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<User>> GetByRoleAsync(
             string roleName,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            string includeProperties = "")
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             var role = await _context.Roles.SingleOrDefaultAsync(r => r.Name == roleName);
 
@@ -93,7 +96,7 @@ namespace DataAccess.Repositories
         private IQueryable<User> GetQuery(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            string includeProperties = "")
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             IQueryable<User> usersQuery = (
                 filter is null
@@ -102,10 +105,9 @@ namespace DataAccess.Repositories
             )
             .Where(u => u.IsActive);
 
-            if (!string.IsNullOrEmpty(includeProperties))
+            if (includeProperties is not null)
             {
-                usersQuery = includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Aggregate(usersQuery, (current, includeProperty) => current.Include(includeProperty));
+                usersQuery = includeProperties(usersQuery);
             }
 
             if (orderBy is not null)
