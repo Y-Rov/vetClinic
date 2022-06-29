@@ -4,6 +4,7 @@ using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ClinicContext))]
-    partial class ClinicContextModelSnapshot : ModelSnapshot
+    [Migration("20220628190514_UpdgradedAdminSeeding")]
+    partial class UpdgradedAdminSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,15 +356,19 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "270a9998-361f-4ede-b59f-3ed2c45834d4",
+                            ConcurrencyStamp = "f29f9b4c-7d86-4b49-92dc-31b3b74840ca",
+                            Email = "admin.mail@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             IsActive = true,
+                            LastName = "AdminLastName",
                             LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN.MAIL@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKRkq7I0qLFP5ORAY8OUJAjgQSo4bELnkha8DXwN2FwoEW2/7CmMnt6bSTRBwxMhDA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHvCVgw0h624ljAuZsJeg1uFXDM/i+yJVvmDp9WenYmsZFBoEBuT3lhagVryM8kZTQ==",
+                            PhoneNumber = "00 000 000 0000",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "07d066eb-727c-423b-97cf-b663bf90d8a8",
+                            SecurityStamp = "ab4bdded-8336-4337-858c-5fa15ff26b01",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -416,28 +422,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "72f880d7-60de-4cb7-9828-389a443f4a36",
+                            ConcurrencyStamp = "b771c2bb-df75-464d-9465-3415274b17e3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "23df42e9-ebf9-4707-8a95-d6e6ca163824",
+                            ConcurrencyStamp = "967fe632-cda2-4256-9372-83dd2a6e3dfe",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "4f636c4a-6c54-40b5-960b-f7e69d2fe72f",
+                            ConcurrencyStamp = "e5c6ec60-544e-4f02-b395-aed8fdd33b22",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "b968f4be-f2e5-40d1-96f5-d8f87aa13371",
+                            ConcurrencyStamp = "9007621e-b681-4494-8251-a819e12c82a2",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
