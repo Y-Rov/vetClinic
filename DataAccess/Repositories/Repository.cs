@@ -2,6 +2,7 @@
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace DataAccess.Repositories
 {
@@ -9,10 +10,12 @@ namespace DataAccess.Repositories
         where T : class
     {
         private readonly ClinicContext _clinicContext;
-
+        protected readonly DbSet<T> DbSet;
+        
         public Repository(ClinicContext clinicContext)
         {
             _clinicContext = clinicContext;
+            DbSet = _clinicContext.Set<T>();
         }
 
         public IQueryable<T> GetQuery(
@@ -59,27 +62,46 @@ namespace DataAccess.Repositories
             return trackingResult;
 
         }
+        
+        public async Task<IList<T>> QueryAsync(
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            int? take = null, int skip = 0,
+            bool asNoTracking = false)
+        {
+            var query = DbSet.AsQueryable().Skip(skip);
+
+            if (asNoTracking)
+                query = query.AsNoTracking();
+            
+            if (include is not null)
+                query = include(query);
+            
+            if (filter is not null)
+                query = query.Where(filter);
+            
+            if (orderBy is not null)
+                query = orderBy(query);
+
+            if (take is not null)
+                query = query.Take(take.Value);
+
+            return await query.ToListAsync();
+        }
 
         public async Task<T?> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>>? filter = null,
-            string includeProperties = "",
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             bool asNoTracking = false)
         {
-            var query = GetQuery(
+            var query = await QueryAsync(
                 filter: filter,
-                includeProperties: includeProperties,
-                orderBy: null);
+                include: include,
+                asNoTracking: asNoTracking
+            );
 
-            if (asNoTracking)
-            {
-                var noTrackingResult = await query.AsNoTracking()
-                    .FirstOrDefaultAsync();
-
-                return noTrackingResult;
-            }
-               
-            var trackingResult = await query.FirstOrDefaultAsync();
-            return trackingResult;
+            return query.SingleOrDefault();
         }
 
         public async Task<T?> GetById(int id, string includeProperties = "")
