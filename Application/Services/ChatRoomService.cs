@@ -61,4 +61,9 @@ public class ChatRoomService : IChatRoomService
         _userChatRoomRepository.Delete(userChatRoom);
         await _userChatRoomRepository.SaveChangesAsync();
     }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        return await _chatRoomRepository.ExistsAsync(id);
+    } 
 }
