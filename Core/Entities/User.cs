@@ -15,6 +15,8 @@ namespace Core.Entities
 
         public IEnumerable<Salary> Salaries { get; set; } = new List<Salary>();
         public IEnumerable<Animal> Animals { get; set; } = new List<Animal>();
+        public IEnumerable<Article> Articles { get; set; } = new List<Article>();
+        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
         public IEnumerable<AppointmentUser> AppointmentUsers { get; set; } = new List<AppointmentUser>();
         public IEnumerable<UserSpecialization> UserSpecializations { get; set; } = new List<UserSpecialization>();
     }
