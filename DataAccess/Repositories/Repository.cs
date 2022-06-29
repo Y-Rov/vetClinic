@@ -15,7 +15,7 @@ namespace DataAccess.Repositories
         public Repository(ClinicContext clinicContext)
         {
             _clinicContext = clinicContext;
-            
+            DbSet = _clinicContext.Set<T>();
         }
 
         public IQueryable<T> GetQuery(
