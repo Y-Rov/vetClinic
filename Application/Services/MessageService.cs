@@ -53,8 +53,8 @@ public class MessageService : IMessageService
             ).ToListAsync();
     }
 
-    public Task SendMessageAsync(Message message)
+    public async Task CreateAsync(Message message)
     {
-        throw new NotImplementedException();
+        await _messageRepository.InsertAsync(message);
     }
 }
