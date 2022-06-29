@@ -4,9 +4,8 @@ namespace Core.Interfaces.Services;
 
 public interface IChatRoomService
 {
-    Task Create(ChatRoom chatRoom);
-    Task<IEnumerable<User>> GetParticipants();
-    Task AddMember(User user);
-    Task KickMember(int userId);
-    Task Deactivate();
+    Task CreateAsync(ChatRoom chatRoom);
+    Task<IEnumerable<User>> GetParticipantsAsync(int chatRoomId);
+    Task AddMemberAsync(int roomId, int userId);
+    Task KickMemberAsync(int roomId, int userId);
 }
