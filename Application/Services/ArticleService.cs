@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Application.Services;
@@ -14,15 +15,18 @@ public class ArticleService : IArticleService
     private readonly IArticleRepository _articleRepository;
     private readonly ILoggerManager _loggerManager;
     private readonly IArticleImageManager _imageManager;
+    private readonly IConfiguration _configuration;
 
     public ArticleService(
         IArticleRepository articleRepository,
         ILoggerManager loggerManager,
-        IArticleImageManager imageManager)
+        IArticleImageManager imageManager,
+        IConfiguration configuration)
     {
         _articleRepository = articleRepository;
         _loggerManager = loggerManager;
         _imageManager = imageManager;
+        _configuration = configuration;
     }
 
     private async Task<string> UploadImages(string body)
@@ -35,26 +39,25 @@ public class ArticleService : IArticleService
                 break;
             }
             
-            var tagLength = "<img src=\"data:image/".Length;
-            var formatIndex = tagIndex + "<img src=\"data:image/".Length;
-
-            int formatLength = body.IndexOf(';', tagIndex) - formatIndex;
-            var format = body.Substring(formatIndex, formatLength);
+            var format = body.Substring(
+                startIndex: tagIndex + 21, // 21 for <img src="data:image/ length
+                length: body.IndexOf(';', tagIndex) - tagIndex - 21);
             
             var closingQuoteIndex = body.IndexOf("\">", tagIndex, StringComparison.Ordinal);
-            var base64StartIndex = body.IndexOf(",", formatIndex, StringComparison.Ordinal);
+            var base64StartIndex = body.IndexOf(",", tagIndex, StringComparison.Ordinal);
             var base64Str = body.Substring(
-                startIndex: base64StartIndex + 1, //+1 for separating comma: png;base64-->,<--iVBORw0KG
+                startIndex: base64StartIndex + 1, //+1 for separating comma: ...base64,iVBORw0KG...
                 length: closingQuoteIndex - base64StartIndex - 1); //-1 for the closing " of the tag
 
             var image = LoadImage(base64Str);
             var fileName = await _imageManager.UploadAsync(image, format);
             
-            var link = "http://127.0.0.1:10000/devstoreaccount1/vet-clinic/" + fileName;
+            var link = _configuration["Azure:ContainerLink"] + "/" + _configuration["Azure:ContainerName"] + "/" + fileName;
+
             body = body.Remove(
-                startIndex: tagIndex + "<img src=\"".Length,
-                count: "data:image/".Length + formatLength + ";base64,".Length + base64Str.Length);
-            body = body.Insert(tagIndex + "<img src=\"".Length, link);
+                startIndex: tagIndex + 10, // 10 for <img src=" length
+                count: closingQuoteIndex - (tagIndex + 10));
+            body = body.Insert(tagIndex + 10, link);
         }
 
         return body;
@@ -98,19 +101,18 @@ public class ArticleService : IArticleService
         _loggerManager.LogInfo($"Updated article with id {article.Id}");
     }
 
-    private async Task DeleteImages(string body)
+    private async Task<string> DeleteImages(string body)
     {
         while (true)
         {
-            var nameIndex = body.IndexOf("<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles",
-                StringComparison.Ordinal);
+            var nameIndex = body.IndexOf("<img src=\"http", StringComparison.Ordinal);
             if (nameIndex == -1)
             {
-                return;
+                return body;
             }
 
-            int start = nameIndex + "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/".Length;
             int end = body.IndexOf("\">", nameIndex, StringComparison.Ordinal);
+            int start = body.LastIndexOf("/", end, StringComparison.Ordinal) + 1;
             var fileName = body.Substring(start, end - start);
 
             await _imageManager.DeleteAsync(fileName);
@@ -123,7 +125,7 @@ public class ArticleService : IArticleService
     {
         var articleToRemove = await GetByIdAsync(articleId);
 
-        await DeleteImages(articleToRemove.Body);
+        articleToRemove.Body = await DeleteImages(articleToRemove.Body);
         
         _articleRepository.Delete(articleToRemove);
         await _articleRepository.SaveChangesAsync();
