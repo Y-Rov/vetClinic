@@ -1,14 +1,28 @@
-﻿using Core.Entities;
+﻿using Azure.Storage.Blobs;
+using Core.Entities;
+using Core.Interfaces.Services;
 using Core.ViewModels.User;
+using System.Drawing;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.UserMappers
 {
     public class UserCreateMapper : IViewModelMapper<UserCreateViewModel, User>
     {
+        private readonly IUserProfilePictureService _userProfilePictureService;
+        private readonly BlobServiceClient _blobServiceClient;
+
+        public UserCreateMapper(
+            IUserProfilePictureService userProfilePictureService,
+            BlobServiceClient blobServiceClient)
+        {
+            _userProfilePictureService = userProfilePictureService;
+            _blobServiceClient = blobServiceClient;
+        }
+
         public User Map(UserCreateViewModel source)
         {
-            byte[] profilePicture = GetProfilePicture(source.ProfilePicture);
+            string profilePicture = GetProfilePicture(source).Result;
 
             return new User()
             {
@@ -22,26 +36,16 @@ namespace WebApi.AutoMapper.UserMappers
             };
         }
 
-        private static byte[] GetProfilePicture(string sourcePicture)
+        private async Task<string> GetProfilePicture(UserCreateViewModel createViewModel)
         {
-            byte[] profilePicture;
+            byte[]? bytes = Convert.FromBase64String(createViewModel.ProfilePicture);
+            MemoryStream ms = new(bytes);
+            var image = Image.FromStream(ms);
 
-            if (!string.IsNullOrEmpty(sourcePicture))
-            {
-                profilePicture = Convert.FromBase64String(sourcePicture);
-            }
-            else
-            {
-                string defaultProfilePicPath = $"../WebApi/Images/default_profile_pic.jpg";
+            var profilePictureLink = await _userProfilePictureService.UploadAsync(
+                image, createViewModel.FirstName!, createViewModel.Email!, "png");
 
-                using (var fileStream = new FileStream(defaultProfilePicPath, FileMode.Open, FileAccess.Read))
-                {
-                    profilePicture = File.ReadAllBytes(defaultProfilePicPath);
-                    fileStream.Read(profilePicture, 0, Convert.ToInt32(fileStream.Length));
-                }
-            }
-
-            return profilePicture;
+            return profilePictureLink;
         }
     }
 }

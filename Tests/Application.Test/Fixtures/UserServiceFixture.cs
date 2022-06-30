@@ -4,6 +4,7 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Moq;
 
 namespace Application.Test.Fixtures
@@ -17,10 +18,12 @@ namespace Application.Test.Fixtures
             MockUserService = fixture.Freeze<UserService>();
             MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
+            MockUserProfilePictureService = fixture.Freeze<Mock<IUserProfilePictureService>>();
 
             MockUserService = new UserService(
                 MockUserRepository.Object,
-                MockLoggerManager.Object);
+                MockLoggerManager.Object,
+                MockUserProfilePictureService.Object);
 
             Id = 1;
             Role = "Client";
@@ -32,6 +35,7 @@ namespace Application.Test.Fixtures
         public UserService MockUserService { get; }
         public Mock<IUserRepository> MockUserRepository { get; }
         public Mock<ILoggerManager> MockLoggerManager { get; }
+        public Mock<IUserProfilePictureService> MockUserProfilePictureService { get; set; }
 
         public int Id { get; set; }
         public string Role { get; set; }
