@@ -187,7 +187,7 @@ namespace Application.Test
                 .ReturnsAsync(salaryList);
 
             //Act
-            var result = await _fixture.MockFinancialService.GetSalaryAsync();
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
 
             //Assert
             Assert.NotNull(result);
@@ -209,7 +209,7 @@ namespace Application.Test
                 .ReturnsAsync(emptysalaryList);
 
             //Act
-            var result = await _fixture.MockFinancialService.GetSalaryAsync();
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
 
             //Assert
             Assert.NotNull(result);
