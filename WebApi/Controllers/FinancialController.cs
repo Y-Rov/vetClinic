@@ -1,6 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
-using Core.Models;
+using Core.Models.Finance;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

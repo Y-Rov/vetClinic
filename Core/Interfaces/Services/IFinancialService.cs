@@ -1,5 +1,5 @@
 ﻿using Core.Entities;
-using Core.Models;
+using Core.Models.Finance;
 using System.Linq.Expressions;
 
 namespace Core.Interfaces.Services

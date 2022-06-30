@@ -1,5 +1,5 @@
 ﻿using Core.Entities;
-using Core.Models;
+using Core.Models.Finance;
 using Core.ViewModels;
 using Core.ViewModels.SalaryViewModel;
 using WebApi.AutoMapper.Interface;

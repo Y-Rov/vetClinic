@@ -3,7 +3,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Core.Models;
+using Core.Models.Finance;
 using System.Linq.Expressions;
 
 namespace Application.Services

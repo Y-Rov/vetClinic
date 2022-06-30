@@ -1,4 +1,4 @@
-﻿using Core.Models;
+﻿using Core.Models.Finance;
 using Core.ViewModels.SalaryViewModel;
 using WebApi.AutoMapper.Interface;
 
