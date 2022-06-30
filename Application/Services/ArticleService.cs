@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Application.Services;
@@ -14,15 +15,18 @@ public class ArticleService : IArticleService
     private readonly IArticleRepository _articleRepository;
     private readonly ILoggerManager _loggerManager;
     private readonly IArticleImageManager _imageManager;
+    private readonly IConfiguration _configuration;
 
     public ArticleService(
         IArticleRepository articleRepository,
         ILoggerManager loggerManager,
-        IArticleImageManager imageManager)
+        IArticleImageManager imageManager,
+        IConfiguration configuration)
     {
         _articleRepository = articleRepository;
         _loggerManager = loggerManager;
         _imageManager = imageManager;
+        _configuration = configuration;
     }
 
     private async Task<string> UploadImages(string body)
@@ -48,7 +52,7 @@ public class ArticleService : IArticleService
             var image = LoadImage(base64Str);
             var fileName = await _imageManager.UploadAsync(image, format);
             
-            var link = "http://127.0.0.1:10000/devstoreaccount1/vet-clinic/" + fileName;
+            var link = _configuration["Azure:ContainerLink"] + "/" + _configuration["Azure:ContainerName"] + "/" + fileName;
 
             body = body.Remove(
                 startIndex: tagIndex + 10, // 10 for <img src=" length
@@ -97,19 +101,18 @@ public class ArticleService : IArticleService
         _loggerManager.LogInfo($"Updated article with id {article.Id}");
     }
 
-    private async Task DeleteImages(string body)
+    private async Task<string> DeleteImages(string body)
     {
         while (true)
         {
-            var nameIndex = body.IndexOf("<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles",
-                StringComparison.Ordinal);
+            var nameIndex = body.IndexOf("<img src=\"http", StringComparison.Ordinal);
             if (nameIndex == -1)
             {
-                return;
+                return body;
             }
 
-            int start = nameIndex + "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/".Length;
             int end = body.IndexOf("\">", nameIndex, StringComparison.Ordinal);
+            int start = body.LastIndexOf("/", end, StringComparison.Ordinal) + 1;
             var fileName = body.Substring(start, end - start);
 
             await _imageManager.DeleteAsync(fileName);
@@ -122,7 +125,7 @@ public class ArticleService : IArticleService
     {
         var articleToRemove = await GetByIdAsync(articleId);
 
-        await DeleteImages(articleToRemove.Body);
+        articleToRemove.Body = await DeleteImages(articleToRemove.Body);
         
         _articleRepository.Delete(articleToRemove);
         await _articleRepository.SaveChangesAsync();
