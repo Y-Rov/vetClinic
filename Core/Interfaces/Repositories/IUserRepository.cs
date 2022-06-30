@@ -10,12 +10,16 @@ namespace Core.Interfaces.Repositories
         Task<IEnumerable<User>> GetAllAsync(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null);
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
+            int? takeCount = null,
+            int skipCount = 0);
 
         Task<IEnumerable<User>> GetByRoleAsync(
             string roleName,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null);
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
+            int? takeCount = null,
+            int skipCount = 0);
 
         Task<User?> GetByIdAsync(
             int id,

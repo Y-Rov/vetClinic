@@ -56,12 +56,14 @@ namespace Application.Services
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllUsersAsync(int? takeCount, int skipCount = 0)
         {
             var users = await _userRepository.GetAllAsync(
                 includeProperties: query => query
                     .Include(u => u.Address)
-                    .Include(u => u.Portfolio!));
+                    .Include(u => u.Portfolio!),
+                takeCount: takeCount,
+                skipCount: skipCount);
 
             _loggerManager.LogInfo("Successfully retrieved all users");
 
