@@ -32,7 +32,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
         {
             var users = await _userService.GetAllUsersAsync();

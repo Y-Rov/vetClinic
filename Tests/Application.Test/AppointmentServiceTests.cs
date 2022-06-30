@@ -266,7 +266,7 @@ namespace Application.Test
 
 
         [Fact]
-        public async Task CreateAsync_whenГіукListIsEmpty_thanSuccess()
+        public async Task CreateAsync_whenUserListIsEmpty_thanSuccess()
         {
             //Arrange
             var emptyUserIds = new List<int>();
@@ -502,6 +502,115 @@ namespace Application.Test
             //Assert
             await Assert.ThrowsAsync<DbUpdateException>(()=>result);
         }
+
+        [Fact]
+        public async Task UpdateAsync_whenSomeProcedureDontExist_thanThrowNotFound()
+        {
+            var appointment = new Appointment
+            {
+                Date = DateTime.Now,
+                MeetHasOccureding = true,
+                Disease = "Broke a leg",
+                AnimalId = 3,
+                AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+                AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+            };
+
+            //Arrange
+            var procedureIds = new List<int>()
+        {
+            1, 2, 5
+        };
+
+            _appointmentServiceFixture.MockProcedureEntityService
+                .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
+                .Throws<NotFoundException>();
+
+            _appointmentServiceFixture.MockAppointmentRepository
+                .Setup(repo => repo.Update(It.IsAny<Appointment>()))
+                .Verifiable();
+
+            _appointmentServiceFixture.MockAppointmentRepository
+                .Setup(repo => repo.SaveChangesAsync())
+                .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+            //Act
+            var result =  _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentEntity.Id, procedureIds);
+
+            //Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
+
+        }
+
+
+
+        [Fact]
+        public async Task UpdateAsync_whenSomeUserDontExist_thanThrowNotFound()
+        {
+            var appointment = new Appointment
+            {
+                Date = DateTime.Now,
+                MeetHasOccureding = true,
+                Disease = "Broke a leg",
+                AnimalId = 3,
+                AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+                AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+            };
+
+            //Arrange
+            var userIds = new List<int>()
+        {
+            1, 2, 5
+        };
+
+            _appointmentServiceFixture.MockUserEntityService
+                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
+                .Throws<NotFoundException>();
+
+            _appointmentServiceFixture.MockAppointmentRepository
+                .Setup(repo => repo.Update(It.IsAny<Appointment>()))
+                .Verifiable();
+
+            _appointmentServiceFixture.MockAppointmentRepository
+                .Setup(repo => repo.SaveChangesAsync())
+                .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+            //Act
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentEntity.Id, userIds);
+
+            //Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
+
+        }
+
     }
 }
 

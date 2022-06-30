@@ -9,14 +9,19 @@ namespace DataAccess.Repositories
     {
         private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
         private readonly IUserSpecializationRepository _usrerSpecializationRepository;
-        public SpecializationRepository(ClinicContext context,
-            IProcedureSpecializationRepository procedureSpecializationRepository,
-            IUserSpecializationRepository userSpecializationRepository)
-            : base(context)
+
+        public SpecializationRepository(ClinicContext clinicContext) : base(clinicContext)
         {
-            _procedureSpecializationRepository = procedureSpecializationRepository;
-            _usrerSpecializationRepository = userSpecializationRepository;
         }
+
+        //public SpecializationRepository(ClinicContext context,
+        //    IProcedureSpecializationRepository procedureSpecializationRepository,
+        //    IUserSpecializationRepository userSpecializationRepository)
+        //    : base(context)
+        //{
+        //    _procedureSpecializationRepository = procedureSpecializationRepository;
+        //    _usrerSpecializationRepository = userSpecializationRepository;
+        //}
 
         public async Task UpdateProceduresAsync(int specializationId, IEnumerable<int> proceduresIds)
         {
