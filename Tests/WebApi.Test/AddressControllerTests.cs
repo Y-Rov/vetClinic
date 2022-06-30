@@ -6,11 +6,11 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
 {
-    public class AddressControllerTest : IClassFixture<AddressControllerFixture>
+    public class AddressControllerTests : IClassFixture<AddressControllerFixture>
     {
         private readonly AddressControllerFixture _fixture;
 
-        public AddressControllerTest(AddressControllerFixture fixture)
+        public AddressControllerTests(AddressControllerFixture fixture)
         {
             _fixture = fixture;
         }
@@ -36,10 +36,11 @@ namespace WebApi.Test
                 .Returns(_fixture.AddressCreateReadViewModels);
 
             // Act
-            var result = await _fixture.MockController.GetAsync();
+            var result = await _fixture.MockAddressController.GetAsync();
 
             // Assert
             Assert.NotNull(result);
+            
             _fixture.AddressCreateReadViewModels.Should().BeEquivalentTo(result);
         }
 
@@ -59,7 +60,7 @@ namespace WebApi.Test
                 .Returns(addressBaseViewModel);
 
             // Act
-            var result = await _fixture.MockController.GetAsync(_fixture.UserId);
+            var result = await _fixture.MockAddressController.GetAsync(_fixture.UserId);
 
             // Assert
             Assert.NotNull(result);
@@ -82,7 +83,7 @@ namespace WebApi.Test
                 .Returns(Task.CompletedTask).Verifiable();
 
             // Act
-            var result = await _fixture.MockController.CreateAsync(addressCreateReadViewModel);
+            var result = await _fixture.MockAddressController.CreateAsync(addressCreateReadViewModel);
 
             // Assert
             Assert.NotNull(result);
@@ -106,7 +107,7 @@ namespace WebApi.Test
                     It.Is<Address>(match => match == address)));
 
             // Act
-            var result = await _fixture.MockController.UpdateAsync(_fixture.UserId, addressBaseViewModel);
+            var result = await _fixture.MockAddressController.UpdateAsync(_fixture.UserId, addressBaseViewModel);
 
             // Assert
             Assert.NotNull(result);
@@ -122,7 +123,7 @@ namespace WebApi.Test
                 .Returns(Task.CompletedTask).Verifiable();
 
             // Act
-            var result = await _fixture.MockController.DeleteAsync(_fixture.UserId);
+            var result = await _fixture.MockAddressController.DeleteAsync(_fixture.UserId);
 
             // Assert
             Assert.NotNull(result);
