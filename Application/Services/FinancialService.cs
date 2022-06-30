@@ -152,7 +152,9 @@ namespace Application.Services
             var appointments = await _appointmentRepository.GetAsync(x=>
                 (x.Date >= date.startDate)&&
                 (x.Date < date.endDate)&&
-                (x.MeetHasOccureding == true));
+                (x.MeetHasOccureding == true),
+                null,
+                includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
             var _incomes = new List<Income>();
 
             //Dictionary<Appoinment.Id, AppointmentCost>
