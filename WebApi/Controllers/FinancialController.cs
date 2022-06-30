@@ -10,7 +10,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Accountant")]
+    //[Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
@@ -19,6 +19,8 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
         private readonly IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
+        private readonly IViewModelMapper<DateViewModel, Date> _date;
+        private readonly IViewModelMapper<FinancialStatementList, FinancialStatementViewModel> _finaStatViewModel;
 
         public FinancialController(
             IFinancialService financialService,
@@ -26,7 +28,9 @@ namespace WebApi.Controllers
             IViewModelMapper<Salary, SalaryViewModel> readSalary,
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
             IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
-            IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList)
+            IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
+            IViewModelMapper<DateViewModel, Date> date,
+            IViewModelMapper<FinancialStatementList, FinancialStatementViewModel> finaStatViewModel)
         {
             _financialService = financialService;
             _userService = userService;
@@ -34,6 +38,8 @@ namespace WebApi.Controllers
             _writeSalary = writeSalary;
             _readSalaryList = readSalaryList;
             _readEmployeesList = readEmployeesList;
+            _date = date;
+            _finaStatViewModel = finaStatViewModel;
         }
 
         [HttpGet("/api/[controller]/")]
@@ -90,10 +96,12 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("/api/financialStatements")]
-        public async Task<FinancialStatement> GetFinancialStatementAsync(DateTime startDate)
+        public async Task<FinancialStatementViewModel> GetFinancialStatementAsync(DateViewModel dateViewModel)
         {
-            var result = await _financialService.GetFinancialStatement(startDate);
-            return result;
+            var date = _date.Map(dateViewModel);
+            var result = await _financialService.GetFinancialStatement(date);
+            var finViewModel = _finaStatViewModel.Map(result);
+            return finViewModel;
         }
     }
 
