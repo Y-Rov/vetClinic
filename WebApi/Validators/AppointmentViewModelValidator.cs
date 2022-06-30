@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace WebApi.Validators
 {
-    public class AppointmentViewModelValidator : AbstractValidator<AppointmentViewModel>
+    public class AppointmentViewModelValidator : AbstractValidator<AppointmentReadViewModel>
     {
         public AppointmentViewModelValidator()
         {
