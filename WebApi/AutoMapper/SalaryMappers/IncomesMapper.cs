@@ -6,11 +6,11 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.SalaryMappers
 {
-    public class IncomesMapper : IViewModelMapper<IEnumerable<Income>, IEnumerable<IncomeViewModel>>
+    public class IncomesMapper : IEnumerableViewModelMapper<IEnumerable<Income>, IEnumerable<IncomeViewModel>>
     {
-        readonly IViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> _internalmapper;
+        readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> _internalmapper;
 
-        public IncomesMapper(IViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> internalmapper)
+        public IncomesMapper(IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> internalmapper)
         {
             _internalmapper = internalmapper;
         }

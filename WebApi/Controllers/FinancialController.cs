@@ -30,7 +30,8 @@ namespace WebApi.Controllers
             IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
             IViewModelMapper<DateViewModel, Date> date,
-            IViewModelMapper<FinancialStatementList, FinancialStatementViewModel> finaStatViewModel)
+            IViewModelMapper<FinancialStatementList, FinancialStatementViewModel> finaStatViewModel
+            )
         {
             _financialService = financialService;
             _userService = userService;

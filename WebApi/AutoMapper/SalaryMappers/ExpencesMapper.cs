@@ -4,7 +4,7 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.SalaryMappers
 {
-    public class ExpencesMapper : IViewModelMapper<IEnumerable<Expences>, IEnumerable<ExpencesViewModel>>
+    public class ExpencesMapper : IEnumerableViewModelMapper<IEnumerable<Expences>, IEnumerable<ExpencesViewModel>>
     {
         public IEnumerable<ExpencesViewModel> Map(IEnumerable<Expences> source)
         {

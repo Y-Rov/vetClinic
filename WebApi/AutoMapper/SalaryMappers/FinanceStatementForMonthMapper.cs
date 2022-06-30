@@ -4,7 +4,7 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.SalaryMappers
 {
-    public class FinancialStatementForMonthMapper : IViewModelMapper<IEnumerable<FinancialStatement>,
+    public class FinancialStatementForMonthMapper : IEnumerableViewModelMapper<IEnumerable<FinancialStatement>,
         IEnumerable<FinancialStatementForMonthViewModel>>
     {
         private readonly IViewModelMapper<Date, DateViewModel> _dateMapper;
