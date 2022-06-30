@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services;
 
@@ -28,41 +29,32 @@ public class ArticleService : IArticleService
     {
         while (true)
         {
-            var index = body.IndexOf("<img src=\"data:image/", StringComparison.Ordinal);
-            if (index == -1)
+            var tagIndex = body.IndexOf("<img src=\"data:image/", StringComparison.Ordinal);
+            if (tagIndex == -1)
             {
                 break;
             }
+            
             var tagLength = "<img src=\"data:image/".Length;
+            var formatIndex = tagIndex + "<img src=\"data:image/".Length;
 
-            int formatLength = 0;
-            for (int i = index + tagLength; i < index + tagLength + 10; i++)
-            {
-                if (body[i] == ';')
-                {
-                    formatLength = i - (index + tagLength);
-                    break;
-                }
-            }
-
-            var format = body.Substring(index + tagLength, formatLength);
-
-            var closingQuoteIndex = body.IndexOf("\">", index, StringComparison.Ordinal);
-
-            var base64StrStartIndex = body.IndexOf(",", index + tagLength, StringComparison.Ordinal);
-
+            int formatLength = body.IndexOf(';', tagIndex) - formatIndex;
+            var format = body.Substring(formatIndex, formatLength);
+            
+            var closingQuoteIndex = body.IndexOf("\">", tagIndex, StringComparison.Ordinal);
+            var base64StartIndex = body.IndexOf(",", formatIndex, StringComparison.Ordinal);
             var base64Str = body.Substring(
-                startIndex: base64StrStartIndex + 1, //+1 for separating comma: png;base64-->,<--iVBORw0KG
-                length: closingQuoteIndex - base64StrStartIndex - 1); //-1 for the closing " of the tag
+                startIndex: base64StartIndex + 1, //+1 for separating comma: png;base64-->,<--iVBORw0KG
+                length: closingQuoteIndex - base64StartIndex - 1); //-1 for the closing " of the tag
 
             var image = LoadImage(base64Str);
             var fileName = await _imageManager.UploadAsync(image, format);
+            
             var link = "http://127.0.0.1:10000/devstoreaccount1/vet-clinic/" + fileName;
             body = body.Remove(
-                startIndex: index + "<img src=\"".Length,
+                startIndex: tagIndex + "<img src=\"".Length,
                 count: "data:image/".Length + formatLength + ";base64,".Length + base64Str.Length);
-            
-            body = body.Insert(index + "<img src=\"".Length, link);
+            body = body.Insert(tagIndex + "<img src=\"".Length, link);
         }
 
         return body;
@@ -93,12 +85,12 @@ public class ArticleService : IArticleService
         
         _loggerManager.LogInfo($"Created new article with title {article.Title}");
     }
-
+    
     public async Task UpdateArticleAsync(Article article)
     {
         var updatingArticle = await GetByIdAsync(article.Id);
         updatingArticle.Title = article.Title;
-        updatingArticle.Body = article.Body;
+        updatingArticle.Body = await UploadImages(article.Body);
         updatingArticle.Published = article.Published;
         updatingArticle.Edited = true;
 
@@ -106,10 +98,33 @@ public class ArticleService : IArticleService
         _loggerManager.LogInfo($"Updated article with id {article.Id}");
     }
 
+    private async Task DeleteImages(string body)
+    {
+        while (true)
+        {
+            var nameIndex = body.IndexOf("<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles",
+                StringComparison.Ordinal);
+            if (nameIndex == -1)
+            {
+                return;
+            }
+
+            int start = nameIndex + "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/".Length;
+            int end = body.IndexOf("\">", nameIndex, StringComparison.Ordinal);
+            var fileName = body.Substring(start, end - start);
+
+            await _imageManager.DeleteAsync(fileName);
+
+            body = body.Remove( nameIndex , end - nameIndex);
+        }
+    }
+
     public async Task DeleteArticleAsync(int articleId)
     {
         var articleToRemove = await GetByIdAsync(articleId);
 
+        await DeleteImages(articleToRemove.Body);
+        
         _articleRepository.Delete(articleToRemove);
         await _articleRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Deleted article with id {articleId}");

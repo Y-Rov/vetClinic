@@ -26,4 +26,11 @@ public class ArticleImageManager : IArticleImageManager
         await blobClient.UploadAsync(ms);
         return fileName;
     }
+
+    public async Task DeleteAsync(string image)
+    {
+        var blobContainer = _blobServiceClient.GetBlobContainerClient("vet-clinic");
+        var blobClient = blobContainer.GetBlobClient("articles/" + image);
+        await blobClient.DeleteAsync();
+    }
 }
