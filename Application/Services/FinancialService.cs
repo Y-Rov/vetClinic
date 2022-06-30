@@ -204,7 +204,11 @@ namespace Application.Services
             foreach(var salary in salaries)
             {
                 var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
-                var expence = new Expences()
+                if (!premiums.ContainsKey(employee.Id))
+                {
+                    premiums.Add(employee.Id, 0);
+                }
+                    var expence = new Expences()
                 {
                     EmployeeName = employee.FirstName + " " + employee.LastName,
                     SalaryValue = salary.Value,
