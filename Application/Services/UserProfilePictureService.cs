@@ -1,18 +1,21 @@
 ﻿using Azure.Storage.Blobs;
 using Core.Interfaces.Services;
-using Core.ViewModels.User;
+using Microsoft.Extensions.Configuration;
 using System.Drawing;
 
 namespace Application.Services
 {
     public class UserProfilePictureService : IUserProfilePictureService
     {
+        private readonly IConfiguration _configuration;
         private readonly BlobServiceClient _blobServiceClient;
-        private const string BLOBLINK = "http://127.0.0.1:10000/devstoreaccount1/vet-clinic/profile-pictures/";
 
-        public UserProfilePictureService(BlobServiceClient blobServiceClient)
+        public UserProfilePictureService(
+            IConfiguration configuration,
+            BlobServiceClient blobServiceClient)
         {
             _blobServiceClient = blobServiceClient;
+            _configuration = configuration;
         }
 
         public async Task<string> UploadAsync( 
@@ -21,7 +24,7 @@ namespace Application.Services
             string email,
             string imageFormat)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("vet-clinic");
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
             var fileName = $"profile-pictures/{firstName}-{email}.{imageFormat}";
             var blobClient = blobContainer.GetBlobClient(fileName);
 
@@ -30,7 +33,7 @@ namespace Application.Services
             ms.Position = 0;
 
             await blobClient.UploadAsync(ms);
-            fileName = $"{BLOBLINK}/{fileName}";
+            fileName = $"{_configuration["Azure:ContainerLink"]}/{_configuration["Azure:ContainerName"]}/{fileName}";
 
             return fileName;
         }
