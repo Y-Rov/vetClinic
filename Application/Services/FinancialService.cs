@@ -85,7 +85,7 @@ namespace Application.Services
 
         public async Task<Salary> GetSalaryByUserIdAsync(int id)
         {
-            Salary salary = await _repository.GetById(id);
+            Salary? salary = await _repository.GetById(id);
             if ((salary == null)||(salary.Value == 0))
             {
                 _logger.LogWarn($"Salary with id: {id} not found");
