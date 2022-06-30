@@ -134,16 +134,12 @@ namespace Application.Services
             return result;
         }
 
-        public async Task<FinancialStatement> GetFinancialStatement(DateTime _startDate)
+        private async Task<FinancialStatement> GetFinancialStatementOneMonth(Date _date)
         {
             decimal procent = 0.1M;
             decimal allIncome =0;
             decimal allExpence = 0;
-            var date = new Date()
-            {
-                startDate = _startDate,
-                endDate = _startDate.AddMonths(1)
-            };
+            var date = _date;
 
             //Dictionary<EmployeeId, EmployeePremiums>
             IDictionary<int, decimal> premiums = new Dictionary<int,decimal>();
@@ -239,6 +235,44 @@ namespace Application.Services
             };
 
             return financialStatement;
+        }
+
+        private int GetMonthsBetween(DateTime from, DateTime to)
+        {
+            if (from > to) return GetMonthsBetween(to, from);
+
+            var monthDiff = Math.Abs((to.Year * 12 + (to.Month - 1)) - (from.Year * 12 + (from.Month - 1)));
+
+            if (from.AddMonths(monthDiff) > to || to.Day < from.Day)
+            {
+                return monthDiff - 1;
+            }
+            else
+            {
+                return monthDiff;
+            }
+        }
+
+        public async Task<FinancialStatementList> GetFinancialStatement(Date date)
+        {
+            var countMonth = GetMonthsBetween(date.startDate, date.endDate);
+            var finStatList = new List<FinancialStatement>();
+            var monthDate = new Date();
+
+            for(int i = 0; i < countMonth; i++)
+            {
+                monthDate.startDate = date.startDate.AddMonths(i);
+                monthDate.endDate = monthDate.startDate.AddMonths(1);
+
+                finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
+            }
+            
+            var financialStatementList = new FinancialStatementList()
+            {
+                Period = date,
+                StatementsForEachMonth = finStatList
+            };
+            return financialStatementList;
         }
     }
     
