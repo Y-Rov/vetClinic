@@ -35,26 +35,25 @@ public class ArticleService : IArticleService
                 break;
             }
             
-            var tagLength = "<img src=\"data:image/".Length;
-            var formatIndex = tagIndex + "<img src=\"data:image/".Length;
-
-            int formatLength = body.IndexOf(';', tagIndex) - formatIndex;
-            var format = body.Substring(formatIndex, formatLength);
+            var format = body.Substring(
+                startIndex: tagIndex + 21, // 21 for <img src="data:image/ length
+                length: body.IndexOf(';', tagIndex) - tagIndex - 21);
             
             var closingQuoteIndex = body.IndexOf("\">", tagIndex, StringComparison.Ordinal);
-            var base64StartIndex = body.IndexOf(",", formatIndex, StringComparison.Ordinal);
+            var base64StartIndex = body.IndexOf(",", tagIndex, StringComparison.Ordinal);
             var base64Str = body.Substring(
-                startIndex: base64StartIndex + 1, //+1 for separating comma: png;base64-->,<--iVBORw0KG
+                startIndex: base64StartIndex + 1, //+1 for separating comma: ...base64,iVBORw0KG...
                 length: closingQuoteIndex - base64StartIndex - 1); //-1 for the closing " of the tag
 
             var image = LoadImage(base64Str);
             var fileName = await _imageManager.UploadAsync(image, format);
             
             var link = "http://127.0.0.1:10000/devstoreaccount1/vet-clinic/" + fileName;
+
             body = body.Remove(
-                startIndex: tagIndex + "<img src=\"".Length,
-                count: "data:image/".Length + formatLength + ";base64,".Length + base64Str.Length);
-            body = body.Insert(tagIndex + "<img src=\"".Length, link);
+                startIndex: tagIndex + 10, // 10 for <img src=" length
+                count: closingQuoteIndex - (tagIndex + 10));
+            body = body.Insert(tagIndex + 10, link);
         }
 
         return body;
