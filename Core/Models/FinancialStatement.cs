@@ -29,5 +29,11 @@ namespace Core.Models
         public decimal TotalExpences { get; set; }
         public decimal TotalIncomes { get; set; }
     }
+
+    public class FinancialStatementList
+    {
+        public Date Period = new Date();
+        public IEnumerable<FinancialStatement> StatementsForEachMonth = new List<FinancialStatement>();
+    }
 }
 
