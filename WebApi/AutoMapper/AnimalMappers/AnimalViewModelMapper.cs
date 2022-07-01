@@ -18,7 +18,8 @@ namespace WebApi.AutoMapper.AnimalMappers
                 Id = source.Id,
                 OwnerId = source.OwnerId,
                 NickName = source.NickName,
-                BirthDate = source.BirthDate
+                BirthDate = source.BirthDate,
+                PhotoUrl = source.PhotoUrl
             };
 
             return animalViewModel;
