@@ -34,21 +34,22 @@ public class ArticleService : IArticleService
         link = "";
         base64 = "";
         isOuterLink = false;
-        isBase64 = tag.Substring(10, 4) == "data";
-        if (isBase64)
-        {
-            var base64StartIndex = tag.IndexOf(",", StringComparison.Ordinal);
-            base64 = tag.Substring(
-                startIndex: base64StartIndex + 1,
-                length: tag.Length - base64StartIndex - 3);
-            format = tag.Substring(
-                startIndex: 21, 
-                length: tag.IndexOf(';') - 21);
-            return;
-        }
-
         int srcOffset = tag.IndexOf("src", StringComparison.Ordinal) - 5;
 
+        isBase64 = tag.Substring(10 + srcOffset, 4) == "data";
+        if (isBase64)
+        {
+            var base64StartIndex = tag.IndexOf(",", srcOffset, StringComparison.Ordinal);
+            var base64EndIndex = tag.IndexOf('"', base64StartIndex);
+            base64 = tag.Substring(
+                startIndex: base64StartIndex + 1, //+1 for separating comma: ...base64,iVBORw0KG...
+                length: base64EndIndex - base64StartIndex - 1); //-2 for the closing " of the tag - 1 for length not position
+            format = tag.Substring(
+                startIndex: 21 + srcOffset, // 21 for <img src="data:image/ length
+                length: tag.IndexOf(';') - 21 - srcOffset);
+            return;
+        }
+        
         int possibleQueryIndex = tag.IndexOf('?', 11 + srcOffset);
         int closingQuoteIndex = tag.IndexOf('"', 11+ srcOffset);
         int linkEndingIndex = possibleQueryIndex > 0 && possibleQueryIndex < closingQuoteIndex
@@ -84,9 +85,9 @@ public class ArticleService : IArticleService
                 var newLink = _configuration["Azure:ContainerLink"] + "/" + _configuration["Azure:ContainerName"] + "/" + fileName;
                 
                 body = body.Remove(
-                    startIndex: tagIndex + 10, // 10 for <img src=" length
-                    count: closingQuoteIndex - (tagIndex + 10));
-                body = body.Insert(tagIndex + 10, newLink + '"');
+                    startIndex: tagIndex ,
+                    count: closingQuoteIndex - tagIndex);
+                body = body.Insert(tagIndex, "<img src=\"" + newLink + '"');
             }
 
             if (isOuterLink)
