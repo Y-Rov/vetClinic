@@ -33,9 +33,11 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync(
+            [FromQuery(Name = "takeCount")] int? takeCount,
+            [FromQuery(Name = "skipCount")] int skipCount = 0)
         {
-            var users = await _userService.GetAllUsersAsync();
+            var users = await _userService.GetAllUsersAsync(takeCount, skipCount);
             var readModels = _readEnumerableMapper.Map(users);
 
             return Ok(readModels);
