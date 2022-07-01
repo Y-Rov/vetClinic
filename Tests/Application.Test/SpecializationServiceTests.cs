@@ -73,11 +73,6 @@ namespace Application.Test
         [Fact]
         public async Task GetAllSpecializations_whenResultNotEmpty_thenReturnSpecializations()
         {
-            var expected = new List<Specialization>()
-            {
-                new Specialization() { Id = 0, Name = "Surgeon"},
-                new Specialization() { Id = 1, Name = "Cleaner"}
-            };
 
             _fixture.MockRepository.Setup(repository =>
                 repository.GetAsync(
@@ -96,7 +91,7 @@ namespace Application.Test
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            result.Should().BeEquivalentTo(expected);
+            Assert.IsType<List<Specialization>>(result);
         }
 
         [Fact]
@@ -285,6 +280,73 @@ namespace Application.Test
             await _fixture.MockService.RemoveProcedureFromSpecialization(specializationId,procedureId);
 
             Assert.DoesNotContain(relationshipToRemove, specialization.ProcedureSpecializations);
+            _fixture.MockRepository.Verify(method => method.Update(specialization), Times.Once);
+        }
+
+        [Fact]
+        public async Task RemoveProcedureFromSpecialization_whenProcedureNotExists_thenThrowException()
+        {
+            int specializationId = 2;
+            int procedureId = 1;
+
+            Specialization specialization = new Specialization
+            {
+                Id = specializationId,
+                Name = "doctor",
+                ProcedureSpecializations = new List<ProcedureSpecialization>()
+                {
+                    new ProcedureSpecialization { ProcedureId = 0, SpecializationId = specializationId }
+                }
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(It.Is<int>(specId => specId == specializationId),
+                    It.Is<string>(props => props == includeProperties)))
+                .ReturnsAsync(specialization);
+
+            var result = _fixture.MockService
+                .RemoveProcedureFromSpecialization(specializationId, procedureId);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
+        }
+
+        [Fact]
+        public async Task AddProcedureToSpecialization_whenSpecializationExists()
+        {
+            var specializationId = 2;
+
+            var procedureId = 1;
+
+            var expectedRelationship = new ProcedureSpecialization
+            {
+                SpecializationId = specializationId,
+                ProcedureId = procedureId
+            };
+
+            Specialization specialization = new Specialization
+            {
+                Id = specializationId,
+                Name = "doctor",
+                ProcedureSpecializations = new List<ProcedureSpecialization>()
+                {
+                    new ProcedureSpecialization { ProcedureId = 0, SpecializationId = specializationId }
+                }
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(It.Is<int>(specId => specId == specializationId),
+                    It.Is<string>(props => props == includeProperties)))
+                .ReturnsAsync(specialization);
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.Update(
+                    It.Is<Specialization>(spec => spec == specialization)))
+                .Verifiable();
+
+            await _fixture.MockService.AddProcedureToSpecialization(specializationId, procedureId);
+
+            specialization.ProcedureSpecializations.Should().ContainEquivalentOf(expectedRelationship);
+
             _fixture.MockRepository.Verify(method => method.Update(specialization), Times.Once);
         }
     }
