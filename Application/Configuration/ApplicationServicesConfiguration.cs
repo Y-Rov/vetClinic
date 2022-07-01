@@ -19,6 +19,7 @@ namespace Application.Configuration
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IArticleService, ArticleService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IArticleImageManager, ArticleImageManager>();
             services.AddScoped<IUserProfilePictureService, UserProfilePictureService>();
         }
