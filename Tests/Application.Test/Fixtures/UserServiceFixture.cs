@@ -4,7 +4,6 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
 using Moq;
 
 namespace Application.Test.Fixtures
