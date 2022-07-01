@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.ViewModels.User;
 using Moq;
 using WebApi.AutoMapper.Interface;
@@ -33,6 +34,7 @@ namespace WebApi.Test.Fixtures
             ReadViewModel = new() { Id = Id, FirstName = "Ren", LastName = "Amamiya" };
             CreateViewModel = new() { FirstName = "Ren", LastName = "Amamiya", Password = "test_pass" };
             UpdateViewModel = new() { FirstName = "Ren", LastName = "Amamiya" };
+            CollateParameters = new();
             Users = new List<User>() { User };
             ReadViewModels = new List<UserReadViewModel>() { ReadViewModel };
         }
@@ -49,6 +51,7 @@ namespace WebApi.Test.Fixtures
         public UserReadViewModel ReadViewModel { get; set; }
         public UserCreateViewModel CreateViewModel { get; set; }
         public UserUpdateViewModel UpdateViewModel { get; set; }
+        public CollateParameters CollateParameters { get; set; }
         public IEnumerable<User> Users { get; set; }
         public IEnumerable<UserReadViewModel> ReadViewModels { get; set; }
     }

@@ -31,7 +31,8 @@ namespace Application.Test
                 .ReturnsAsync(_fixture.Users);
 
             // Act
-            var result = await _fixture.MockUserService.GetAllUsersAsync(It.IsAny<int>(), It.IsAny<int>());
+            var result = await _fixture.MockUserService.GetAllUsersAsync(
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
