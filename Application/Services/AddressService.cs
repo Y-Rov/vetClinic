@@ -54,10 +54,6 @@ namespace Application.Services
                 throw new BadRequestException($"User with ID = {newAddress.UserId} has already an address");
             }
 
-            var user = await _userService.GetUserByIdAsync(newAddress.UserId);
-            user.Address = newAddress;
-            newAddress.User = user;
-
             await _addressRepository.InsertAsync(newAddress);
             await _addressRepository.SaveChangesAsync();
             _loggerManager.LogInfo($"Address for user with ID = {newAddress.UserId} was created");
