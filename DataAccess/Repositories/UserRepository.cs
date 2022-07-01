@@ -3,6 +3,7 @@ using Core.Interfaces.Repositories;
 using DataAccess.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace DataAccess.Repositories
@@ -34,13 +35,19 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<User>> GetAllAsync(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            string includeProperties = "")
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
+            int? takeCount = null,
+            int skipCount = 0)
         {
-            var users = await GetQuery(filter, orderBy, includeProperties).ToListAsync();
+            var users = await GetQuery(filter, orderBy, includeProperties, takeCount, skipCount)
+                .ToListAsync();
+
             return users;
         }
 
-        public async Task<User?> GetByIdAsync(int id, string includeProperties = "")
+        public async Task<User?> GetByIdAsync(
+            int id, 
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             var user = await GetQuery(includeProperties: includeProperties)
                 .SingleOrDefaultAsync(u => u.Id == id);
@@ -63,7 +70,9 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<User>> GetByRoleAsync(
             string roleName,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            string includeProperties = "")
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
+            int? takeCount = null,
+            int skipCount = 0)
         {
             var role = await _context.Roles.SingleOrDefaultAsync(r => r.Name == roleName);
 
@@ -71,7 +80,9 @@ namespace DataAccess.Repositories
                 u => u.Id == _context.UserRoles
                     .SingleOrDefault(ur => ur.RoleId == role!.Id && ur.UserId == u.Id)!.UserId,
                 orderBy,
-                includeProperties);
+                includeProperties,
+                takeCount,
+                skipCount);
 
             var users = await usersQuery.ToListAsync();
 
@@ -93,24 +104,31 @@ namespace DataAccess.Repositories
         private IQueryable<User> GetQuery(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            string includeProperties = "")
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
+            int? takeCount = null,
+            int skipCount = 0)
         {
             IQueryable<User> usersQuery = (
                 filter is null
                 ? _userManager.Users
                 : _userManager.Users.Where(filter)
             )
-            .Where(u => u.IsActive);
+            .Where(u => u.IsActive)
+            .Skip(skipCount);
 
-            if (!string.IsNullOrEmpty(includeProperties))
+            if (includeProperties is not null)
             {
-                usersQuery = includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Aggregate(usersQuery, (current, includeProperty) => current.Include(includeProperty));
+                usersQuery = includeProperties(usersQuery);
             }
 
             if (orderBy is not null)
             {
                 usersQuery = orderBy(usersQuery);
+            }
+
+            if (takeCount is not null)
+            {
+                usersQuery = usersQuery.Take(takeCount.Value);
             }
 
             return usersQuery;

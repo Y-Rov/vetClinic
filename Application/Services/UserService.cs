@@ -3,6 +3,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
@@ -55,9 +56,15 @@ namespace Application.Services
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllUsersAsync(int? takeCount, int skipCount = 0)
         {
-            var users = await _userRepository.GetAllAsync(includeProperties: "Address,Portfolio");
+            var users = await _userRepository.GetAllAsync(
+                includeProperties: query => query
+                    .Include(u => u.Address)
+                    .Include(u => u.Portfolio!),
+                takeCount: takeCount,
+                skipCount: skipCount);
+
             _loggerManager.LogInfo("Successfully retrieved all users");
 
             return users;
@@ -67,7 +74,11 @@ namespace Application.Services
         {
             var doctors = await _userRepository.GetByRoleAsync(
                 roleName: "Doctor",
-                includeProperties: "Address,Portfolio,UserSpecializations.Specialization");
+                includeProperties: query => query
+                    .Include(u => u.Address)
+                    .Include(u => u.Portfolio)
+                    .Include(u => u.UserSpecializations)
+                        .ThenInclude(us => us.Specialization!));
 
             if (!string.IsNullOrEmpty(specialization))
             {
@@ -81,7 +92,10 @@ namespace Application.Services
 
         public async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id, "Address,Portfolio");
+            var user = await _userRepository.GetByIdAsync(id, 
+                query => query
+                    .Include(u => u.Address)
+                    .Include(u => u.Portfolio!));
 
             if (user is null)
             {
