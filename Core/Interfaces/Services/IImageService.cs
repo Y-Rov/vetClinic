@@ -11,7 +11,7 @@ public interface IImageService
     /// <param name="folder">Folder on your blob where the image will be uploaded. For example - <b>articles</b> , without slash</param>
     /// <param name="imageFormat">Image format, like <b>png</b></param>
     /// <param name="fileName">Optionally name of the file. If not provided - a file will be named with new guid. Note that <b>fileName</b> be unique</param>
-    /// <example>var resultName = await UploadFromImageAsync(<b><br></br>image: readImage, <br></br>folder: "articles", <br></br>imageFormat: "png", <br></br>fileName: "{firstName}-{email}.{imageFormat}"</b>)</example>
+    /// <example>var resultName = await UploadFromImageAsync(<b><br></br>image: readImage, <br></br>folder: "articles", <br></br>imageFormat: "png", <br></br>fileName: "{firstName}-{email}"</b>)</example>
     /// <returns>A path to the file, including folder, file name and format: <b>$"{folder}/{fileName}.{imageFormat}"</b></returns>
     public Task<string> UploadFromImageAsync(
         Image image, 
@@ -26,7 +26,7 @@ public interface IImageService
     /// <param name="folder">Folder on your blob where the image will be uploaded. For example - <b>articles</b> , without slash</param>
     /// <param name="imageFormat">Image format, like <b>png</b></param>
     /// <param name="fileName">Optionally name of the file. If not provided - a file will be named with new guid. Note that <b>fileName</b> be unique</param>
-    /// <example>var resultName = await UploadFromBase64Async(<b><br></br>base64: "*very large string here*", <br></br>folder: "articles", <br></br>imageFormat: "png", <br></br>fileName: "{firstName}-{email}.{imageFormat}"</b>)</example>
+    /// <example>var resultName = await UploadFromBase64Async(<b><br></br>base64: "*very large string here*", <br></br>folder: "articles", <br></br>imageFormat: "png", <br></br>fileName: "{firstName}-{email}"</b>)</example>
     /// <returns>A path to the file, including folder, file name and format: <b>$"{folder}/{fileName}.{imageFormat}"</b></returns>
     public Task<string> UploadFromBase64Async(
         string base64,
