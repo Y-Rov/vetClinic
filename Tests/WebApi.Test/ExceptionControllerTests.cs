@@ -36,10 +36,11 @@ namespace WebApi.Test
             // Act
 
             var result = await _exceptionControllerFixture.MockExceptionController.GetAsync(ExceptionControllerFixture.pagingParameters);
-
+            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionEntityReadViewModel>;
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, ExceptionControllerFixture._pagedListViewModelsExceptions);
+            Assert.IsType<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>>(result);
+            Assert.NotEmpty(readViewModels);
         }
 
         [Fact]
@@ -52,10 +53,11 @@ namespace WebApi.Test
 
             // Act
             var result = await _exceptionControllerFixture.MockExceptionController.GetAsync(ExceptionControllerFixture._id);
-
+            var exceptions = (result.Result as OkObjectResult)!.Value as ExceptionEntity;
             // Assert
             Assert.NotNull(result);
             Assert.Equal((result.Result as OkObjectResult)!.Value, ExceptionControllerFixture._exceptionEntity);
+            Assert.NotNull(exceptions);
         }
 
         [Fact]
@@ -71,10 +73,12 @@ namespace WebApi.Test
 
             // Act
             var result = await _exceptionControllerFixture.MockExceptionController.GetStatsAsync(ExceptionControllerFixture.pagingParameters);
+            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionStats>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, ExceptionControllerFixture._pagedListExceptionStats);
+            Assert.IsType<ActionResult<IEnumerable<ExceptionStats>>>(result);
+            Assert.NotEmpty(readViewModels);
         }
 
         [Fact]
@@ -94,10 +98,12 @@ namespace WebApi.Test
 
             // Act
             var result = await _exceptionControllerFixture.MockExceptionController.GetTodayAsync(ExceptionControllerFixture.pagingParameters);
+            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionEntityReadViewModel>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, ExceptionControllerFixture._pagedListViewModelsExceptions);
+            Assert.IsType<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>>(result);
+            Assert.NotEmpty(readViewModels);
         }
 
         [Fact]
@@ -111,12 +117,13 @@ namespace WebApi.Test
             _exceptionControllerFixture.MockExceptionController.ControllerContext = new ControllerContext();
             _exceptionControllerFixture.MockExceptionController.ControllerContext.HttpContext = new DefaultHttpContext();
 
-            // Act
             var result = await _exceptionControllerFixture.MockExceptionController.GetTodayStatsAsync(ExceptionControllerFixture.pagingParameters);
+            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionStats>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, ExceptionControllerFixture._pagedListExceptionStats);
+            Assert.IsType<ActionResult<IEnumerable<ExceptionStats>>>(result);
+            Assert.NotEmpty(readViewModels);
         }
     }
 }

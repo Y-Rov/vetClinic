@@ -31,7 +31,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptions);
+            Assert.NotEmpty(result);
+            Assert.IsType<PagedList<ExceptionEntity>>(result);
         }
 
         [Fact]
@@ -47,7 +48,7 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._exceptionEntity);
+            Assert.IsType<ExceptionEntity>(result);
         }
 
         [Fact]
@@ -78,7 +79,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptions);
+            Assert.NotEmpty(result);
+            Assert.IsType<PagedList<ExceptionEntity>>(result);
 
             var resultAndExpect = result!.Zip(ExceptionServiceFixture._exceptionEntities, (result, expect) => new { Result = result, Expect = expect });
             foreach (var item in resultAndExpect)
@@ -100,7 +102,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptionStats);
+            Assert.NotEmpty(result);
+            Assert.IsType<PagedList<ExceptionStats>>(result);
         }
 
         [Fact]
@@ -116,7 +119,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, ExceptionServiceFixture._pagedListExceptionStats);
+            Assert.NotEmpty(result);
+            Assert.IsType<PagedList<ExceptionStats>>(result);
         }
     }
 }
