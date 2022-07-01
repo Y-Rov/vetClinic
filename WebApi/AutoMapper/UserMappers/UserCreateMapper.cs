@@ -17,7 +17,7 @@ namespace WebApi.AutoMapper.UserMappers
 
         public User Map(UserCreateViewModel source)
         {
-            string profilePicture = GetProfilePicture(source).Result;
+            string? profilePicture = GetProfilePicture(source).Result;
 
             return new User()
             {
@@ -31,7 +31,7 @@ namespace WebApi.AutoMapper.UserMappers
             };
         }
 
-        private async Task<string> GetProfilePicture(UserCreateViewModel createViewModel)
+        private async Task<string?> GetProfilePicture(UserCreateViewModel createViewModel)
         {
             byte[]? bytes = Convert.FromBase64String(createViewModel.ProfilePicture);
             MemoryStream ms = new(bytes);

@@ -20,7 +20,7 @@ namespace WebApi.Test
         {
             // Arrange
             _fixture.MockUserService
-                .Setup(s => s.GetAllUsersAsync())
+                .Setup(s => s.GetAllUsersAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
             _fixture.MockReadEnumerableMapper
@@ -28,7 +28,7 @@ namespace WebApi.Test
                 .Returns(_fixture.ReadViewModels);
 
             // Act
-            var result = await _fixture.MockUserController.GetAsync();
+            var result = await _fixture.MockUserController.GetAsync(It.IsAny<int>(), It.IsAny<int>());
             var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<UserReadViewModel>;
 
             // Assert

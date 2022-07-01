@@ -18,28 +18,45 @@ namespace Application.Test.Fixtures
             MockUserService = fixture.Freeze<UserService>();
             MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
-            MockUserProfilePictureService = fixture.Freeze<Mock<IUserProfilePictureService>>();
 
             MockUserService = new UserService(
                 MockUserRepository.Object,
-                MockLoggerManager.Object,
-                MockUserProfilePictureService.Object);
+                MockLoggerManager.Object);
 
             Id = 1;
             Role = "Client";
             Passowrd = "test_pass";
-            User = new() { Id = Id, FirstName = "Ren", LastName = "Amamiya" };
+            SpecializationName = "test_spec";
+            Specialization = new() { Name = SpecializationName };
+
+            UserSpecializations = new List<UserSpecialization>()
+            {
+                new UserSpecialization()
+                {
+                    Specialization = Specialization
+                }
+            };
+
+            User = new() {
+                Id = Id,
+                FirstName = "Ren",
+                LastName = "Amamiya",
+                UserSpecializations = UserSpecializations
+            };
+
             Users = new List<User>() { User };
         }
 
         public UserService MockUserService { get; }
         public Mock<IUserRepository> MockUserRepository { get; }
         public Mock<ILoggerManager> MockLoggerManager { get; }
-        public Mock<IUserProfilePictureService> MockUserProfilePictureService { get; set; }
 
         public int Id { get; set; }
         public string Role { get; set; }
         public string Passowrd { get; set; }
+        public string SpecializationName { get; set; }
+        public Specialization Specialization { get; set; }
+        public IEnumerable<UserSpecialization> UserSpecializations { get; set; }
         public User User { get; set; }
         public IEnumerable<User> Users { get; set; }
     }

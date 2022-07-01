@@ -2,6 +2,7 @@
 using Core.Entities;
 using Core.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System.Linq.Expressions;
 
@@ -24,11 +25,13 @@ namespace Application.Test
                 .Setup(r => r.GetAllAsync(
                     It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
-                    It.IsAny<string>()))
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
             // Act
-            var result = await _fixture.MockUserService.GetAllUsersAsync();
+            var result = await _fixture.MockUserService.GetAllUsersAsync(It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
@@ -41,7 +44,9 @@ namespace Application.Test
         {
             // Arrange
             _fixture.MockUserRepository
-                .Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(r => r.GetByIdAsync(
+                    It.IsAny<int>(), 
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(_fixture.User);
 
             // Act
@@ -57,7 +62,9 @@ namespace Application.Test
         {
             // Arrange
             _fixture.MockUserRepository
-                .Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(r => r.GetByIdAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .Throws<NotFoundException>();
 
             // Act
@@ -74,13 +81,19 @@ namespace Application.Test
             // Arrange
             _fixture.MockUserRepository
                 .Setup(r => r.GetByRoleAsync(
-                    It.IsAny<string>(), 
-                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(), 
-                    It.IsAny<string>()))
+                    It.IsAny<string>(),
+                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
+            _fixture.MockUserRepository
+                .Setup(r => r.FilterBySpecialization(It.IsAny<IEnumerable<User>>(), It.IsAny<string>()))
+                .Returns(_fixture.Users);
+
             // Act
-            var result = await _fixture.MockUserService.GetDoctorsAsync();
+            var result = await _fixture.MockUserService.GetDoctorsAsync(_fixture.SpecializationName);
 
             // Assert
             Assert.NotNull(result);

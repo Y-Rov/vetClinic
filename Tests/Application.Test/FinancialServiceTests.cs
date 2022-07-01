@@ -1,6 +1,7 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System.Linq.Expressions;
 
@@ -459,7 +460,9 @@ namespace Application.Test
                 .Setup(repo => repo.GetAllAsync(
                     It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
-                    It.IsAny<string>()))
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(listEmployees);
 
             //Act
