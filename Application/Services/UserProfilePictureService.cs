@@ -33,11 +33,14 @@ namespace Application.Services
                 await DeleteAsync(fileName);
             }
 
-            MemoryStream ms = new();
-            image.Save(ms, image.RawFormat);
-            ms.Position = 0;
+            using (MemoryStream ms = new())
+            {
+                image.Save(ms, image.RawFormat);
+                ms.Position = 0;
 
-            await blobClient.UploadAsync(ms);
+                await blobClient.UploadAsync(ms);
+            }
+
             fileName = $"{_configuration["Azure:ContainerLink"]}/{_configuration["Azure:ContainerName"]}/{fileName}";
 
             return fileName;
