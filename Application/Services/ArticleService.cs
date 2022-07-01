@@ -14,19 +14,19 @@ public class ArticleService : IArticleService
 {
     private readonly IArticleRepository _articleRepository;
     private readonly ILoggerManager _loggerManager;
-    private readonly IArticleImageManager _imageManager;
     private readonly IConfiguration _configuration;
+    private readonly IImageService _imageService;
 
     public ArticleService(
         IArticleRepository articleRepository,
         ILoggerManager loggerManager,
-        IArticleImageManager imageManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IImageService imageService)
     {
         _articleRepository = articleRepository;
         _loggerManager = loggerManager;
-        _imageManager = imageManager;
         _configuration = configuration;
+        _imageService = imageService;
     }
 
     private async Task<string> UploadImages(string body)
@@ -49,9 +49,11 @@ public class ArticleService : IArticleService
                 startIndex: base64StartIndex + 1, //+1 for separating comma: ...base64,iVBORw0KG...
                 length: closingQuoteIndex - base64StartIndex - 1); //-1 for the closing " of the tag
 
-            var image = LoadImage(base64Str);
-            var fileName = await _imageManager.UploadAsync(image, format);
-            
+            var fileName = await _imageService.UploadFromBase64Async(
+                base64: base64Str,
+                folder: "articles",
+                imageFormat: format);
+
             var link = _configuration["Azure:ContainerLink"] + "/" + _configuration["Azure:ContainerName"] + "/" + fileName;
 
             body = body.Remove(
@@ -115,9 +117,11 @@ public class ArticleService : IArticleService
             int start = body.LastIndexOf("/", end, StringComparison.Ordinal) + 1;
             var fileName = body.Substring(start, end - start);
 
-            await _imageManager.DeleteAsync(fileName);
+            await _imageService.DeleteAsync( 
+                imageName: fileName,
+                folder: "articles");
 
-            body = body.Remove( nameIndex , end - nameIndex);
+            body = body.Remove(nameIndex , end - nameIndex);
         }
     }
 
