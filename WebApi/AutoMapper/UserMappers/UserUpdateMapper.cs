@@ -43,7 +43,7 @@ namespace WebApi.AutoMapper.UserMappers
             MemoryStream ms = new(bytes);
             var image = Image.FromStream(ms);
 
-            var profilePictureLink = await _userProfilePictureService.UploadAsync(image, user.FirstName!, user.Email, "png");
+            var profilePictureLink = await _userProfilePictureService.UploadAsync(image, user.Email, "jpg");
 
             return profilePictureLink;
         }

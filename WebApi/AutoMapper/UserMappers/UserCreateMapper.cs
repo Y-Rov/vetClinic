@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.User;
 using System.Drawing;
@@ -10,14 +9,10 @@ namespace WebApi.AutoMapper.UserMappers
     public class UserCreateMapper : IViewModelMapper<UserCreateViewModel, User>
     {
         private readonly IUserProfilePictureService _userProfilePictureService;
-        private readonly BlobServiceClient _blobServiceClient;
 
-        public UserCreateMapper(
-            IUserProfilePictureService userProfilePictureService,
-            BlobServiceClient blobServiceClient)
+        public UserCreateMapper(IUserProfilePictureService userProfilePictureService)
         {
             _userProfilePictureService = userProfilePictureService;
-            _blobServiceClient = blobServiceClient;
         }
 
         public User Map(UserCreateViewModel source)
@@ -42,8 +37,7 @@ namespace WebApi.AutoMapper.UserMappers
             MemoryStream ms = new(bytes);
             var image = Image.FromStream(ms);
 
-            var profilePictureLink = await _userProfilePictureService.UploadAsync(
-                image, createViewModel.FirstName!, createViewModel.Email!, "png");
+            var profilePictureLink = await _userProfilePictureService.UploadAsync(image, createViewModel.Email!, "jpg");
 
             return profilePictureLink;
         }

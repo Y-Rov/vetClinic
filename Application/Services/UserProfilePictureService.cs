@@ -20,13 +20,18 @@ namespace Application.Services
 
         public async Task<string> UploadAsync( 
             Image image,
-            string firstName,
             string email,
             string imageFormat)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
-            var fileName = $"profile-pictures/{firstName}-{email}.{imageFormat}";
+            var fileName = $"profile-pictures/{email}.{imageFormat}";
+
             var blobClient = blobContainer.GetBlobClient(fileName);
+
+            if (await blobClient.ExistsAsync())
+            {
+                await DeleteAsync(fileName);
+            }
 
             MemoryStream ms = new();
             image.Save(ms, image.RawFormat);
@@ -41,7 +46,8 @@ namespace Application.Services
         public async Task DeleteAsync(string image)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient("vet-clinic");
-            var blobClient = blobContainer.GetBlobClient($"profile-pictures/{image}");
+            var blobClient = blobContainer.GetBlobClient(image);
+
             await blobClient.DeleteAsync();
         }
     }

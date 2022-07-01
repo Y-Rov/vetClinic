@@ -6,8 +6,7 @@ namespace Core.Interfaces.Services
     public interface IUserProfilePictureService
     {
         public Task<string> UploadAsync(
-            Image image, 
-            string firstName,
+            Image image,
             string email,
             string imageFormat);
 
