@@ -41,6 +41,8 @@ namespace WebApi.Test
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.IsType<List<AddressCreateReadViewModel>>(result);
+
+            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]
@@ -61,7 +63,7 @@ namespace WebApi.Test
 
             // Assert
             _fixture.MockAddressService
-                .Verify(service => service.GetAllAddressesAsync(), Times.Exactly(2));
+                .Verify(service => service.GetAllAddressesAsync(), Times.Once);
 
             _fixture.MockAddressReadEnumerableViewModelMapper
                 .Verify();
@@ -69,6 +71,8 @@ namespace WebApi.Test
             Assert.NotNull(result);
             Assert.Empty(result);
             Assert.IsType<List<AddressCreateReadViewModel>>(result);
+
+            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]
@@ -89,14 +93,15 @@ namespace WebApi.Test
 
             // Assert
             _fixture.MockAddressService
-                .Verify(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)), Times.Exactly(2));
+                .Verify(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)), Times.Once);
 
             _fixture.MockAddressReadViewModelMapper
                 .Verify();
 
             Assert.NotNull(result);
             Assert.IsType<AddressBaseViewModel>(result);
-            Assert.Equal(_fixture.AddressBaseViewModelWithApartmentNumber, result);
+
+            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]
@@ -130,14 +135,14 @@ namespace WebApi.Test
         public async Task UpdateAsync_WhenAddressBaseViewModelIsCorrect_ThenNoContentResultReturned()
         {
             // Arrange
-            _fixture.MockAddressService
-                .Setup(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)))
-                .ReturnsAsync(_fixture.AddressWithApartmentNumber);
-
             _fixture.MockAddressUpdateMapper
                 .Setup(mapper => mapper.Map(
                     It.IsAny<AddressBaseViewModel>(),
                     It.IsAny<Address>()));
+
+            _fixture.MockAddressService
+                .Setup(service => service.UpdateAddressAsync(It.IsAny<Address>()))
+                .Returns(Task.FromResult<object?>(null));
 
             // Act
             var result = await _fixture.MockAddressController.UpdateAsync(_fixture.UserId, _fixture.AddressBaseViewModelWithApartmentNumber);
@@ -146,11 +151,16 @@ namespace WebApi.Test
             _fixture.MockAddressService
                 .Verify(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)), Times.Once);
 
+            _fixture.MockAddressService
+                .Verify(service => service.UpdateAddressAsync(It.IsAny<Address>()), Times.Once);
+
             _fixture.MockAddressCreateMapper
                 .Verify();
 
             Assert.NotNull(result);
             Assert.IsType<NoContentResult>(result);
+            
+            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]

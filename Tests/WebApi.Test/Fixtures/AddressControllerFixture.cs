@@ -49,10 +49,10 @@ namespace WebApi.Test.Fixtures
         }
 
         public int UserId { get; }
-        public Address AddressWithApartmentNumber { get; set; }
-        public AddressBaseViewModel AddressBaseViewModelWithApartmentNumber { get; set; }
-        public AddressCreateReadViewModel AddressCreateReadViewModelWithApartmentNumber { get; set; }
-        public IEnumerable<Address> Addresses { get; set; }
-        public IEnumerable<AddressCreateReadViewModel> AddressCreateReadViewModels { get; set; }
+        public Address AddressWithApartmentNumber { get; }
+        public AddressBaseViewModel AddressBaseViewModelWithApartmentNumber { get; }
+        public AddressCreateReadViewModel AddressCreateReadViewModelWithApartmentNumber { get; }
+        public IEnumerable<Address> Addresses { get; }
+        public IEnumerable<AddressCreateReadViewModel> AddressCreateReadViewModels { get; }
     }
 }
