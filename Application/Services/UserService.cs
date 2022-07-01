@@ -4,6 +4,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -56,9 +57,12 @@ namespace Application.Services
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync(int? takeCount, int skipCount = 0)
+        public async Task<IEnumerable<User>> GetAllUsersAsync(string? filterParam, int? takeCount, int skipCount = 0)
         {
+            var filterQuery = GetFilterQuery(filterParam);
+
             var users = await _userRepository.GetAllAsync(
+                filter: filterQuery,
                 includeProperties: query => query
                     .Include(u => u.Address)
                     .Include(u => u.Portfolio!),
@@ -119,6 +123,23 @@ namespace Application.Services
             }
 
             _loggerManager.LogInfo($"Successfully updated the user with id {user.Id}");
+        }
+
+        private Expression<Func<User, bool>>? GetFilterQuery(string? filterParam)
+        {
+            Expression<Func<User, bool>>? filterQuery = null;
+
+            if (filterParam is not null)
+            {
+                string formatedFilter = filterParam.Trim().ToLower();
+
+                filterQuery = u => u.FirstName!.ToLower().Contains(formatedFilter)
+                    || u.LastName!.ToLower().Contains(formatedFilter)
+                    || u.Email.ToLower().Contains(formatedFilter)
+                    || u.PhoneNumber.Contains(formatedFilter);
+            }
+
+            return filterQuery;
         }
     }
 }
