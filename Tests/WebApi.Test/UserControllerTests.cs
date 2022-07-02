@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Models;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -20,7 +21,7 @@ namespace WebApi.Test
         {
             // Arrange
             _fixture.MockUserService
-                .Setup(s => s.GetAllUsersAsync())
+                .Setup(s => s.GetAllUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
             _fixture.MockReadEnumerableMapper
@@ -28,7 +29,7 @@ namespace WebApi.Test
                 .Returns(_fixture.ReadViewModels);
 
             // Act
-            var result = await _fixture.MockUserController.GetAsync();
+            var result = await _fixture.MockUserController.GetAsync(_fixture.CollateParameters);
             var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<UserReadViewModel>;
 
             // Assert
