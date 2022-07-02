@@ -9,6 +9,7 @@ namespace Application.Services
     {
         private readonly IConfiguration _configuration;
         private readonly BlobServiceClient _blobServiceClient;
+        private readonly string _containerName;
 
         public UserProfilePictureService(
             IConfiguration configuration,
@@ -16,6 +17,7 @@ namespace Application.Services
         {
             _blobServiceClient = blobServiceClient;
             _configuration = configuration;
+            _containerName = _configuration["Azure:ContainerName"];
         }
 
         public async Task<string> UploadAsync( 
@@ -23,7 +25,7 @@ namespace Application.Services
             string email,
             string imageFormat)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
             var fileName = $"profile-pictures/{email}.{imageFormat}";
 
             var blobClient = blobContainer.GetBlobClient(fileName);
@@ -41,15 +43,21 @@ namespace Application.Services
                 await blobClient.UploadAsync(ms);
             }
 
-            fileName = $"{_configuration["Azure:ContainerLink"]}/{_configuration["Azure:ContainerName"]}/{fileName}";
+            fileName = $"{_configuration["Azure:ContainerLink"]}/{_containerName}/{fileName}";
 
             return fileName;
         }
 
-        public async Task DeleteAsync(string image)
+        public async Task DeleteAsync(string imageLink)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("vet-clinic");
-            var blobClient = blobContainer.GetBlobClient(image);
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+            if (imageLink.Contains(_containerName))
+            {
+                imageLink = imageLink.Split(_containerName)[1];
+            }
+
+            var blobClient = blobContainer.GetBlobClient(imageLink);
 
             await blobClient.DeleteAsync();
         }

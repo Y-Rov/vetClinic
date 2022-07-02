@@ -10,6 +10,6 @@ namespace Core.Interfaces.Services
             string email,
             string imageFormat);
 
-        public Task DeleteAsync(string image);
+        public Task DeleteAsync(string imageLink);
     }
 }

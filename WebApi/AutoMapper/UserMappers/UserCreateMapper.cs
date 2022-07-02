@@ -34,12 +34,14 @@ namespace WebApi.AutoMapper.UserMappers
         private async Task<string?> GetProfilePicture(UserCreateViewModel createViewModel)
         {
             byte[]? bytes = Convert.FromBase64String(createViewModel.ProfilePicture);
-            MemoryStream ms = new(bytes);
-            var image = Image.FromStream(ms);
 
-            var profilePictureLink = await _userProfilePictureService.UploadAsync(image, createViewModel.Email!, "jpg");
+            using (MemoryStream ms = new(bytes))
+            {
+                var image = Image.FromStream(ms);
+                var profilePictureLink = await _userProfilePictureService.UploadAsync(image, createViewModel.Email!, "jpg");
 
-            return profilePictureLink;
+                return profilePictureLink;
+            }
         }
     }
 }

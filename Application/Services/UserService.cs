@@ -12,13 +12,16 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _loggerManager;
+        private readonly IUserProfilePictureService _userProfilePictureService;
 
         public UserService(
             IUserRepository userRepository, 
-            ILoggerManager loggerManager)
+            ILoggerManager loggerManager,
+            IUserProfilePictureService userProfilePictureService)
         {
             _userRepository = userRepository;
             _loggerManager = loggerManager;
+            _userProfilePictureService = userProfilePictureService;
         }
 
         public async Task AssignRoleAsync(User user, string role)
@@ -53,6 +56,8 @@ namespace Application.Services
         {
             _userRepository.Delete(user);
             await _userRepository.UpdateAsync(user);
+
+            await _userProfilePictureService.DeleteAsync(user.ProfilePicture!);
 
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
