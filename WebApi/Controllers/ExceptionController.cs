@@ -1,8 +1,8 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.Pagginator;
-using Core.Pagginator.Parameters;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace WebApi.Controllers
 {
     [Route("api/exceptions")]
     [ApiController]
-   // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class ExceptionController : ControllerBase
     {
         private readonly IExceptionEntityService _exceptionEntityService;
@@ -74,6 +74,7 @@ namespace WebApi.Controllers
             return Ok(exceptionsStats);
 
         }
+
         private void SentPagginationInfo<T>(PagedList<T> paggedList)
         {
             var metadata = new

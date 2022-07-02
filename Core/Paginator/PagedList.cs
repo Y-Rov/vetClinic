@@ -1,4 +1,4 @@
-﻿namespace Core.Pagginator
+﻿namespace Core.Paginator
 {
     public class PagedList<T> : List<T>
     {
