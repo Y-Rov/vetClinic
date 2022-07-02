@@ -136,7 +136,7 @@ public class ArticleService : IArticleService
         catch (RequestFailedException)
         {
             _loggerManager.LogWarn("Error while uploading files to the blob");
-            throw new NotFoundException("Error while uploading files to the blob");
+            throw new BadRequestException("Error while uploading files to the blob");
         }
         updatingArticle.Published = article.Published;
         updatingArticle.Edited = true;
