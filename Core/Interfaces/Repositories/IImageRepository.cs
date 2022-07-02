@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace Core.Interfaces.Services;
+namespace Core.Interfaces.Repositories;
 
-public interface IImageService
+public interface IImageRepository
 {
     /// <summary>
     /// Uploads image to the Azure blob storage
