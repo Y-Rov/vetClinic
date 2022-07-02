@@ -253,7 +253,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<FinancialStatementList> GetFinancialStatement(Date date)
+        public async Task<IEnumerable<FinancialStatement>> GetFinancialStatement(Date date)
         {
             var countMonth = GetMonthsBetween(date.startDate, date.endDate);
             var finStatList = new List<FinancialStatement>();
@@ -272,7 +272,7 @@ namespace Application.Services
                 Period = date,
                 StatementsForEachMonth = finStatList
             };
-            return financialStatementList;
+            return finStatList;
         }
     }
     
