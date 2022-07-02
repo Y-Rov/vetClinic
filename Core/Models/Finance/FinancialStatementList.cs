@@ -2,8 +2,8 @@
 {
     public class FinancialStatementList
     {
-        public Date Period = new Date();
-        public IEnumerable<FinancialStatement> StatementsForEachMonth = new List<FinancialStatement>();
+        public Date Period { get; set; } = new Date();
+        public IList<FinancialStatement> StatementsForEachMonth { get; set; } = new List<FinancialStatement>();
     }
 }
 

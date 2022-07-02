@@ -2,7 +2,7 @@
 {
     public class FinancialStatementViewModel
     {
-        public DateViewModel Period = new DateViewModel();
-        public IEnumerable<FinancialStatementForMonthViewModel> StatementsForEachMonth = new List<FinancialStatementForMonthViewModel>();
+        public DateViewModel Period { get; set; }
+        public IEnumerable<FinancialStatementForMonthViewModel> StatementsForEachMonth { get; set; } = new List<FinancialStatementForMonthViewModel>();
     }
 }

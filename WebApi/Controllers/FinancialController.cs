@@ -96,7 +96,7 @@ namespace WebApi.Controllers
             await _financialService.UpdateSalaryAsync(writeSalary);
         }
 
-        [HttpPut("/api/financialStatements")]
+        [HttpPost("/api/financialStatements")]
         public async Task<FinancialStatementViewModel> GetFinancialStatementAsync(DateViewModel dateViewModel)
         {
             var date = _date.Map(dateViewModel);

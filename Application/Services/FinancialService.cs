@@ -134,12 +134,11 @@ namespace Application.Services
             return result;
         }
 
-        private async Task<FinancialStatement> GetFinancialStatementOneMonth(Date _date)
+        private async Task<FinancialStatement> GetFinancialStatementOneMonth(Date date)
         {
             decimal procent = 0.1M;
             decimal allIncome =0;
             decimal allExpence = 0;
-            var date = _date;
 
             //Dictionary<EmployeeId, EmployeePremiums>
             IDictionary<int, decimal> premiums = new Dictionary<int,decimal>();
@@ -226,8 +225,9 @@ namespace Application.Services
             }
 
             var financialStatement = new FinancialStatement()
-            {
-                Period = date,
+            { 
+                Month = date.startDate.ToString("MMMM yyyy"),
+                //Period = date,
                 expences = _expences,
                 incomes = _incomes,
                 TotalExpences = allExpence,
@@ -262,7 +262,7 @@ namespace Application.Services
             for(int i = 0; i < countMonth; i++)
             {
                 monthDate.startDate = date.startDate.AddMonths(i);
-                monthDate.endDate = monthDate.startDate.AddMonths(1);
+                monthDate.endDate = date.startDate.AddMonths(i+1);
 
                 finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
             }
