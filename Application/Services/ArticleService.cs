@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Azure;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
@@ -101,21 +102,12 @@ public class ArticleService : IArticleService
         }
         return body;
     }
-    
-    private Image LoadImage(string base64String)
-    {
-        var bytes = Convert.FromBase64String(base64String);
 
-        var ms = new MemoryStream(bytes);
-        var image = Image.FromStream(ms);
-        return image;
-    }
-    
     public async Task CreateArticleAsync(Article article)
     {
-        article.Body = await UploadImages(article.Body!);
         try
         {
+            article.Body = await UploadImages(article.Body!);
             await _articleRepository.InsertAsync(article);
             await _articleRepository.SaveChangesAsync();
         }
@@ -123,6 +115,11 @@ public class ArticleService : IArticleService
         {
             _loggerManager.LogWarn($"user with id {article.AuthorId} not found");
             throw new NotFoundException($"user with id {article.AuthorId} not found");
+        }
+        catch (RequestFailedException)
+        {
+            _loggerManager.LogWarn("Error while uploading files to the blob");
+            throw new NotFoundException("Error while uploading files to the blob");
         }
         
         _loggerManager.LogInfo($"Created new article with title {article.Title}");
@@ -132,7 +129,15 @@ public class ArticleService : IArticleService
     {
         var updatingArticle = await GetByIdAsync(article.Id);
         updatingArticle.Title = article.Title;
-        updatingArticle.Body = await UploadImages(article.Body);
+        try
+        {
+            updatingArticle.Body = await UploadImages(article.Body);
+        }
+        catch (RequestFailedException)
+        {
+            _loggerManager.LogWarn("Error while uploading files to the blob");
+            throw new NotFoundException("Error while uploading files to the blob");
+        }
         updatingArticle.Published = article.Published;
         updatingArticle.Edited = true;
 
@@ -175,7 +180,15 @@ public class ArticleService : IArticleService
     {
         var articleToRemove = await GetByIdAsync(articleId);
 
-        articleToRemove.Body = await DeleteImages(articleToRemove.Body);
+        try
+        {
+            articleToRemove.Body = await DeleteImages(articleToRemove.Body);
+        }
+        catch (RequestFailedException)
+        {
+            _loggerManager.LogWarn("Error while deleting files from the blob");
+            throw new NotFoundException("Error while deleting files from the blob");
+        }
         
         _articleRepository.Delete(articleToRemove);
         await _articleRepository.SaveChangesAsync();
