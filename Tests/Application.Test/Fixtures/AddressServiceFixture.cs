@@ -15,30 +15,24 @@ namespace Application.Test.Fixtures
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            MockUserService = fixture.Freeze<Mock<IUserService>>();
             MockAddressRepository = fixture.Freeze<Mock<IAddressRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
 
             MockAddressService = new AddressService(
                 MockAddressRepository.Object,
-                MockUserService.Object,
                 MockLoggerManager.Object);
 
             WrongUserId = 4;
-            TestAddress = new Address() { UserId = 1, City = "Ivano-Frankisk", Street = "Malanyuka", House = "14" };
-            TestAddresses = new List<Address>() { TestAddress };
-            TestUser = new User() { Address = null };
+            TestAddress = new Address { UserId = 1, City = "Ivano-Frankisk", Street = "Malanyuka", House = "14" };
+            TestListOfAddresses = new List<Address> { TestAddress };
         }
 
         public IAddressService MockAddressService { get; }
-        public Mock<IUserService> MockUserService { get; }
         public Mock<IAddressRepository> MockAddressRepository { get; }
         public Mock<ILoggerManager> MockLoggerManager { get; }
 
         public int WrongUserId { get; }
         public Address TestAddress { get; }
-        public IList<Address> TestAddresses { get; }
-        public User TestUser { get; }
-
+        public IList<Address> TestListOfAddresses { get; }
     }
 }

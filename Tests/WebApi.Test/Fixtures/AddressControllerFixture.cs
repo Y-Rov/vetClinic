@@ -13,13 +13,6 @@ namespace WebApi.Test.Fixtures
     {
         public AddressControllerFixture()
         {
-            UserId = 1;
-            AddressWithApartmentNumber = new Address { UserId = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
-            AddressBaseViewModelWithApartmentNumber = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
-            AddressCreateReadViewModelWithApartmentNumber = new AddressCreateReadViewModel { Id = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
-            Addresses = new List<Address> { AddressWithApartmentNumber };
-            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> { AddressCreateReadViewModelWithApartmentNumber, };
-
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
             MockAddressService = fixture.Freeze<Mock<IAddressService>>();
@@ -36,6 +29,13 @@ namespace WebApi.Test.Fixtures
                 MockAddressUpdateMapper.Object,
                 MockAddressReadEnumerableViewModelMapper.Object
                 );
+
+            UserId = 1;
+            AddressWithApartmentNumber = new Address { UserId = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
+            AddressBaseViewModelWithApartmentNumber = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
+            AddressCreateReadViewModelWithApartmentNumber = new AddressCreateReadViewModel { Id = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
+            Addresses = new List<Address> { AddressWithApartmentNumber };
+            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> { AddressCreateReadViewModelWithApartmentNumber, };
         }
 
         public AddressController MockAddressController { get; }

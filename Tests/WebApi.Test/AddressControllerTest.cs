@@ -40,7 +40,7 @@ namespace WebApi.Test
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.IsType<List<AddressCreateReadViewModel>>(result);
+            Assert.IsAssignableFrom<IEnumerable<AddressCreateReadViewModel>>(result);
 
             _fixture.MockAddressService.ResetCalls();
         }
@@ -70,7 +70,7 @@ namespace WebApi.Test
 
             Assert.NotNull(result);
             Assert.Empty(result);
-            Assert.IsType<List<AddressCreateReadViewModel>>(result);
+            Assert.IsAssignableFrom<IEnumerable<AddressCreateReadViewModel>>(result);
 
             _fixture.MockAddressService.ResetCalls();
         }
@@ -80,7 +80,7 @@ namespace WebApi.Test
         {
             // Arrange
             _fixture.MockAddressService
-                .Setup(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)))
+                .Setup(service => service.GetAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)))
                 .ReturnsAsync(_fixture.AddressWithApartmentNumber);
 
             _fixture.MockAddressReadViewModelMapper
@@ -93,7 +93,7 @@ namespace WebApi.Test
 
             // Assert
             _fixture.MockAddressService
-                .Verify(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)), Times.Once);
+                .Verify(service => service.GetAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)), Times.Once);
 
             _fixture.MockAddressReadViewModelMapper
                 .Verify();
@@ -105,7 +105,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task CreateAsync_WhenAddressCreateReadViewModelIsCorrect_ThenNoContentResultReturned()
+        public async Task CreateAsync_WhenAddressCreateReadViewModelIsCorrect_ThenNoContentResultIsReturned()
         {
             // Arrange
             _fixture.MockAddressCreateMapper
@@ -132,9 +132,13 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task UpdateAsync_WhenAddressBaseViewModelIsCorrect_ThenNoContentResultReturned()
+        public async Task UpdateAsync_WhenAddressBaseViewModelIsCorrect_ThenNoContentResultIsReturned()
         {
             // Arrange
+            _fixture.MockAddressService
+                .Setup(service => service.GetAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)))
+                .ReturnsAsync(_fixture.AddressWithApartmentNumber);
+
             _fixture.MockAddressUpdateMapper
                 .Setup(mapper => mapper.Map(
                     It.IsAny<AddressBaseViewModel>(),
@@ -149,7 +153,7 @@ namespace WebApi.Test
 
             // Assert
             _fixture.MockAddressService
-                .Verify(service => service.GetAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)), Times.Once);
+                .Verify(service => service.GetAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)), Times.Once);
 
             _fixture.MockAddressService
                 .Verify(service => service.UpdateAddressAsync(It.IsAny<Address>()), Times.Once);
@@ -164,11 +168,11 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenUserIdIsCorrect_ThenNoContentResultReturned()
+        public async Task DeleteAsync_WhenUserIdIsCorrect_ThenNoContentResultIsReturned()
         {
             // Arrange
             _fixture.MockAddressService
-                .Setup(service => service.DeleteAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)))
+                .Setup(service => service.DeleteAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)))
                 .Returns(Task.FromResult<object?>(null));
 
             // Act
@@ -176,7 +180,7 @@ namespace WebApi.Test
 
             // Assert
             _fixture.MockAddressService
-                .Verify(service => service.DeleteAddressByUserIdAsync(It.IsInRange(1, int.MaxValue, Moq.Range.Inclusive)), Times.Once);
+                .Verify(service => service.DeleteAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)), Times.Once);
 
             Assert.NotNull(result);
             Assert.IsType<NoContentResult>(result);

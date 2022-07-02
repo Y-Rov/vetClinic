@@ -9,16 +9,13 @@ namespace Application.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
-        private readonly IUserService _userService;
         private readonly ILoggerManager _loggerManager;
 
         public AddressService(
             IAddressRepository addressRepository,
-            IUserService userService,
             ILoggerManager loggerManager)
         {
             _addressRepository = addressRepository;
-            _userService = userService;
             _loggerManager = loggerManager;
         }
 
