@@ -33,7 +33,17 @@ namespace WebApi.AutoMapper.UserMappers
 
         private async Task<string?> GetProfilePicture(UserCreateViewModel createViewModel)
         {
-            byte[]? bytes = Convert.FromBase64String(createViewModel.ProfilePicture);
+            byte[]? bytes;
+
+            if (createViewModel.ProfilePicture is not null)
+            {
+                bytes = Convert.FromBase64String(createViewModel.ProfilePicture);
+            }
+            else
+            {
+                string defaultProfilePicPath = "../WebApi/Assets/Images/default_profile_pic.jpg";
+                bytes = await File.ReadAllBytesAsync(defaultProfilePicPath);
+            }
 
             using (MemoryStream ms = new(bytes))
             {
