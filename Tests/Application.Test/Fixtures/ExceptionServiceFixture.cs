@@ -16,15 +16,15 @@ namespace Application.Test.Fixtures
     {
         public ExceptionServiceFixture()
         {
-            MockExceptionEntityService = new ExceptionEntityService(
-                MockExceptionRepository.Object,
-                MockLogger.Object);
-
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
             MockExceptionEntityService = fixture.Freeze<ExceptionEntityService>();
             MockExceptionRepository = fixture.Freeze<Mock<IExceptionEntityRepository>>();
             MockLogger = fixture.Freeze<Mock<ILoggerManager>>();
+
+            MockExceptionEntityService = new ExceptionEntityService(
+                MockExceptionRepository.Object,
+                MockLogger.Object);
 
             _id = 1;
             _exceptionEntity = new()

@@ -16,14 +16,14 @@ namespace WebApi.Test.Fixtures
     {
         public ExceptionControllerFixture()
         {
-            MockExceptionController = new ExceptionController(
-                MockExceptionService.Object,
-                MockMapperException.Object);
-
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
             MockExceptionService = fixture.Freeze<Mock<IExceptionEntityService>>();
             MockMapperException = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>>>();
+
+            MockExceptionController = new ExceptionController(
+                MockExceptionService.Object,
+                MockMapperException.Object);
 
             _id = 1;
             _exceptionEntity = new()
