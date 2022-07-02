@@ -387,6 +387,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         _fixture.MockCreateMapper.Verify(m => m.Map(createCommentViewModel), Times.Once);
+        _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
         _fixture.MockCommentService.Verify(s => s.CreateCommentAsync(_comment), Times.Once);
     }
     
@@ -424,6 +425,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         _fixture.MockUpdateMapper.Verify(m => m.Map(_updateCommentViewModel), Times.Once);
+        _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
         _fixture.MockCommentService.Verify(s => s.UpdateCommentAsync(_comment, _requestUser), Times.Once);
     }
 
