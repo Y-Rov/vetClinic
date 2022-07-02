@@ -15,8 +15,8 @@ public class ArticleBaseValidator<T> : AbstractValidator<T> where T : ArticleVie
         
         RuleFor(art => art.Body)
             .MinimumLength(5)
-            .WithMessage("Article body length must be greater than 5")
-            .MaximumLength(6000)
-            .WithMessage("Article body length must be lower than 6000");
+            .WithMessage("Article body length must be greater than 5");
+            //.MaximumLength(6000)
+            //.WithMessage("Article body length must be lower than 6000")
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,9 +34,14 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync(
+            [FromQuery] CollateParameters collateParameters)
         {
-            var users = await _userService.GetAllUsersAsync();
+            var users = await _userService.GetAllUsersAsync(
+                collateParameters.FilterParam, 
+                collateParameters.TakeCount, 
+                collateParameters.SkipCount);
+
             var readModels = _readEnumerableMapper.Map(users);
 
             return Ok(readModels);
