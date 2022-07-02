@@ -1,8 +1,8 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.Pagginator;
-using Core.Pagginator.Parameters;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
