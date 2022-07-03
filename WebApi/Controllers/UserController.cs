@@ -38,7 +38,8 @@ namespace WebApi.Controllers
             [FromQuery] CollateParameters collateParameters)
         {
             var users = await _userService.GetAllUsersAsync(
-                collateParameters.FilterParam, 
+                collateParameters.FilterParam,
+                collateParameters.OrderByParam,
                 collateParameters.TakeCount, 
                 collateParameters.SkipCount);
 
