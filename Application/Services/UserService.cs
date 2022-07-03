@@ -56,7 +56,6 @@ namespace Application.Services
         {
             _userRepository.Delete(user);
             await _userRepository.UpdateAsync(user);
-
             await _userProfilePictureService.DeleteAsync(user.ProfilePicture!);
 
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");

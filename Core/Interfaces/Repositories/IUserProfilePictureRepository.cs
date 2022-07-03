@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace Core.Interfaces.Services
+namespace Core.Interfaces.Repositories
 {
-    public interface IUserProfilePictureService
+    public interface IUserProfilePictureRepository
     {
         Task<string> UploadAsync(Image image, string email, string imageFormat);
         Task DeleteAsync(string imageLink);
