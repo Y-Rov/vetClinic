@@ -10,7 +10,7 @@ namespace DataAccess.Repositories
     public class Repository<T> : IRepository<T>
         where T : class
     {
-        private readonly ClinicContext _clinicContext;
+        protected readonly ClinicContext _clinicContext;
         protected readonly DbSet<T> DbSet;
 
         public Repository(ClinicContext clinicContext)
