@@ -4,6 +4,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using System.Drawing;
 
 namespace Application.Services
 {
@@ -11,26 +12,20 @@ namespace Application.Services
     {
         private readonly IAnimalRepository _animalRepository;
         private readonly ILoggerManager _loggerManager;
-        //private readonly IAnimalImageManager _animalImageManager;
+        private readonly IImageService _imageService;
         private readonly IConfiguration _configuration;
 
         public AnimalService(
             IAnimalRepository animalRepository,
             ILoggerManager loggerManager,
-            //IAnimalImageManager animalImageManager,
+            IImageService imageService,
             IConfiguration configuration)
         {
             _animalRepository = animalRepository;
             _loggerManager = loggerManager;
-            //_animalImageManager = animalImageManager;
+            _imageService = imageService;
             _configuration = configuration;
         }
-
-        //private async Task<string> UploadImage(string body)
-        //{
-        //    var image = LoadImage()
-        //}
-
 
         public async Task CreateAsync(Animal animal)
         {
