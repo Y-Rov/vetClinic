@@ -4,9 +4,9 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.PortfolioMappers
 {
-    public class PortfolioCreateMapper : IViewModelMapper<PortfolioCreateViewModel, Portfolio>
+    public class PortfolioCreateMapper : IViewModelMapper<PortfolioCreateReadViewModel, Portfolio>
     {
-        public Portfolio Map(PortfolioCreateViewModel source)
+        public Portfolio Map(PortfolioCreateReadViewModel source)
         {
             return new Portfolio
             {

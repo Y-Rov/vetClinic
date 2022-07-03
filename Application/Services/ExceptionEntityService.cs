@@ -4,8 +4,8 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.Pagginator;
-using Core.Pagginator.Parameters;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Application.Services
 {
