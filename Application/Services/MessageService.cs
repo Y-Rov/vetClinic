@@ -12,7 +12,7 @@ public class MessageService : IMessageService
     private readonly IUserChatRoomRepository _userChatRoomRepository;
     private readonly IChatRoomRepository _chatRoomRepository;
     private readonly IUserService _userService;
-    
+
     public MessageService(
         IMessageRepository messageRepository,
         IUserChatRoomRepository userChatRoomRepository,
@@ -24,21 +24,27 @@ public class MessageService : IMessageService
         _chatRoomRepository = chatRoomRepository;
         _userService = userService;
     }
-    
-    public async Task<IEnumerable<Message>> LoadMessagesInChatRoomAsync(int chatRoomId, int skip, int take)
+
+    public async Task<Message?> GetByIdAsync(int id)
+    {
+        return await _messageRepository.GetFirstOrDefaultAsync(
+            filter: m => m.Id == id);
+    }
+
+    public async Task<IEnumerable<Message>> LoadMessagesInChatRoomAsync(int readerId, int chatRoomId, int skip,
+        int take)
     {
         if (!await _chatRoomRepository.ExistsAsync(chatRoomId))
             throw new NotFoundException($"Chatroom with id {chatRoomId} does not exist");
-        
-        var messagesToRead = await _messageRepository.Query(
-                filter: m => m.ChatRoomId == chatRoomId,
-                orderBy: q => q.OrderByDescending(m => m.SentAt),
-                include: q => q.Include(m => m.Sender),
-                skip: skip,
-                take: take
-            ).ToListAsync();
 
-        messagesToRead.ForEach(m => m.IsRead = true);
+        var messagesToRead = await _messageRepository.QueryAsync(
+            filter: m => m.ChatRoomId == chatRoomId,
+            orderBy: q => q.OrderByDescending(m => m.SentAt),
+            include: q => q.Include(m => m.Sender!),
+            skip: skip,
+            take: take
+        );
+
         await _messageRepository.SaveChangesAsync();
 
         return messagesToRead;
@@ -49,16 +55,14 @@ public class MessageService : IMessageService
         var user = await _userService.GetUserByIdAsync(userId);
         if (user is null)
             throw new NotFoundException($"User with id {userId} does not exist");
-        
-        var roomsIds = await _userChatRoomRepository
-            .Query(filter: ur => ur.UserId == userId)
-            .Select(ur => ur.UserId)
-            .ToListAsync();
-        
-        return await _messageRepository.Query(
-            filter: m =>  roomsIds.Contains(m.ChatRoomId)  && !m.IsRead,
-            asNoTracking: true
-            ).ToListAsync();
+
+        var roomsIds = (await _userChatRoomRepository
+            .QueryAsync(filter: ur => ur.UserId == userId))
+            .Select(r => r.ChatRoomId);
+
+        return await _messageRepository.QueryAsync(
+            filter: m => roomsIds.Contains(m.ChatRoomId),
+            asNoTracking: true);
     }
 
     public async Task CreateAsync(Message message)
@@ -67,5 +71,22 @@ public class MessageService : IMessageService
             throw new NotFoundException($"Chat room with id {message.ChatRoomId} does not exist");
 
         await _messageRepository.InsertAsync(message);
+    }
+
+    public async Task ReadMessageAsync(int readerId, int messageId)
+    {
+        var message = await GetByIdAsync(messageId);
+        
+        if (message is null)
+            throw new NotFoundException($"Message with id {messageId} does not exist");
+
+        var userChatRoom = await _userChatRoomRepository.GetFirstOrDefaultAsync(
+            filter: ur => ur.UserId == readerId && ur.ChatRoomId == message.ChatRoomId,
+            include: q => q.Include(ur => ur.LastReadMessage)!);
+
+        if (userChatRoom!.LastReadMessage is null || userChatRoom.LastReadMessage.SentAt < message.SentAt)
+        {
+            userChatRoom.LastReadMessageId = message.Id;
+        }
     }
 }
