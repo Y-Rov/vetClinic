@@ -146,6 +146,9 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("ChatRooms", (string)null);
@@ -187,14 +190,11 @@ namespace DataAccess.Migrations
                     b.Property<int>("ChatRoomId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
                     b.Property<int>("SenderId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("SentAt")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Text")
                         .HasMaxLength(600)
@@ -397,15 +397,15 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "07d81da4-50bc-4a4f-9920-a4065fe9f92a",
+                            ConcurrencyStamp = "b41815ce-208b-40c1-9860-4a584d18ad3f",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPFJO7T7MiP/jJSspGU99xnj1IgxYTcAMrImOFcQy65ilKYM4UX1/vX23xy2zHOz2g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBIfcWGfWU8YmD1TStBTpw2I3ofuDBFVv96rFPx+l1K7Dz8ukybx4metn+frr3edWw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "35cf81f8-caef-4691-bfcb-aa7cfbf0490e",
+                            SecurityStamp = "5d9cb06a-ad67-4432-aae2-f790256c069a",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -419,9 +419,14 @@ namespace DataAccess.Migrations
                     b.Property<int>("ChatRoomId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("LastReadMessageId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "ChatRoomId");
 
                     b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("LastReadMessageId");
 
                     b.ToTable("UserChatRooms");
                 });
@@ -474,28 +479,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "ef3b797b-4786-40b7-abfa-1308b85b45ec",
+                            ConcurrencyStamp = "3ecd03c3-9fda-4bc5-acb6-c76555235559",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "8968fc9b-8081-4917-94e8-fca1522bfe0e",
+                            ConcurrencyStamp = "cd15a105-fd4c-4913-96bd-ed7873e1873f",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "87255a2d-6f29-4d20-8391-75a7d87784d4",
+                            ConcurrencyStamp = "f9b361e8-af9d-40d0-8e5b-12e0641289f3",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "7ba29697-32ba-407c-a754-4ed353a8e2ce",
+                            ConcurrencyStamp = "1d147f2f-339a-4fbe-9588-e4423c2e3af4",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -750,6 +755,10 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Core.Entities.Message", "LastReadMessage")
+                        .WithMany("LastReadByUsers")
+                        .HasForeignKey("LastReadMessageId");
+
                     b.HasOne("Core.Entities.User", "User")
                         .WithMany("UserChatRooms")
                         .HasForeignKey("UserId")
@@ -757,6 +766,8 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("ChatRoom");
+
+                    b.Navigation("LastReadMessage");
 
                     b.Navigation("User");
                 });
@@ -848,6 +859,11 @@ namespace DataAccess.Migrations
                     b.Navigation("Messages");
 
                     b.Navigation("UserChatRooms");
+                });
+
+            modelBuilder.Entity("Core.Entities.Message", b =>
+                {
+                    b.Navigation("LastReadByUsers");
                 });
 
             modelBuilder.Entity("Core.Entities.Procedure", b =>

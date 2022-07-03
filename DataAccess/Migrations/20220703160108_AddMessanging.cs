@@ -14,7 +14,8 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,8 +29,7 @@ namespace DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(type: "nvarchar(600)", maxLength: 600, nullable: true),
-                    SentAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SenderId = table.Column<int>(type: "int", nullable: false),
                     ChatRoomId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -55,7 +55,8 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    ChatRoomId = table.Column<int>(type: "int", nullable: false)
+                    ChatRoomId = table.Column<int>(type: "int", nullable: false),
+                    LastReadMessageId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -72,6 +73,11 @@ namespace DataAccess.Migrations
                         principalTable: "ChatRooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserChatRooms_Messages_LastReadMessageId",
+                        column: x => x.LastReadMessageId,
+                        principalTable: "Messages",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.UpdateData(
@@ -79,35 +85,35 @@ namespace DataAccess.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "ConcurrencyStamp",
-                value: "ef3b797b-4786-40b7-abfa-1308b85b45ec");
+                value: "3ecd03c3-9fda-4bc5-acb6-c76555235559");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "ConcurrencyStamp",
-                value: "8968fc9b-8081-4917-94e8-fca1522bfe0e");
+                value: "cd15a105-fd4c-4913-96bd-ed7873e1873f");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "ConcurrencyStamp",
-                value: "87255a2d-6f29-4d20-8391-75a7d87784d4");
+                value: "f9b361e8-af9d-40d0-8e5b-12e0641289f3");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: 4,
                 column: "ConcurrencyStamp",
-                value: "7ba29697-32ba-407c-a754-4ed353a8e2ce");
+                value: "1d147f2f-339a-4fbe-9588-e4423c2e3af4");
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "07d81da4-50bc-4a4f-9920-a4065fe9f92a", "AQAAAAEAACcQAAAAEPFJO7T7MiP/jJSspGU99xnj1IgxYTcAMrImOFcQy65ilKYM4UX1/vX23xy2zHOz2g==", "35cf81f8-caef-4691-bfcb-aa7cfbf0490e" });
+                values: new object[] { "b41815ce-208b-40c1-9860-4a584d18ad3f", "AQAAAAEAACcQAAAAEBIfcWGfWU8YmD1TStBTpw2I3ofuDBFVv96rFPx+l1K7Dz8ukybx4metn+frr3edWw==", "5d9cb06a-ad67-4432-aae2-f790256c069a" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatRoomId",
@@ -123,15 +129,20 @@ namespace DataAccess.Migrations
                 name: "IX_UserChatRooms_ChatRoomId",
                 table: "UserChatRooms",
                 column: "ChatRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChatRooms_LastReadMessageId",
+                table: "UserChatRooms",
+                column: "LastReadMessageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Messages");
+                name: "UserChatRooms");
 
             migrationBuilder.DropTable(
-                name: "UserChatRooms");
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "ChatRooms");
