@@ -29,7 +29,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
     private readonly Comment _updatedComment = new Comment()
     {
         Id = 1,
-        Content = "uppdated hello",
+        Content = "updated hello",
     };
     
     private readonly IList<Comment> _comments = new List<Comment>()
@@ -150,8 +150,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
     [Fact]
     public async Task GetAllArticleCommentsAsync_whenCommentsListIsNotEmpty_thanReturnCommentsList()
     {
-        int articleId = 1;
-
         IList<Comment> articleComments = new List<Comment>()
         {
             new Comment()
