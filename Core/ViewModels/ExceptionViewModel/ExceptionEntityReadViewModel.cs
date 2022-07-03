@@ -1,4 +1,4 @@
-﻿namespace Core.ViewModel
+﻿namespace Core.ViewModels.ExceptionViewModel
 {
     public record ExceptionEntityReadViewModel
     {
