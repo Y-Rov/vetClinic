@@ -9,16 +9,13 @@ namespace Application.Services
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
-        private readonly IUserService _userService;
         private readonly ILoggerManager _loggerManager;
 
         public AddressService(
             IAddressRepository addressRepository,
-            IUserService userService,
             ILoggerManager loggerManager)
         {
             _addressRepository = addressRepository;
-            _userService = userService;
             _loggerManager = loggerManager;
         }
 
@@ -53,10 +50,6 @@ namespace Application.Services
                 _loggerManager.LogWarn($"User with ID = {newAddress.UserId} has already an address");
                 throw new BadRequestException($"User with ID = {newAddress.UserId} has already an address");
             }
-
-            var user = await _userService.GetUserByIdAsync(newAddress.UserId);
-            user.Address = newAddress;
-            newAddress.User = user;
 
             await _addressRepository.InsertAsync(newAddress);
             await _addressRepository.SaveChangesAsync();
