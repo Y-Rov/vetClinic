@@ -1,5 +1,4 @@
-﻿using Azure;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
