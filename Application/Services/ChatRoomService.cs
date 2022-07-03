@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Core.Emuns;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
@@ -29,23 +30,30 @@ public class ChatRoomService : IChatRoomService
 
     public async Task<IEnumerable<User>> GetParticipantsAsync(int chatRoomId)
     {
-        return await _userChatRoomRepository.Query(
-                filter: ur => ur.ChatRoomId == chatRoomId,
-                include: q => q.Include(ur => ur.User),
-                asNoTracking: true)
-            .Select(ur => ur.User)
-            .ToListAsync();
+        var userChatRooms = await _userChatRoomRepository.QueryAsync(
+            filter: ur => ur.ChatRoomId == chatRoomId,
+            include: q => q.Include(ur => ur.User),
+            asNoTracking: true);
+        return userChatRooms.Select(ur => ur.User);
     }
 
-    public async Task AddMemberAsync(int roomId, int userId)
+    public async Task<UserChatRoom?> GetUserChatRoomAsync(int userId, int chatRoomId)
     {
-        if (!await _chatRoomRepository.ExistsAsync(roomId))
-            throw new NotFoundException($"Chatroom with id {roomId} does not exist");
+        return await _userChatRoomRepository.GetFirstOrDefaultAsync(
+            filter: ur => 
+                ur.UserId == userId 
+                && ur.ChatRoomId == chatRoomId);
+    }
+    
+    public async Task AddMemberAsync(int chatRoomId, int userId)
+    {
+        if (!await _chatRoomRepository.ExistsAsync(chatRoomId))
+            throw new NotFoundException($"Chatroom with id {chatRoomId} does not exist");
 
         var userChatRoom = new UserChatRoom()
         {
             UserId = userId,
-            ChatRoomId = roomId
+            ChatRoomId = chatRoomId
         };
         await _userChatRoomRepository.InsertAsync(userChatRoom);
     }
@@ -65,5 +73,32 @@ public class ChatRoomService : IChatRoomService
     public async Task<bool> ExistsAsync(int id)
     {
         return await _chatRoomRepository.ExistsAsync(id);
+    } 
+    
+    public async Task<ChatRoom> EnsurePrivateRoomCreatedAsync(int memberId1, int memberId2)
+    {
+        ChatRoom? chatRoom;
+        chatRoom = await _chatRoomRepository.GetFirstOrDefaultAsync(
+            include: q => q.Include(cr => cr.UserChatRooms),
+            filter: cr =>
+                cr.UserChatRooms.Select(ur => ur.UserId).Contains(memberId1)
+                && cr.UserChatRooms.Select(ur => ur.UserId).Contains(memberId2)
+                && cr.Type == ChatType.Private);
+
+        if (chatRoom is null)
+        {
+            chatRoom = new ChatRoom()
+            {
+                Type = ChatType.Private,
+                UserChatRooms = new[]
+                {
+                    new UserChatRoom() { UserId = memberId1 },
+                    new UserChatRoom() { UserId = memberId2 }
+                }
+            };
+            await CreateAsync(chatRoom);
+        }
+        
+        return chatRoom;
     } 
 }
