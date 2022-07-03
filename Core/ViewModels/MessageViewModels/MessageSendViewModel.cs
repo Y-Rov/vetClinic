@@ -2,4 +2,5 @@
 
 public class MessageSendViewModel : MessageViewModelBase
 {
+    public int ReceiverId { get; set; }
 }
