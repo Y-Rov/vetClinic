@@ -1,9 +1,7 @@
 ﻿using Application.Services;
 using Core.Interfaces;
-using Core.ViewModels.User;
 using FluentValidation.AspNetCore;
 using WebApi.Validators;
-using WebApi.Validators.User;
 
 namespace Host.Configurations
 {
