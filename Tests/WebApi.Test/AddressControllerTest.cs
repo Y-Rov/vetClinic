@@ -81,11 +81,11 @@ namespace WebApi.Test
             // Arrange
             _fixture.MockAddressService
                 .Setup(service => service.GetAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)))
-                .ReturnsAsync(_fixture.AddressWithApartmentNumber);
+                .ReturnsAsync(_fixture.FullAddress);
 
             _fixture.MockAddressReadViewModelMapper
                 .Setup(mapper => mapper.Map(It.IsAny<Address>()))
-                .Returns(_fixture.AddressBaseViewModelWithApartmentNumber)
+                .Returns(_fixture.FullAddressBaseViewModel)
                 .Verifiable();
 
             // Act
@@ -110,7 +110,7 @@ namespace WebApi.Test
             // Arrange
             _fixture.MockAddressCreateMapper
                 .Setup(mapper => mapper.Map(It.IsAny<AddressCreateReadViewModel>()))
-                .Returns(_fixture.AddressWithApartmentNumber)
+                .Returns(_fixture.FullAddress)
                 .Verifiable();
 
             _fixture.MockAddressService
@@ -118,7 +118,7 @@ namespace WebApi.Test
                 .Returns(Task.FromResult<object?>(null));
 
             // Act
-            var result = await _fixture.MockAddressController.CreateAsync(_fixture.AddressCreateReadViewModelWithApartmentNumber);
+            var result = await _fixture.MockAddressController.CreateAsync(_fixture.FullAddressCreateReadViewModel);
 
             // Assert
             _fixture.MockAddressService
@@ -137,7 +137,7 @@ namespace WebApi.Test
             // Arrange
             _fixture.MockAddressService
                 .Setup(service => service.GetAddressByUserIdAsync(It.Is<int>(userId => userId == _fixture.UserId)))
-                .ReturnsAsync(_fixture.AddressWithApartmentNumber);
+                .ReturnsAsync(_fixture.FullAddress);
 
             _fixture.MockAddressUpdateMapper
                 .Setup(mapper => mapper.Map(
@@ -149,7 +149,7 @@ namespace WebApi.Test
                 .Returns(Task.FromResult<object?>(null));
 
             // Act
-            var result = await _fixture.MockAddressController.UpdateAsync(_fixture.UserId, _fixture.AddressBaseViewModelWithApartmentNumber);
+            var result = await _fixture.MockAddressController.UpdateAsync(_fixture.UserId, _fixture.FullAddressBaseViewModel);
 
             // Assert
             _fixture.MockAddressService
