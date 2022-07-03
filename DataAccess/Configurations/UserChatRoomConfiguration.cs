@@ -17,5 +17,9 @@ public class UserChatRoomConfiguration : IEntityTypeConfiguration<UserChatRoom>
         builder.HasOne(userChatRoom => userChatRoom.ChatRoom)
             .WithMany(cr => cr.UserChatRooms)
             .HasForeignKey(userChatRoom => userChatRoom.ChatRoomId);
+
+        builder.HasOne(userChatRoom => userChatRoom.LastReadMessage)
+            .WithMany(m => m.LastReadByUsers)
+            .HasForeignKey(userChatRoom => userChatRoom.LastReadMessageId);
     }
 }
