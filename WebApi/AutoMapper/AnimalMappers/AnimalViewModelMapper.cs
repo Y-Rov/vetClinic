@@ -1,12 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.AnimalViewModel;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AnimalMappers

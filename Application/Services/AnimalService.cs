@@ -3,8 +3,6 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
-using System.Drawing;
 
 namespace Application.Services
 {

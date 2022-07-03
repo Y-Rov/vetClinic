@@ -5,11 +5,6 @@ using Core.Interfaces.Services;
 using Core.ViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.AutoMapper.Interface;
 using WebApi.Controllers;
 
