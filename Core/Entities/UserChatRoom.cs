@@ -7,4 +7,7 @@ public class UserChatRoom
 
     public int ChatRoomId { get; set; }
     public ChatRoom ChatRoom { get; set; } = null!;
+    
+    public int? LastReadMessageId { get; set; }
+    public Message? LastReadMessage { get; set; }
 }

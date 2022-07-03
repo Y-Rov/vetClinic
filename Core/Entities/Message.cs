@@ -11,4 +11,6 @@ public class Message
 
     public int ChatRoomId { get; set; }
     public ChatRoom ChatRoom { get; set; } = null!;
+
+    public IEnumerable<UserChatRoom> LastReadByUsers { get; set; } = new List<UserChatRoom>();
 }
