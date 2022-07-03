@@ -256,7 +256,7 @@ namespace Application.Test
         }
 
         [Fact]
-        public async Task DeleteAddressByUserIdAsync_WhenUserIdIsIncorrect_ThenAddressIsDeletedSuccessfullyAndTaskIsReturned()
+        public async Task DeleteAddressByUserIdAsync_WhenUserIdIsIncorrect_ThenNotFoundExceptionIsThrown()
         {
             _fixture.MockAddressRepository
                 .Setup(repository => repository.GetById(

@@ -256,7 +256,7 @@ namespace Application.Test
         }
 
         [Fact]
-        public async Task DeletePortfolioByUserIdAsync_WhenUserIdIsIncorrect_ThenPortfolioIsDeletedSuccessfullyAndTaskIsReturned()
+        public async Task DeletePortfolioByUserIdAsync_WhenUserIdIsIncorrect_ThenNotFoundExceptionIsThrown()
         {
             _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
