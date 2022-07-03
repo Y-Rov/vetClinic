@@ -16,8 +16,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture = fixture;
     }
     
-    
-    
     private readonly Comment _comment = new Comment()
     {
         Id = 1,
@@ -26,6 +24,12 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         Content = "hello",
         CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
         Edited = false
+    };
+
+    private readonly Comment _updatedComment = new Comment()
+    {
+        Id = 1,
+        Content = "uppdated hello",
     };
     
     private readonly IList<Comment> _comments = new List<Comment>()
@@ -229,6 +233,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
             .Verify(r => r.InsertAsync(_comment), Times.Once);
         _fixture.MockCommentRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
+        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -248,6 +253,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Verify(r => r.InsertAsync(_comment), Times.Once);
         await Assert.ThrowsAsync<NotFoundException>(() => result);
+        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -255,37 +261,140 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
     {
         //Arrange
         _fixture.MockCommentRepository
-            .Setup(r => r.De(It.IsAny<Comment>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
+            .Setup(r=> r.GetById(
+                It.IsAny<int>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(_comment);
+
+        _fixture.MockCommentRepository
+            .Setup(r => r.Delete(It.IsAny<Comment>()))
+            .Verifiable();
         
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         //Act
-        await _fixture.MockCommentService.CreateCommentAsync(_comment);
+        await _fixture.MockCommentService.DeleteCommentAsync(1, _requestUser);
+        
         //Assert
         _fixture.MockCommentRepository
-            .Verify(r => r.InsertAsync(_comment), Times.Once);
-        _fixture.MockCommentRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
+        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
-    public async Task CreateCommentAsync_whenUserDontExist_thenThrowNotFound()
+    public async Task DeleteCommentAsync_whenWrongUser_thenThrowBadRequest()
     {
         //Arrange
         _fixture.MockCommentRepository
-            .Setup(r => r.InsertAsync(It.IsAny<Comment>()))
+            .Setup(r=> r.GetById(
+                It.IsAny<int>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(_comment);
+
+        _fixture.MockCommentRepository
+            .Setup(r => r.Delete(It.IsAny<Comment>()))
+            .Verifiable();
+        
+        _fixture.MockCommentRepository
+            .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        //Act
+        var result = _fixture.MockCommentService.DeleteCommentAsync(1, new User(){Id = 10});
+        
+        //Assert
+        await Assert.ThrowsAsync<BadRequestException>(() => result);
+        _fixture.MockCommentRepository.ResetCalls();
+    }
+    
+    [Fact]
+    public async Task DeleteCommentAsync_whenCommentDontExist_thenThrowNotFound()
+    {
+        //Arrange
+        _fixture.MockCommentRepository
+            .Setup(r => r.GetById(
+                It.IsAny<int>(),
+                It.IsAny<string>()))
+            .ThrowsAsync(new NotFoundException());
+
+        _fixture.MockCommentRepository
+            .Setup(r => r.Delete(It.IsAny<Comment>()))
+            .Verifiable();
+        
+        _fixture.MockCommentRepository
+            .Setup(r => r.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        //Act
+        var result = _fixture.MockCommentService.DeleteCommentAsync(1, _requestUser);
+        
+        //Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => result);
+        _fixture.MockCommentRepository.ResetCalls();
+    }
+    
+        [Fact]
+    public async Task UpdateCommentAsync_whenNormal_thenSuccess()
+    {
+        //Arrange
+        _fixture.MockCommentRepository
+            .Setup(r=> r.GetById(
+                It.IsAny<int>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(_comment);
 
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
-            .Throws<DbUpdateException>();
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
         //Act
-        var result = _fixture.MockCommentService.CreateCommentAsync(_comment);
+        await _fixture.MockCommentService.UpdateCommentAsync(_updatedComment, _requestUser);
+        
         //Assert
         _fixture.MockCommentRepository
-            .Verify(r => r.InsertAsync(_comment), Times.Once);
+            .Verify(r => r.GetById(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        _fixture.MockCommentRepository
+            .Verify(r => r.SaveChangesAsync(), Times.Once);
+        _fixture.MockCommentRepository.ResetCalls();
+    }
+    
+    [Fact]
+    public async Task UpdateCommentAsync_whenWrongUser_thenThrowBadRequest()
+    {
+        //Arrange
+        _fixture.MockCommentRepository
+            .Setup(r=> r.GetById(
+                It.IsAny<int>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(_comment);
+
+        _fixture.MockCommentRepository
+            .Setup(r => r.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        //Act
+        var result = _fixture.MockCommentService.UpdateCommentAsync(_updatedComment, new User(){Id = 10});
+        
+        //Assert
+        await Assert.ThrowsAsync<BadRequestException>(() => result);
+        _fixture.MockCommentRepository.ResetCalls();
+    }
+    
+    [Fact]
+    public async Task UpdateCommentAsync_whenCommentDontExist_thenThrowNotFound()
+    {
+        //Arrange
+        _fixture.MockCommentRepository
+            .Setup(r => r.GetById(
+                It.IsAny<int>(),
+                It.IsAny<string>()))
+            .ThrowsAsync(new NotFoundException());
+
+        _fixture.MockCommentRepository
+            .Setup(r => r.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        //Act
+        var result = _fixture.MockCommentService.UpdateCommentAsync(_updatedComment, _requestUser);
+        
+        //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
+        _fixture.MockCommentRepository.ResetCalls();
     }
 }
