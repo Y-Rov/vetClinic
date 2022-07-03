@@ -6,39 +6,39 @@ using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class AddressServiceTests : IClassFixture<AddressServiceFixture>
+    public class PortfolioServiceTests : IClassFixture<PortfolioServiceFixture>
     {
-        private readonly AddressServiceFixture _fixture;
+        private readonly PortfolioServiceFixture _fixture;
 
-        public AddressServiceTests(AddressServiceFixture fixture)
+        public PortfolioServiceTests(PortfolioServiceFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact]
-        public async Task GetAllAddressesAsync_WhenListOfAddressesIsRequested_ThenListOfAddressesIsReturned()
+        public async Task GetAllPortfoliosAsync_WhenListOfPortfoliosIsRequested_ThenListOfPortfoliosIsReturned()
         {
             // Arrange
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetAsync(
-                    It.IsAny<Expression<Func<Address, bool>>>(),
-                    It.IsAny<Func<IQueryable<Address>, IOrderedQueryable<Address>>>(),
+                    It.IsAny<Expression<Func<Portfolio, bool>>>(),
+                    It.IsAny<Func<IQueryable<Portfolio>, IOrderedQueryable<Portfolio>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(_fixture.TestListOfAddresses);
+                .ReturnsAsync(_fixture.TestListOfPortfolios);
 
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogInfo(It.IsAny<string>()))
                 .Verifiable();
 
             // Act
-            var result = await _fixture.MockAddressService.GetAllAddressesAsync();
+            var result = await _fixture.MockPortfolioService.GetAllPortfoliosAsync();
 
             // Assert
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repository => repository.GetAsync(
-                    It.IsAny<Expression<Func<Address, bool>>>(),
-                    It.IsAny<Func<IQueryable<Address>, IOrderedQueryable<Address>>>(),
+                    It.IsAny<Expression<Func<Portfolio, bool>>>(),
+                    It.IsAny<Func<IQueryable<Portfolio>, IOrderedQueryable<Portfolio>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()), Times.Once);
 
@@ -46,48 +46,48 @@ namespace Application.Test
                 .Verify();
 
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<Address>>(result);
+            Assert.IsAssignableFrom<IEnumerable<Portfolio>>(result);
         }
 
         [Fact]
-        public async Task GetAddressByUserIdAsync_WhenAddressExists_ThenAddressIsReturned()
+        public async Task GetPortfolioByUserIdAsync_WhenPortfolioExists_ThenPortfolioIsReturned()
         {
             // Arrange
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
-                .ReturnsAsync(_fixture.TestAddress);
+                .ReturnsAsync(_fixture.TestPortfolio);
 
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogInfo(It.IsAny<string>()))
                 .Verifiable();
 
             // Act
-            var result = await _fixture.MockAddressService.GetAddressByUserIdAsync(_fixture.TestAddress.UserId);
+            var result = await _fixture.MockPortfolioService.GetPortfolioByUserIdAsync(_fixture.TestPortfolio.UserId);
 
             // Assert
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()), Times.Once);
 
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             Assert.NotNull(result);
-            Assert.IsType<Address>(result);
+            Assert.IsType<Portfolio>(result);
         }
 
         [Fact]
-        public async Task GetAddressByUserIdAsync_WhenAddressNotExists_ThenNotFoundExceptionIsThrown()
+        public async Task GetPortfolioByUserIdAsync_WhenPortfolioNotExists_ThenNotFoundExceptionIsThrown()
         {
             // Arrange
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(match => match != _fixture.TestAddress.UserId),
+                    It.Is<int>(match => match != _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
                 .ReturnsAsync(() => null);
 
@@ -96,33 +96,33 @@ namespace Application.Test
                 .Verifiable();
 
             // Act
-            var result = _fixture.MockAddressService.GetAddressByUserIdAsync(_fixture.WrongUserId);
+            var result = _fixture.MockPortfolioService.GetPortfolioByUserIdAsync(_fixture.WrongUserId);
 
             // Assert
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             await Assert.ThrowsAsync<NotFoundException>(() => result);
             Assert.True(result.IsFaulted);
         }
 
         [Fact]
-        public async Task CreateAddressAsync_WhenUserAddressWasUndefinedBefore_ThenItIsSavedInDatabaseAndTaskIsReturned()
+        public async Task CreatePortfolioAsync_WhenUserPortfolioWasUndefinedBefore_ThenItIsSavedInDatabaseAndTaskIsReturned()
         {
             // Arrange
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
                 .ReturnsAsync(() => null);
 
-            _fixture.MockAddressRepository
-                .Setup(repo => repo.InsertAsync(It.IsAny<Address>()))
+            _fixture.MockPortfolioRepository
+                .Setup(repo => repo.InsertAsync(It.IsAny<Portfolio>()))
                 .Returns(Task.FromResult<object?>(null));
 
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repo => repo.SaveChangesAsync())
                 .Returns(Task.FromResult<object?>(null));
 
@@ -131,136 +131,136 @@ namespace Application.Test
                 .Verifiable();
 
             // Act
-            var result = _fixture.MockAddressService.CreateAddressAsync(_fixture.TestAddress);
+            var result = _fixture.MockPortfolioService.CreatePortfolioAsync(_fixture.TestPortfolio);
 
             // Assert
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()), Times.Once);
 
-            _fixture.MockAddressRepository
-                .Verify(repo => repo.InsertAsync(It.IsAny<Address>()), Times.Once);
+            _fixture.MockPortfolioRepository
+                .Verify(repo => repo.InsertAsync(It.IsAny<Portfolio>()), Times.Once);
 
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repo => repo.SaveChangesAsync(), Times.Once);
 
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             await result;
             Assert.True(result.IsCompletedSuccessfully);
         }
 
         [Fact]
-        public async Task CreateAddressAsync_WhenUserAddressWasDefinedAlready_ThenBadRequestExceptionIsThrown()
+        public async Task CreatePortfolioAsync_WhenUserPortfolioWasDefinedAlready_ThenBadRequestExceptionIsThrown()
         {
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
-                .ReturnsAsync(_fixture.TestAddress);
+                .ReturnsAsync(_fixture.TestPortfolio);
 
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogWarn(It.IsAny<string>()))
                 .Verifiable();
 
             // Act
-            var result = _fixture.MockAddressService.CreateAddressAsync(_fixture.TestAddress);
+            var result = _fixture.MockPortfolioService.CreatePortfolioAsync(_fixture.TestPortfolio);
 
             // Assert
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             await Assert.ThrowsAsync<BadRequestException>(() => result);
             Assert.True(result.IsFaulted);
         }
 
         [Fact]
-        public async Task UpdateAddressAsync_WhenAddressIsCorrect_ThenItIsUpdatedSuccessfullyAndTaskIsReturned()
+        public async Task UpdatePortfolioAsync_WhenPortfolioIsCorrect_ThenItIsUpdatedSuccessfullyAndTaskIsReturned()
         {
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
-                .ReturnsAsync(_fixture.TestAddress);
+                .ReturnsAsync(_fixture.TestPortfolio);
 
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogInfo(It.IsAny<string>()))
                 .Verifiable();
 
             // Act
-            var result = _fixture.MockAddressService.UpdateAddressAsync(_fixture.TestAddress);
+            var result = _fixture.MockPortfolioService.UpdatePortfolioAsync(_fixture.TestPortfolio);
 
             // Assert
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()), Times.Once);
 
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             await result;
             Assert.True(result.IsCompletedSuccessfully);
         }
 
         [Fact]
-        public async Task DeleteAddressByUserIdAsync_WhenUserIdIsCorrect_ThenAddressIsDeletedSuccessfullyAndTaskIsReturned()
+        public async Task DeletePortfolioByUserIdAsync_WhenUserIdIsCorrect_ThenPortfolioIsDeletedSuccessfullyAndTaskIsReturned()
         {
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
-                .ReturnsAsync(_fixture.TestAddress);
+                .ReturnsAsync(_fixture.TestPortfolio);
 
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogInfo(It.IsAny<string>()))
                 .Verifiable();
 
-            _fixture.MockAddressRepository
-                .Setup(repo => repo.Delete(It.IsAny<Address>()));
+            _fixture.MockPortfolioRepository
+                .Setup(repo => repo.Delete(It.IsAny<Portfolio>()));
 
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repo => repo.SaveChangesAsync())
                 .Returns(Task.FromResult<object?>(null));
 
             // Act
-            var result = _fixture.MockAddressService.DeleteAddressByUserIdAsync(_fixture.TestAddress.UserId);
+            var result = _fixture.MockPortfolioService.DeletePortfolioByUserIdAsync(_fixture.TestPortfolio.UserId);
 
             // Assert
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId == _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()), Times.Once);
 
-            _fixture.MockAddressRepository
-                .Verify(repo => repo.Delete(It.IsAny<Address>()), Times.Once);
+            _fixture.MockPortfolioRepository
+                .Verify(repo => repo.Delete(It.IsAny<Portfolio>()), Times.Once);
 
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Verify(repo => repo.SaveChangesAsync(), Times.Once);
 
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             await result;
             Assert.True(result.IsCompletedSuccessfully);
         }
 
         [Fact]
-        public async Task DeleteAddressByUserIdAsync_WhenUserIdIsIncorrect_ThenNotFoundExceptionIsThrown()
+        public async Task DeletePortfolioByUserIdAsync_WhenUserIdIsIncorrect_ThenNotFoundExceptionIsThrown()
         {
-            _fixture.MockAddressRepository
+            _fixture.MockPortfolioRepository
                 .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId != _fixture.TestAddress.UserId),
+                    It.Is<int>(userId => userId != _fixture.TestPortfolio.UserId),
                     It.IsAny<string>()))
                 .ReturnsAsync(() => null);
 
@@ -269,13 +269,13 @@ namespace Application.Test
                 .Verifiable();
 
             // Act
-            var result = _fixture.MockAddressService.DeleteAddressByUserIdAsync(_fixture.WrongUserId);
+            var result = _fixture.MockPortfolioService.DeletePortfolioByUserIdAsync(_fixture.WrongUserId);
 
             // Assert
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockAddressRepository.ResetCalls();
+            _fixture.MockPortfolioRepository.ResetCalls();
 
             await Assert.ThrowsAsync<NotFoundException>(() => result);
             Assert.True(result.IsFaulted);

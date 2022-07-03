@@ -31,11 +31,11 @@ namespace WebApi.Test.Fixtures
                 );
 
             UserId = 1;
-            AddressWithApartmentNumber = new Address { UserId = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
-            AddressBaseViewModelWithApartmentNumber = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
-            AddressCreateReadViewModelWithApartmentNumber = new AddressCreateReadViewModel { Id = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10 };
-            Addresses = new List<Address> { AddressWithApartmentNumber };
-            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> { AddressCreateReadViewModelWithApartmentNumber, };
+            FullAddress = new Address { UserId = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+            FullAddressBaseViewModel = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+            FullAddressCreateReadViewModel = new AddressCreateReadViewModel { Id = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+            Addresses = new List<Address> { FullAddress };
+            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> { FullAddressCreateReadViewModel };
         }
 
         public AddressController MockAddressController { get; }
@@ -49,9 +49,9 @@ namespace WebApi.Test.Fixtures
         }
 
         public int UserId { get; }
-        public Address AddressWithApartmentNumber { get; }
-        public AddressBaseViewModel AddressBaseViewModelWithApartmentNumber { get; }
-        public AddressCreateReadViewModel AddressCreateReadViewModelWithApartmentNumber { get; }
+        public Address FullAddress { get; }
+        public AddressBaseViewModel FullAddressBaseViewModel { get; }
+        public AddressCreateReadViewModel FullAddressCreateReadViewModel { get; }
         public IEnumerable<Address> Addresses { get; }
         public IEnumerable<AddressCreateReadViewModel> AddressCreateReadViewModels { get; }
     }
