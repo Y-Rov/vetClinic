@@ -31,13 +31,12 @@ namespace WebApi.AutoMapper.AnimalMappers
 
         public void Map(AnimalViewModel source, Animal dest)
         {
-            if (source.PhotoUrl == dest.PhotoUrl)
+            if (source.PhotoUrl==null)
             {
                 dest.Id = source.Id;
                 dest.OwnerId = source.OwnerId;
                 dest.NickName = source.NickName;
                 dest.BirthDate = source.BirthDate;
-                dest.PhotoUrl = source.PhotoUrl;
             }
             else
             {
@@ -66,7 +65,7 @@ namespace WebApi.AutoMapper.AnimalMappers
             using (MemoryStream ms = new(bytes))
             {
                 var image = Image.FromStream(ms);
-                var profilePictureLink = await _animalPhotoService.UploadAsync(image, source.NickName!, "jpg");
+                var profilePictureLink = await _animalPhotoService.UploadAsync(image, $"{source.Id}-{source.NickName}"!, "jpg");
 
                 return profilePictureLink;
             }
