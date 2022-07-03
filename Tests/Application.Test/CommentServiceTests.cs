@@ -173,8 +173,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
                 Edited = false
             }
         };
-
-        Expression<Func<Comment, bool>> searchExpression = c => c.ArticleId == articleId;
         
         _fixture.MockCommentRepository
             .Setup(repo => repo.GetAsync(
@@ -191,29 +189,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         Assert.NotEmpty(result);
         Assert.Equal(articleComments, result);
     }
-    
-    [Fact]
-    public async Task GetAllArticleCommentsAsync_whenCommentsListIsEmpty_thanReturnEmptyCommentsList()
-    {
-        //Arrange
-        var emptyComments = new List<Comment>();
-        
-        _fixture.MockCommentRepository
-            .Setup(repo => repo.GetAsync(
-                It.IsAny<Expression<Func<Comment, bool>>>(),
-                It.IsAny<Func<IQueryable<Comment>, IOrderedQueryable<Comment>>>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()))
-            .ReturnsAsync(emptyComments);
-        
-        //Act
-        var result = await _fixture.MockCommentService.GetAllCommentsAsync();
-        
-        //Assert
-        Assert.NotNull(result);
-        Assert.Empty(result);
-        Assert.Equal(emptyComments, result);
-    }
 
     [Fact]
     public async Task CreateCommentAsync_whenNormal_thenSuccess()
@@ -226,8 +201,10 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         await _fixture.MockCommentService.CreateCommentAsync(_comment);
+        
         //Assert
         _fixture.MockCommentRepository
             .Verify(r => r.InsertAsync(_comment), Times.Once);
@@ -247,12 +224,15 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Throws<DbUpdateException>();
+        
         //Act
         var result = _fixture.MockCommentService.CreateCommentAsync(_comment);
+        
         //Assert
         _fixture.MockCommentRepository
             .Verify(r => r.InsertAsync(_comment), Times.Once);
         await Assert.ThrowsAsync<NotFoundException>(() => result);
+        
         _fixture.MockCommentRepository.ResetCalls();
     }
     
@@ -273,6 +253,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         await _fixture.MockCommentService.DeleteCommentAsync(1, _requestUser);
         
@@ -299,6 +280,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         var result = _fixture.MockCommentService.DeleteCommentAsync(1, new User(){Id = 10});
         
@@ -324,6 +306,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         var result = _fixture.MockCommentService.DeleteCommentAsync(1, _requestUser);
         
@@ -345,6 +328,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         await _fixture.MockCommentService.UpdateCommentAsync(_updatedComment, _requestUser);
         
@@ -369,6 +353,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         var result = _fixture.MockCommentService.UpdateCommentAsync(_updatedComment, new User(){Id = 10});
         
@@ -390,6 +375,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         var result = _fixture.MockCommentService.UpdateCommentAsync(_updatedComment, _requestUser);
         
