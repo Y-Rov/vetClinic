@@ -13,7 +13,7 @@ public class ChatRoomRepository : Repository<ChatRoom>, IChatRoomRepository
     
     public async Task<bool> ExistsAsync(int id)
     {
-        var chatRoom = await _dbSet.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+        var chatRoom = await DbSet.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
         return (chatRoom is not null);
     }
 }

@@ -13,7 +13,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
 
     public async Task<bool> ExistsAsync(int id)
     {
-        var message = await _dbSet.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+        var message = await DbSet.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
         return (message is not null);
     }
 }
