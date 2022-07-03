@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using WebApi.AutoMapper.Interface;
 
-namespace WebApi.Hubs;
+namespace WebApi.SignalR.Hubs;
 
 [Authorize]
 public class MessageHub : Hub
@@ -26,22 +26,33 @@ public class MessageHub : Hub
         _getMessageMapper = getMessageMapper;
     }
 
-    public async Task SendMessage(MessageSendViewModel message)
+    public async Task SendPrivateMessage(MessageSendViewModel message)
     {
-        bool chatRoomExists = await _chatRoomService.ExistsAsync(message.ChatRoomId);
-        if (chatRoomExists)
+        if (TryParseUserId(out int senderId))
         {
+            var chatRoom = await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
+
             var messageMap = _sendMessageMapper.Map(message);
-            int senderId;
-            var parseSucceeded = Int32.TryParse(Context.UserIdentifier, out senderId);
-            if (parseSucceeded)
-            {
-                messageMap.SenderId = senderId;
-                await _messageService.CreateAsync(messageMap);
-                var messageGetMap = _getMessageMapper.Map(messageMap);
-                await Clients.Group(messageMap.ChatRoomId.ToString())
-                    .SendAsync("getMessage", messageGetMap);
-            }
+            messageMap.SenderId = senderId;
+            messageMap.SentAt = DateTime.Now;
+            await _messageService.CreateAsync(messageMap);
+            
+            var messageGetMap = _getMessageMapper.Map(messageMap);
+            await Clients.GroupExcept(messageMap.ChatRoomId.ToString(), Context.UserIdentifier!)
+                .SendAsync("getMessage", messageGetMap);
         }
+    }
+
+    public async Task ReadMessage(int messageId)
+    {
+        if (TryParseUserId(out int readerId))
+        {
+            await _messageService.ReadMessageAsync(readerId, messageId);
+        }
+    }
+
+    private bool TryParseUserId(out int userId)
+    {
+        return Int32.TryParse(Context.UserIdentifier, out userId);
     }
 }
