@@ -176,6 +176,7 @@ namespace Application.Services
                 };
             //Add previous to list
                 _incomes.Add(income);
+                listProcedures.Clear();
 
                 var doctorsCount = appointment.AppointmentUsers.Count();
 
