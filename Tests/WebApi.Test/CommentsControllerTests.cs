@@ -257,8 +257,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -284,6 +284,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         _fixture.MockCommentService.Verify();
+        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -292,8 +293,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -315,6 +316,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
+        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -323,8 +325,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -346,6 +348,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
+        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -360,8 +363,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
 
         _fixture.MockCreateMapper
             .Setup(mapper =>
@@ -389,6 +392,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockCreateMapper.Verify(m => m.Map(createCommentViewModel), Times.Once);
         _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
         _fixture.MockCommentService.Verify(s => s.CreateCommentAsync(_comment), Times.Once);
+        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -402,8 +406,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
 
         _fixture.MockCommentService
             .Setup(service =>
@@ -427,6 +431,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUpdateMapper.Verify(m => m.Map(_updateCommentViewModel), Times.Once);
         _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
         _fixture.MockCommentService.Verify(s => s.UpdateCommentAsync(_comment, _requestUser), Times.Once);
+        _fixture.MockUserManager.ResetCalls();
     }
 
     [Fact]
@@ -435,8 +440,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -458,6 +463,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
+        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -466,8 +472,8 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockUserManager
             .Setup(um => um
-                .GetUserAsync(It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync(_requestUser);
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_requestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -489,5 +495,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
+        _fixture.MockUserManager.ResetCalls();
     }
 }
