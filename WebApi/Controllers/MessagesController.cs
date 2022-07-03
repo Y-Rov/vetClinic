@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.ViewModel.MessageViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
