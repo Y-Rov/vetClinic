@@ -13,11 +13,11 @@ namespace WebApi.AutoMapper.AnimalMappers
     {
         public IEnumerable<AnimalViewModel> Map(IEnumerable<Animal> source)
         {
-            var appointmentViewModels = source.Select(GetAppointmentViewModel).ToList();
+            var appointmentViewModels = source.Select(GetAnimalViewModel).ToList();
             return appointmentViewModels;
         }
 
-        private AnimalViewModel GetAppointmentViewModel(Animal animal)
+        private AnimalViewModel GetAnimalViewModel(Animal animal)
         {
             var animalViewModel = new AnimalViewModel()
             {

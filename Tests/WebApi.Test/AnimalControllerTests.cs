@@ -205,7 +205,7 @@ namespace WebApi.Test
         [Fact]
         public async Task CreateAnimal_ShouldReturnStatusCodeOk()
         {
-            _animalControllerFixture.MockAnimalViewModelMapper
+            _animalControllerFixture.MockAnimalViewModelMapperUpdater
             .Setup(mapper =>
                 mapper.Map(It.IsAny<AnimalViewModel>()))
             .Returns(_animal);
@@ -226,7 +226,7 @@ namespace WebApi.Test
         [Fact]
         public async Task CreateAnimal_ShouldReturnError()
         {
-            _animalControllerFixture.MockAnimalViewModelMapper
+            _animalControllerFixture.MockAnimalViewModelMapperUpdater
             .Setup(mapper =>
                 mapper.Map(It.IsAny<AnimalViewModel>()))
             .Returns(_animal);
@@ -247,7 +247,7 @@ namespace WebApi.Test
         public async Task UpdateAnimal_ShouldReturnStatusCodeOk()
         {
             //Arrange
-            _animalControllerFixture.MockAnimalViewModelMapper
+            _animalControllerFixture.MockAnimalViewModelMapperUpdater
                 .Setup(map => map.Map(It.IsAny<AnimalViewModel>()))
                 .Returns(_animal);
 
@@ -267,7 +267,7 @@ namespace WebApi.Test
         public async Task UpdateAnimal_ShouldReturnError()
         {
             //Arrange
-            _animalControllerFixture.MockAnimalViewModelMapper
+            _animalControllerFixture.MockAnimalViewModelMapperUpdater
                 .Setup(map => map.Map(It.IsAny<AnimalViewModel>()))
                 .Returns(_animal);
 

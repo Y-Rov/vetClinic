@@ -12,14 +12,14 @@ namespace WebApi.Controllers
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalService _animalService;
-        private readonly IViewModelMapper<AnimalViewModel, Animal> _mapperVMtoM;
+        private readonly IViewModelMapperUpdater<AnimalViewModel, Animal> _mapperVMtoM;
         private readonly IViewModelMapper<Animal, AnimalViewModel> _mapperMtoVM;
         private readonly IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> _mapperAnimalListToList;
         private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>> _mapperMedCard;
 
         public AnimalController(
             IAnimalService animalService,
-            IViewModelMapper<AnimalViewModel, Animal> mapperVMtoM,
+            IViewModelMapperUpdater<AnimalViewModel, Animal> mapperVMtoM,
             IViewModelMapper<Animal, AnimalViewModel> mapperMtoVM,
             IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> mapperAnimalListToList,
             IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>> mapperMedCard)
@@ -73,8 +73,9 @@ namespace WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateAsync([FromBody]AnimalViewModel model)
         {
-            var map = _mapperVMtoM.Map(model);
-            await _animalService.UpdateAsync(map);
+            var prevAnimal = _animalService.GetByIdAsync(model.Id);
+            _mapperVMtoM.Map(model, prevAnimal.Result);
+            await _animalService.UpdateAsync(prevAnimal.Result);
             return NoContent();
         }
     }

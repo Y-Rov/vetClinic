@@ -12,19 +12,17 @@ namespace Application.Services
     {
         private readonly IAnimalRepository _animalRepository;
         private readonly ILoggerManager _loggerManager;
-        private readonly IImageService _imageService;
-        private readonly IConfiguration _configuration;
+        private readonly IAnimalPhotoService _animalPhotoService;
 
         public AnimalService(
             IAnimalRepository animalRepository,
             ILoggerManager loggerManager,
-            IImageService imageService,
-            IConfiguration configuration)
+            IAnimalPhotoService animalPhotoService
+            )
         {
             _animalRepository = animalRepository;
             _loggerManager = loggerManager;
-            _imageService = imageService;
-            _configuration = configuration;
+            _animalPhotoService = animalPhotoService;
         }
 
         public async Task CreateAsync(Animal animal)
@@ -38,6 +36,9 @@ namespace Application.Services
         {
             var animalToDelete = await GetByIdAsync(animalId);
             _animalRepository.Delete(animalToDelete);
+
+            await _animalPhotoService.DeleteAsync(animalToDelete.PhotoUrl!);
+
             await _animalRepository.SaveChangesAsync();
             _loggerManager.LogInfo("Animal deleted");
         }
