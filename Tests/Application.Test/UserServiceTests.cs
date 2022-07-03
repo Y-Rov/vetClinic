@@ -116,6 +116,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -148,6 +149,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -179,7 +181,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockUserRepository.Verify(r => r.UpdateAsync(It.IsAny<User>()), Times.AtLeastOnce());
+            _fixture.MockUserRepository.Verify(r => r.UpdateAsync(It.IsAny<User>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -207,6 +210,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.Delete(It.IsAny<User>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
     }
 }
