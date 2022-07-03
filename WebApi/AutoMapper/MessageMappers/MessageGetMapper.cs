@@ -13,7 +13,6 @@ public class MessageGetMapper : IViewModelMapper<Message, MessageGetViewModel>
             Id = source.Id,
             Text = source.Text,
             ChatRoomId = source.ChatRoomId,
-            IsRead = source.IsRead,
             SenderId = source.SenderId,
             SenderName = $"{source.Sender.FirstName} {source.Sender.LastName}",
             SentAt = source.SentAt

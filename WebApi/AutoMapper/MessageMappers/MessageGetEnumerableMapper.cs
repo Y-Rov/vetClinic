@@ -4,12 +4,12 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.MessageMappers;
 
-public class MessageGetEnumerable 
+public class MessageGetEnumerableMapper
     : IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>>
 {
     private readonly IViewModelMapper<Message, MessageGetViewModel> _mapper;
 
-    public MessageGetEnumerable(IViewModelMapper<Message, MessageGetViewModel> mapper)
+    public MessageGetEnumerableMapper(IViewModelMapper<Message, MessageGetViewModel> mapper)
     {
         _mapper = mapper;
     }

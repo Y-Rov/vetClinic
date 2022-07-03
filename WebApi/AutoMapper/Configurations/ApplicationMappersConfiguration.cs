@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.ViewModel;
+using Core.ViewModel.MessageViewModels;
 using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
@@ -14,6 +15,7 @@ using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.AppointmentMappers;
 using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.Interface;
+using WebApi.AutoMapper.MessageMappers;
 using WebApi.AutoMapper.PortfolioMappers;
 using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SalaryMappers;
@@ -68,5 +70,10 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Appointment, AppointmentViewModel>, AppointmentMapper>();
         services.AddScoped<IViewModelMapper<AppointmentViewModel, Appointment>, AppointmentViewModelMapper>();
         services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>>, AppointmentsMapper>();
+
+        services.AddScoped<IViewModelMapper<MessageSendViewModel, Message>, MessageSendMapper>();
+        services.AddScoped<IViewModelMapper<Message, MessageGetViewModel>, MessageGetMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>>,
+            MessageGetEnumerableMapper>();
     }
 }

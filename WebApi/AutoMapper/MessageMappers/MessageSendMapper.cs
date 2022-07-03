@@ -4,13 +4,12 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.MessageMappers;
 
-public class MessageSendMapper : IViewModelMapper<Message, MessageSendViewModel>
+public class MessageSendMapper : IViewModelMapper<MessageSendViewModel, Message>
 {
-    public MessageSendViewModel Map(Message source)
+    public Message Map(MessageSendViewModel source)
     {
-        return new MessageSendViewModel()
+        return new Message()
         {
-            ChatRoomId = source.ChatRoomId,
             Text = source.Text
         };
     }
