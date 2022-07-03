@@ -11,39 +11,12 @@ namespace DataAccess.Repositories
         where T : class
     {
         private readonly ClinicContext _clinicContext;
-        protected readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> DbSet;
 
         public Repository(ClinicContext clinicContext)
         {
             _clinicContext = clinicContext;
-            _dbSet = _clinicContext.Set<T>();
-        }
-
-        public IQueryable<T> Query(
-            Expression<Func<T, bool>>? filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-            int? take = null, int skip = 0,
-            bool asNoTracking = false)
-        {
-            var query = _dbSet.AsQueryable().Skip(skip);
-
-            if (asNoTracking)
-                query = query.AsNoTracking();
-            
-            if (include is not null)
-                query = include(query);
-            
-            if (filter is not null)
-                query = query.Where(filter);
-            
-            if (orderBy is not null)
-                query = orderBy(query);
-
-            if (take is not null)
-                query = query.Take(take.Value);
-
-            return query;
+            DbSet = _clinicContext.Set<T>();
         }
 
         public IQueryable<T> GetQuery(
@@ -91,18 +64,45 @@ namespace DataAccess.Repositories
 
         }
 
+        public async Task<IList<T>> QueryAsync(
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            int? take = null, int skip = 0,
+            bool asNoTracking = false)
+        {
+            var query = DbSet.AsQueryable().Skip(skip);
+
+            if (asNoTracking)
+                query = query.AsNoTracking();
+            
+            if (include is not null)
+                query = include(query);
+            
+            if (filter is not null)
+                query = query.Where(filter);
+            
+            if (orderBy is not null)
+                query = orderBy(query);
+
+            if (take is not null)
+                query = query.Take(take.Value);
+
+            return await query.ToListAsync();
+        }
+        
         public async Task<T?> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             bool asNoTracking = false)
         {
-            var query = Query(
+            var query = await QueryAsync(
                 filter: filter,
                 include: include,
                 asNoTracking: asNoTracking
                 );
             
-            return await query.FirstOrDefaultAsync();
+            return query.FirstOrDefault();
         }
 
         public async Task<T?> GetById(int id, string includeProperties = "")
