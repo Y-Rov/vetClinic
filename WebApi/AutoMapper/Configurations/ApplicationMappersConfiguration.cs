@@ -1,10 +1,12 @@
 ﻿using Core.Entities;
-using Core.ViewModel;
+using Core.Models;
+using Core.Paginator;
 using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.ArticleViewModels;
 using Core.ViewModels.CommentViewModels;
+using Core.ViewModels.ExceptionViewModel;
 using Core.ViewModels.AppointmentsViewModel;
 using Core.ViewModels.PortfolioViewModels;
 using Core.ViewModels.ProcedureViewModels;
@@ -18,6 +20,7 @@ using WebApi.AutoMapper.AppointmentMappers;
 using WebApi.AutoMapper.ArticleMappers;
 using WebApi.AutoMapper.CommentMappers;
 using WebApi.AutoMapper.ExceptionMapper;
+using WebApi.AutoMapper.ExceptionMappers;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.PortfolioMappers;
 using WebApi.AutoMapper.ProcedureMappers;
@@ -37,8 +40,6 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<UserCreateViewModel, User>, UserCreateMapper>();
         services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UserUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>, UserReadEnumerableMapper>();
-
-        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
 
         services.AddScoped<IViewModelMapper<ProcedureUpdateViewModel, Procedure>, ProcedureUpdateMapper>();
         services.AddScoped<IViewModelMapper<ProcedureCreateViewModel, Procedure>, ProcedureCreateMapper>();
@@ -83,6 +84,11 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<CreateCommentViewModel, Comment>, CreateCommentMapper>();
         services.AddScoped<IViewModelMapper<UpdateCommentViewModel, Comment>, UpdateCommentMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Comment>, IEnumerable<ReadCommentViewModel>>, ReadEnumerableCommentMapper>();
+
+        services.AddScoped<IViewModelMapper<PagedList<ExceptionEntity>, PagedReadViewModel<ExceptionEntityReadViewModel>>, PagedExceptionEntityMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>, ExceptionsMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ExceptionStats>, IEnumerable<ExceptionStatsReadViewModel>>, ExceptionStatsMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<ExceptionStats>, PagedReadViewModel<ExceptionStatsReadViewModel>>, PagedExceptionStatsMapper>();
         services.AddScoped<IViewModelMapper<Appointment, AppointmentReadViewModel>, AppointmentReadMapper>();
         services.AddScoped<IViewModelMapper<AppointmentCreateViewModel, Appointment>, AppointmentCreateMapper>();
         services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();

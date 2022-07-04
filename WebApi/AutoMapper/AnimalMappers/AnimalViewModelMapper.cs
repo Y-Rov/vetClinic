@@ -31,7 +31,7 @@ namespace WebApi.AutoMapper.AnimalMappers
 
         public void Map(AnimalViewModel source, Animal dest)
         {
-            if (source.PhotoUrl==null)
+            if (source.PhotoUrl==dest.PhotoUrl)
             {
                 dest.Id = source.Id;
                 dest.OwnerId = source.OwnerId;
