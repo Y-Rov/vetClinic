@@ -12,13 +12,13 @@ namespace Core.Interfaces.Repositories
              string includeProperties = "",
              bool asNoTracking = false);
 
-        public IQueryable<T> Query(
+        public Task<IList<T>> QueryAsync(
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             int? take = null, int skip = 0,
             bool asNoTracking = false);
-        
+
         Task<T?> GetById(int id, string includeProperties = "");
 
         Task<T?> GetFirstOrDefaultAsync(
