@@ -22,6 +22,7 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<IArticleRepository, ArticleRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IUserProfilePictureRepository, UserProfilePictureRepository>();
         }
     }
 }

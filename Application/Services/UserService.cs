@@ -56,18 +56,20 @@ namespace Application.Services
         {
             _userRepository.Delete(user);
             await _userRepository.UpdateAsync(user);
-
             await _userProfilePictureService.DeleteAsync(user.ProfilePicture!);
 
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync(string? filterParam, int? takeCount, int skipCount = 0)
+        public async Task<IEnumerable<User>> GetAllUsersAsync(string? filterParam,
+            string? orderByParam, int? takeCount, int skipCount = 0)
         {
             var filterQuery = GetFilterQuery(filterParam);
+            var orderByQuery = GetOrderByQuery(orderByParam);
 
             var users = await _userRepository.GetAllAsync(
                 filter: filterQuery,
+                orderBy: orderByQuery,
                 includeProperties: query => query
                     .Include(u => u.Address)
                     .Include(u => u.Portfolio!),
@@ -130,7 +132,7 @@ namespace Application.Services
             _loggerManager.LogInfo($"Successfully updated the user with id {user.Id}");
         }
 
-        private Expression<Func<User, bool>>? GetFilterQuery(string? filterParam)
+        private static Expression<Func<User, bool>>? GetFilterQuery(string? filterParam)
         {
             Expression<Func<User, bool>>? filterQuery = null;
 
@@ -146,5 +148,15 @@ namespace Application.Services
 
             return filterQuery;
         }
+
+        private static Func<IQueryable<User>, IOrderedQueryable<User>>? GetOrderByQuery(string? orderBy) => orderBy switch
+        {
+            "FirstName" => query => query.OrderBy(u => u.FirstName),
+            "LastName" => query => query.OrderBy(u => u.LastName),
+            "Email" => query => query.OrderBy(u => u.Email),
+            "PhoneNumber" => query => query.OrderBy(u => u.PhoneNumber),
+            "BirthDate" => query => query.OrderBy(u => u.BirthDate),
+            _ => null
+        };
     }
 }

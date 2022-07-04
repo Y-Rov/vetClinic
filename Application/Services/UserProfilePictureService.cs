@@ -1,65 +1,53 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Core.Exceptions;
+using Core.Interfaces;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
 using System.Drawing;
 
 namespace Application.Services
 {
     public class UserProfilePictureService : IUserProfilePictureService
     {
-        private readonly IConfiguration _configuration;
-        private readonly BlobServiceClient _blobServiceClient;
-        private readonly string _containerName;
+        private readonly IUserProfilePictureRepository _userProfilePictureRepository;
+        private readonly ILoggerManager _loggerManager;
 
         public UserProfilePictureService(
-            IConfiguration configuration,
-            BlobServiceClient blobServiceClient)
+            IUserProfilePictureRepository userProfilePictureRepository, 
+            ILoggerManager loggerManager)
         {
-            _blobServiceClient = blobServiceClient;
-            _configuration = configuration;
-            _containerName = _configuration["Azure:ContainerName"];
-        }
-
-        public async Task<string> UploadAsync( 
-            Image image,
-            string email,
-            string imageFormat)
-        {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
-            var fileName = $"profile-pictures/{email}.{imageFormat}";
-
-            var blobClient = blobContainer.GetBlobClient(fileName);
-
-            if (await blobClient.ExistsAsync())
-            {
-                await DeleteAsync(fileName);
-            }
-
-            using (MemoryStream ms = new())
-            {
-                image.Save(ms, image.RawFormat);
-                ms.Position = 0;
-
-                await blobClient.UploadAsync(ms);
-            }
-
-            fileName = $"{_configuration["Azure:ContainerLink"]}/{_containerName}/{fileName}";
-
-            return fileName;
+            _userProfilePictureRepository = userProfilePictureRepository;
+            _loggerManager = loggerManager;
         }
 
         public async Task DeleteAsync(string imageLink)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
-
-            if (imageLink.Contains(_containerName))
+            try
             {
-                imageLink = imageLink.Split(_containerName)[1];
+                await _userProfilePictureRepository.DeleteAsync(imageLink);
+            }
+            catch(RequestFailedException)
+            {
+                _loggerManager.LogWarn("The image with the provided link could no be deleted");
+                throw new BadRequestException("The image with the provided link could no be deleted");
+            }
+        }
+
+        public async Task<string> UploadAsync(Image image, string email, string imageFormat)
+        {
+            string fileName;
+
+            try
+            {
+                fileName = await _userProfilePictureRepository.UploadAsync(image, email, imageFormat);
+            }
+            catch(RequestFailedException)
+            {
+                _loggerManager.LogWarn("The image with the provided link could no be uploaded");
+                throw new BadRequestException("The image with the provided link could no be uploaded");
             }
 
-            var blobClient = blobContainer.GetBlobClient(imageLink);
-
-            await blobClient.DeleteAsync();
+            return fileName;
         }
     }
 }
