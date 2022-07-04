@@ -1,6 +1,8 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.ViewModels.FeedbackViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -29,15 +31,19 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<FeedbackReadViewModel>> GetAllFeedbacks()
+        [Authorize(Roles = "Admin")]
+        public async Task<IEnumerable<FeedbackReadViewModel>> GetAllFeedbacks(
+            [FromQuery] CollateParameters parameters)
         {
-            var feedbacks = await _service.GetAllFeedbacks();
+            var feedbacks = 
+                    await _service.GetAllFeedbacks(parameters.FilterParam, parameters.TakeCount, parameters.SkipCount);
 
             var mappedFeedbacks = _listMapper.Map(feedbacks);
 
-            return mappedFeedbacks; 
+            return mappedFeedbacks;
         }
 
+        [Authorize(Roles = "Client")]
         [HttpPost]
         public async Task AddFeedback(FeedbackCreateViewModel feedback)
         {

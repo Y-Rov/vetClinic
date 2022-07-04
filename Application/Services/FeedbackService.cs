@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -10,6 +11,21 @@ namespace Application.Services
     {
         readonly IFeedbackRepository _repository;
         readonly ILoggerManager _logger;
+
+        Expression<Func<Feedback, bool>> GetFilterQuery (string? filterParam)
+        {
+            Expression<Func<Feedback, bool>>? filterQuery = null;
+            
+            if(filterParam is not null)
+            {
+                string formatedParameter = filterParam.Trim().ToLower();
+
+                filterQuery = feedback =>
+                    feedback.Email.ToLower().Contains(formatedParameter);
+            }
+            
+            return filterQuery;
+        }
 
         public FeedbackService(
             IFeedbackRepository repository, 
@@ -28,12 +44,18 @@ namespace Application.Services
             _logger.LogInfo($"feedback was added");
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacks()
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacks(
+            string? filterParam, 
+            int? takeCount, 
+            int skipCount = 0)
         {
             _logger.LogInfo($"feedbacks were recieved");
 
             return await _repository.QueryAsync(
                 asNoTracking: true,
+                filter: GetFilterQuery(filterParam),
+                take: takeCount,
+                skip: skipCount,
                 include: query =>
                     query.Include(feedback => feedback.User));
         }

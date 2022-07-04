@@ -22,30 +22,21 @@ namespace Application.Test
         public async Task GetSpecializationById_whenIdIsCorrect_thenReturnSpecialization()
         {
             int id = 1;
-            var expected = new Specialization
-            {
-                Id = id,
-                Name = "surgeon"
-            };
 
             _fixture.MockRepository
                 .Setup(repository =>
                     repository.GetById(
                         It.Is<int>(specId => specId == id),
                         It.IsAny<string>()))
-                .ReturnsAsync(new Specialization
-                {
-                    Id = id,
-                    Name = "surgeon"
-                });
+                .ReturnsAsync(_fixture.Expected);
 
 
             var result = 
                 await _fixture.MockService.GetSpecializationByIdAsync(id);
 
             Assert.NotNull(result);
-            Assert.Equal(expected.Name, result.Name);
-            Assert.Equal(expected.Id, result.Id);
+            Assert.Equal(_fixture.Expected.Name, result.Name);
+            Assert.Equal(_fixture.Expected.Id, result.Id);
         }
 
         [Fact]
