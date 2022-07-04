@@ -3,6 +3,7 @@ using Core.Interfaces.Services;
 using Core.ViewModels.AnimalViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
+using Core.ViewModels.AppointmentsViewModel;
 using Core.ViewModels;
 
 namespace WebApi.Controllers

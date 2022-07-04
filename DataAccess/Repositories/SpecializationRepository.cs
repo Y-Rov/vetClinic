@@ -9,6 +9,11 @@ namespace DataAccess.Repositories
     {
         private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
         private readonly IUserSpecializationRepository _usrerSpecializationRepository;
+
+        public SpecializationRepository(ClinicContext clinicContext) : base(clinicContext)
+        {
+        }
+
         public SpecializationRepository(ClinicContext context,
             IProcedureSpecializationRepository procedureSpecializationRepository,
             IUserSpecializationRepository userSpecializationRepository)

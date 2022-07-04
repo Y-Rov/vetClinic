@@ -2,6 +2,12 @@
 {
     public class AppointmentBaseViewModel
     {
-        public int Id { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public bool MeetHasOccureding { get; set; }
+
+        public string Disease { get; set; }
+
     }
 }
