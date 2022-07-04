@@ -14,14 +14,14 @@ namespace DataAccess.Repositories
         {
         }
 
-        //public SpecializationRepository(ClinicContext context,
-        //    IProcedureSpecializationRepository procedureSpecializationRepository,
-        //    IUserSpecializationRepository userSpecializationRepository)
-        //    : base(context)
-        //{
-        //    _procedureSpecializationRepository = procedureSpecializationRepository;
-        //    _usrerSpecializationRepository = userSpecializationRepository;
-        //}
+        public SpecializationRepository(ClinicContext context,
+            IProcedureSpecializationRepository procedureSpecializationRepository,
+            IUserSpecializationRepository userSpecializationRepository)
+            : base(context)
+        {
+            _procedureSpecializationRepository = procedureSpecializationRepository;
+            _usrerSpecializationRepository = userSpecializationRepository;
+        }
 
         public async Task UpdateProceduresAsync(int specializationId, IEnumerable<int> proceduresIds)
         {
