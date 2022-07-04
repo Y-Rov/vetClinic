@@ -3,6 +3,7 @@ using Core.Interfaces.Services;
 using Core.ViewModels.AnimalViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
+using Core.ViewModels.AppointmentsViewModel;
 using Core.ViewModels;
 
 namespace WebApi.Controllers
@@ -40,7 +41,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("medcard/{id:int:min(1)}")]
-        public async Task<IEnumerable<AppointmentViewModel>> GetMedCardAsync([FromRoute] int id)
+        public async Task<IEnumerable<AppointmentReadViewModel>> GetMedCardAsync([FromRoute] int id)
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(id);
             var map = _mapperMedCard.Map(appointments);
