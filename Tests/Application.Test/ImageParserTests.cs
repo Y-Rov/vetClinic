@@ -344,6 +344,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         
         //Act
         var result = await _fixture.ImageParser.UploadImages(tag);
+        
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
                 It.IsAny<string>(),
@@ -386,6 +387,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         
         //Act
         var result = await _fixture.ImageParser.UploadImages(tag);
+        
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
                 It.IsAny<string>(),
@@ -467,6 +469,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         
         //Act
         var result = await _fixture.ImageParser.DeleteImages(tag);
+        
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
                 It.IsAny<string>(),
@@ -474,6 +477,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             Times.Exactly(3));
 
         Assert.Equal("<div class=\"div class\"></div>", result);
+        
         _fixture.MockImageRepository.ResetCalls();
     }
     
@@ -502,6 +506,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         
         //Act
         var result = await _fixture.ImageParser.DeleteImages(tag);
+        
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
                 It.IsAny<string>(),
@@ -509,6 +514,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             Times.Exactly(3));
 
         Assert.Equal("<div class=\"div class\"></div><div class=\"div class\"></div><div class=\"div class\"></div>", result);
+        
         _fixture.MockImageRepository.ResetCalls();
     }
     
@@ -542,9 +548,10 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
                 It.IsAny<string>(),
                 It.IsAny<string>()),
-            Times.Never);;
+            Times.Never);
 
         Assert.Equal("<div class=\"div class\"></div>", result);
+        
         _fixture.MockImageRepository.ResetCalls();
     }
 }
