@@ -311,7 +311,7 @@ namespace Application.Test
         }
 
         [Fact]
-        public async Task AddProcedureToSpecialization_whenSpecializationExists()
+        public async Task AddProcedureToSpecialization_whenSpecializationExists_thenExecute()
         {
             var specializationId = 2;
 
@@ -348,6 +348,82 @@ namespace Application.Test
             specialization.ProcedureSpecializations.Should().ContainEquivalentOf(expectedRelationship);
 
             _fixture.MockRepository.Verify(method => method.Update(specialization), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddUserToSpecialization_whenSpecializationExists_thenExecute()
+        {
+            var specializationId = 2;
+
+            var userId = 1;
+
+            var expectedRelationship = new UserSpecialization
+            {
+                SpecializationId = specializationId,
+                UserId = userId
+            };
+
+            Specialization specialization = new Specialization
+            {
+                Id = specializationId,
+                Name = "doctor",
+                UserSpecializations = new List<UserSpecialization>()
+                {
+                    new UserSpecialization { UserId = 2, SpecializationId = specializationId }
+                }
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(It.Is<int>(specId => specId == specializationId),
+                    It.Is<string>(props => props == includeProperties)))
+                .ReturnsAsync(specialization);
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.Update(
+                    It.Is<Specialization>(spec => spec == specialization)))
+                .Verifiable();
+
+             await _fixture.MockService.AddUserToSpecialization(specializationId, userId);
+
+             specialization.UserSpecializations.Should().ContainEquivalentOf(expectedRelationship);
+
+            _fixture.MockRepository.Verify(method => method.Update(specialization), Times.Once);
+
+            _fixture.MockRepository.ResetCalls();
+        }
+
+        [Fact]
+        public async Task AddUserToSpecialization_whenRelationshipExists_thenThrowException()
+        {
+            var specializationId = 2;
+
+            var userId = 1;
+
+            var expectedRelationship = new UserSpecialization
+            {
+                SpecializationId = specializationId,
+                UserId = userId
+            };
+
+            Specialization specialization = new Specialization
+            {
+                Id = specializationId,
+                Name = "doctor",
+                UserSpecializations = new List<UserSpecialization>()
+                {
+                    new UserSpecialization { UserId = 2, SpecializationId = specializationId },
+                    expectedRelationship
+                }
+            };
+
+            _fixture.MockRepository.Setup(repository =>
+                repository.GetById(It.Is<int>(specId => specId == specializationId),
+                    It.Is<string>(props => props == includeProperties)))
+                .ReturnsAsync(specialization);
+
+            Task result = _fixture.MockService.AddUserToSpecialization(specializationId, userId);
+
+            await Assert.ThrowsAsync<ArgumentException>(() => result);
         }
     }
 }
