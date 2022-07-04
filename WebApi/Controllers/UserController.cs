@@ -1,6 +1,8 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,15 +36,10 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync(
-            [FromQuery] CollateParameters collateParameters)
+        public async Task<ActionResult<PagedList<UserReadViewModel>>> GetAsync(
+            [FromQuery] UserParameters userParameters)
         {
-            var users = await _userService.GetAllUsersAsync(
-                collateParameters.FilterParam,
-                collateParameters.OrderByParam,
-                collateParameters.TakeCount, 
-                collateParameters.SkipCount);
-
+            var users = await _userService.GetAllUsersAsync(userParameters);
             var readModels = _readEnumerableMapper.Map(users);
 
             return Ok(readModels);
