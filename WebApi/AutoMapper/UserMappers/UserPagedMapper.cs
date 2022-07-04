@@ -25,7 +25,7 @@ namespace WebApi.AutoMapper.UserMappers
                 HasPrevious = source.HasPrevious,
                 HasNext = source.HasNext,
                 TotalPages = source.TotalPages,
-                ExceptionList = _userReadViewModel.Map(source.AsEnumerable())
+                Entities = _userReadViewModel.Map(source.AsEnumerable())
             };
         }
     }

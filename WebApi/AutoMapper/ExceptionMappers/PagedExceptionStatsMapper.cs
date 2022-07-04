@@ -23,7 +23,7 @@ namespace WebApi.AutoMapper.ExceptionMappers
                 HasPrevious = source.HasPrevious,
                 HasNext = source.HasNext,
                 TotalPages = source.TotalPages,
-                ExceptionList = _exceptionModel.Map(source.AsEnumerable())
+                Entities = _exceptionModel.Map(source.AsEnumerable())
             };
         }
     }

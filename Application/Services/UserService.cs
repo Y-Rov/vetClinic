@@ -3,6 +3,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
 using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -62,7 +63,7 @@ namespace Application.Services
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync(UserParameters userParameters)
+        public async Task<PagedList<User>> GetAllUsersAsync(UserParameters userParameters)
         {
             var filterQuery = GetFilterQuery(userParameters.FilterParam);
             var orderByQuery = GetOrderByQuery(userParameters.OrderByParam);
