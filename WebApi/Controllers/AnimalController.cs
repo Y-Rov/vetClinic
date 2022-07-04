@@ -15,14 +15,14 @@ namespace WebApi.Controllers
         private readonly IViewModelMapperUpdater<AnimalViewModel, Animal> _mapperVMtoM;
         private readonly IViewModelMapper<Animal, AnimalViewModel> _mapperMtoVM;
         private readonly IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> _mapperAnimalListToList;
-        private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>> _mapperMedCard;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>> _mapperMedCard;
 
         public AnimalController(
             IAnimalService animalService,
             IViewModelMapperUpdater<AnimalViewModel, Animal> mapperVMtoM,
             IViewModelMapper<Animal, AnimalViewModel> mapperMtoVM,
             IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> mapperAnimalListToList,
-            IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentViewModel>> mapperMedCard)
+            IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>> mapperMedCard)
         {
             _animalService = animalService;
             _mapperVMtoM = mapperVMtoM;
@@ -40,7 +40,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("medcard/{id:int:min(1)}")]
-        public async Task<IEnumerable<AppointmentViewModel>> GetMedCardAsync([FromRoute] int id)
+        public async Task<IEnumerable<AnimalMedCardViewModel>> GetMedCardAsync([FromRoute] int id)
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(id);
             var map = _mapperMedCard.Map(appointments);

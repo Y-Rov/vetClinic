@@ -96,9 +96,9 @@ namespace WebApi.Test
             }
         };
 
-        private readonly List<AppointmentViewModel> _appointmentViewModels = new()
+        private readonly List<AnimalMedCardViewModel> _animalMedCardViewModel = new()
         {
-            new AppointmentViewModel()
+            new AnimalMedCardViewModel()
             {
                 Id = 1,
                 AnimalId = 1,
@@ -107,7 +107,7 @@ namespace WebApi.Test
                 MeetHasOccureding = true
             },
 
-            new AppointmentViewModel()
+            new AnimalMedCardViewModel()
             {
                 Id = 2,
                 AnimalId = 3,
@@ -326,14 +326,14 @@ namespace WebApi.Test
 
             _animalControllerFixture.MockMedCardMapper
                 .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
-                .Returns(_appointmentViewModels);
+                .Returns(_animalMedCardViewModel);
 
             //Act
             var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(_animal.Id);
 
             //Assert
             Assert.NotNull(actualResult);
-            Assert.Equal(_appointmentViewModels, actualResult);
+            Assert.Equal(_animalMedCardViewModel, actualResult);
         }
 
         [Fact]
@@ -346,7 +346,7 @@ namespace WebApi.Test
 
             _animalControllerFixture.MockMedCardMapper
                 .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
-                .Returns(_appointmentViewModels);
+                .Returns(_animalMedCardViewModel);
 
             //Act
             var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(2);
