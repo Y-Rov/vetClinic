@@ -155,8 +155,6 @@ namespace Application.Services
             //Dictionary<Appoinment.Id, AppointmentCost>
             IDictionary<int, decimal> appCosts = new Dictionary<int, decimal>();
 
-            var listProcedures = new List<Procedure>();
-
             foreach(var appointment in appointments)
             {
                 appCosts.Add(appointment.Id, 0);
@@ -164,19 +162,16 @@ namespace Application.Services
                 foreach(var procedures in appointment.AppointmentProcedures)
                 {
                     var procedure = await _procedureRepository.GetById(procedures.ProcedureId);
-                    listProcedures.Add(procedure);
                     appCosts[appointment.Id] += procedure.Cost;
                 }
             //Create Income 
                 var income = new Income
                 {
                     AppointmenId = appointment.Id,
-                    ListOfProcedures = listProcedures,
                     Cost = appCosts[appointment.Id]
                 };
             //Add previous to list
                 _incomes.Add(income);
-                listProcedures.Clear();
 
                 var doctorsCount = appointment.AppointmentUsers.Count();
 
@@ -228,7 +223,6 @@ namespace Application.Services
             var financialStatement = new FinancialStatement()
             { 
                 Month = date.startDate.ToString("MMMM yyyy"),
-                //Period = date,
                 expences = _expences,
                 incomes = _incomes,
                 TotalExpences = allExpence,
@@ -268,11 +262,6 @@ namespace Application.Services
                 finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
             }
             
-            var financialStatementList = new FinancialStatementList()
-            {
-                Period = date,
-                StatementsForEachMonth = finStatList
-            };
             return finStatList;
         }
     }
