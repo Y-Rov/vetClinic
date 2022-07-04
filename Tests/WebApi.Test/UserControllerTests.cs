@@ -21,7 +21,7 @@ namespace WebApi.Test
         {
             // Arrange
             _fixture.MockUserService
-                .Setup(s => s.GetAllUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetAllUsersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
             _fixture.MockReadEnumerableMapper
