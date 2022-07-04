@@ -80,7 +80,7 @@ public class ArticleService : IArticleService
         catch (RequestFailedException)
         {
             _loggerManager.LogWarn("Error while deleting files from the blob");
-            throw new NotFoundException("Error while deleting files from the blob");
+            throw new BadRequestException("Error while deleting files from the blob");
         }
         
         _articleRepository.Delete(articleToRemove);
