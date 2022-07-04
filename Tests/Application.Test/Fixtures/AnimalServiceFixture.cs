@@ -16,13 +16,16 @@ namespace Application.Test.Fixtures
 
             MockAnimalRepository = fixture.Freeze<Mock<IAnimalRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
+            MockAnimalPhotoService = fixture.Freeze<Mock<IAnimalPhotoService>>();
             MockAnimalService = new AnimalService(
                 MockAnimalRepository.Object,
-                MockLoggerManager.Object);
+                MockLoggerManager.Object,
+                MockAnimalPhotoService.Object);
         }
 
         public Mock<IAnimalRepository> MockAnimalRepository { get; }
         public Mock<ILoggerManager> MockLoggerManager { get; }
+        public Mock<IAnimalPhotoService> MockAnimalPhotoService { get; }
         public AnimalService MockAnimalService { get; }
     }
 }

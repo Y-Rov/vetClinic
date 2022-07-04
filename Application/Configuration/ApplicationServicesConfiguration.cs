@@ -21,6 +21,7 @@ namespace Application.Configuration
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IUserProfilePictureService, UserProfilePictureService>();
             services.AddScoped<IImageParser, ImageParser>();
+            services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
         }
     }
 }
