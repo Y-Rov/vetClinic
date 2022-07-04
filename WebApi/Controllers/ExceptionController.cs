@@ -41,18 +41,6 @@ namespace WebApi.Controllers
             return Ok(exceptionsReadModel);
         }
 
-
-        [HttpGet("test")]
-        public async Task<ActionResult<PagedReadViewModel<ExceptionEntity>>> GetTodddayAsync([FromQuery] ExceptionParameters exceptionParameters)
-        {
-            var allExceptions = await _exceptionEntityService.GetTodayAsync(exceptionParameters);
-
-            var exceptionsReadModel = _exceptionToPagedModel.Map(allExceptions);
-
-            return Ok(exceptionsReadModel);
-
-        }
-
         [HttpGet("stats")]
         public async Task<ActionResult<PagedReadViewModel<ExceptionStatsReadViewModel>>> GetStatsAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
