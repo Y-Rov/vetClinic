@@ -32,7 +32,7 @@ namespace Application.Test
 
             // Act
             var result = await _fixture.MockUserService.GetAllUsersAsync(
-                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
