@@ -138,6 +138,76 @@ namespace DataAccess.Migrations
                     b.ToTable("AppointmentUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(6000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Articles", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Comments", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.ExceptionEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -323,8 +393,8 @@ namespace DataAccess.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<byte[]>("ProfilePicture")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -354,7 +424,7 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "f29f9b4c-7d86-4b49-92dc-31b3b74840ca",
+                            ConcurrencyStamp = "d40bd44f-933d-44d1-a1e7-7ea80d79ae23",
                             Email = "admin.mail@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
@@ -363,10 +433,10 @@ namespace DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN.MAIL@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHvCVgw0h624ljAuZsJeg1uFXDM/i+yJVvmDp9WenYmsZFBoEBuT3lhagVryM8kZTQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGZyIczkaVVM8Z7xYRRHE4ERqlkTMGT3ffnEU907C/xgTlG5M2ce5VOqpYEQkCsc7Q==",
                             PhoneNumber = "00 000 000 0000",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ab4bdded-8336-4337-858c-5fa15ff26b01",
+                            SecurityStamp = "b94e792b-c909-432b-818a-c029f23cd461",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -420,28 +490,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "b771c2bb-df75-464d-9465-3415274b17e3",
+                            ConcurrencyStamp = "e9c5351f-5789-48e2-bb4c-2e290ccc9225",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "967fe632-cda2-4256-9372-83dd2a6e3dfe",
+                            ConcurrencyStamp = "edb63f2a-b150-47a9-8cc5-f8fba2773a23",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "e5c6ec60-544e-4f02-b395-aed8fdd33b22",
+                            ConcurrencyStamp = "0c9349ea-a826-4ac6-9894-69a06cb964ef",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "9007621e-b681-4494-8251-a819e12c82a2",
+                            ConcurrencyStamp = "13bcffc7-2246-488c-a1de-7c9c09b7a6c1",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -628,6 +698,36 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.HasOne("Core.Entities.User", "Author")
+                        .WithMany("Articles")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Core.Entities.Comment", b =>
+                {
+                    b.HasOne("Core.Entities.Article", "Article")
+                        .WithMany("Comments")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.User", "Author")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Core.Entities.Portfolio", b =>
                 {
                     b.HasOne("Core.Entities.User", "User")
@@ -751,6 +851,11 @@ namespace DataAccess.Migrations
                     b.Navigation("AppointmentUsers");
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
             modelBuilder.Entity("Core.Entities.Procedure", b =>
                 {
                     b.Navigation("AppointmentProcedures");
@@ -772,6 +877,10 @@ namespace DataAccess.Migrations
                     b.Navigation("Animals");
 
                     b.Navigation("AppointmentUsers");
+
+                    b.Navigation("Articles");
+
+                    b.Navigation("Comments");
 
                     b.Navigation("Portfolio");
 

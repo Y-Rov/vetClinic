@@ -2,6 +2,7 @@
 using Core.Entities;
 using Core.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System.Linq.Expressions;
 
@@ -24,15 +25,19 @@ namespace Application.Test
                 .Setup(r => r.GetAllAsync(
                     It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
-                    It.IsAny<string>()))
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
             // Act
-            var result = await _fixture.MockUserService.GetAllUsersAsync();
+            var result = await _fixture.MockUserService.GetAllUsersAsync(
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.Users);
+            Assert.NotEmpty(result);
+            Assert.IsType<List<User>>(result);
         }
 
         [Fact]
@@ -40,7 +45,9 @@ namespace Application.Test
         {
             // Arrange
             _fixture.MockUserRepository
-                .Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(r => r.GetByIdAsync(
+                    It.IsAny<int>(), 
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(_fixture.User);
 
             // Act
@@ -48,7 +55,7 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.User);
+            Assert.IsType<User>(result);
         }
 
         [Fact]
@@ -56,13 +63,16 @@ namespace Application.Test
         {
             // Arrange
             _fixture.MockUserRepository
-                .Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(r => r.GetByIdAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .Throws<NotFoundException>();
 
             // Act
             var result = _fixture.MockUserService.GetUserByIdAsync(_fixture.Id);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<NotFoundException>(async () => await result);
         }
 
@@ -72,17 +82,24 @@ namespace Application.Test
             // Arrange
             _fixture.MockUserRepository
                 .Setup(r => r.GetByRoleAsync(
-                    It.IsAny<string>(), 
-                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(), 
-                    It.IsAny<string>()))
+                    It.IsAny<string>(),
+                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
+            _fixture.MockUserRepository
+                .Setup(r => r.FilterBySpecialization(It.IsAny<IEnumerable<User>>(), It.IsAny<string>()))
+                .Returns(_fixture.Users);
+
             // Act
-            var result = await _fixture.MockUserService.GetDoctorsAsync();
+            var result = await _fixture.MockUserService.GetDoctorsAsync(_fixture.SpecializationName);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.Users);
+            Assert.NotEmpty(result);
+            Assert.IsType<List<User>>(result);
         }
 
         [Fact]
@@ -99,6 +116,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -113,6 +131,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Passowrd);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
@@ -130,6 +149,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -144,6 +164,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.AssignRoleAsync(_fixture.User, _fixture.Role);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
@@ -160,7 +181,8 @@ namespace Application.Test
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockUserRepository.Verify();
+            _fixture.MockUserRepository.Verify(r => r.UpdateAsync(It.IsAny<User>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -175,6 +197,7 @@ namespace Application.Test
             var result = _fixture.MockUserService.UpdateAsync(_fixture.User);
 
             // Assert
+            Assert.NotNull(result);
             await Assert.ThrowsAsync<BadRequestException>(async () => await result);
         }
 
@@ -187,6 +210,7 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.Delete(It.IsAny<User>()), Times.Once());
+            _fixture.MockUserRepository.ResetCalls();
         }
     }
 }

@@ -4,9 +4,9 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AddressMappers
 {
-    public class AddressCreateMapper : IViewModelMapper<AddressCreateViewModel, Address>
+    public class AddressCreateMapper : IViewModelMapper<AddressCreateReadViewModel, Address>
     {
-        public Address Map(AddressCreateViewModel source)
+        public Address Map(AddressCreateReadViewModel source)
         {
             return new Address
             {

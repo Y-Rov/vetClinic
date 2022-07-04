@@ -32,27 +32,27 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AnimalViewModel>>> GetAsync()
+        public async Task<IEnumerable<AnimalViewModel>> GetAsync()
         {
             var animals = await _animalService.GetAsync();
             var map = _mapperAnimalListToList.Map(animals);
-            return Ok(map);
+            return map;
         }
 
-        [HttpGet("/medcard/{id:int:min(1)}")]
-        public async Task<ActionResult<IEnumerable<AppointmentReadViewModel>>> GetMedCardAsync([FromRoute] int id)
+        [HttpGet("medcard/{id:int:min(1)}")]
+        public async Task<IEnumerable<AppointmentViewModel>> GetMedCardAsync([FromRoute] int id)
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(id);
             var map = _mapperMedCard.Map(appointments);
-            return Ok(map);
+            return map;
         }
 
         [HttpGet("{id:int:min(1)}")]
-        public async Task<ActionResult<AnimalViewModel>> GetAsync([FromRoute]int id)
+        public async Task<AnimalViewModel> GetAsync([FromRoute]int id)
         {
             var animal = await _animalService.GetByIdAsync(id);
             var map = _mapperMtoVM.Map(animal);
-            return Ok(map);
+            return map;
         }
 
         [HttpPost]

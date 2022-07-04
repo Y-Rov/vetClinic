@@ -5,16 +5,16 @@ using WebApi.AutoMapper.Interface;
 namespace WebApi.AutoMapper.PortfolioMappers
 {
     public class PortfolioReadEnumerableViewModelMapper 
-        : IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateViewModel>>
+        : IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>>
     {
-        private readonly IViewModelMapper<Portfolio, PortfolioCreateViewModel> _readMapper;
+        private readonly IViewModelMapper<Portfolio, PortfolioCreateReadViewModel> _readMapper;
 
-        public PortfolioReadEnumerableViewModelMapper(IViewModelMapper<Portfolio, PortfolioCreateViewModel> readMapper)
+        public PortfolioReadEnumerableViewModelMapper(IViewModelMapper<Portfolio, PortfolioCreateReadViewModel> readMapper)
         {
             _readMapper = readMapper;
         }
 
-        public IEnumerable<PortfolioCreateViewModel> Map(IEnumerable<Portfolio> source)
+        public IEnumerable<PortfolioCreateReadViewModel> Map(IEnumerable<Portfolio> source)
         {
             var readViewModels = source.Select(portfolio => _readMapper.Map(portfolio));
             return readViewModels;

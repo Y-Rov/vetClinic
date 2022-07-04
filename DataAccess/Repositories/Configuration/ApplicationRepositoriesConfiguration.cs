@@ -18,6 +18,11 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddScoped<ISalaryRepository, SalaryRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IUserSpecializationRepository, UserSpecializationRepository>();
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IUserProfilePictureRepository, UserProfilePictureRepository>();
             services.AddScoped<IAppointmentProcedureRepository, AppointmentProcedureRepository>();
             services.AddScoped<IAppointmentUserRepository, AppointmentUserRepository>();
         }

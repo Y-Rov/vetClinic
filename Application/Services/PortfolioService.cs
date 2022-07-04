@@ -9,16 +9,13 @@ namespace Application.Services
     public class PortfolioService : IPortfolioService
     {
         private readonly IPortfolioRepository _portfolioRepository;
-        private readonly IUserService _userService;
         private readonly ILoggerManager _loggerManager;
 
         public PortfolioService(
             IPortfolioRepository portfolioRepository,
-            IUserService userService,
             ILoggerManager loggerManager)
         {
             _portfolioRepository = portfolioRepository;
-            _userService = userService;
             _loggerManager = loggerManager;
         }
         
@@ -53,10 +50,6 @@ namespace Application.Services
                 _loggerManager.LogWarn($"User with ID = {newPortfolio.UserId} has already a portfolio");
                 throw new BadRequestException($"User with ID = {newPortfolio.UserId} has already a portfolio");
             }
-
-            var user = await _userService.GetUserByIdAsync(newPortfolio.UserId);
-            user.Portfolio = newPortfolio;
-            newPortfolio.User = user;
 
             await _portfolioRepository.InsertAsync(newPortfolio);
             await _portfolioRepository.SaveChangesAsync();

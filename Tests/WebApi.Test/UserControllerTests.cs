@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Models;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -20,7 +21,7 @@ namespace WebApi.Test
         {
             // Arrange
             _fixture.MockUserService
-                .Setup(s => s.GetAllUsersAsync())
+                .Setup(s => s.GetAllUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(_fixture.Users);
 
             _fixture.MockReadEnumerableMapper
@@ -28,11 +29,13 @@ namespace WebApi.Test
                 .Returns(_fixture.ReadViewModels);
 
             // Act
-            var result = await _fixture.MockUserController.GetAsync();
+            var result = await _fixture.MockUserController.GetAsync(_fixture.CollateParameters);
+            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<UserReadViewModel>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, _fixture.ReadViewModels);
+            Assert.IsType<ActionResult<IEnumerable<UserReadViewModel>>>(result);
+            Assert.NotEmpty(readViewModels);
         }
 
         [Fact]
@@ -49,10 +52,12 @@ namespace WebApi.Test
 
             // Act
             var result = await _fixture.MockUserController.GetAsync(_fixture.Id);
+            var readViewModel = (result.Result as OkObjectResult)!.Value as UserReadViewModel;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, _fixture.ReadViewModel);
+            Assert.IsType<ActionResult<UserReadViewModel>>(result);
+            Assert.NotNull(readViewModel);
         }
 
         [Fact]
@@ -69,10 +74,12 @@ namespace WebApi.Test
 
             // Act
             var result = await _fixture.MockUserController.GetDoctorsAsync(string.Empty);
+            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<UserReadViewModel>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as OkObjectResult)!.Value, _fixture.ReadViewModels);
+            Assert.IsType<ActionResult<IEnumerable<UserReadViewModel>>>(result);
+            Assert.NotEmpty(readViewModels);
         }
 
         [Fact]
@@ -89,10 +96,12 @@ namespace WebApi.Test
 
             // Act
             var result = await _fixture.MockUserController.CreateAsync(_fixture.CreateViewModel);
+            var readViewModel = (result.Result as CreatedAtActionResult)!.Value as UserReadViewModel;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((result.Result as CreatedAtActionResult)!.Value, _fixture.ReadViewModel);
+            Assert.IsType<ActionResult<UserReadViewModel>>(result);
+            Assert.NotNull(readViewModel);
         }
 
         [Fact]
@@ -112,7 +121,7 @@ namespace WebApi.Test
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockUserService.Verify();
+            Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
@@ -128,7 +137,7 @@ namespace WebApi.Test
 
             // Assert
             Assert.NotNull(result);
-            _fixture.MockUserService.Verify();
+            Assert.IsType<NoContentResult>(result);
         }
     }
 }
