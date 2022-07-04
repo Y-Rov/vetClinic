@@ -2,6 +2,7 @@
 using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Application.Test;
@@ -136,4 +137,137 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
     }
+
+    [Fact]
+    public async Task GetPublishedArticlesAsync_whenArticlesListIsNotEmpty_thanReturnArticlesList()
+    {
+        var published = new List<Article>()
+        {
+            new Article
+            {
+                Id = 1,
+                AuthorId = 1,
+                Body = "<ul><li><p class=\"mat-title\">Hello</li><li>World</li></ul>",
+                CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
+                Edited = true,
+                Published = true,
+                Title = "Hello"
+            },
+            new Article
+            {
+                Id = 2,
+                AuthorId = 1,
+                Body = "<ul><li><p class=\"mat-title\">Hello</li><li>World</li></ul>",
+                CreatedAt = new DateTime(2020, 10, 10, 10, 10, 30),
+                Edited = false,
+                Published = true,
+                Title = "Hello"
+            }
+        };
+        _fixture.MockArticleRepository
+            .Setup(repo => repo.GetAsync(
+                It.IsAny<Expression<Func<Article, bool>>>(),
+                It.IsAny<Func<IQueryable<Article>, IOrderedQueryable<Article>>>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>()))
+            .ReturnsAsync(published);
+        
+        //Act
+        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        
+        //Assert
+        Assert.NotEmpty(result);
+        Assert.Equal(published, result);
+    }
+
+    [Fact]
+    public async Task CreateArticleAsync_whenNormal_thenSuccess()
+    {
+        //Arrange
+        _fixture.MockImageParser
+            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .ReturnsAsync("article body");
+        
+        _fixture.MockArticleRepository
+            .Setup(r => r.InsertAsync(It.IsAny<Article>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
+        _fixture.MockArticleRepository
+            .Setup(r => r.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+        //Act
+        await _fixture.MockArticleService.CreateArticleAsync(_article);
+        
+        //Assert
+        _fixture.MockArticleRepository
+            .Verify(r => r.InsertAsync(_article), Times.Once);
+        _fixture.MockArticleRepository
+            .Verify(r => r.SaveChangesAsync(), Times.Once);
+        _fixture.MockArticleRepository.ResetCalls();
+    }
+
+    [Fact]
+    public async Task CreateArticleAsync_whenUserDontExist_thenThrowNotFound()
+    {
+        //Arrange
+        _fixture.MockImageParser
+            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .ReturnsAsync("article body");
+        
+        _fixture.MockArticleRepository
+            .Setup(r => r.InsertAsync(It.IsAny<Article>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
+        _fixture.MockArticleRepository
+            .Setup(r => r.SaveChangesAsync())
+            .Throws<DbUpdateException>();
+
+        //Act
+        var result = _fixture.MockArticleService.CreateArticleAsync(_article);
+        
+        //Assert
+        _fixture.MockArticleRepository
+            .Verify(r => r.InsertAsync(_article), Times.Once);
+        await Assert.ThrowsAsync<NotFoundException>(() => result);
+        
+        _fixture.MockArticleRepository.ResetCalls();
+    }
+
+    [Fact]
+    public async Task CreateArticleAsync_whenBlobError_thenThrowBadRequest()
+    {
+        //Arrange
+        _fixture.MockImageParser
+            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .ThrowsAsync(new BadRequestException());
+        
+        _fixture.MockArticleRepository
+            .Setup(r => r.InsertAsync(It.IsAny<Article>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
+        _fixture.MockArticleRepository
+            .Setup(r => r.SaveChangesAsync())
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
+        //Act
+        var result = _fixture.MockArticleService.CreateArticleAsync(_article);
+        
+        //Assert
+        _fixture.MockArticleRepository
+            .Verify(r => r.InsertAsync(_article), Times.Never);
+        await Assert.ThrowsAsync<BadRequestException>(() => result);
+    }
+    
+    [Fact]
+    public async Task UpdateArticleAsync_whenNormal_thenSuccess(){}
+    
+    [Fact]
+    public async Task UpdateArticleAsync_whenBlobError_thenThrowBadRequest(){}
+    
+    [Fact]
+    public async Task DeleteArticleAsync_whenNormal_thenSuccess(){}
+    
+    [Fact]
+    public async Task DeleteArticleAsync_whenBlobError_thenThrowBadRequest(){}
 }

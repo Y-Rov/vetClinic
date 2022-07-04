@@ -14,12 +14,12 @@ public class ArticleService : IArticleService
 {
     private readonly IArticleRepository _articleRepository;
     private readonly ILoggerManager _loggerManager;
-    private readonly ImageParser _imageParser;
+    private readonly IImageParser _imageParser;
 
     public ArticleService(
         IArticleRepository articleRepository,
         ILoggerManager loggerManager,
-        ImageParser imageParser
+        IImageParser imageParser
         )
     {
         _articleRepository = articleRepository;
@@ -43,7 +43,7 @@ public class ArticleService : IArticleService
         catch (RequestFailedException)
         {
             _loggerManager.LogWarn("Error while uploading files to the blob");
-            throw new NotFoundException("Error while uploading files to the blob");
+            throw new BadRequestException("Error while uploading files to the blob");
         }
         
         _loggerManager.LogInfo($"Created new article with title {article.Title}");

@@ -1,9 +1,10 @@
 ﻿using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
-public class ImageParser
+public class ImageParser : IImageParser
 {
     private readonly IConfiguration _configuration;
     private readonly IImageRepository _imageRepository;
