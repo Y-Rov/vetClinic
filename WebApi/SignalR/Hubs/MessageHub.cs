@@ -30,7 +30,7 @@ public class MessageHub : Hub
     {
         if (TryParseUserId(out int senderId))
         {
-            var chatRoom = await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
+            await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
 
             var messageMap = _sendMessageMapper.Map(message);
             messageMap.SenderId = senderId;
@@ -38,7 +38,7 @@ public class MessageHub : Hub
             await _messageService.CreateAsync(messageMap);
             
             var messageGetMap = _getMessageMapper.Map(messageMap);
-            await Clients.GroupExcept(messageMap.ChatRoomId.ToString(), Context.UserIdentifier!)
+            await Clients.User(message.ReceiverId.ToString())
                 .SendAsync("getMessage", messageGetMap);
         }
     }
