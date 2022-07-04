@@ -273,4 +273,44 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         Assert.Empty(base64);
         Assert.True(isOuter);
     }
-}
+
+    [Fact]
+    public async Task UploadImages_when3Base64ImagesWithAttributesAtTheBeginningAndAtTheEnd_inARow()
+    {
+        //Arrange
+        var tag =
+            "<div class=\"div class\"><img alt=\"111hello111\" src=\"data:image/jpeg;base64,***the FIRST string***\" style=\"111hello111: hello111\">" +
+            "<img class=\"div class\"    alt=\"222hello222\" src=\"data:image/png;base64,***the SECOND string***\" style=\"222hello222: hello333\">" +
+            "<img class=\"div class\" alt=\"333hello333\" src=\"data:image/webp;base64,***the THIRD string***\" style=\"333hello333: hello333\"></div>";
+        
+        _fixture.MockImageRepository
+            .Setup(r => r.UploadFromBase64Async(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .ReturnsAsync("folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format")
+            .Verifiable();
+        
+        _fixture.MockConfiguration
+            .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
+            .Returns("http://127.0.0.1:10000/devstoreaccount1");
+        
+        _fixture.MockConfiguration
+            .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
+            .Returns("vet-clinic");
+        
+        //Act
+        var result = await _fixture.ImageParser.UploadImages(tag);
+        //Assert
+        _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
+            Times.Exactly(3));
+
+        Assert.Equal("<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
+                            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
+                            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>", result);
+    }}
