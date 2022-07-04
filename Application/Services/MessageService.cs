@@ -31,8 +31,8 @@ public class MessageService : IMessageService
             filter: m => m.Id == id);
     }
 
-    public async Task<IEnumerable<Message>> LoadMessagesInChatRoomAsync(int readerId, int chatRoomId, int skip,
-        int take)
+    public async Task<IEnumerable<Message>> GetMessagesInChatRoomAsync(
+        int readerId, int chatRoomId, int skip, int take)
     {
         if (!await _chatRoomRepository.ExistsAsync(chatRoomId))
             throw new NotFoundException($"Chatroom with id {chatRoomId} does not exist");
@@ -52,17 +52,7 @@ public class MessageService : IMessageService
 
     public async Task<IEnumerable<Message>> GetUnreadMessagesAsync(int userId)
     {
-        var user = await _userService.GetUserByIdAsync(userId);
-        if (user is null)
-            throw new NotFoundException($"User with id {userId} does not exist");
-
-        var roomsIds = (await _userChatRoomRepository
-            .QueryAsync(filter: ur => ur.UserId == userId))
-            .Select(r => r.ChatRoomId);
-
-        return await _messageRepository.QueryAsync(
-            filter: m => roomsIds.Contains(m.ChatRoomId),
-            asNoTracking: true);
+        return await _messageRepository.GetUnreadMessagesAsync(userId);
     }
 
     public async Task CreateAsync(Message message)
