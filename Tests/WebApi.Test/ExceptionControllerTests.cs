@@ -2,7 +2,7 @@
 using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
-using Core.ViewModel;
+using Core.ViewModels.ExceptionViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

@@ -5,7 +5,7 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
-using Core.ViewModel;
+using Core.ViewModels.ExceptionViewModel;
 using Moq;
 using WebApi.AutoMapper.Interface;
 using WebApi.Controllers;
