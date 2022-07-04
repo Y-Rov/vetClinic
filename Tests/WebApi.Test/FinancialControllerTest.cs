@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
+using Core.Models.Finance;
 using Core.ViewModels.SalaryViewModel;
 using Moq;
 using WebApi.Test.Fixtures;
@@ -553,6 +554,110 @@ namespace WebApi.Test
             //Act
             //Assert
             await Assert.ThrowsAsync<BadRequestException>(async () => await _fixture.MockFinancialController.PutAsync(salaryViewModel));
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
+        {
+            //Arrange
+            var dateVM = new DateViewModel()
+            {
+                startDate = new DateTime(2022, 5, 1),
+                endDate = new DateTime(2022, 6, 1)
+            };
+            var date = new Date()
+            {
+                startDate = new DateTime(2022, 5, 1),
+                endDate = new DateTime(2022, 6, 1)
+            };
+
+            var finStatement = new List<FinancialStatement>()
+            {
+                new FinancialStatement()
+                {
+                    Month = "first",
+                    TotalIncomes =1,
+                    TotalExpences=1
+                },
+                new FinancialStatement()
+                {
+                    Month = "second",
+                    TotalIncomes =2,
+                    TotalExpences=2
+                }
+            };
+
+            var finStatementVM = new List<FinancialStatementForMonthViewModel>()
+            {
+                new FinancialStatementForMonthViewModel()
+                {
+                    Month = "first",
+                    TotalIncomes =1,
+                    TotalExpences=1
+                },
+                new FinancialStatementForMonthViewModel()
+                {
+                    Month = "second",
+                    TotalIncomes =2,
+                    TotalExpences=2
+                }
+            };
+
+            _fixture.MockDate
+                .Setup(mapper =>
+                    mapper.Map(It.Is<DateViewModel>(x => x.Equals(dateVM))))
+                .Returns(date);
+            _fixture.MockFinancialService
+                .Setup(service =>
+                    service.GetFinancialStatement(It.Is<Date>(x => x.Equals(date))))
+                .ReturnsAsync(finStatement);
+            _fixture.MockFinancialStatementViewModel
+                .Setup(mapper=>
+                    mapper.Map(It.IsAny<IEnumerable<FinancialStatement>>()))
+                .Returns(finStatementVM);
+            //Act
+            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(dateVM);
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(finStatementVM,result);
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenFinancialStatementListIsEmpty_thenReturnOk()
+        {
+            //Arrange
+            var dateVM = new DateViewModel()
+            {
+                startDate = new DateTime(2022, 5, 1),
+                endDate = new DateTime(2022, 6, 1)
+            };
+            var date = new Date()
+            {
+                startDate = new DateTime(2022, 5, 1),
+                endDate = new DateTime(2022, 6, 1)
+            };
+
+            var finStatement = new List<FinancialStatement>();
+
+            var finStatementVM = new List<FinancialStatementForMonthViewModel>();
+
+            _fixture.MockDate
+                .Setup(mapper =>
+                    mapper.Map(It.Is<DateViewModel>(x => x.Equals(dateVM))))
+                .Returns(date);
+            _fixture.MockFinancialService
+                .Setup(service =>
+                    service.GetFinancialStatement(It.Is<Date>(x => x.Equals(date))))
+                .ReturnsAsync(finStatement);
+            _fixture.MockFinancialStatementViewModel
+                .Setup(mapper =>
+                    mapper.Map(It.IsAny<IEnumerable<FinancialStatement>>()))
+                .Returns(finStatementVM);
+            //Act
+            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(dateVM);
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(finStatementVM, result);
         }
     }
 }

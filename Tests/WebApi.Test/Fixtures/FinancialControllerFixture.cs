@@ -24,7 +24,9 @@ namespace WebApi.Test.Fixtures
             MockListSalaryViewModels = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>>>();
             MockListEmployees = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>>>();
             MockDate = fixture.Freeze<Mock<IViewModelMapper<DateViewModel, Date>>>();
-            MockFinancialStatementViewModel = fixture.Freeze<Mock<IViewModelMapper<FinancialStatementList, FinancialStatementViewModel>>>();
+            MockFinancialStatementViewModel = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<FinancialStatement>,
+                IEnumerable<FinancialStatementForMonthViewModel>>>>();
+
 
             MockFinancialController = new FinancialController(
                 MockFinancialService.Object,
@@ -34,7 +36,8 @@ namespace WebApi.Test.Fixtures
                 MockListSalaryViewModels.Object,
                 MockListEmployees.Object,
                 MockDate.Object,
-                MockFinancialStatementViewModel.Object);
+                MockFinancialStatementViewModel.Object
+                );
         }
 
         public FinancialController  MockFinancialController{ get; }
@@ -45,6 +48,7 @@ namespace WebApi.Test.Fixtures
         public Mock<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>> MockListSalaryViewModels { get; }
         public Mock<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>> MockListEmployees { get; }
         public Mock<IViewModelMapper<DateViewModel, Date>> MockDate { get; }
-        public Mock<IViewModelMapper<FinancialStatementList, FinancialStatementViewModel>> MockFinancialStatementViewModel { get; }
+        public Mock<IViewModelMapper<IEnumerable<FinancialStatement>, 
+            IEnumerable<FinancialStatementForMonthViewModel>>> MockFinancialStatementViewModel { get; }
     }
 }
