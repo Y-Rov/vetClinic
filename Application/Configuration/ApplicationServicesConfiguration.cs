@@ -20,6 +20,8 @@ namespace Application.Configuration
             services.AddScoped<IArticleService, ArticleService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IUserProfilePictureService, UserProfilePictureService>();
+
+            services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
         }
     }
 }

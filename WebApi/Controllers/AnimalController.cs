@@ -13,17 +13,17 @@ namespace WebApi.Controllers
     public class AnimalController : ControllerBase
     {
         private readonly IAnimalService _animalService;
-        private readonly IViewModelMapper<AnimalViewModel, Animal> _mapperVMtoM;
+        private readonly IViewModelMapperUpdater<AnimalViewModel, Animal> _mapperVMtoM;
         private readonly IViewModelMapper<Animal, AnimalViewModel> _mapperMtoVM;
         private readonly IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> _mapperAnimalListToList;
-        private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>> _mapperMedCard;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>> _mapperMedCard;
 
         public AnimalController(
             IAnimalService animalService,
-            IViewModelMapper<AnimalViewModel, Animal> mapperVMtoM,
+            IViewModelMapperUpdater<AnimalViewModel, Animal> mapperVMtoM,
             IViewModelMapper<Animal, AnimalViewModel> mapperMtoVM,
             IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> mapperAnimalListToList,
-            IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>> mapperMedCard)
+            IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>> mapperMedCard)
         {
             _animalService = animalService;
             _mapperVMtoM = mapperVMtoM;
@@ -41,7 +41,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("medcard/{id:int:min(1)}")]
-        public async Task<IEnumerable<AppointmentReadViewModel>> GetMedCardAsync([FromRoute] int id)
+        public async Task<IEnumerable<AnimalMedCardViewModel>> GetMedCardAsync([FromRoute] int id)
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(id);
             var map = _mapperMedCard.Map(appointments);
@@ -74,8 +74,9 @@ namespace WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateAsync([FromBody]AnimalViewModel model)
         {
-            var map = _mapperVMtoM.Map(model);
-            await _animalService.UpdateAsync(map);
+            var prevAnimal = _animalService.GetByIdAsync(model.Id);
+            _mapperVMtoM.Map(model, prevAnimal.Result);
+            await _animalService.UpdateAsync(prevAnimal.Result);
             return NoContent();
         }
     }
