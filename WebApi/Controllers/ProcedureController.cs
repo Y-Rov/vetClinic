@@ -47,8 +47,8 @@ public class ProcedureController : ControllerBase
         var viewModel = _procedureViewModelMapper.Map(result);
         return viewModel;
     }
-    
-    //[Authorize(Roles = "Admin")]
+
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task CreateAsync([FromBody]ProcedureCreateViewModel procedure)
     {

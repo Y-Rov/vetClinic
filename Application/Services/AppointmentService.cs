@@ -120,12 +120,9 @@ namespace Application.Services
             existingAppointment.MeetHasOccureding = appointment.MeetHasOccureding;
             existingAppointment.Disease = appointment.Disease;
             existingAppointment.AnimalId = appointment.AnimalId;
-            existingAppointment.AppointmentUsers = appointment.AppointmentUsers;
-            existingAppointment.AppointmentProcedures = appointment.AppointmentProcedures;
+            //existingAppointment.AppointmentUsers = appointment.AppointmentUsers;
+            //existingAppointment.AppointmentProcedures = appointment.AppointmentProcedures;
 
-
-
-            await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
         }
     }
