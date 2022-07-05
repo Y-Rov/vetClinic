@@ -1,5 +1,10 @@
-﻿using Core.Entities;
+﻿using System.Configuration;
+using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
+using Core.ViewModels.CommentViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +71,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         }
     };
     
-    private readonly IEnumerable<Procedure> _procedures = new List<Procedure>()
+    private static readonly List<Procedure> _procedures = new List<Procedure>()
     {
         new Procedure()
         {
@@ -114,8 +119,22 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
             }
         }
     };
-    
-    private readonly IEnumerable<ProcedureReadViewModel> _procedureReadViewModels = new List<ProcedureReadViewModel>()
+
+    private readonly PagedList<Procedure> _pagedProcedures = new PagedList<Procedure>(_procedures, 3, 1, 5);
+
+    private readonly PagedReadViewModel<ProcedureReadViewModel> _pagedReadViewModel =
+        new PagedReadViewModel<ProcedureReadViewModel>()
+        {
+            CurrentPage = 1,
+            Entities = _procedureReadViewModels,
+            HasNext = false,
+            HasPrevious = false,
+            PageSize = 5,
+            TotalCount = 3,
+            TotalPages = 1
+        };
+
+    private static readonly IEnumerable<ProcedureReadViewModel> _procedureReadViewModels = new List<ProcedureReadViewModel>()
     {
         new ProcedureReadViewModel()
         {
@@ -201,46 +220,46 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         //  Arrange
         _fixture.MockProcedureService
             .Setup(service =>
-                service.GetAllProceduresAsync())
-            .ReturnsAsync(_procedures);
+                service.GetAllProceduresAsync(It.IsAny<ProcedureParameters>()))
+            .ReturnsAsync(_pagedProcedures);
 
-        _fixture.MockProcedureReadViewModelListMapper
+        _fixture.MockPagedListMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Procedure>>(p => p.Equals(_procedures))))
-            .Returns(_procedureReadViewModels);
+                mapper.Map(It.IsAny<PagedList<Procedure>>()))
+            .Returns(_pagedReadViewModel);
 
         //  Act
-        var result = await _fixture.MockProcedureController.GetAsync();
+        var result = await _fixture.MockProcedureController.GetAsync(new ProcedureParameters());
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _procedureReadViewModels);
+        Assert.Equal(result, _pagedReadViewModel);
     }
 
     [Fact]
     public async Task GetAll_whenProceduresListIsEmpty_thenStatusOkReturned()
     {
         //  Arrange
-        var emptyProcedures = new List<Procedure>();
+        var emptyPagedProcedures = new PagedList<Procedure>(new List<Procedure>(), 0, 0, 0);
 
-        var emptyProcedureReadViewModels = new List<ProcedureReadViewModel>();
+        var emptyPagedReadViewModel = new PagedReadViewModel<ProcedureReadViewModel>();
 
         _fixture.MockProcedureService
             .Setup(service =>
-                service.GetAllProceduresAsync())
-            .ReturnsAsync(emptyProcedures);
+                service.GetAllProceduresAsync(It.IsAny<ProcedureParameters>()))
+            .ReturnsAsync(emptyPagedProcedures);
 
-        _fixture.MockProcedureReadViewModelListMapper
+        _fixture.MockPagedListMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Procedure>>(p => p.Equals(emptyProcedures))))
-            .Returns(emptyProcedureReadViewModels);
+                mapper.Map(It.IsAny<PagedList<Procedure>>()))
+            .Returns(emptyPagedReadViewModel);
 
         //  Act
-        var result = await _fixture.MockProcedureController.GetAsync();
+        var result = await _fixture.MockProcedureController.GetAsync(It.IsAny<ProcedureParameters>());
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, emptyProcedureReadViewModels);
+        Assert.Equal(result, emptyPagedReadViewModel);
     }
     
     [Fact]
