@@ -21,31 +21,21 @@ namespace Application.Test
         [Fact]
         public async Task GetSpecializationById_whenIdIsCorrect_thenReturnSpecialization()
         {
-            int id = 1;
-            var expected = new Specialization
-            {
-                Id = id,
-                Name = "surgeon"
-            };
+            int id = 2;
 
             _fixture.MockRepository
                 .Setup(repository =>
                     repository.GetById(
                         It.Is<int>(specId => specId == id),
                         It.IsAny<string>()))
-                .ReturnsAsync(new Specialization
-                {
-                    Id = id,
-                    Name = "surgeon"
-                });
+                .ReturnsAsync(_fixture.Expected);
 
 
             var result = 
                 await _fixture.MockService.GetSpecializationByIdAsync(id);
 
             Assert.NotNull(result);
-            Assert.Equal(expected.Name, result.Name);
-            Assert.Equal(expected.Id, result.Id);
+            Assert.IsType<Specialization>(result);
         }
 
         [Fact]
@@ -80,11 +70,7 @@ namespace Application.Test
                     It.IsAny<Func<IQueryable<Specialization>, IOrderedQueryable<Specialization>>?>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
-            .ReturnsAsync(new List<Specialization>()
-            {
-                new Specialization() { Id = 0, Name = "Surgeon"},
-                new Specialization() { Id = 1, Name = "Cleaner"}
-            });
+            .ReturnsAsync(_fixture.ExpectedSpecializations);
 
 
             var result = await _fixture.MockService.GetAllSpecializationsAsync();
@@ -116,20 +102,14 @@ namespace Application.Test
         [Fact]
         public async Task AddSpecialization_whenDataIsCorrect_thenReturnCreated()
         {
-            var specialization = new Specialization()
-            {
-                Id = 1,
-                Name = "doctor"
-            };
-
             _fixture.MockRepository.Setup(repository =>
                 repository.InsertAsync(It.IsAny<Specialization>()))
             .Returns(Task.FromResult<object?>(null));
 
-            var result = await _fixture.MockService.AddSpecializationAsync(specialization);
+            var result = await _fixture.MockService.AddSpecializationAsync(_fixture.Expected);
 
             Assert.NotNull(result);
-            Assert.Equal(specialization, result);
+            Assert.IsType<Specialization>(result);
         }
 
         [Fact]
