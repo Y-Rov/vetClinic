@@ -71,7 +71,7 @@ namespace WebApi.Test.Fixtures
                 PageSize = 1,
                 HasNext = false,
                 HasPrevious = false,
-                ExceptionList = _exceptionEntityReadViewModels
+                Entities = _exceptionEntityReadViewModels
             };
             _pagedExceptionsStatsReadViewModel = new()
             {
@@ -80,7 +80,7 @@ namespace WebApi.Test.Fixtures
                 PageSize = 1,
                 HasNext = false,
                 HasPrevious = false,
-                ExceptionList = _exceptionStatsReadViewModels
+                Entities = _exceptionStatsReadViewModels
             };
             pagingParameters = new();
         }

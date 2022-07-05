@@ -1,6 +1,8 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System.Linq.Expressions;
@@ -445,6 +447,8 @@ namespace Application.Test
                 }
             };
 
+            var pagedEmployees = new PagedList<User>(listEmployees, 5, 1, 5);
+
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
@@ -458,12 +462,11 @@ namespace Application.Test
                 .ReturnsAsync(employeesId);
             _fixture.MockUserRepository
                 .Setup(repo => repo.GetAllAsync(
+                    It.IsAny<UserParameters>(),
                     It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
-                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
-                .ReturnsAsync(listEmployees);
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(pagedEmployees);
 
             //Act
             var result = await _fixture.MockFinancialService.GetEmployeesWithoutSalary();
