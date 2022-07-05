@@ -2,7 +2,9 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
-using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.User;
 using Moq;
 using WebApi.AutoMapper.Interface;
@@ -21,22 +23,34 @@ namespace WebApi.Test.Fixtures
             MockCreateMapper = fixture.Freeze<Mock<IViewModelMapper<UserCreateViewModel, User>>>();
             MockUpdateMapper = fixture.Freeze<Mock<IViewModelMapperUpdater<UserUpdateViewModel, User>>>();
             MockReadEnumerableMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>>>();
+            MockReadPagedMapper = fixture.Freeze<Mock<IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>>>>();
 
             MockUserController = new UserController(
                 MockUserService.Object,
                 MockReadMapper.Object,
                 MockCreateMapper.Object,
                 MockUpdateMapper.Object,
-                MockReadEnumerableMapper.Object);
+                MockReadEnumerableMapper.Object,
+                MockReadPagedMapper.Object);
             
             Id = 1;
             User = new() { Id = Id, FirstName = "Ren", LastName = "Amamiya" };
             ReadViewModel = new() { Id = Id, FirstName = "Ren", LastName = "Amamiya" };
             CreateViewModel = new() { FirstName = "Ren", LastName = "Amamiya", Password = "test_pass" };
             UpdateViewModel = new() { FirstName = "Ren", LastName = "Amamiya" };
-            CollateParameters = new();
+            UserParameters = new();
             Users = new List<User>() { User };
             ReadViewModels = new List<UserReadViewModel>() { ReadViewModel };
+            PagedList = new(Users, 5, 1, 5);
+
+            PagedReadViewModels = new()
+            {
+                Entities = new List<UserReadViewModel>()
+                {
+                    ReadViewModel
+                }
+            };
+
         }
 
         public UserController MockUserController { get; }
@@ -45,14 +59,17 @@ namespace WebApi.Test.Fixtures
         public Mock<IViewModelMapper<UserCreateViewModel, User>> MockCreateMapper { get; }
         public Mock<IViewModelMapperUpdater<UserUpdateViewModel, User>> MockUpdateMapper { get; }
         public Mock<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>> MockReadEnumerableMapper { get; }
+        public Mock<IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>>> MockReadPagedMapper { get; }
 
         public int Id { get; set; }
         public User User { get; set; }
         public UserReadViewModel ReadViewModel { get; set; }
         public UserCreateViewModel CreateViewModel { get; set; }
         public UserUpdateViewModel UpdateViewModel { get; set; }
-        public CollateParameters CollateParameters { get; set; }
-        public IEnumerable<User> Users { get; set; }
-        public IEnumerable<UserReadViewModel> ReadViewModels { get; set; }
+        public UserParameters UserParameters { get; set; }
+        public List<User> Users { get; set; }
+        public List<UserReadViewModel> ReadViewModels { get; set; }
+        public PagedReadViewModel<UserReadViewModel> PagedReadViewModels { get; set; }
+        public PagedList<User> PagedList { get; set; }
     }
 }
