@@ -25,7 +25,7 @@ namespace Application.Test
             //Arrange
             _animalServiceFixture.MockAnimalRepository
                 .Setup(rep => rep.GetAsync(
-                    It.IsAny<Expression<Func<Animal,bool>>>(),
+                    It.IsAny<Expression<Func<Animal, bool>>>(),
                     It.IsAny<Func<IQueryable<Animal>, IOrderedQueryable<Animal>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
@@ -69,7 +69,7 @@ namespace Application.Test
             int _id = 1;
 
             _animalServiceFixture.MockAnimalRepository
-                .Setup(rep=>rep.GetById(
+                .Setup(rep => rep.GetById(
                     It.Is<int>(id => id == _id),
                     It.IsAny<string>()))
                 .ReturnsAsync(_animalServiceFixture.ExpectedAnimal);
@@ -93,7 +93,7 @@ namespace Application.Test
                 .Setup(rep => rep.GetById(
                     It.Is<int>(id => id == _id),
                     It.IsAny<string>()))
-                .ReturnsAsync(()=>null);
+                .ReturnsAsync(() => null);
 
             //Act
             var actualResult = _animalServiceFixture.MockAnimalService.GetByIdAsync(_id);
@@ -184,6 +184,60 @@ namespace Application.Test
 
             //Assert
             Assert.Empty(actualResult);
+        }
+
+        [Fact]
+        public async Task DeleteAnimalAsync_ShouldDeleteAnimal()
+        {
+            //Arrange
+            int _id = 1;
+
+            _animalServiceFixture.MockAnimalRepository
+                .Setup(rep => rep.GetById(
+                    It.Is<int>(id => id == _id),
+                    It.IsAny<string>()))
+                .ReturnsAsync(_animalServiceFixture.ExpectedAnimal);
+
+            _animalServiceFixture.MockAnimalRepository
+                .Setup(rep => rep.Delete(It.IsAny<Animal>()))
+                .Verifiable();
+
+            _animalServiceFixture.MockAnimalRepository
+                .Setup(rep => rep.SaveChangesAsync())
+                .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+            //Act
+            var actualResult = _animalServiceFixture.MockAnimalService.DeleteAsync(_id);
+
+            //Assert
+            Assert.NotNull(actualResult);
+        }
+
+        [Fact]
+        public async Task DeleteAnimalAsync_ShouldThowError()
+        {
+            //Arrange
+            int _id = 0;
+
+            _animalServiceFixture.MockAnimalRepository
+                .Setup(rep => rep.GetById(
+                    It.Is<int>(id => id == _id),
+                    It.IsAny<string>()))
+                .Throws<NotFoundException>();
+
+            _animalServiceFixture.MockAnimalRepository
+                .Setup(rep => rep.Delete(It.IsAny<Animal>()))
+                .Verifiable();
+
+            _animalServiceFixture.MockAnimalRepository
+                .Setup(rep => rep.SaveChangesAsync())
+                .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+            //Act
+            var actualResult = _animalServiceFixture.MockAnimalService.DeleteAsync(_id);
+
+            //Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => actualResult);
         }
     }
 }
