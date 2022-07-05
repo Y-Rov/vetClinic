@@ -49,6 +49,9 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Procedure, ProcedureReadViewModel>, ProcedureReadMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationBaseViewModel>>,
                 ProcedureSpecEnumerableMapper>();
+        services
+            .AddScoped<IViewModelMapper<PagedList<Procedure>, PagedReadViewModel<ProcedureReadViewModel>>,
+                ProcedurePagedMapper>();
 
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
         services.AddScoped<IViewModelMapper<SpecializationViewModel, Specialization>, SpecializationMapper>();
