@@ -3,6 +3,7 @@ using Core.Interfaces.Services;
 using Core.ViewModels.AnimalViewModel;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
+using Core.ViewModels.AppointmentsViewModel;
 using Core.ViewModels;
 
 namespace WebApi.Controllers
@@ -73,9 +74,9 @@ namespace WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateAsync([FromBody]AnimalViewModel model)
         {
-            var prevAnimal = _animalService.GetByIdAsync(model.Id);
-            _mapperVMtoM.Map(model, prevAnimal.Result);
-            await _animalService.UpdateAsync(prevAnimal.Result);
+            var prevAnimal = await _animalService.GetByIdAsync(model.Id);
+            _mapperVMtoM.Map(model, prevAnimal);
+            await _animalService.UpdateAsync(prevAnimal);
             return NoContent();
         }
     }

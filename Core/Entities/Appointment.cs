@@ -14,8 +14,8 @@
 
         public Animal? Animal { get; set; }
 
-        public IEnumerable<AppointmentUser> AppointmentUsers { get; set; } = new List<AppointmentUser>();
+        public ICollection<AppointmentUser> AppointmentUsers { get; set; } = new List<AppointmentUser>();
 
-        public IEnumerable<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
+        public ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
     }
 }
