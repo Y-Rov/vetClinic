@@ -7,7 +7,7 @@ namespace Host.Configurations
 {
     public static class SystemServicesConfiguration
     {
-        static public string AllowedOrigins = "frontend";
+        public const string AllowedOrigins = "frontend";
 
         public static void AddSystemServices(this IServiceCollection services)
         {
