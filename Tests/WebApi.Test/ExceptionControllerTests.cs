@@ -2,6 +2,7 @@
 using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.ExceptionViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,20 +28,16 @@ namespace WebApi.Test
                 .Setup(s => s.GetAsync(It.IsAny<ExceptionParameters>()))
                 .ReturnsAsync(_exceptionControllerFixture._pagedListExceptions);
 
-            _exceptionControllerFixture.MockMapperException
-                .Setup(m => m.Map(It.IsAny<IEnumerable<ExceptionEntity>>()))
-                .Returns(_exceptionControllerFixture._pagedListViewModelsExceptions);
+            _exceptionControllerFixture.MockExceptionToPagedModel
+                 .Setup(m => m.Map(It.IsAny<PagedList<ExceptionEntity>>()))
+                .Returns(_exceptionControllerFixture._pagedExceptionsReadViewModel);
 
-            _exceptionControllerFixture.MockExceptionController.ControllerContext = new ControllerContext();
-            _exceptionControllerFixture.MockExceptionController.ControllerContext.HttpContext = new DefaultHttpContext();
             // Act
 
             var result = await _exceptionControllerFixture.MockExceptionController.GetAsync(_exceptionControllerFixture.pagingParameters);
-            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionEntityReadViewModel>;
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>>(result);
-            Assert.NotEmpty(readViewModels);
+            Assert.IsType<ActionResult<PagedReadViewModel<ExceptionEntityReadViewModel>>>(result);
         }
 
         [Fact]
@@ -68,17 +65,16 @@ namespace WebApi.Test
                 .Setup(s => s.GetStatsAsync(It.IsAny<ExceptionParameters>()))
                 .ReturnsAsync(_exceptionControllerFixture._pagedListExceptionStats);
 
-            _exceptionControllerFixture.MockExceptionController.ControllerContext = new ControllerContext();
-            _exceptionControllerFixture.MockExceptionController.ControllerContext.HttpContext = new DefaultHttpContext();
+            _exceptionControllerFixture.MockExceptionStatesToPagedModel
+                    .Setup(m => m.Map(It.IsAny<PagedList<ExceptionStats>>()))
+                   .Returns(_exceptionControllerFixture._pagedExceptionsStatsReadViewModel);
 
             // Act
             var result = await _exceptionControllerFixture.MockExceptionController.GetStatsAsync(_exceptionControllerFixture.pagingParameters);
-            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionStats>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<ActionResult<IEnumerable<ExceptionStats>>>(result);
-            Assert.NotEmpty(readViewModels);
+            Assert.IsType<ActionResult<PagedReadViewModel<ExceptionStatsReadViewModel>>>(result);
         }
 
         [Fact]
@@ -89,21 +85,17 @@ namespace WebApi.Test
                 .Setup(s => s.GetTodayAsync(It.IsAny<ExceptionParameters>()))
                 .ReturnsAsync(_exceptionControllerFixture._pagedListExceptions);
 
-            _exceptionControllerFixture.MockMapperException
-                .Setup(m => m.Map(It.IsAny<IEnumerable<ExceptionEntity>>()))
-                .Returns(_exceptionControllerFixture._pagedListViewModelsExceptions);
-
-            _exceptionControllerFixture.MockExceptionController.ControllerContext = new ControllerContext();
-            _exceptionControllerFixture.MockExceptionController.ControllerContext.HttpContext = new DefaultHttpContext();
+            _exceptionControllerFixture.MockExceptionToPagedModel
+                .Setup(m => m.Map(It.IsAny<PagedList<ExceptionEntity>>()))
+               .Returns(_exceptionControllerFixture._pagedExceptionsReadViewModel);
 
             // Act
-            var result = await _exceptionControllerFixture.MockExceptionController.GetTodayAsync(_exceptionControllerFixture.pagingParameters);
-            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionEntityReadViewModel>;
 
+            var result = await _exceptionControllerFixture.MockExceptionController.GetAsync(_exceptionControllerFixture.pagingParameters);
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>>(result);
-            Assert.NotEmpty(readViewModels);
+            Assert.IsType<ActionResult<PagedReadViewModel<ExceptionEntityReadViewModel>>>(result);
+
         }
 
         [Fact]
@@ -114,16 +106,16 @@ namespace WebApi.Test
                 .Setup(s => s.GetTodayStatsAsync(It.IsAny<ExceptionParameters>()))
                 .ReturnsAsync(_exceptionControllerFixture._pagedListExceptionStats);
 
-            _exceptionControllerFixture.MockExceptionController.ControllerContext = new ControllerContext();
-            _exceptionControllerFixture.MockExceptionController.ControllerContext.HttpContext = new DefaultHttpContext();
+            _exceptionControllerFixture.MockExceptionStatesToPagedModel
+                               .Setup(m => m.Map(It.IsAny<PagedList<ExceptionStats>>()))
+                              .Returns(_exceptionControllerFixture._pagedExceptionsStatsReadViewModel);
 
-            var result = await _exceptionControllerFixture.MockExceptionController.GetTodayStatsAsync(_exceptionControllerFixture.pagingParameters);
-            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<ExceptionStats>;
+            // Act
+            var result = await _exceptionControllerFixture.MockExceptionController.GetStatsAsync(_exceptionControllerFixture.pagingParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<ActionResult<IEnumerable<ExceptionStats>>>(result);
-            Assert.NotEmpty(readViewModels);
+            Assert.IsType<ActionResult<PagedReadViewModel<ExceptionStatsReadViewModel>>>(result);
         }
     }
 }
