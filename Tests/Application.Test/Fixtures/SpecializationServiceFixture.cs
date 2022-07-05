@@ -37,7 +37,12 @@ namespace Application.Test.Fixtures
             var specialization = new Specialization
             {
                 Id = 2,
-                Name = "surgeon"
+                Name = "surgeon",
+                ProcedureSpecializations = new List<ProcedureSpecialization>()
+                {
+                    new ProcedureSpecialization { ProcedureId = 1, SpecializationId = 2 },
+                    new ProcedureSpecialization { ProcedureId = 0, SpecializationId = 2 }
+                }
             };
 
             return specialization;

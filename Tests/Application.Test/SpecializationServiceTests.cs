@@ -117,46 +117,40 @@ namespace Application.Test
         {
             int id = 0;
 
-            string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
-
             var updatedSpecialization = new Specialization()
             {
-                Id = 0,
-                Name = "updatedName"
-            };
-
-            var specialization = new Specialization
-            {
-                Id = 0,
-                Name = "oldName"
+                Id = 2,
+                Name = "updatedSurgeon"
             };
 
             _fixture.MockRepository.Setup(repository =>
                 repository.GetById(
                     It.Is<int>(specId => specId == id),
                     It.Is<string>(properties => properties == includeProperties)))
-            .ReturnsAsync(specialization)
+            .ReturnsAsync(_fixture.Expected)
             .Verifiable();
 
             _fixture.MockRepository.Setup(repository =>
-                repository.Update(It.IsAny<Specialization>()))
-            .Verifiable();
+                repository.Update(It.Is<Specialization>
+                    (specialization => specialization == _fixture.Expected)));
 
             await _fixture.MockService.UpdateSpecializationAsync(id, updatedSpecialization);
 
             _fixture.MockRepository.Verify(
                 repo => repo.GetById(id, includeProperties), Times.Once);
 
-            _fixture.MockRepository.Verify(
-                repo => repo.Update(specialization), Times.Once);
+            _fixture.MockRepository.Verify(repository =>
+                repository.Update(It.Is<Specialization>
+                    (specialization => specialization == _fixture.Expected)),
+                Times.Once);
+
+            _fixture.MockRepository.ResetCalls();
         }
 
         [Fact]
         public async Task UpdateSpecialization_whenIdIsIncorrect_thenThrowException()
         {
             int id = 40;
-
-            string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
 
             var updatedSpecialization = new Specialization()
             {
@@ -180,25 +174,17 @@ namespace Application.Test
         [Fact]
         public async Task DeleteSpecialization_whenSpecializationExists_thenExecute()
         {
-            int id = 4;
-
-            string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
-
-            var specializationToDelete = new Specialization
-            {
-                Id = id,
-                Name = "cleaner"
-            };
+            int id = 2;
 
             _fixture.MockRepository.Setup(repository =>
-                repository.Delete(It.Is<Specialization>(spec => specializationToDelete == spec)))
+                repository.Delete(It.Is<Specialization>(spec => _fixture.Expected == spec)))
             .Verifiable();
 
             _fixture.MockRepository.Setup(repository => 
                 repository.GetById(
                     It.Is<int>(specId => specId == id),
                     It.Is<string>(props => props == includeProperties)))
-            .ReturnsAsync(specializationToDelete);
+            .ReturnsAsync(_fixture.Expected);
 
             await _fixture.MockService.DeleteSpecializationAsync(id);
 
@@ -206,7 +192,7 @@ namespace Application.Test
                 method => method.GetById(id, includeProperties), Times.Once);
 
             _fixture.MockRepository.Verify(
-                method => method.Delete(specializationToDelete), Times.Once); ;
+                method => method.Delete(_fixture.Expected), Times.Once); ;
         }
 
         [Fact]
@@ -236,31 +222,22 @@ namespace Application.Test
             var relationshipToRemove =
                 new ProcedureSpecialization { ProcedureId = procedureId, SpecializationId = specializationId };
 
-            Specialization specialization = new Specialization
-            {
-                Id = specializationId,
-                Name = "doctor",
-                ProcedureSpecializations = new List<ProcedureSpecialization>()
-                {
-                    relationshipToRemove,
-                    new ProcedureSpecialization { ProcedureId = 0, SpecializationId = specializationId }
-                }
-            };
-
             _fixture.MockRepository.Setup(repository =>
                 repository.GetById(It.Is<int>(specId => specId == specializationId),
                     It.Is<string>(props => props == includeProperties)))
-                .ReturnsAsync(specialization);
+                .ReturnsAsync(_fixture.Expected);
 
             _fixture.MockRepository.Setup(repository =>
                 repository.Update(
-                    It.Is<Specialization>(spec => spec == specialization)))
+                    It.Is<Specialization>(spec => spec == _fixture.Expected)))
                 .Verifiable();
 
             await _fixture.MockService.RemoveProcedureFromSpecialization(specializationId,procedureId);
 
-            Assert.DoesNotContain(relationshipToRemove, specialization.ProcedureSpecializations);
-            _fixture.MockRepository.Verify(method => method.Update(specialization), Times.Once);
+            Assert.DoesNotContain(relationshipToRemove, _fixture.Expected.ProcedureSpecializations);
+            _fixture.MockRepository.Verify(method => method.Update(_fixture.Expected), Times.Once);
+
+            _fixture.MockRepository.ResetCalls();
         }
 
         [Fact]
