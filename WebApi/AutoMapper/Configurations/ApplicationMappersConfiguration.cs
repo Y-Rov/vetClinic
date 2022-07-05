@@ -60,6 +60,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>, AnimalListToListMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>>, AnimalMedCardMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>>, AnimalPagedMedCardMapper>();
 
         services.AddScoped<IViewModelMapper<Salary, SalaryViewModel>, SalaryMapper>();
         services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();

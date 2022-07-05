@@ -1,4 +1,6 @@
 ﻿using Core.Entities;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Core.Interfaces.Services
 {
@@ -9,6 +11,6 @@ namespace Core.Interfaces.Services
         Task UpdateAsync(Animal animal);
         Task<IEnumerable<Animal>> GetAsync();
         Task<Animal> GetByIdAsync(int id);
-        Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id);
+        Task<PagedList<Appointment>> GetAllAppointmentsWithAnimalIdAsync(AnimalParameters animalParameters);
     }
 }
