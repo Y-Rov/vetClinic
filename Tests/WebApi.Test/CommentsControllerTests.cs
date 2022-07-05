@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator.Parameters;
+using Core.ViewModels.ArticleViewModels;
 using Core.ViewModels.CommentViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -117,6 +119,9 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         Content = "hello"
     };
 
+    private readonly CommentsParameters _concreteArticleParameters = new CommentsParameters() {ArticleId = 1};
+    private readonly CommentsParameters _defaultParameters = new CommentsParameters();
+
     [Fact]
     public async Task GetCommentById_whenIdIsCorrect_thenStatusCodeOkReturned()
     {
@@ -161,7 +166,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllCommentsAsync())
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
             .ReturnsAsync(_comments);
 
         _fixture.MockReadEnumMapper
@@ -170,7 +175,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
             .Returns(_readViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAsync();
+        var result = await _fixture.MockCommentsController.GetAsync(_defaultParameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -187,7 +192,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllCommentsAsync())
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
             .ReturnsAsync(emptyComments);
 
         _fixture.MockReadEnumMapper
@@ -196,7 +201,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
             .Returns(emptyCommentReadViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAsync();
+        var result = await _fixture.MockCommentsController.GetAsync(_defaultParameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -209,7 +214,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllArticleCommentsAsync(It.IsAny<int>()))
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
             .ReturnsAsync(_comments);
 
         _fixture.MockReadEnumMapper
@@ -218,7 +223,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
             .Returns(_readViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAllArticleCommentsAsync(1);
+        var result = await _fixture.MockCommentsController.GetAsync(_concreteArticleParameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -235,7 +240,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllArticleCommentsAsync(It.IsAny<int>()))
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
             .ReturnsAsync(emptyPublishedComments);
 
         _fixture.MockReadEnumMapper
@@ -244,7 +249,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
             .Returns(emptyPublishedCommentReadViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAllArticleCommentsAsync(1);
+        var result = await _fixture.MockCommentsController.GetAsync(_concreteArticleParameters);
 
         //  Assert
         Assert.NotNull(result);
