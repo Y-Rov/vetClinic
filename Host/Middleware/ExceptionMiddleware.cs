@@ -32,42 +32,42 @@ namespace Host.Middleware
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.Unauthorized,
+                await HandleExceptionAsync(context, HttpStatusCode.Unauthorized,
                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (NotFoundException ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.NotFound,
+                await HandleExceptionAsync(context, HttpStatusCode.NotFound,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (ForbidException ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.Forbidden,
+                await HandleExceptionAsync(context, HttpStatusCode.Forbidden,
                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (BadRequestException ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.BadRequest,
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest,
                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (DivideByZeroException ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (HttpRequestException ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
 
@@ -75,7 +75,7 @@ namespace Host.Middleware
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
 
@@ -83,7 +83,7 @@ namespace Host.Middleware
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
 
@@ -91,7 +91,7 @@ namespace Host.Middleware
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                    $"{ex.Message}. Path:{context.Request.Path}.");
             }
 
@@ -99,21 +99,21 @@ namespace Host.Middleware
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (WebException ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                     $"{ex.Message}. Path:{context.Request.Path}.");
             }
             catch (Exception ex)
             {
                 await AddExceptionAsync(ex, context, ex.GetType().Name);
 
-                await HandleExсeptionAsync(context, HttpStatusCode.InternalServerError,
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,
                    $"{ex.Message}. Path:{context.Request.Path}.");
 
             }
@@ -129,7 +129,7 @@ namespace Host.Middleware
             }
         }
 
-        private Task HandleExсeptionAsync(HttpContext context, HttpStatusCode errorCode, string errorMessage)
+        private Task HandleExceptionAsync(HttpContext context, HttpStatusCode errorCode, string errorMessage)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)errorCode;
