@@ -17,6 +17,11 @@ namespace Application.Configuration
             services.AddScoped<IProcedureService, ProcedureService>();
             services.AddScoped<IFinancialService, FinancialService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IArticleService, ArticleService>();
+            services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IUserProfilePictureService, UserProfilePictureService>();
+            services.AddScoped<IImageParser, ImageParser>();
+            services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
         }
     }
 }

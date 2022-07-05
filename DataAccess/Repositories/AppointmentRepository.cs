@@ -34,7 +34,6 @@ namespace DataAccess.Repositories
                     ProcedureId = procedureId
                 });
             }
-            await SaveChangesAsync();
         }
 
         public async Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds)
@@ -54,7 +53,6 @@ namespace DataAccess.Repositories
                     UserId = userId
                 });
             }
-            await SaveChangesAsync();
         }
     }
 }

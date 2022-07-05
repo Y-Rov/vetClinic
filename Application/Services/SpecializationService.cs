@@ -17,13 +17,13 @@ namespace Application.Services
                 .Any(pair => pair.SpecializationId == specialization.Id && pair.ProcedureId == procedureId);
         }
 
-        //public SpecializationService(
-        //    ISpecializationRepository repository,
-        //    ILoggerManager logger)
-        //{
-        //    _repository = repository;
-        //    _logger = logger;
-        //}
+        public SpecializationService(
+            ISpecializationRepository repository,
+            ILoggerManager logger)
+        {
+            _repository = repository;
+            _logger = logger;
+        }
 
         public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
         {

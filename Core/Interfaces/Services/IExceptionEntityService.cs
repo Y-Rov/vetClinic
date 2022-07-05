@@ -1,7 +1,7 @@
 ﻿using Core.Entities;
 using Core.Models;
-using Core.Pagginator;
-using Core.Pagginator.Parameters;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Core.Interfaces.Services
 {

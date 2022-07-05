@@ -33,6 +33,7 @@ namespace WebApi.Controllers
             _appointmentUpdateMapper = appointmentUpdateMapper; 
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IEnumerable<AppointmentReadViewModel>> GetAsync()
         {
@@ -43,6 +44,7 @@ namespace WebApi.Controllers
             return appointmentsViewModel;
         }
 
+        [Authorize]
         [HttpGet("{appointmentId:int:min(1)}")]
         public async Task<AppointmentReadViewModel> GetAsync([FromRoute] int appointmentId)
         {
@@ -53,7 +55,7 @@ namespace WebApi.Controllers
             return appointmentViewModel;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostAsync(AppointmentCreateViewModel appointmentViewModel)
         {
@@ -64,7 +66,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> PutAsync(AppointmentUpdateViewModel appointmentViewModel) 
         {
@@ -77,7 +79,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpDelete("{appointmentId:int:min(1)}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int appointmentId)
         {

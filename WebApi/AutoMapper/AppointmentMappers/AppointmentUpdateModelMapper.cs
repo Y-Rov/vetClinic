@@ -19,7 +19,7 @@ namespace WebApi.AutoMapper.AppointmentMappers
                 Date = source.Date,
                 Disease = source.Disease,
                 MeetHasOccureding = source.MeetHasOccureding,
-
+                AnimalId = source.AnimalId
             };
 
             return appointment;

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
 using System.Text.Json.Serialization;
+using Azure.Storage.Blobs;
 using WebApi.AutoMapper.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,8 @@ builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddApplicationMappers();
+
+builder.Services.AddScoped(_ => new BlobServiceClient(builder.Configuration.GetConnectionString("BlobConnection")));
 
 builder.Services.AddDbContext<ClinicContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
