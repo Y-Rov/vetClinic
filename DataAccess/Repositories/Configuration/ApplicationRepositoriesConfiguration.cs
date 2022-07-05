@@ -1,5 +1,4 @@
-﻿using Core.Entities;
-using Core.Interfaces.Repositories;
+﻿using Core.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.Repositories.Configuration

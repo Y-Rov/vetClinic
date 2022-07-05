@@ -41,6 +41,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<UserCreateViewModel, User>, UserCreateMapper>();
         services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UserUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>, UserReadEnumerableMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>>, UserPagedMapper>();
 
         services.AddScoped<IViewModelMapper<ProcedureUpdateViewModel, Procedure>, ProcedureUpdateMapper>();
         services.AddScoped<IViewModelMapper<ProcedureCreateViewModel, Procedure>, ProcedureCreateMapper>();

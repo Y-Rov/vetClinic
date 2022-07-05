@@ -3,6 +3,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator.Parameters;
 using Core.Models.Finance;
 using System.Linq.Expressions;
 
@@ -122,7 +123,7 @@ namespace Application.Services
         {
             var salaries = await GetSalaryAsync(null);
             var employeesId = await _repository.GetEmployees();
-            var employees = await _userRepository.GetAllAsync(filter: x=> employeesId.Contains(x.Id));
+            var employees = await _userRepository.GetAllAsync(new UserParameters(), filter: x=> employeesId.Contains(x.Id));
 
             var res = from salary in salaries
                       join employee in employees on salary.EmployeeId equals employee.Id
