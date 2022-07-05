@@ -2,7 +2,6 @@
 using Core.Models;
 using Core.Paginator;
 using Core.Models.Finance;
-using Core.ViewModel;
 using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;

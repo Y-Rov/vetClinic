@@ -551,14 +551,14 @@ namespace Application.Test
                 .Setup(repo=>
                     repo.GetByIdAsync(
                         It.Is<int>(x=> x.Equals(userOne.Id)),
-                        It.IsAny<string>()))
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(userOne);
 
             _fixture.MockUserRepository
                 .Setup(repo =>
                     repo.GetByIdAsync(
                         It.Is<int>(x => x.Equals(userTwo.Id)),
-                        It.IsAny<string>()))
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(userTwo);
             //Act
             var result = await _fixture.MockFinancialService.GetFinancialStatement(date);
@@ -625,14 +625,14 @@ namespace Application.Test
                 .Setup(repo =>
                     repo.GetByIdAsync(
                         It.Is<int>(x => x.Equals(userOne.Id)),
-                        It.IsAny<string>()))
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(userOne);
 
             _fixture.MockUserRepository
                 .Setup(repo =>
                     repo.GetByIdAsync(
                         It.Is<int>(x => x.Equals(userTwo.Id)),
-                        It.IsAny<string>()))
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(userTwo);
             //Act
             var result = await _fixture.MockFinancialService.GetFinancialStatement(date);
