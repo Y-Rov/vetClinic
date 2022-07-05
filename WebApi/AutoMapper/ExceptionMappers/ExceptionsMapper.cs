@@ -1,5 +1,5 @@
 ﻿using Core.Entities;
-using Core.ViewModel;
+using Core.ViewModels.ExceptionViewModel;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.ExceptionMapper;
@@ -14,7 +14,7 @@ public class ExceptionsMapper : IEnumerableViewModelMapper<IEnumerable<Exception
 
     private ExceptionEntityReadViewModel GetExceptionEntityReadViewModel(ExceptionEntity exception)
     {
-        var appointmentViewModel = new ExceptionEntityReadViewModel()
+        var exceptionViewModel = new ExceptionEntityReadViewModel()
         {
             Id = exception.Id,
             DateTime = exception.DateTime,
@@ -22,7 +22,7 @@ public class ExceptionsMapper : IEnumerableViewModelMapper<IEnumerable<Exception
             Path = exception.Path
         };
 
-        return appointmentViewModel;
+        return exceptionViewModel;
     }
 }
 

@@ -1,16 +1,17 @@
 ﻿using System.Drawing;
 using Azure.Storage.Blobs;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 
-namespace Application.Services;
+namespace DataAccess.Repositories;
 
-public class ImageService : IImageService
+public class ImageRepository : IImageRepository
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly IConfiguration _configuration;
 
-    public ImageService(
+    public ImageRepository(
         BlobServiceClient blobServiceClient,
         IConfiguration configuration)
     {

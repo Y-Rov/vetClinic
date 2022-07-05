@@ -12,5 +12,6 @@ namespace Core.ViewModels.AnimalViewModel
         public int OwnerId { get; set; }
         public string? NickName { get; set; }
         public DateTime BirthDate { get; set; }
+        public string? PhotoUrl { get; set; }
     }
 }

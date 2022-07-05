@@ -1,5 +1,8 @@
 ﻿using Core.Entities;
+using Core.Extensions;
 using Core.Interfaces.Repositories;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using DataAccess.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,15 +35,14 @@ namespace DataAccess.Repositories
             user.IsActive = false;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync(
+        public async Task<PagedList<User>> GetAllAsync(
+            UserParameters userParameters,
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
-            int? takeCount = null,
-            int skipCount = 0)
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
-            var users = await GetQuery(filter, orderBy, includeProperties, takeCount, skipCount)
-                .ToListAsync();
+            var users = await GetQuery(filter, orderBy, includeProperties)
+                .ToPagedListAsync(userParameters.PageNumber, userParameters.PageSize);
 
             return users;
         }
@@ -70,9 +72,7 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<User>> GetByRoleAsync(
             string roleName,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
-            int? takeCount = null,
-            int skipCount = 0)
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             var role = await _context.Roles.SingleOrDefaultAsync(r => r.Name == roleName);
 
@@ -80,9 +80,7 @@ namespace DataAccess.Repositories
                 u => u.Id == _context.UserRoles
                     .SingleOrDefault(ur => ur.RoleId == role!.Id && ur.UserId == u.Id)!.UserId,
                 orderBy,
-                includeProperties,
-                takeCount,
-                skipCount);
+                includeProperties);
 
             var users = await usersQuery.ToListAsync();
 
@@ -104,17 +102,14 @@ namespace DataAccess.Repositories
         private IQueryable<User> GetQuery(
             Expression<Func<User, bool>>? filter = null,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null,
-            int? takeCount = null,
-            int skipCount = 0)
+            Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
             IQueryable<User> usersQuery = (
                 filter is null
                 ? _userManager.Users
                 : _userManager.Users.Where(filter)
             )
-            .Where(u => u.IsActive)
-            .Skip(skipCount);
+            .Where(u => u.IsActive);
 
             if (includeProperties is not null)
             {
@@ -124,11 +119,6 @@ namespace DataAccess.Repositories
             if (orderBy is not null)
             {
                 usersQuery = orderBy(usersQuery);
-            }
-
-            if (takeCount is not null)
-            {
-                usersQuery = usersQuery.Take(takeCount.Value);
             }
 
             return usersQuery;

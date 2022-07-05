@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace WebApi.Validators.AddressValidators
 {
-    public class AddressCreateViewModelValidator : AddressBaseViewModelValidator<AddressCreateViewModel>
+    public class AddressCreateViewModelValidator : AddressBaseViewModelValidator<AddressCreateReadViewModel>
     {
         public AddressCreateViewModelValidator()
         {

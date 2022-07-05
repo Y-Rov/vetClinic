@@ -1,4 +1,4 @@
-﻿namespace Core.Pagginator.Parameters
+﻿namespace Core.Paginator.Parameters
 {
     public class ExceptionParameters : ElementParameters
     {

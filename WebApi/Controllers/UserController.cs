@@ -1,6 +1,9 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,32 +20,31 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<UserCreateViewModel, User> _createMapper;
         private readonly IViewModelMapperUpdater<UserUpdateViewModel, User> _updateMapper;
         private readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _readEnumerableMapper;
+        private readonly IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>> _readPagedMapper;
 
         public UserController(
             IUserService userService,
             IViewModelMapper<User, UserReadViewModel> readMapper,
             IViewModelMapper<UserCreateViewModel, User> createMapper,
             IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper,
-            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> readEnumerableMapper)
+            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> readEnumerableMapper,
+            IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>> readPagedMapper)
         {
             _userService = userService;
             _readMapper = readMapper;
             _createMapper = createMapper;
             _updateMapper = updateMapper;
             _readEnumerableMapper = readEnumerableMapper;
+            _readPagedMapper = readPagedMapper;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync(
-            [FromQuery] CollateParameters collateParameters)
+        public async Task<ActionResult<PagedReadViewModel<UserReadViewModel>>> GetAsync(
+            [FromQuery] UserParameters userParameters)
         {
-            var users = await _userService.GetAllUsersAsync(
-                collateParameters.FilterParam, 
-                collateParameters.TakeCount, 
-                collateParameters.SkipCount);
-
-            var readModels = _readEnumerableMapper.Map(users);
+            var users = await _userService.GetAllUsersAsync(userParameters);
+            var readModels = _readPagedMapper.Map(users);
 
             return Ok(readModels);
         }
