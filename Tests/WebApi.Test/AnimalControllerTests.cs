@@ -1,13 +1,9 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
-using Core.ViewModels;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModels.AnimalViewModel;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
@@ -21,135 +17,42 @@ namespace WebApi.Test
 
         private readonly AnimalControllerFixture _animalControllerFixture;
 
-        private readonly List<Animal> _animals = new()
-        {
-            new Animal()
-            {
-                Id = 1,
-                OwnerId = 1,
-                NickName = "Test1",
-                BirthDate = new DateTime(2002,02,22)
-            },
-
-            new Animal()
-            {
-                Id = 2,
-                OwnerId = 1,
-                NickName = "Test1",
-                BirthDate = new DateTime(2002,02,22)
-            }
-        };
-
-        private readonly List<AnimalViewModel> _animalViewModels = new List<AnimalViewModel>()
-        {
-            new AnimalViewModel()
-            {
-                Id = 1,
-                OwnerId = 1,
-                NickName = "Test1",
-                BirthDate = new DateTime(2002,02,22)
-            },
-
-            new AnimalViewModel()
-            {
-                Id = 2,
-                OwnerId = 1,
-                NickName = "Test2",
-                BirthDate = new DateTime(2002,04,22)
-            }
-        };
-
-        private readonly Animal _animal = new Animal()
-        {
-            Id = 3,
-            OwnerId = 1,
-            NickName = "Test3",
-            BirthDate = new DateTime(2022, 01, 15)
-        };
-
-        private readonly AnimalViewModel _animalViewModel = new AnimalViewModel()
-        {
-            Id = 3,
-            OwnerId = 1,
-            NickName = "Test3",
-            BirthDate = new DateTime(2022, 01, 15)
-        };
-
-        private readonly List<Appointment> _appointments = new()
-        {
-            new Appointment()
-            {
-                Id = 1,
-                AnimalId = 1,
-                Date = DateTime.Now,
-                Disease = "stst",
-                MeetHasOccureding = true
-            },
-
-            new Appointment()
-            {
-                Id = 2,
-                AnimalId = 2,
-                Date = DateTime.Now,
-                Disease = "stst",
-                MeetHasOccureding = true
-            }
-        };
-
-        private readonly List<AnimalMedCardViewModel> _animalMedCardViewModel = new()
-        {
-            new AnimalMedCardViewModel()
-            {
-                Id = 1,
-                AnimalId = 1,
-                Date = DateTime.Now,
-                Disease = "stst",
-                MeetHasOccureding = true
-            },
-
-            new AnimalMedCardViewModel()
-            {
-                Id = 2,
-                AnimalId = 3,
-                Date = DateTime.Now,
-                Disease = "stst",
-                MeetHasOccureding = true
-            }
-        };
-
         [Fact]
         public async Task GetAnimalById_ShouldReturnStatusCodeOk()
         {
             //Arrange
+            int _id = 1;
+
             _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetByIdAsync(It.Is<int>(id => id == _animal.Id)))
-                .ReturnsAsync(_animal);
+                .Setup(ser => ser.GetByIdAsync(It.Is<int>(id => id == _id)))
+                .ReturnsAsync(_animalControllerFixture.ExpectedAnimal);
 
             _animalControllerFixture.MockAnimalMapper
-                .Setup(map => map.Map(It.Is<Animal>(x => x == _animal)))
-                .Returns(_animalViewModel);
+                .Setup(map => map.Map(It.Is<Animal>(x => x == _animalControllerFixture.ExpectedAnimal)))
+                .Returns(_animalControllerFixture.ExpectedAnimalViewModel);
 
             //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync(3);
+            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync(_id);
 
             //Assert
             Assert.NotNull(actualResult);
-            Assert.Equal(_animalViewModel, actualResult);
+            Assert.Equal(_animalControllerFixture.ExpectedAnimalViewModel, actualResult);
+            Assert.Equal(_animalControllerFixture.ExpectedAnimalViewModel.NickName, actualResult.NickName);
         }
 
         [Fact]
         public async Task GetAnimalById_ShouldReturnError()
         {
             //Arrange
-            int incorrectId = 400;
+            int incorrectId = 0;
 
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.GetByIdAsync(It.IsAny<int>()))
                 .Throws<NotFoundException>();
 
             _animalControllerFixture.MockAnimalMapper
-                .Setup(map => map.Map(It.Is<Animal>(x => x == _animal)))
-                .Returns(_animalViewModel);
+                .Setup(map => map.Map(It.Is<Animal>(x => x == _animalControllerFixture.ExpectedAnimal)))
+                .Returns(_animalControllerFixture.ExpectedAnimalViewModel);
 
             //Act
             var actualResult = _animalControllerFixture.MockAnimalController.GetAsync(incorrectId);
@@ -165,34 +68,31 @@ namespace WebApi.Test
             //Arrange
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.GetAsync())
-                .ReturnsAsync(_animals);
+                .ReturnsAsync(_animalControllerFixture.ExpectedAnimals);
 
             _animalControllerFixture.MockAnimalListToListMapper
-                .Setup(map => map.Map(It.Is<IEnumerable<Animal>>(x => x.Equals(_animals))))
-                .Returns(_animalViewModels);
+                .Setup(map => map.Map(It.Is<IEnumerable<Animal>>(x => x.Equals(_animalControllerFixture.ExpectedAnimals))))
+                .Returns(_animalControllerFixture.ExpectedAnimalViewModels);
 
             //Act
             var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync();
 
             //Assert
             Assert.NotNull(actualResult);
-            Assert.Equal(_animalViewModels, actualResult);
+            Assert.Equal(_animalControllerFixture.ExpectedAnimalViewModels, actualResult);
         }
 
         [Fact]
         public async Task GetAllAnimals_ShouldReturnEmptyList()
         {
-            var emptyList = new List<Animal>();
-            var emptyListMap = new List<AnimalViewModel>();
-
             //Arrange
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.GetAsync())
-                .ReturnsAsync(emptyList);
+                .ReturnsAsync(_animalControllerFixture.ExpectedEmptyAnimals);
 
             _animalControllerFixture.MockAnimalListToListMapper
-                .Setup(map => map.Map(It.Is<IEnumerable<Animal>>(x => x.Equals(emptyList))))
-                .Returns(emptyListMap);
+                .Setup(map => map.Map(It.Is<IEnumerable<Animal>>(x => x.Equals(_animalControllerFixture.ExpectedEmptyAnimals))))
+                .Returns(_animalControllerFixture.ExpectedAnimalEmptyViewModels);
 
             //Act
             var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync();
@@ -208,7 +108,7 @@ namespace WebApi.Test
             _animalControllerFixture.MockAnimalViewModelMapperUpdater
             .Setup(mapper =>
                 mapper.Map(It.IsAny<AnimalViewModel>()))
-            .Returns(_animal);
+            .Returns(_animalControllerFixture.ExpectedAnimal);
 
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.CreateAsync(
@@ -216,7 +116,8 @@ namespace WebApi.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //  Act
-            var actualResult =  await _animalControllerFixture.MockAnimalController.CreateAsync(_animalViewModel);
+            var actualResult =  await _animalControllerFixture.MockAnimalController
+                .CreateAsync(_animalControllerFixture.ExpectedAnimalViewModel);
 
             //  Assert
             _animalControllerFixture.MockAnimalService.Verify();
@@ -226,20 +127,22 @@ namespace WebApi.Test
         [Fact]
         public async Task CreateAnimal_ShouldReturnError()
         {
+            //Arrange
             _animalControllerFixture.MockAnimalViewModelMapperUpdater
             .Setup(mapper =>
                 mapper.Map(It.IsAny<AnimalViewModel>()))
-            .Returns(_animal);
+            .Returns(_animalControllerFixture.ExpectedAnimal);
 
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.CreateAsync(
                         It.IsAny<Animal>()))
                 .Throws<NotFoundException>();
 
-            //  Act
-            var actualResult = _animalControllerFixture.MockAnimalController.CreateAsync(_animalViewModel);
+            //Act
+            var actualResult = _animalControllerFixture.MockAnimalController
+                .CreateAsync(_animalControllerFixture.ExpectedAnimalViewModel);
 
-            //  Assert
+            //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => actualResult);
         }
 
@@ -249,14 +152,15 @@ namespace WebApi.Test
             //Arrange
             _animalControllerFixture.MockAnimalViewModelMapperUpdater
                 .Setup(map => map.Map(It.IsAny<AnimalViewModel>()))
-                .Returns(_animal);
+                .Returns(_animalControllerFixture.ExpectedAnimal);
 
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.UpdateAsync(It.IsAny<Animal>()))
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.UpdateAsync(_animalViewModel);
+            var actualResult = await _animalControllerFixture.MockAnimalController
+                .UpdateAsync(_animalControllerFixture.ExpectedAnimalViewModel);
 
             //Assert
             _animalControllerFixture.MockAnimalService.Verify();
@@ -269,14 +173,15 @@ namespace WebApi.Test
             //Arrange
             _animalControllerFixture.MockAnimalViewModelMapperUpdater
                 .Setup(map => map.Map(It.IsAny<AnimalViewModel>()))
-                .Returns(_animal);
+                .Returns(_animalControllerFixture.ExpectedAnimal);
 
             _animalControllerFixture.MockAnimalService
                 .Setup(ser => ser.UpdateAsync(It.IsAny<Animal>()))
                 .Throws<NotFoundException>();
 
             //Act
-            var actualResult = _animalControllerFixture.MockAnimalController.UpdateAsync(_animalViewModel);
+            var actualResult = _animalControllerFixture.MockAnimalController
+                .UpdateAsync(_animalControllerFixture.ExpectedAnimalViewModel);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => actualResult);
@@ -316,44 +221,46 @@ namespace WebApi.Test
             await Assert.ThrowsAsync<NotFoundException>(() => actualResult);
         }
 
-        //[Fact]
-        //public async Task GetMedCard_ShouldReturnStatusCodeOk()
-        //{
-        //    //Arrange
-        //    _animalControllerFixture.MockAnimalService
-        //        .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.Is<int>(x => x == _animal.Id)))
-        //        .ReturnsAsync(_appointments);
+        [Fact]
+        public async Task GetMedCard_ShouldReturnStatusCodeOk()
+        {
+            //Arrange
+            _animalControllerFixture.MockAnimalService
+                .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.IsAny<AnimalParameters>()))
+                .ReturnsAsync(_animalControllerFixture.ExpectedPagedList);
 
-        //    _animalControllerFixture.MockMedCardMapper
-        //        .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
-        //        .Returns(_animalMedCardViewModel);
+            _animalControllerFixture.MockPagedMedCardMapper
+                .Setup(map => map.Map(It.IsAny<PagedList<Appointment>>()))
+                .Returns(_animalControllerFixture.ExpectedPagedListViewModel);
 
-        //    //Act
-        //    var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(_animal.Id);
+            //Act
+            var actualResult = await _animalControllerFixture.MockAnimalController
+                .GetMedCardAsync(_animalControllerFixture.pagingParameters);
 
-        //    //Assert
-        //    Assert.NotNull(actualResult);
-        //    Assert.Equal(_animalMedCardViewModel, actualResult);
-        //}
+            //Assert
+            Assert.NotNull(actualResult);
+            Assert.Equal(_animalControllerFixture.ExpectedPagedListViewModel.Entities, actualResult.Entities);
+        }
 
-        //[Fact]
-        //public async Task GetMedCard_ShouldReturnEmptyList()
-        //{
-        //    //Arrange
-        //    _animalControllerFixture.MockAnimalService
-        //        .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.Is<int>(x => x == _animal.Id)))
-        //        .ReturnsAsync(_appointments);
+        [Fact]
+        public async Task GetMedCard_ShouldReturnEmptyList()
+        {
+            //Arrange
+            _animalControllerFixture.MockAnimalService
+                .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.IsAny<AnimalParameters>()))
+                .ReturnsAsync(_animalControllerFixture.ExpectedEmptyPagedList);
 
-        //    _animalControllerFixture.MockMedCardMapper
-        //        .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
-        //        .Returns(_animalMedCardViewModel);
+            _animalControllerFixture.MockPagedMedCardMapper
+                .Setup(map => map.Map(It.IsAny<PagedList<Appointment>>()))
+                .Returns(_animalControllerFixture.ExpectedEmptyPagedListViewModel);
 
-        //    //Act
-        //    var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(2);
+            //Act
+            var actualResult = await _animalControllerFixture.MockAnimalController
+                .GetMedCardAsync(_animalControllerFixture.pagingParameters);
 
-        //    //Assert
-        //    Assert.NotNull(actualResult);
-        //    Assert.Empty(actualResult);
-        //}
+            //Assert
+            Assert.NotNull(actualResult);
+            Assert.Null(actualResult.Entities);
+        }
     }
 }
