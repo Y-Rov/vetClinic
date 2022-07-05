@@ -174,7 +174,7 @@ namespace Application.Services
             //Add previous to list
                 _incomes.Add(income);
 
-                var doctorsCount = appointment.AppointmentUsers.Count();
+                var doctorsCount = appointment.AppointmentUsers.Count;
 
             //Count all doctors Premiums
                 foreach(var doctors in appointment.AppointmentUsers)
