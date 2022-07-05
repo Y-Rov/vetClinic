@@ -36,9 +36,9 @@ namespace WebApi.Test
                 }
         };
 
-        [Fact]
-        public async Task<IEnumerable<AppointmentReadViewModel>> GetAsync_ThenResult() { 
+        //[Fact]
+        //public async Task<IEnumerable<AppointmentReadViewModel>> GetAsync_ThenResult() { 
             
-        }
+        //}
     }
 }

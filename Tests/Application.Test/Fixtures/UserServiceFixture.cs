@@ -5,6 +5,8 @@ using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Moq;
 
 namespace Application.Test.Fixtures
@@ -29,6 +31,7 @@ namespace Application.Test.Fixtures
             Role = "Client";
             Passowrd = "test_pass";
             SpecializationName = "test_spec";
+            UserParameters = new();
             Specialization = new() { Name = SpecializationName };
 
             UserSpecializations = new List<UserSpecialization>()
@@ -47,6 +50,7 @@ namespace Application.Test.Fixtures
             };
 
             Users = new List<User>() { User };
+            PagedUsers = new(Users, 5, 1, 5);
         }
 
         public UserService MockUserService { get; }
@@ -58,9 +62,11 @@ namespace Application.Test.Fixtures
         public string Role { get; set; }
         public string Passowrd { get; set; }
         public string SpecializationName { get; set; }
+        public UserParameters UserParameters { get; set; }
         public Specialization Specialization { get; set; }
         public IEnumerable<UserSpecialization> UserSpecializations { get; set; }
         public User User { get; set; }
-        public IEnumerable<User> Users { get; set; }
+        public List<User> Users { get; set; }
+        public PagedList<User> PagedUsers { get; set; }
     }
 }

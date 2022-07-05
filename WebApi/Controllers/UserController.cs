@@ -40,11 +40,10 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<PagedList<UserReadViewModel>>> GetAsync(
+        public async Task<ActionResult<PagedReadViewModel<UserReadViewModel>>> GetAsync(
             [FromQuery] UserParameters userParameters)
         {
             var users = await _userService.GetAllUsersAsync(userParameters);
-            //var readModels = _readEnumerableMapper.Map(users);
             var readModels = _readPagedMapper.Map(users);
 
             return Ok(readModels);
