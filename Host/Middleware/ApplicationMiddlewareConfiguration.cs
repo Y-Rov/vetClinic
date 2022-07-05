@@ -1,6 +1,4 @@
-﻿
-
-namespace Host.Middleware
+﻿namespace Host.Middleware
 {
     public static class ApplicationMiddlewareConfiguration
     {
