@@ -49,8 +49,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Procedure, ProcedureReadViewModel>, ProcedureReadMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationBaseViewModel>>,
                 ProcedureSpecEnumerableMapper>();
-        services
-            .AddScoped<IViewModelMapper<PagedList<Procedure>, PagedReadViewModel<ProcedureReadViewModel>>,
+        services.AddScoped<IViewModelMapper<PagedList<Procedure>, PagedReadViewModel<ProcedureReadViewModel>>,
                 ProcedurePagedMapper>();
 
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
@@ -83,7 +82,9 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<CreateArticleViewModel, Article>, CreateArticleMapper>();
         services.AddScoped<IViewModelMapper<UpdateArticleViewModel, Article>, UpdateArticleMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Article>, IEnumerable<ReadArticleViewModel>>, ReadEnumerableArticleMapper>();
-
+        services.AddScoped<IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>>,
+            PagedArticlesMapper>();
+        
         services.AddScoped<IViewModelMapper<Comment, ReadCommentViewModel>, ReadCommentMapper>();
         services.AddScoped<IViewModelMapper<CreateCommentViewModel, Comment>, CreateCommentMapper>();
         services.AddScoped<IViewModelMapper<UpdateCommentViewModel, Comment>, UpdateCommentMapper>();

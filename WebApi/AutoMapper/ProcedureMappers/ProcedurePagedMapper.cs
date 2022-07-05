@@ -15,8 +15,7 @@ public class ProcedurePagedMapper : IViewModelMapper<PagedList<Procedure>, Paged
     {
         _enumMapper = enumMapper;
     }
-
-
+    
     public PagedReadViewModel<ProcedureReadViewModel> Map(PagedList<Procedure> source)
     {
         return new PagedReadViewModel<ProcedureReadViewModel>()

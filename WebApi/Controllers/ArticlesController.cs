@@ -1,6 +1,10 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.ArticleViewModels;
+using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
@@ -11,45 +15,43 @@ namespace WebApi.Controllers;
 [ApiController]
 public class ArticlesController : ControllerBase
 {
-    private readonly IEnumerableViewModelMapper<IEnumerable<Article>, IEnumerable<ReadArticleViewModel>>
-        _enumerableViewModelMapper;
-
     private readonly IArticleService _articleService;
     private readonly IViewModelMapper<CreateArticleViewModel, Article>  _createMapper;
     private readonly IViewModelMapper<UpdateArticleViewModel, Article> _updateMapper;
     private readonly IViewModelMapper<Article, ReadArticleViewModel> _readMapper;
+    private readonly IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> _readPagedMapper;
 
     public ArticlesController(
         IArticleService articleService,
         IViewModelMapper<CreateArticleViewModel, Article> createMapper,
         IViewModelMapper<UpdateArticleViewModel, Article> updateMapper,
         IViewModelMapper<Article, ReadArticleViewModel> readMapper,
-        IEnumerableViewModelMapper<IEnumerable<Article>, IEnumerable<ReadArticleViewModel>> enumerableViewModelMapper)
+        IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> readPagedMapper)
     {
-        _enumerableViewModelMapper = enumerableViewModelMapper;
         _articleService = articleService;
         _createMapper = createMapper;
         _updateMapper = updateMapper;
         _readMapper = readMapper;
+        _readPagedMapper = readPagedMapper;
     }
 
     [HttpGet]
-    public async Task<IEnumerable<ReadArticleViewModel>> GetAsync()
+    public async Task<PagedReadViewModel<ReadArticleViewModel>> GetAsync([FromQuery] ArticleParameters parameters)
     {
-        var articles = await _articleService.GetAllArticlesAsync();
-        var viewModels = _enumerableViewModelMapper.Map(articles);
+        var articles = await _articleService.GetArticlesAsync(parameters);
+        var viewModels = _readPagedMapper.Map(articles);
+        return viewModels;
+    }    
+    
+    [Authorize(Roles = "Admin")]
+    [HttpGet("/published")]
+    public async Task<PagedReadViewModel<ReadArticleViewModel>> GetPublishedAsync([FromQuery] ArticleParameters parameters)
+    {
+        var articles = await _articleService.GetPublishedArticlesAsync(parameters);
+        var viewModels = _readPagedMapper.Map(articles);
         return viewModels;
     }
 
-    [HttpGet("published")]
-    public async Task<IEnumerable<ReadArticleViewModel>> GetPublishedAsync()
-    {
-        var articles = await _articleService.GetPublishedArticlesAsync();
-        var viewModels = _enumerableViewModelMapper.Map(articles);
-        return viewModels;
-    }
-
-        
     [HttpGet("{id:int:min(1)}")]
     public async Task<ReadArticleViewModel> GetByIdAsync([FromRoute]int id)
     {

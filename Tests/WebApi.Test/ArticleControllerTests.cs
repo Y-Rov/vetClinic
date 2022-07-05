@@ -149,7 +149,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         //  Arrange
         _fixture.MockArticleService
             .Setup(service =>
-                service.GetAllArticlesAsync())
+                service.GetArticlesAsync())
             .ReturnsAsync(_articles);
 
         _fixture.MockEnumerableViewModelMapper
@@ -175,7 +175,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
 
         _fixture.MockArticleService
             .Setup(service =>
-                service.GetAllArticlesAsync())
+                service.GetArticlesAsync())
             .ReturnsAsync(emptyArticles);
 
         _fixture.MockEnumerableViewModelMapper

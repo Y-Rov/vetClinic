@@ -74,7 +74,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .ReturnsAsync(_articles);
         
         //Act
-        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        var result = await _fixture.MockArticleService.GetArticlesAsync();
         
         //Assert
         Assert.NotEmpty(result);
@@ -97,7 +97,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .ReturnsAsync(emptyArticles);
         
         //Act
-        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        var result = await _fixture.MockArticleService.GetArticlesAsync();
         
         //Assert
         Assert.NotNull(result);
@@ -179,7 +179,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .ReturnsAsync(published);
         
         //Act
-        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        var result = await _fixture.MockArticleService.GetArticlesAsync();
         
         //Assert
         Assert.NotEmpty(result);
