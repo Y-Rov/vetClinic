@@ -53,7 +53,7 @@ namespace WebApi.Controllers
         //    return map;
         //}
 
-        [HttpGet("medcard/{id:int:min(1)}")]
+        [HttpGet("medcard")]
         public async Task<PagedReadViewModel<AnimalMedCardViewModel>> GetMedCardAsync([FromQuery] AnimalParameters animalParameters)
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(animalParameters);
