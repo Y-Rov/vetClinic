@@ -21,11 +21,14 @@ namespace DataAccess.Repositories
         {
             var existing = await _appointmentProcedureRepository.GetAsync(
                 filter: app => app.AppointmentId == appointmentId);
+
             foreach (var app in existing) 
             {
                 _appointmentProcedureRepository.Delete(app);
             }
+
             await _appointmentProcedureRepository.SaveChangesAsync();
+
             foreach (var procedureId in procedureIds) 
             {
                 await _appointmentProcedureRepository.InsertAsync(new AppointmentProcedure()
