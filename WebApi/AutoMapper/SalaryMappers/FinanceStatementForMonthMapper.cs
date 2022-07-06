@@ -7,17 +7,6 @@ namespace WebApi.AutoMapper.SalaryMappers
     public class FinancialStatementForMonthMapper : IEnumerableViewModelMapper<IEnumerable<FinancialStatement>,
         IEnumerable<FinancialStatementForMonthViewModel>>
     {
-        private readonly IViewModelMapper<IEnumerable<Income>, IEnumerable<IncomeViewModel>> _incomeMapper;
-        private readonly IViewModelMapper<IEnumerable<Expences>, IEnumerable<ExpencesViewModel>> _expencesMapper;
-
-
-        public FinancialStatementForMonthMapper(
-            IViewModelMapper<IEnumerable<Income>, IEnumerable<IncomeViewModel>> incomeMapper,
-            IViewModelMapper<IEnumerable<Expences>, IEnumerable<ExpencesViewModel>> expencesMapper)
-        {
-            _incomeMapper = incomeMapper;
-            _expencesMapper = expencesMapper;
-        }
 
         public IEnumerable<FinancialStatementForMonthViewModel> Map(IEnumerable<FinancialStatement> source)
         {
@@ -31,10 +20,11 @@ namespace WebApi.AutoMapper.SalaryMappers
             {
                 TotalExpences = source.TotalExpences,
                 TotalIncomes = source.TotalIncomes,
-                Month = source.Month
+                Month = source.Month,
+                IncomesList = source.IncomesList,
+                ExpencesList = source.ExpencesList
             };
-            financialStatementForMonthViewModel.IncomesList = _incomeMapper.Map(source.IncomesList);
-            financialStatementForMonthViewModel.ExpencesList = _expencesMapper.Map(source.ExpencesList);
+
             return financialStatementForMonthViewModel;
         }
     }

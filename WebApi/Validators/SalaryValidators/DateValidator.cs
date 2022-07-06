@@ -1,12 +1,12 @@
-﻿using Core.ViewModels.SalaryViewModel;
+﻿using Core.Models.Finance;
 using FluentValidation;
 
 
 namespace WebApi.Validators.SalaryValidators
 {
-    public class DateViewModelValidator: AbstractValidator<DateViewModel>
+    public class DateValidator: AbstractValidator<Date>
     {
-        public DateViewModelValidator()
+        public DateValidator()
         {
             RuleFor(dto => dto.EndDate)
                 .NotEqual(start => start.StartDate)

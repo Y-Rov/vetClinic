@@ -19,7 +19,6 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
         private readonly IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
-        private readonly IViewModelMapper<DateViewModel, Date> _date;
         private readonly IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> _finStatViewModel;
 
         public FinancialController(
@@ -29,7 +28,6 @@ namespace WebApi.Controllers
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
             IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
-            IViewModelMapper<DateViewModel, Date> date,
             IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> finStatViewModel
             )
         {
@@ -39,7 +37,6 @@ namespace WebApi.Controllers
             _writeSalary = writeSalary;
             _readSalaryList = readSalaryList;
             _readEmployeesList = readEmployeesList;
-            _date = date;
             _finStatViewModel = finStatViewModel;
         }
 
@@ -97,9 +94,13 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("/api/financialStatements")]
-        public async Task<IEnumerable<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(DateViewModel dateViewModel)
+        public async Task<IEnumerable<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(Date incomeDate)
         {
-            var date = _date.Map(dateViewModel);
+            var date = new Date()
+            {
+                StartDate = incomeDate.StartDate.ToLocalTime(),
+                EndDate = incomeDate.EndDate.ToLocalTime()
+            };
             var result = await _financialService.GetFinancialStatement(date);
             var finViewModel = _finStatViewModel.Map(result);
             return finViewModel;

@@ -560,11 +560,6 @@ namespace WebApi.Test
         public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
         {
             //Arrange
-            var dateVM = new DateViewModel()
-            {
-                StartDate = new DateTime(2022, 5, 1),
-                EndDate = new DateTime(2022, 6, 1)
-            };
             var date = new Date()
             {
                 StartDate = new DateTime(2022, 5, 1),
@@ -603,10 +598,7 @@ namespace WebApi.Test
                 }
             };
 
-            _fixture.MockDate
-                .Setup(mapper =>
-                    mapper.Map(It.Is<DateViewModel>(x => x.Equals(dateVM))))
-                .Returns(date);
+
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetFinancialStatement(It.Is<Date>(x => x.Equals(date))))
@@ -616,7 +608,7 @@ namespace WebApi.Test
                     mapper.Map(It.IsAny<IEnumerable<FinancialStatement>>()))
                 .Returns(finStatementVM);
             //Act
-            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(dateVM);
+            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(date);
             //Assert
             Assert.NotNull(result);
             Assert.Equal(finStatementVM,result);
@@ -626,11 +618,7 @@ namespace WebApi.Test
         public async Task GetFinancialStatement_whenFinancialStatementListIsEmpty_thenReturnOk()
         {
             //Arrange
-            var dateVM = new DateViewModel()
-            {
-                StartDate = new DateTime(2022, 5, 1),
-                EndDate = new DateTime(2022, 6, 1)
-            };
+
             var date = new Date()
             {
                 StartDate = new DateTime(2022, 5, 1),
@@ -641,10 +629,7 @@ namespace WebApi.Test
 
             var finStatementVM = new List<FinancialStatementForMonthViewModel>();
 
-            _fixture.MockDate
-                .Setup(mapper =>
-                    mapper.Map(It.Is<DateViewModel>(x => x.Equals(dateVM))))
-                .Returns(date);
+
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetFinancialStatement(It.Is<Date>(x => x.Equals(date))))
@@ -654,7 +639,7 @@ namespace WebApi.Test
                     mapper.Map(It.IsAny<IEnumerable<FinancialStatement>>()))
                 .Returns(finStatementVM);
             //Act
-            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(dateVM);
+            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(date);
             //Assert
             Assert.NotNull(result);
             Assert.Equal(finStatementVM, result);

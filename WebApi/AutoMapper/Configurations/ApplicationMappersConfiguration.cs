@@ -62,12 +62,8 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<Salary, SalaryViewModel>, SalaryMapper>();
         services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();
-        services.AddScoped<IViewModelMapper<Date, DateViewModel>, DateMapper>();
-        services.AddScoped<IViewModelMapper<DateViewModel, Date>, DateViewModelMapper>();
-        services.AddScoped<IViewModelMapper<IEnumerable<Expences>, IEnumerable<ExpencesViewModel>>, ExpencesMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<FinancialStatement>,
             IEnumerable<FinancialStatementForMonthViewModel>>, FinancialStatementForMonthMapper>();
-        services.AddScoped<IViewModelMapper<IEnumerable<Income>, IEnumerable<IncomeViewModel>>, IncomesMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>, SalariesMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>, EmployeesMapper>();
 
