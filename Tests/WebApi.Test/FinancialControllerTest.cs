@@ -562,13 +562,13 @@ namespace WebApi.Test
             //Arrange
             var dateVM = new DateViewModel()
             {
-                startDate = new DateTime(2022, 5, 1),
-                endDate = new DateTime(2022, 6, 1)
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
             };
             var date = new Date()
             {
-                startDate = new DateTime(2022, 5, 1),
-                endDate = new DateTime(2022, 6, 1)
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
             };
 
             var finStatement = new List<FinancialStatement>()
@@ -628,13 +628,13 @@ namespace WebApi.Test
             //Arrange
             var dateVM = new DateViewModel()
             {
-                startDate = new DateTime(2022, 5, 1),
-                endDate = new DateTime(2022, 6, 1)
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
             };
             var date = new Date()
             {
-                startDate = new DateTime(2022, 5, 1),
-                endDate = new DateTime(2022, 6, 1)
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
             };
 
             var finStatement = new List<FinancialStatement>();

@@ -482,8 +482,8 @@ namespace Application.Test
             //Arrange
             var date = new Date()
             {
-                startDate = new DateTime(2022, 5, 1),
-                endDate = new DateTime(2022, 6, 1)
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
             };
             var appointments = new List<Appointment>
             {
@@ -576,8 +576,8 @@ namespace Application.Test
             //Arrange
             var date = new Date()
             {
-                startDate = new DateTime(2022, 5, 1),
-                endDate = new DateTime(2022, 6, 1)
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
             };
             var appointments = new List<Appointment>();
             var salaries = new List<Salary>

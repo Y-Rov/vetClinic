@@ -11,8 +11,8 @@ namespace WebApi.AutoMapper.SalaryMappers
 
             var dateViewModel = new DateViewModel()
             {
-                startDate = source.startDate,
-                endDate = source.endDate
+                StartDate = source.StartDate,
+                EndDate = source.EndDate
             };
             return dateViewModel;
         }

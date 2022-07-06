@@ -11,8 +11,8 @@ namespace WebApi.AutoMapper.SalaryMappers
 
             var date = new Date()
             {
-                startDate = source.startDate.ToLocalTime(),
-                endDate = source.endDate.ToLocalTime()
+                StartDate = source.StartDate.ToLocalTime(),
+                EndDate = source.EndDate.ToLocalTime()
             };
             return date;
         }

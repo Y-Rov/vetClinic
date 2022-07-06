@@ -146,8 +146,8 @@ namespace Application.Services
 
             //Get all Appoinments in Period
             var appointments = await _appointmentRepository.GetAsync(x=>
-                (x.Date >= date.startDate)&&
-                (x.Date < date.endDate)&&
+                (x.Date >= date.StartDate)&&
+                (x.Date < date.EndDate)&&
                 (x.MeetHasOccureding == true),
                 null,
                 includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
@@ -192,7 +192,7 @@ namespace Application.Services
             }
 
             //Get all Salaries where we need to pay in Period
-            var salaries = await GetSalaryAsync(x => x.Date < date.startDate);
+            var salaries = await GetSalaryAsync(x => x.Date < date.StartDate);
 
             var _expences = new List<Expences>();
             foreach(var salary in salaries)
@@ -223,9 +223,9 @@ namespace Application.Services
 
             var financialStatement = new FinancialStatement()
             { 
-                Month = date.startDate.ToString("MMMM yyyy"),
-                expences = _expences,
-                incomes = _incomes,
+                Month = date.StartDate.ToString("MMMM yyyy"),
+                ExpencesList = _expences,
+                IncomesList = _incomes,
                 TotalExpences = allExpence,
                 TotalIncomes = allIncome
             };
@@ -251,14 +251,14 @@ namespace Application.Services
 
         public async Task<IEnumerable<FinancialStatement>> GetFinancialStatement(Date date)
         {
-            var countMonth = GetMonthsBetween(date.startDate, date.endDate);
+            var countMonth = GetMonthsBetween(date.StartDate, date.EndDate);
             var finStatList = new List<FinancialStatement>();
             var monthDate = new Date();
 
             for(int i = 0; i < countMonth; i++)
             {
-                monthDate.startDate = date.startDate.AddMonths(i);
-                monthDate.endDate = date.startDate.AddMonths(i+1);
+                monthDate.StartDate = date.StartDate.AddMonths(i);
+                monthDate.EndDate = date.StartDate.AddMonths(i+1);
 
                 finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
             }

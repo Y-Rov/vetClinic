@@ -33,8 +33,8 @@ namespace WebApi.AutoMapper.SalaryMappers
                 TotalIncomes = source.TotalIncomes,
                 Month = source.Month
             };
-            financialStatementForMonthViewModel.incomes = _incomeMapper.Map(source.incomes);
-            financialStatementForMonthViewModel.expences = _expencesMapper.Map(source.expences);
+            financialStatementForMonthViewModel.IncomesList = _incomeMapper.Map(source.IncomesList);
+            financialStatementForMonthViewModel.ExpencesList = _expencesMapper.Map(source.ExpencesList);
             return financialStatementForMonthViewModel;
         }
     }
