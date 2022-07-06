@@ -102,14 +102,12 @@ namespace Application.Test
         [Fact]
         public async Task AddSpecialization_whenDataIsCorrect_thenReturnCreated()
         {
-            _fixture.MockRepository.Setup(repository =>
-                repository.InsertAsync(It.IsAny<Specialization>()))
-            .Returns(Task.FromResult<object?>(null));
-
             var result = await _fixture.MockService.AddSpecializationAsync(_fixture.Expected);
 
             Assert.NotNull(result);
             Assert.IsType<Specialization>(result);
+
+            _fixture.MockRepository.Verify(repository => repository.InsertAsync(_fixture.Expected));
         }
 
         [Fact]
