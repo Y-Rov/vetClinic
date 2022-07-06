@@ -125,7 +125,7 @@ namespace Application.Test
         [Fact]
         public async Task CreateAsync_whenNormal_thanSuccessResult()
         {
-            //Arrange
+            // Arrange
             var ids = new List<int> { 1, 2, 3, 4 };
             var animalId = 1;
 
@@ -133,19 +133,20 @@ namespace Application.Test
                 .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
 
+
             _appointmentServiceFixture.MockUserEntityService
                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
                .ReturnsAsync(_appointmentServiceFixture.MockUser);
 
-            //Act
+            // Act
             await _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(
                 _appointmentServiceFixture.MockAppointment,
                 ids,
                 ids,
                 animalId);
 
-            //Assert
-            _appointmentServiceFixture.MockAppointmentRepository.Verify(x => x.SaveChangesAsync(), Times.Once);
+            // Assert
+            _appointmentServiceFixture.MockAppointmentRepository.Verify(x => x.InsertAsync(_appointmentServiceFixture.MockAppointment), Times.Once);
         }
 
 
