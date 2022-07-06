@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models.Finance;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
         private readonly IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
+        private readonly IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> _finStatViewModel;
 
         public FinancialController(
             IFinancialService financialService,
@@ -25,7 +27,9 @@ namespace WebApi.Controllers
             IViewModelMapper<Salary, SalaryViewModel> readSalary,
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
             IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
-            IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList)
+            IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
+            IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> finStatViewModel
+            )
         {
             _financialService = financialService;
             _userService = userService;
@@ -33,12 +37,13 @@ namespace WebApi.Controllers
             _writeSalary = writeSalary;
             _readSalaryList = readSalaryList;
             _readEmployeesList = readEmployeesList;
+            _finStatViewModel = finStatViewModel;
         }
 
-        [HttpGet("/api/[controller]/")]
+        [HttpGet]
         public async Task<IEnumerable<SalaryViewModel>> GetAsync()
         {
-            var salaries = await _financialService.GetSalaryAsync();
+            var salaries = await _financialService.GetSalaryAsync(null);
             var readSalary = _readSalaryList.Map(salaries);
             foreach(var res in readSalary)
             {
@@ -48,7 +53,7 @@ namespace WebApi.Controllers
             return readSalary;
         }
 
-        [HttpGet("/api/[controller]/{id:int:min(1)}")]
+        [HttpGet("{id:int:min(1)}")]
         public async Task<SalaryViewModel> GetAsync([FromRoute]int id)
         {
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
@@ -86,6 +91,19 @@ namespace WebApi.Controllers
         {
             var writeSalary = _writeSalary.Map(model);
             await _financialService.UpdateSalaryAsync(writeSalary);
+        }
+
+        [HttpPost("/api/financialStatements")]
+        public async Task<IEnumerable<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(DatePeriod incomeDate)
+        {
+            var date = new DatePeriod()
+            {
+                StartDate = incomeDate.StartDate.ToLocalTime(),
+                EndDate = incomeDate.EndDate.ToLocalTime()
+            };
+            var result = await _financialService.GetFinancialStatement(date);
+            var finViewModel = _finStatViewModel.Map(result);
+            return finViewModel;
         }
     }
 
