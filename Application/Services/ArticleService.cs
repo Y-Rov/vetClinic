@@ -137,16 +137,27 @@ public class ArticleService : IArticleService
     private static Expression<Func<Article, bool>>? GetFilterQuery(string? filterParam, bool isPublished)
     {
         Expression<Func<Article, bool>>? filterQuery = null;
-
-        if (isPublished) filterQuery = art => art.Published == true;
         
-        if (filterParam is null) return filterQuery;
+        if (string.IsNullOrEmpty(filterParam))
+        {
+            if(isPublished)
+                filterQuery = art => art.Published;
+            
+            return filterQuery;
+        }
         
         var formattedFilter = filterParam.Trim().ToLower();
-
-        filterQuery = u => u.Title!.ToLower().Contains(formattedFilter)
-                           || u.Body!.ToLower().Contains(formattedFilter);
-
+        
+        if (isPublished)
+        {
+            filterQuery = art => (art.Title!.ToLower().Contains(formattedFilter)
+                                  || art.Body!.ToLower().Contains(formattedFilter)) && art.Published;
+        }
+        else
+        {
+            filterQuery = art => art.Title!.ToLower().Contains(formattedFilter)
+                                 || art.Body!.ToLower().Contains(formattedFilter);
+        }
         return filterQuery;
     }
 

@@ -4,7 +4,6 @@ using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ArticleViewModels;
-using Core.ViewModels.ProcedureViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
@@ -35,6 +34,7 @@ public class ArticlesController : ControllerBase
         _readPagedMapper = readPagedMapper;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<PagedReadViewModel<ReadArticleViewModel>> GetAsync([FromQuery] ArticleParameters parameters)
     {
@@ -43,8 +43,7 @@ public class ArticlesController : ControllerBase
         return viewModels;
     }    
     
-    [Authorize(Roles = "Admin")]
-    [HttpGet("/published")]
+    [HttpGet("published")]
     public async Task<PagedReadViewModel<ReadArticleViewModel>> GetPublishedAsync([FromQuery] ArticleParameters parameters)
     {
         var articles = await _articleService.GetPublishedArticlesAsync(parameters);
