@@ -23,8 +23,8 @@ namespace Application.Test.Fixtures
                 MockLoggerManager.Object);
 
             WrongUserId = 4;
-            TestAddress = new Address { UserId = 1, City = "Ivano-Frankisk", Street = "Malanyuka", House = "14" };
-            TestListOfAddresses = new List<Address> { TestAddress };
+            TestAddress = GenerateAddress();
+            TestListOfAddresses = GenerateListOfAddresses();
         }
 
         public IAddressService MockAddressService { get; }
@@ -34,5 +34,19 @@ namespace Application.Test.Fixtures
         public int WrongUserId { get; }
         public Address TestAddress { get; }
         public IList<Address> TestListOfAddresses { get; }
+
+        private Address GenerateAddress()
+        {
+            var address = new Address { UserId = 1, City = "Ivano-Frankisk", Street = "Malanyuka", House = "14" };
+
+            return address;
+        }
+
+        private IList<Address> GenerateListOfAddresses()
+        {
+            var addresses = new List<Address> { TestAddress };
+
+            return addresses;
+        }
     }
 }

@@ -31,20 +31,11 @@ namespace WebApi.Test.Fixtures
             );
 
             UserId = 1;
-            ReadyPortfolio = new Portfolio
-            {
-                UserId = UserId, Description = "Lorem ipsum dolor sit amet, duo modus equidem te, nulla nostrud ne pro. Ea quo tota dicunt. Mutat quodsi tamquam vis ex."
-            };
-            ReadyPortfolioBaseViewModel = new PortfolioBaseViewModel
-            {
-                Description = "Lorem ipsum dolor sit amet, duo modus equidem te, nulla nostrud ne pro. Ea quo tota dicunt. Mutat quodsi tamquam vis ex."
-            };
-            ReadyPortfolioCreateReadViewModel = new PortfolioCreateReadViewModel
-            {
-                Id = UserId, Description = "Lorem ipsum dolor sit amet, duo modus equidem te, nulla nostrud ne pro. Ea quo tota dicunt. Mutat quodsi tamquam vis ex."
-            };
-            Portfolios = new List<Portfolio> { ReadyPortfolio };
-            PortfolioCreateReadViewModels = new List<PortfolioCreateReadViewModel> { ReadyPortfolioCreateReadViewModel };
+            ReadyPortfolio = GeneratePortfolio();
+            ReadyPortfolioBaseViewModel = GeneratePortfolioBaseViewModel();
+            ReadyPortfolioCreateReadViewModel = GeneratePortfolioCreateReadViewModel();
+            Portfolios = GenerateListOfPortfolios();
+            PortfolioCreateReadViewModels = GenerateListOfPortfolioCreateReadViewModels();
         }
 
         public PortfolioController MockPortfolioController { get; }
@@ -63,5 +54,49 @@ namespace WebApi.Test.Fixtures
         public PortfolioCreateReadViewModel ReadyPortfolioCreateReadViewModel { get; }
         public IEnumerable<Portfolio> Portfolios { get; }
         public IEnumerable<PortfolioCreateReadViewModel> PortfolioCreateReadViewModels { get; }
+
+        private Portfolio GeneratePortfolio()
+        {
+            var portfolio = new Portfolio
+            {
+                UserId = UserId, Description = "Lorem ipsum dolor sit amet, duo modus equidem te, nulla nostrud ne pro. Ea quo tota dicunt. Mutat quodsi tamquam vis ex."
+            };
+
+            return portfolio;
+        }
+
+        private PortfolioBaseViewModel GeneratePortfolioBaseViewModel()
+        {
+            var portfolioBaseViewModel = new PortfolioBaseViewModel
+            {
+                Description = "Lorem ipsum dolor sit amet, duo modus equidem te, nulla nostrud ne pro. Ea quo tota dicunt. Mutat quodsi tamquam vis ex."
+            };
+
+            return portfolioBaseViewModel;
+        }
+
+        private PortfolioCreateReadViewModel GeneratePortfolioCreateReadViewModel()
+        {
+            var portfolioCreateReadViewModel = new PortfolioCreateReadViewModel
+            {
+                Id = UserId, Description = "Lorem ipsum dolor sit amet, duo modus equidem te, nulla nostrud ne pro. Ea quo tota dicunt. Mutat quodsi tamquam vis ex."
+            };
+
+            return portfolioCreateReadViewModel;
+        }
+
+        private IEnumerable<Portfolio> GenerateListOfPortfolios()
+        {
+            var portfolios = new List<Portfolio> { ReadyPortfolio };
+
+            return portfolios;
+        }
+
+        private IEnumerable<PortfolioCreateReadViewModel> GenerateListOfPortfolioCreateReadViewModels()
+        {
+            var portfolioCreateReadViewModels = new List<PortfolioCreateReadViewModel> { ReadyPortfolioCreateReadViewModel };
+
+            return portfolioCreateReadViewModels;
+        }
     }
 }
