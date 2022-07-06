@@ -76,14 +76,14 @@ namespace WebApi.Test
             _fixture.MockAppointmentsViewModelMapper
                 .Setup(mapper =>
                     mapper.Map(It.Is<IEnumerable<Appointment>>(p => p.Equals(_fixture.MockAppointments))))
-                .Returns(_appointmentReadViewModels);
+                .Returns(_fixture.MockAppointmentReadViewModels);
 
             //  Act
             var result = await _fixture.MockAppointmentController.GetAsync();
 
             //  Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _appointmentReadViewModels);
+            Assert.Equal(result, _fixture.MockAppointmentReadViewModels);
         }
 
         [Fact]

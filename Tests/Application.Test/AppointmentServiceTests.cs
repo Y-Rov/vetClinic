@@ -504,7 +504,7 @@ namespace Application.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentEntity.Id, userIds);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -544,7 +544,7 @@ namespace Application.Test
 
             _appointmentServiceFixture.MockProcedureEntityService
                 .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_procedureEntity);
+                .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
 
             _appointmentServiceFixture.MockAppointmentRepository
                 .Setup(repo => repo.Update(It.IsAny<Appointment>()))
@@ -555,7 +555,7 @@ namespace Application.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentEntity.Id, procedureIds);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -595,7 +595,7 @@ namespace Application.Test
 
             _appointmentServiceFixture.MockUserEntityService
                 .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_userEntity);
+                .ReturnsAsync(_appointmentServiceFixture.MockUser);
 
             _appointmentServiceFixture.MockAppointmentRepository
                 .Setup(repo => repo.Update(It.IsAny<Appointment>()))
@@ -606,7 +606,7 @@ namespace Application.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentEntity.Id, userIds);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
