@@ -3,6 +3,7 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels;
+using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.AppointmentsViewModel;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
@@ -22,6 +23,7 @@ namespace WebApi.Test.Fixtures
             MockAppointment = GenerateAppointment();
             MockAppointmentCreateViewModel = GenerateAppointmentCreateViewModel();
             MockAppointmentUpdateViewModel = GenerateAppointmentUpdateViewModel();
+            MockAppointmentReadViewModel = GenerateAppointmentReadViewModel();
             MockAppointments = GenerateAppointments();
             MockAppointmentReadViewModels = GenerateAppointmentReadViewModels();
 
@@ -49,6 +51,7 @@ namespace WebApi.Test.Fixtures
 
         public Appointment MockAppointment { get; set; }
         public AppointmentCreateViewModel MockAppointmentCreateViewModel { get; set; }
+        public AppointmentReadViewModel MockAppointmentReadViewModel { get; set; }
         public AppointmentUpdateViewModel MockAppointmentUpdateViewModel { get; set; }
         public IEnumerable<Appointment> MockAppointments { get; set; }
         public IEnumerable<AppointmentReadViewModel> MockAppointmentReadViewModels { get; set; }
@@ -82,6 +85,70 @@ namespace WebApi.Test.Fixtures
             };
 
             return appointment;
+        }
+
+        private AppointmentReadViewModel GenerateAppointmentReadViewModel()
+        {
+            var appointmentReadViewModel = new AppointmentReadViewModel
+            {
+                Id = 1,
+                Date = DateTime.Now,
+                Disease = "pain in leg",
+                MeetHasOccureding = true,
+                Procedures = new List<ProcedureReadViewModel>
+                {
+                     new ProcedureReadViewModel
+                     {
+                         Id = 3,
+                         Cost = 100,
+                         Name = "leg surgery",
+                         Description = "leg surgery description",
+                         DurationInMinutes = 35,
+                         Specializations = new List<SpecializationBaseViewModel>
+                         {
+                            new SpecializationBaseViewModel() {Id = 17, Name = "Younger surgeon"},
+                            new SpecializationBaseViewModel() {Id = 18, Name = "Master surgeon"},
+                         }
+                     }
+                },
+
+                Users = new List<UserReadViewModel>
+                {
+                    new UserReadViewModel
+                    {
+                        Id = 1,
+                        FirstName = "Ren",
+                        LastName = "Amamiya",
+                        Address = "Vovchunetska",
+                        BirthDate= DateTime.Now,
+                        Email = "Amamiya@gmail.com",
+                        Role = "doctor",
+                        ProfilePicture = "none",
+                        PhoneNumber = "0987654321",
+
+                        Portfolio = new Portfolio
+                        {
+                            Description = "some description",
+                            UserId = 1
+                        },
+
+                        Specializations = new List<Specialization>
+                        {
+                            new Specialization() {Id = 2, Name = "Younger surgeon"}
+                        }
+                    }
+                },
+
+                AnimalViewModel = new AnimalViewModel 
+                {
+                    Id = 1,
+                    BirthDate = DateTime.Now,
+                    NickName = "Tom",
+                    OwnerId = 1,
+                    PhotoUrl = "none"
+                }
+            };
+            return appointmentReadViewModel;
         }
 
         private AppointmentCreateViewModel GenerateAppointmentCreateViewModel()

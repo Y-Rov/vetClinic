@@ -449,7 +449,7 @@ namespace Application.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //Act
-            var result =  _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentEntity.Id, procedureIds);
+            var result =  _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);

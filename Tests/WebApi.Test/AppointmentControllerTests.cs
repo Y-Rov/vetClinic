@@ -29,7 +29,7 @@ namespace WebApi.Test
             _fixture.MockAppointmentReadMapper
                 .Setup(mapper =>
                     mapper.Map(It.Is<Appointment>(x => x == _fixture.MockAppointment)))
-                .Returns(_fixture.MockAppointmentReadViewModels);
+                .Returns(_fixture.MockAppointmentReadViewModel);
 
             //  Act
             var result = await _fixture.MockAppointmentController.GetAsync(3);
@@ -53,7 +53,7 @@ namespace WebApi.Test
             _fixture.MockAppointmentReadMapper
                 .Setup(mapper =>
                     mapper.Map(It.Is<Appointment>(p => p == _fixture.MockAppointment)))
-                .Returns(_fixture.MockAppointmentsViewModelMapper);
+                .Returns(_fixture.MockAppointmentReadViewModel);
 
             //  Act
             var result = _fixture.MockAppointmentController.GetAsync(id);
@@ -99,7 +99,7 @@ namespace WebApi.Test
                     service.GetAsync())
                 .ReturnsAsync(emptyAppointments);
 
-            _fixture.MockAppointmentReadMapper
+            _fixture.MockAppointmentsViewModelMapper
                 .Setup(mapper =>
                     mapper.Map(It.Is<IEnumerable<Appointment>>(p => p.Equals(emptyAppointments))))
                 .Returns(emptyAppointmentReadViewModels);
@@ -125,7 +125,10 @@ namespace WebApi.Test
                 .Setup(service =>
                     service.CreateAsync(
                         It.IsAny<Appointment>(),
-                        It.IsAny<IEnumerable<int>>()))
+                        It.IsAny<IEnumerable<int>>(),
+                        It.IsAny<IEnumerable<int>>(),
+                        It.IsAny<int>())
+                        )
 
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
@@ -140,6 +143,7 @@ namespace WebApi.Test
         public async Task Create_whenNotAllProceduresAndUsersAndAnimalExist_thenStatusNotFoundReturned()
         {
             //  Arrange
+
             _fixture.MockCreateAppointmentMapper
                 .Setup(mapper =>
                     mapper.Map(It.IsAny<AppointmentCreateViewModel>()))
@@ -149,11 +153,13 @@ namespace WebApi.Test
                 .Setup(service =>
                     service.CreateAsync(
                         It.IsAny<Appointment>(),
-                        It.IsAny<IEnumerable<int>>()))
+                        It.IsAny<IEnumerable<int>>(),
+                        It.IsAny<IEnumerable<int>>(),
+                        It.IsAny<int>()))
                 .Throws<NotFoundException>();
 
             //  Act
-            var result = _fixture.MockAppointmentController.CreateAsync(_fixture.MockAppointmentCreateViewModel);
+            var result = _fixture.MockAppointmentController.PostAsync(_fixture.MockAppointmentCreateViewModel);
 
             //  Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -203,8 +209,10 @@ namespace WebApi.Test
             _fixture.MockAppointmentService
                 .Setup(service =>
                     service.CreateAsync(
-                        It.IsAny<Appointment>(),
-                        It.IsAny<IEnumerable<int>>()))
+                       It.IsAny<Appointment>(),
+                        It.IsAny<IEnumerable<int>>(),
+                        It.IsAny<IEnumerable<int>>(),
+                        It.IsAny<int>()))
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //  Act
