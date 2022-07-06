@@ -28,10 +28,6 @@ namespace WebApi.Validators
                 .NotEmpty()
                 .ExclusiveBetween(0, 5)
                 .WithMessage("Support rate must be in range from 1 to 4");
-
-            RuleFor(feedback => feedback.Suggestions)
-                .MaximumLength(500)
-                .WithMessage("Lenght must be less than 1000");
         }
     }
 }
