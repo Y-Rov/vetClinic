@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
+using Core.Models.Finance;
 using Core.ViewModels.SalaryViewModel;
 using Moq;
 using WebApi.Test.Fixtures;
@@ -219,7 +220,7 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetSalaryAsync())
+                    service.GetSalaryAsync(null))
                 .ReturnsAsync(salaryList);
 
             _fixture.MockListSalaryViewModels
@@ -257,7 +258,7 @@ namespace WebApi.Test
             //Arrange
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetSalaryAsync())
+                    service.GetSalaryAsync(null))
                 .ReturnsAsync(salary);
 
             _fixture.MockListSalaryViewModels
@@ -553,6 +554,95 @@ namespace WebApi.Test
             //Act
             //Assert
             await Assert.ThrowsAsync<BadRequestException>(async () => await _fixture.MockFinancialController.PutAsync(salaryViewModel));
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
+        {
+            //Arrange
+            var date = new DatePeriod()
+            {
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
+            };
+
+            var finStatement = new List<FinancialStatement>()
+            {
+                new FinancialStatement()
+                {
+                    Month = "first",
+                    TotalIncomes =1,
+                    TotalExpences=1
+                },
+                new FinancialStatement()
+                {
+                    Month = "second",
+                    TotalIncomes =2,
+                    TotalExpences=2
+                }
+            };
+
+            var finStatementVM = new List<FinancialStatementForMonthViewModel>()
+            {
+                new FinancialStatementForMonthViewModel()
+                {
+                    Month = "first",
+                    TotalIncomes =1,
+                    TotalExpences=1
+                },
+                new FinancialStatementForMonthViewModel()
+                {
+                    Month = "second",
+                    TotalIncomes =2,
+                    TotalExpences=2
+                }
+            };
+
+
+            _fixture.MockFinancialService
+                .Setup(service =>
+                    service.GetFinancialStatement(It.Is<DatePeriod>(x => x.Equals(date))))
+                .ReturnsAsync(finStatement);
+            _fixture.MockFinancialStatementViewModel
+                .Setup(mapper=>
+                    mapper.Map(It.IsAny<IEnumerable<FinancialStatement>>()))
+                .Returns(finStatementVM);
+            //Act
+            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(date);
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(finStatementVM,result);
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenFinancialStatementListIsEmpty_thenReturnOk()
+        {
+            //Arrange
+
+            var date = new DatePeriod()
+            {
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
+            };
+
+            var finStatement = new List<FinancialStatement>();
+
+            var finStatementVM = new List<FinancialStatementForMonthViewModel>();
+
+
+            _fixture.MockFinancialService
+                .Setup(service =>
+                    service.GetFinancialStatement(It.Is<DatePeriod>(x => x.Equals(date))))
+                .ReturnsAsync(finStatement);
+            _fixture.MockFinancialStatementViewModel
+                .Setup(mapper =>
+                    mapper.Map(It.IsAny<IEnumerable<FinancialStatement>>()))
+                .Returns(finStatementVM);
+            //Act
+            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(date);
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(finStatementVM, result);
         }
     }
 }

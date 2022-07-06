@@ -4,6 +4,7 @@ using Core.Exceptions;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore.Query;
+using Core.Models.Finance;
 using Moq;
 using System.Linq.Expressions;
 
@@ -190,7 +191,7 @@ namespace Application.Test
                 .ReturnsAsync(salaryList);
 
             //Act
-            var result = await _fixture.MockFinancialService.GetSalaryAsync();
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
 
             //Assert
             Assert.NotNull(result);
@@ -212,7 +213,7 @@ namespace Application.Test
                 .ReturnsAsync(emptysalaryList);
 
             //Act
-            var result = await _fixture.MockFinancialService.GetSalaryAsync();
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
 
             //Assert
             Assert.NotNull(result);
@@ -398,7 +399,7 @@ namespace Application.Test
                 .UpdateSalaryAsync(salary));
         }
 
-        [Fact] //don`t sure how to test
+        [Fact] 
         public async Task GetListEmployeeWithoutSalary_whenItIsEmpty_thanSucceed()
         {
             //Arrange
@@ -473,6 +474,174 @@ namespace Application.Test
 
             //Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_WhenAppoinmentsExist_thenReturnOk()
+        {
+            //Arrange
+            var date = new DatePeriod()
+            {
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
+            };
+            var appointments = new List<Appointment>
+            {
+                new Appointment
+                {
+                    Id = 1,
+                    AnimalId = 1,
+                    Disease ="first"
+                },
+                new Appointment
+                {
+                    Id = 2,
+                    AnimalId = 1,
+                    Disease ="second"
+                }
+            };
+            var procedure = new Procedure();
+            var salaries = new List<Salary>
+            { 
+                new Salary()
+                {
+                    EmployeeId =1,
+                    Value = 1,
+                },
+                new Salary()
+                {
+                    EmployeeId = 2,
+                    Value =1
+                }
+            };
+
+            var userOne = new User
+            {
+                Id=1,
+                FirstName = "frst",
+                LastName ="scnd"
+            };
+            var userTwo = new User
+            {
+                Id = 2,
+                FirstName = "dfg",
+                LastName = "erg"
+            };
+
+            _fixture.MockAppointmentRepository
+                .Setup(repo =>
+                    repo.GetAsync(
+                        It.IsAny<Expression<Func<Appointment, bool>>>(),
+                        It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(appointments);
+            _fixture.MockProcedureRepository
+                .Setup(repo =>
+                    repo.GetById(
+                        It.IsAny<int>(),
+                        It.IsAny<string>()))
+                .ReturnsAsync(procedure);
+            _fixture.MockSalaryRepository
+                .Setup(repo
+                    => repo.GetAsync(
+                        It.IsAny<Expression<Func<Salary, bool>>>(),
+                        It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(salaries);
+            _fixture.MockUserRepository
+                .Setup(repo=>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x=> x.Equals(userOne.Id)),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(userOne);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x.Equals(userTwo.Id)),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(userTwo);
+            //Act
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(date);
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<FinancialStatement>>(result);
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_WhenAppoinmentsNotExist_thenReturnOk()
+        {
+            //Arrange
+            var date = new DatePeriod()
+            {
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
+            };
+            var appointments = new List<Appointment>();
+            var salaries = new List<Salary>
+            {
+                new Salary()
+                {
+                    EmployeeId =1,
+                    Value = 1,
+                },
+                new Salary()
+                {
+                    EmployeeId = 2,
+                    Value =1
+                }
+            };
+
+            var userOne = new User
+            {
+                Id = 1,
+                FirstName = "frst",
+                LastName = "scnd"
+            };
+            var userTwo = new User
+            {
+                Id = 2,
+                FirstName = "dfg",
+                LastName = "erg"
+            };
+
+            _fixture.MockAppointmentRepository
+                .Setup(repo =>
+                    repo.GetAsync(
+                        It.IsAny<Expression<Func<Appointment, bool>>>(),
+                        It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(appointments);
+
+            _fixture.MockSalaryRepository
+                .Setup(repo
+                    => repo.GetAsync(
+                        It.IsAny<Expression<Func<Salary, bool>>>(),
+                        It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(salaries);
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x.Equals(userOne.Id)),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(userOne);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x.Equals(userTwo.Id)),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(userTwo);
+            //Act
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(date);
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<FinancialStatement>>(result);
         }
     }
 }

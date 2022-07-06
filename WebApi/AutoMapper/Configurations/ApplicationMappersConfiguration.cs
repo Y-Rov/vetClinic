@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Models;
 using Core.Paginator;
+using Core.Models.Finance;
 using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
@@ -64,6 +65,8 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<Salary, SalaryViewModel>, SalaryMapper>();
         services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();
+        services.AddScoped<IViewModelMapper<IEnumerable<FinancialStatement>,
+            IEnumerable<FinancialStatementForMonthViewModel>>, FinancialStatementForMonthMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>, SalariesMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>, EmployeesMapper>();
 

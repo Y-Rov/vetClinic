@@ -18,16 +18,22 @@ namespace Application.Test.Fixtures
             MockSalaryRepository = fixture.Freeze<Mock<ISalaryRepository>>();
             MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
+            MockAppointmentRepository = fixture.Freeze<Mock<IAppointmentRepository>>();
+            MockProcedureRepository = fixture.Freeze<Mock<IProcedureRepository>>();
 
             MockFinancialService = new FinancialService(
                 MockSalaryRepository.Object,
                 MockUserRepository.Object,
-                MockLoggerManager.Object);
+                MockLoggerManager.Object,
+                MockAppointmentRepository.Object,
+                MockProcedureRepository.Object);
         }
 
         public IFinancialService MockFinancialService { get; }
         public Mock<ISalaryRepository> MockSalaryRepository { get; }
         public Mock<IUserRepository> MockUserRepository { get; }
+        public Mock<IAppointmentRepository> MockAppointmentRepository { get; }
+        public Mock<IProcedureRepository> MockProcedureRepository { get; }
         public Mock<ILoggerManager> MockLoggerManager { get; }
     }
 }
