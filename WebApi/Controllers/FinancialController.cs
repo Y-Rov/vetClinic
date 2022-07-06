@@ -40,7 +40,7 @@ namespace WebApi.Controllers
             _finStatViewModel = finStatViewModel;
         }
 
-        [HttpGet("/api/[controller]/")]
+        [HttpGet]
         public async Task<IEnumerable<SalaryViewModel>> GetAsync()
         {
             var salaries = await _financialService.GetSalaryAsync(null);
@@ -53,7 +53,7 @@ namespace WebApi.Controllers
             return readSalary;
         }
 
-        [HttpGet("/api/[controller]/{id:int:min(1)}")]
+        [HttpGet("{id:int:min(1)}")]
         public async Task<SalaryViewModel> GetAsync([FromRoute]int id)
         {
             var salary = await _financialService.GetSalaryByUserIdAsync(id);
