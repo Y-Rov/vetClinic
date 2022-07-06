@@ -61,7 +61,7 @@ namespace WebApi.Test.Fixtures
         {
             var appointment = new Appointment()
             {
-
+                Id = 3,
                 Date = DateTime.Now,
                 MeetHasOccureding = true,
                 Disease = "Broke a leg",

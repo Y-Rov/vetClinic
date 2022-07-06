@@ -36,7 +36,7 @@ namespace WebApi.Test
 
             //  Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.MockAppointmentReadViewModels);
+            Assert.IsType<AppointmentReadViewModel?>(result);
         }
 
         [Fact]
@@ -234,21 +234,20 @@ namespace WebApi.Test
             _fixture.MockAppointmentService
                 .Setup(service =>
                     service.UpdateAsync(
-                        It.IsAny<Appointment>(),
-                        It.IsAny<IEnumerable<int>>()))
+                        It.IsAny<Appointment>()))
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
             
             _fixture.MockAppointmentService
                .Setup(service =>
                    service.UpdateAppointmentProceduresAsync(
-                       It.IsAny<Procedure>(),
+                       It.IsAny<int>(),
                        It.IsAny<IEnumerable<int>>()))
                .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             _fixture.MockAppointmentService
                .Setup(service =>
                    service.UpdateAppointmentUsersAsync(
-                       It.IsAny<User>(),
+                       It.IsAny<int>(),
                        It.IsAny<IEnumerable<int>>()))
                .Returns(Task.FromResult<object?>(null)).Verifiable();
 
@@ -272,21 +271,20 @@ namespace WebApi.Test
             _fixture.MockAppointmentService
                .Setup(service =>
                    service.UpdateAsync(
-                       It.IsAny<Appointment>(),
-                       It.IsAny<IEnumerable<int>>()))
+                       It.IsAny<Appointment>()))
                .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             _fixture.MockAppointmentService
                 .Setup(service =>
                     service.UpdateAppointmentProceduresAsync(
-                        It.IsAny<Procedure>(),
+                        It.IsAny<int>(),
                         It.IsAny<IEnumerable<int>>()))
                 .Throws<NotFoundException>();
 
             _fixture.MockAppointmentService
               .Setup(service =>
                   service.UpdateAppointmentUsersAsync(
-                      It.IsAny<User>(),
+                      It.IsAny<int>(),
                       It.IsAny<IEnumerable<int>>()))
               .Returns(Task.FromResult<object?>(null)).Verifiable();
 
@@ -310,8 +308,7 @@ namespace WebApi.Test
             _fixture.MockAppointmentService
                 .Setup(service =>
                     service.UpdateAsync(
-                        It.IsAny<Appointment>(),
-                        It.IsAny<IEnumerable<int>>()))
+                        It.IsAny<Appointment>()))
                 .Throws<NotFoundException>();
 
             //  Act

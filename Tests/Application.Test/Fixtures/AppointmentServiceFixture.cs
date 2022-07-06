@@ -54,7 +54,24 @@ namespace Application.Test.Fixtures
                 Id = 1,
                 Disease = "Pain",
                 Date = DateTime.Now,
-                MeetHasOccureding = true
+                MeetHasOccureding = true,
+                AnimalId = 3,
+                AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+                AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
             };
 
             return appointment;

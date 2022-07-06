@@ -386,7 +386,6 @@ namespace Application.Test
 
             };
 
-
             _appointmentServiceFixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
@@ -459,9 +458,9 @@ namespace Application.Test
         [Fact]
         public async Task UpdateAsync_whenSomeUserDontExist_thanThrowNotFound()
         {
-            // rewrite to another method
             var appointment = new Appointment
             {
+                Id = 1,
                 Date = DateTime.Now,
                 MeetHasOccureding = true,
                 Disease = "Broke a leg",
@@ -486,126 +485,54 @@ namespace Application.Test
 
             //Arrange
             var userIds = new List<int>()
-        {
-            1, 2, 5
-        };
-
-            _appointmentServiceFixture.MockUserEntityService
-                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
-                .Throws<NotFoundException>();
+            {
+                1, 2, 5
+            };
 
             _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.Update(It.IsAny<Appointment>()))
-                .Verifiable();
+                .Setup(repository => repository.UpdateAppointmentUsersAsync(
+                    It.Is<int>(id => id == appointment.Id),
+                    It.Is<List<int>>(usersId => usersId == userIds)))
+                .Throws<InvalidOperationException>();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.
+                UpdateAppointmentUsersAsync(appointment.Id, userIds);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
-
         }
 
 
         [Fact]
-        public async Task UpdateAsync_whenSomeProcedureListEmpty()
+        public async Task UpdateAppointmentProceduresAsync_whenSomeProcedureListEmpty_thenThrowException()
         {
-            var appointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
+            int appointmentId = 1;
 
             //Arrange
             var procedureIds = new List<int>();
 
-            _appointmentServiceFixture.MockProcedureEntityService
-                .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.Update(It.IsAny<Appointment>()))
-                .Verifiable();
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
+            var result = 
+                _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
 
             //Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => result);
-
+            await Assert.ThrowsAsync<ArgumentException>(() => result);
         }
 
 
         [Fact]
         public async Task UpdateAsync_whenSomeUserListEmpty()
         {
-            var appointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
             //Arrange
             var userIds = new List<int>();
 
-            _appointmentServiceFixture.MockUserEntityService
-                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockUser);
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.Update(It.IsAny<Appointment>()))
-                .Verifiable();
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService
+                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
 
             //Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => result);
-
+            await Assert.ThrowsAsync<ArgumentException>(() => result);
         }
 
     }
