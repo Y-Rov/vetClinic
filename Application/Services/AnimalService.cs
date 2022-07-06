@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Application.Services
 {
@@ -55,9 +57,9 @@ namespace Application.Services
             return animals;
         }
 
-        public async Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id)
+        public async Task<PagedList<Appointment>> GetAllAppointmentsWithAnimalIdAsync(AnimalParameters animalParameters)
         {
-            var appointments = await _animalRepository.GetAllAppointmentsWithAnimalIdAsync(id);
+            var appointments = await _animalRepository.GetAllAppointmentsWithAnimalIdAsync(animalParameters);
             _loggerManager.LogInfo($"A list of animal-specific appointments with lenght = {appointments.Count()} is been returned");
             return appointments;
         }

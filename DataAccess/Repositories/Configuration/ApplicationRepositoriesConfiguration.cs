@@ -24,6 +24,7 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<IUserProfilePictureRepository, UserProfilePictureRepository>();
             services.AddScoped<IAppointmentProcedureRepository, AppointmentProcedureRepository>();
             services.AddScoped<IAppointmentUserRepository, AppointmentUserRepository>();
+            services.AddScoped<IFeedbackRepository, FeedbackRepository>();
         }
     }
 }

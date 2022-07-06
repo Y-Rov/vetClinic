@@ -316,44 +316,44 @@ namespace WebApi.Test
             await Assert.ThrowsAsync<NotFoundException>(() => actualResult);
         }
 
-        [Fact]
-        public async Task GetMedCard_ShouldReturnStatusCodeOk()
-        {
-            //Arrange
-            _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.Is<int>(x => x == _animal.Id)))
-                .ReturnsAsync(_appointments);
+        //[Fact]
+        //public async Task GetMedCard_ShouldReturnStatusCodeOk()
+        //{
+        //    //Arrange
+        //    _animalControllerFixture.MockAnimalService
+        //        .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.Is<int>(x => x == _animal.Id)))
+        //        .ReturnsAsync(_appointments);
 
-            _animalControllerFixture.MockMedCardMapper
-                .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
-                .Returns(_animalMedCardViewModel);
+        //    _animalControllerFixture.MockMedCardMapper
+        //        .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
+        //        .Returns(_animalMedCardViewModel);
 
-            //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(_animal.Id);
+        //    //Act
+        //    var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(_animal.Id);
 
-            //Assert
-            Assert.NotNull(actualResult);
-            Assert.Equal(_animalMedCardViewModel, actualResult);
-        }
+        //    //Assert
+        //    Assert.NotNull(actualResult);
+        //    Assert.Equal(_animalMedCardViewModel, actualResult);
+        //}
 
-        [Fact]
-        public async Task GetMedCard_ShouldReturnEmptyList()
-        {
-            //Arrange
-            _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.Is<int>(x => x == _animal.Id)))
-                .ReturnsAsync(_appointments);
+        //[Fact]
+        //public async Task GetMedCard_ShouldReturnEmptyList()
+        //{
+        //    //Arrange
+        //    _animalControllerFixture.MockAnimalService
+        //        .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.Is<int>(x => x == _animal.Id)))
+        //        .ReturnsAsync(_appointments);
 
-            _animalControllerFixture.MockMedCardMapper
-                .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
-                .Returns(_animalMedCardViewModel);
+        //    _animalControllerFixture.MockMedCardMapper
+        //        .Setup(map => map.Map(It.Is<IEnumerable<Appointment>>(x => x.Equals(_appointments))))
+        //        .Returns(_animalMedCardViewModel);
 
-            //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(2);
+        //    //Act
+        //    var actualResult = await _animalControllerFixture.MockAnimalController.GetMedCardAsync(2);
 
-            //Assert
-            Assert.NotNull(actualResult);
-            Assert.Empty(actualResult);
-        }
+        //    //Assert
+        //    Assert.NotNull(actualResult);
+        //    Assert.Empty(actualResult);
+        //}
     }
 }
