@@ -9,6 +9,6 @@ namespace Core.ViewModels
         public int TotalCount { get; set; }
         public bool HasPrevious { get; set; }
         public bool HasNext { get; set; }
-        public IEnumerable<T>? ExceptionList { get; set; }
+        public IEnumerable<T>? Entities { get; set; }
     }
 }

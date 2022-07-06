@@ -5,6 +5,7 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.ExceptionViewModel;
 using Moq;
 using WebApi.AutoMapper.Interface;
@@ -19,11 +20,12 @@ namespace WebApi.Test.Fixtures
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
             MockExceptionService = fixture.Freeze<Mock<IExceptionEntityService>>();
-            MockMapperException = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>>>();
-
+            MockExceptionToPagedModel = fixture.Freeze<Mock<IViewModelMapper<PagedList<ExceptionEntity>, PagedReadViewModel<ExceptionEntityReadViewModel>>>>();
+            MockExceptionStatesToPagedModel = fixture.Freeze<Mock<IViewModelMapper<PagedList<ExceptionStats>, PagedReadViewModel<ExceptionStatsReadViewModel>>>>();
             MockExceptionController = new ExceptionController(
                 MockExceptionService.Object,
-                MockMapperException.Object);
+                MockExceptionToPagedModel.Object,
+                MockExceptionStatesToPagedModel.Object);
 
             _id = 1;
             _exceptionEntity = new()
@@ -47,12 +49,39 @@ namespace WebApi.Test.Fixtures
                 Count = 1,
                 Name = "NotFoundException"
             };
+
+            _exceptionStatsReadViewModels = new()
+            {
+                new()
+                {
+                     Count = 1,
+                      Name = "NotFoundException"
+                }
+            };
             _exceptionStats = new() { _exceptionStat };
             _exceptionEntities = new() { _exceptionEntity };
             _exceptionEntityReadViewModels = new() { _exceptionEntityReadViewModel };
             _pagedListExceptionStats = PagedList<ExceptionStats>.ToPagedList(_exceptionStats.AsQueryable(), 1, 10);
             _pagedListExceptions = PagedList<ExceptionEntity>.ToPagedList(_exceptionEntities.AsQueryable(), 1, 10);
             _pagedListViewModelsExceptions = PagedList<ExceptionEntityReadViewModel>.ToPagedList(_exceptionEntityReadViewModels.AsQueryable(), 1, 10);
+            _pagedExceptionsReadViewModel = new()
+            {
+                CurrentPage = 1,
+                TotalCount = 1,
+                PageSize = 1,
+                HasNext = false,
+                HasPrevious = false,
+                Entities = _exceptionEntityReadViewModels
+            };
+            _pagedExceptionsStatsReadViewModel = new()
+            {
+                CurrentPage = 1,
+                TotalCount = 1,
+                PageSize = 1,
+                HasNext = false,
+                HasPrevious = false,
+                Entities = _exceptionStatsReadViewModels
+            };
             pagingParameters = new();
         }
 
@@ -66,11 +95,15 @@ namespace WebApi.Test.Fixtures
         public List<ExceptionStats> _exceptionStats;
         public List<ExceptionEntity> _exceptionEntities;
         public List<ExceptionEntityReadViewModel> _exceptionEntityReadViewModels;
+        public List<ExceptionStatsReadViewModel> _exceptionStatsReadViewModels;
         public PagedList<ExceptionStats> _pagedListExceptionStats;
         public PagedList<ExceptionEntity> _pagedListExceptions;
         public PagedList<ExceptionEntityReadViewModel> _pagedListViewModelsExceptions;
+        public PagedReadViewModel<ExceptionEntityReadViewModel> _pagedExceptionsReadViewModel;
+        public PagedReadViewModel<ExceptionStatsReadViewModel> _pagedExceptionsStatsReadViewModel;
         public ExceptionParameters pagingParameters;
         public Mock<IExceptionEntityService> MockExceptionService { get; }
-        public Mock<IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>>> MockMapperException { get; }
+        public Mock<IViewModelMapper<PagedList<ExceptionEntity>, PagedReadViewModel<ExceptionEntityReadViewModel>>> MockExceptionToPagedModel { get; }
+        public Mock<IViewModelMapper<PagedList<ExceptionStats>, PagedReadViewModel<ExceptionStatsReadViewModel>>> MockExceptionStatesToPagedModel { get; }
     }
 }

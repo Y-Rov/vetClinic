@@ -8,6 +8,7 @@ using Core.ViewModels.ArticleViewModels;
 using Core.ViewModels.CommentViewModels;
 using Core.ViewModels.ExceptionViewModel;
 using Core.ViewModels.AppointmentsViewModel;
+using Core.ViewModels.FeedbackViewModels;
 using Core.ViewModels.PortfolioViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SalaryViewModel;
@@ -20,6 +21,7 @@ using WebApi.AutoMapper.AppointmentMappers;
 using WebApi.AutoMapper.ArticleMappers;
 using WebApi.AutoMapper.CommentMappers;
 using WebApi.AutoMapper.ExceptionMapper;
+using WebApi.AutoMapper.FeedbackMappers;
 using WebApi.AutoMapper.ExceptionMappers;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.PortfolioMappers;
@@ -40,6 +42,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<UserCreateViewModel, User>, UserCreateMapper>();
         services.AddScoped<IViewModelMapperUpdater<UserUpdateViewModel, User>, UserUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>>, UserReadEnumerableMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>>, UserPagedMapper>();
 
         services.AddScoped<IViewModelMapper<ProcedureUpdateViewModel, Procedure>, ProcedureUpdateMapper>();
         services.AddScoped<IViewModelMapper<ProcedureCreateViewModel, Procedure>, ProcedureCreateMapper>();
@@ -57,6 +60,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Animal, AnimalViewModel>, AnimalMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>, AnimalListToListMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>>, AnimalMedCardMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>>, AnimalPagedMedCardMapper>();
 
         services.AddScoped<IViewModelMapper<Salary, SalaryViewModel>, SalaryMapper>();
         services.AddScoped<IViewModelMapper<SalaryViewModel, Salary>, SalaryViewModelMapper>();
@@ -93,5 +97,9 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<AppointmentCreateViewModel, Appointment>, AppointmentCreateMapper>();
         services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();
         services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
+
+        services.AddScoped<IViewModelMapper<Feedback, FeedbackReadViewModel>, FeedbackMapper>();
+        services.AddScoped<IViewModelMapper<FeedbackCreateViewModel, Feedback>, FeedbackCreateMapper>();
+        services.AddScoped<IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>>, FeedbackViewModelListMapper>();
     }
 }

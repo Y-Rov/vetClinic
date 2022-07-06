@@ -1,5 +1,8 @@
 ﻿using Core.Entities;
 using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -21,21 +24,21 @@ namespace WebApi.Test
         {
             // Arrange
             _fixture.MockUserService
-                .Setup(s => s.GetAllUsersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(_fixture.Users);
+                .Setup(s => s.GetAllUsersAsync(It.IsAny<UserParameters>()))
+                .ReturnsAsync(_fixture.PagedList);
 
-            _fixture.MockReadEnumerableMapper
-                .Setup(m => m.Map(It.IsAny<IEnumerable<User>>()))
-                .Returns(_fixture.ReadViewModels);
+            _fixture.MockReadPagedMapper
+                .Setup(m => m.Map(It.IsAny<PagedList<User>>()))
+                .Returns(_fixture.PagedReadViewModels);
 
             // Act
-            var result = await _fixture.MockUserController.GetAsync(_fixture.CollateParameters);
-            var readViewModels = (result.Result as OkObjectResult)!.Value as IEnumerable<UserReadViewModel>;
+            var result = await _fixture.MockUserController.GetAsync(_fixture.UserParameters);
+            var readViewModels = (result.Result as OkObjectResult)!.Value as PagedReadViewModel<UserReadViewModel>;
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<ActionResult<IEnumerable<UserReadViewModel>>>(result);
-            Assert.NotEmpty(readViewModels);
+            Assert.IsType<ActionResult<PagedReadViewModel<UserReadViewModel>>>(result);
+            Assert.NotEmpty(readViewModels!.Entities);
         }
 
         [Fact]
