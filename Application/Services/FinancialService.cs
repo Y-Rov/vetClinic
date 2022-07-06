@@ -135,7 +135,7 @@ namespace Application.Services
             return result;
         }
 
-        private async Task<FinancialStatement> GetFinancialStatementOneMonth(Date date)
+        private async Task<FinancialStatement> GetFinancialStatementOneMonth(DatePeriod date)
         {
             decimal procent = 0.1M;
             decimal allIncome =0;
@@ -249,11 +249,11 @@ namespace Application.Services
             }
         }
 
-        public async Task<IEnumerable<FinancialStatement>> GetFinancialStatement(Date date)
+        public async Task<IEnumerable<FinancialStatement>> GetFinancialStatement(DatePeriod date)
         {
             var countMonth = GetMonthsBetween(date.StartDate, date.EndDate);
             var finStatList = new List<FinancialStatement>();
-            var monthDate = new Date();
+            var monthDate = new DatePeriod();
 
             for(int i = 0; i < countMonth; i++)
             {

@@ -16,6 +16,6 @@ namespace Core.Interfaces.Services
         Task DeleteSalaryByUserIdAsync(int id);
         Task CleanOldSalariesAsync();
         Task<IEnumerable<User>> GetEmployeesWithoutSalary();
-        Task<IEnumerable<FinancialStatement>> GetFinancialStatement(Date date);
+        Task<IEnumerable<FinancialStatement>> GetFinancialStatement(DatePeriod date);
     }
 }

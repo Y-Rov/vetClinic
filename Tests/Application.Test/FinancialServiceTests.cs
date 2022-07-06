@@ -480,7 +480,7 @@ namespace Application.Test
         public async Task GetFinancialStatement_WhenAppoinmentsExist_thenReturnOk()
         {
             //Arrange
-            var date = new Date()
+            var date = new DatePeriod()
             {
                 StartDate = new DateTime(2022, 5, 1),
                 EndDate = new DateTime(2022, 6, 1)
@@ -574,7 +574,7 @@ namespace Application.Test
         public async Task GetFinancialStatement_WhenAppoinmentsNotExist_thenReturnOk()
         {
             //Arrange
-            var date = new Date()
+            var date = new DatePeriod()
             {
                 StartDate = new DateTime(2022, 5, 1),
                 EndDate = new DateTime(2022, 6, 1)

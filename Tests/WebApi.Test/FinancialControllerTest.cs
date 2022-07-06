@@ -560,7 +560,7 @@ namespace WebApi.Test
         public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
         {
             //Arrange
-            var date = new Date()
+            var date = new DatePeriod()
             {
                 StartDate = new DateTime(2022, 5, 1),
                 EndDate = new DateTime(2022, 6, 1)
@@ -601,7 +601,7 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetFinancialStatement(It.Is<Date>(x => x.Equals(date))))
+                    service.GetFinancialStatement(It.Is<DatePeriod>(x => x.Equals(date))))
                 .ReturnsAsync(finStatement);
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper=>
@@ -619,7 +619,7 @@ namespace WebApi.Test
         {
             //Arrange
 
-            var date = new Date()
+            var date = new DatePeriod()
             {
                 StartDate = new DateTime(2022, 5, 1),
                 EndDate = new DateTime(2022, 6, 1)
@@ -632,7 +632,7 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetFinancialStatement(It.Is<Date>(x => x.Equals(date))))
+                    service.GetFinancialStatement(It.Is<DatePeriod>(x => x.Equals(date))))
                 .ReturnsAsync(finStatement);
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper =>

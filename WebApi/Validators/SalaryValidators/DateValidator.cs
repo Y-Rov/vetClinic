@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace WebApi.Validators.SalaryValidators
 {
-    public class DateValidator: AbstractValidator<Date>
+    public class DateValidator: AbstractValidator<DatePeriod>
     {
         public DateValidator()
         {

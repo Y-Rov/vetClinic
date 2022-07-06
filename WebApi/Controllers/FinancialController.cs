@@ -94,9 +94,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("/api/financialStatements")]
-        public async Task<IEnumerable<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(Date incomeDate)
+        public async Task<IEnumerable<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(DatePeriod incomeDate)
         {
-            var date = new Date()
+            var date = new DatePeriod()
             {
                 StartDate = incomeDate.StartDate.ToLocalTime(),
                 EndDate = incomeDate.EndDate.ToLocalTime()
