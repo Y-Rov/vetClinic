@@ -1,10 +1,12 @@
 ﻿using Core.Entities;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Core.Interfaces.Services
 {
     public interface ISpecializationService
     {
-        Task<IEnumerable<Specialization>> GetAllSpecializationsAsync();
+        Task<PagedList<Specialization>> GetAllSpecializationsAsync(SpecializationParameters parameters);
         Task<Specialization> GetSpecializationByIdAsync(int id);
         Task<IEnumerable<Procedure>> GetSpecializationProcedures(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);

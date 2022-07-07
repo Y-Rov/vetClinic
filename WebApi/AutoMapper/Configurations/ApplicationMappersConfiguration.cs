@@ -55,6 +55,7 @@ public static class ApplicationMappersConfiguration
 
         services.AddScoped<IViewModelMapper<Specialization, SpecializationViewModel>, SpecializationViewModelMapper>();
         services.AddScoped<IViewModelMapper<SpecializationViewModel, Specialization>, SpecializationMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>>, SpecializationPagedMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Specialization>, IEnumerable<SpecializationViewModel>>, SpecializationListViewModelMapper>();
 
         services.AddScoped<IViewModelMapperUpdater<AnimalViewModel, Animal>, AnimalViewModelMapper>();

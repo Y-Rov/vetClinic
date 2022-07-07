@@ -16,7 +16,7 @@ namespace Core.Interfaces.Repositories
             Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null);
 
         Task<IEnumerable<User>> GetByRolesAsync(
-            List<string> roleNames,
+            List<int> roleIds,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
             Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null);
 

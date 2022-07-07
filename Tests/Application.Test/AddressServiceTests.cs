@@ -6,13 +6,35 @@ using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class AddressServiceTests : IClassFixture<AddressServiceFixture>
+    public class AddressServiceTests : IClassFixture<AddressServiceFixture>, IDisposable
     {
         private readonly AddressServiceFixture _fixture;
+        private bool _disposed;
 
         public AddressServiceTests(AddressServiceFixture fixture)
         {
             _fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockAddressRepository.ResetCalls();
+            }
+
+            _disposed = true;
         }
 
         [Fact]
