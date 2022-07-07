@@ -70,11 +70,11 @@ namespace DataAccess.Repositories
         }
 
         public async Task<IEnumerable<User>> GetByRolesAsync(
-            List<string> roleNames,
+            List<int> roleIds,
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
             Func<IQueryable<User>, IIncludableQueryable<User, object>>? includeProperties = null)
         {
-            var roles = _context.Roles.Where(r => roleNames.Contains(r.Name));
+            var roles = _context.Roles.Where(r => roleIds.Contains(r.Id));
 
             var usersQuery = GetQuery(
                 u => u.Id == _context.UserRoles
