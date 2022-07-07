@@ -7,6 +7,7 @@ using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
@@ -14,6 +15,7 @@ using WebApi.AutoMapper.Interface;
 namespace WebApi.Controllers
 {
     [Route("api/specialization")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class SpecializationController : ControllerBase
     {
