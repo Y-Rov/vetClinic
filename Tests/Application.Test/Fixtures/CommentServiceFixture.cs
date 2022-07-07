@@ -27,16 +27,16 @@ public class CommentServiceFixture
             MockLoggerManager.Object);
     }
 
-    public CommentService MockCommentService; 
-    public Mock<ICommentRepository> MockCommentRepository;
-    public Mock<ILoggerManager> MockLoggerManager;
+    public CommentService MockCommentService { get; }
+    public Mock<ICommentRepository> MockCommentRepository { get; }
+    public Mock<ILoggerManager> MockLoggerManager { get; }
 
     public Comment ExpectedComment { get; }
     public Comment UpdatedComment { get; }
     public IList<Comment> ExpectedComments { get; }
     public User RequestUser { get; }
 
-    public Comment GetExpectedComment()
+    private Comment GetExpectedComment()
     {
         var comment = new Comment()
         {
@@ -49,7 +49,7 @@ public class CommentServiceFixture
         };
         return comment;
     }
-    public Comment GetUpdatedComment()
+    private Comment GetUpdatedComment()
     {
         var updatedComment = new Comment()
         {
@@ -58,7 +58,7 @@ public class CommentServiceFixture
         };
         return updatedComment;
     }
-    public IList<Comment> GetExpectedComments()
+    private IList<Comment> GetExpectedComments()
     {
         var comments = new List<Comment>()
         {
@@ -92,7 +92,7 @@ public class CommentServiceFixture
         };
         return comments;
     }
-    public User GetRequestUser()
+    private User GetRequestUser()
     {
         var requestUser = new User()
         {
