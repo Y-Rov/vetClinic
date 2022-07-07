@@ -30,7 +30,6 @@ public class ProcedureControllerFixture
         ProcedureCreateViewModel = GetProcedureCreateViewModel();
         ProcedureUpdateViewModel = GetProcedureUpdateViewModel();
         ExpectedProcedureReadViewModel = GetExpectedProcedureReadViewModel();
-        Procedures = GetProcedures();
         PagedProcedures = GetPagedProcedures();
         PagedReadViewModel = GetPagedReadViewModel();
         
@@ -53,7 +52,6 @@ public class ProcedureControllerFixture
     public ProcedureCreateViewModel ProcedureCreateViewModel { get; }
     public ProcedureUpdateViewModel ProcedureUpdateViewModel { get; }
     public ProcedureReadViewModel ExpectedProcedureReadViewModel { get; }
-    public List<Procedure> Procedures { get; }
     public PagedList<Procedure> PagedProcedures { get; }
     public PagedReadViewModel<ProcedureReadViewModel> PagedReadViewModel { get; }
 
@@ -122,7 +120,7 @@ public class ProcedureControllerFixture
         return procedureReadViewModel;
     }
 
-    private List<Procedure> GetProcedures()
+    private PagedList<Procedure> GetPagedProcedures()
     {
         var procedures = new List<Procedure>()
         {
@@ -172,12 +170,8 @@ public class ProcedureControllerFixture
                 }
             }
         };
-        return procedures;
-    }
-
-    private PagedList<Procedure> GetPagedProcedures()
-    {
-        var pagedProcedures = new PagedList<Procedure>(Procedures, 3, 1, 5);
+        
+        var pagedProcedures = new PagedList<Procedure>(procedures, 3, 1, 5);
         return pagedProcedures;
     }
 
