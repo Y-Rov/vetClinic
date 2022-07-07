@@ -129,7 +129,6 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-
         [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteSpecialization([FromRoute] int id)
         {
