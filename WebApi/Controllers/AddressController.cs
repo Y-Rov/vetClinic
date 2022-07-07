@@ -9,6 +9,7 @@ namespace WebApi.Controllers
 {
     [Route("api/addresses")]
     [ApiController]
+    [Authorize]
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;
