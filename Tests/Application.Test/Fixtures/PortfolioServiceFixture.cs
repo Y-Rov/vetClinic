@@ -23,11 +23,8 @@ namespace Application.Test.Fixtures
                 MockLoggerManager.Object);
 
             WrongUserId = 4;
-            TestPortfolio = new Portfolio
-            {
-                UserId = 1, Description= "Ad vero soluta per, vim at wisi idque dicant. Eum ea maiorum honestatis. Illum vitae quo an, et sale vivendum sea."
-            };
-            TestListOfPortfolios = new List<Portfolio> { TestPortfolio };
+            TestPortfolio = GeneratePortfolio();
+            TestListOfPortfolios = GenerateListOfPortfolios();
         }
 
         public IPortfolioService MockPortfolioService { get; }
@@ -37,5 +34,19 @@ namespace Application.Test.Fixtures
         public int WrongUserId { get; }
         public Portfolio TestPortfolio { get; }
         public IList<Portfolio> TestListOfPortfolios { get; }
+
+        private Portfolio GeneratePortfolio()
+        {
+            var portfolio = new Portfolio { UserId = 1, Description = "Ad vero soluta per, vim at wisi idque dicant. Eum ea maiorum honestatis. Illum vitae quo an, et sale vivendum sea." };
+
+            return portfolio;
+        }
+
+        private IList<Portfolio> GenerateListOfPortfolios()
+        {
+            var portfolios = new List<Portfolio> { TestPortfolio };
+
+            return portfolios;
+        }
     }
 }

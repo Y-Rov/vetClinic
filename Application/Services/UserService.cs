@@ -83,8 +83,8 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetDoctorsAsync(string specialization = "")
         {
-            var doctors = await _userRepository.GetByRoleAsync(
-                roleName: "Doctor",
+            var doctors = await _userRepository.GetByRolesAsync(
+                roleNames: new List<string>() { "Doctor" },
                 includeProperties: query => query
                     .Include(u => u.Address)
                     .Include(u => u.Portfolio)

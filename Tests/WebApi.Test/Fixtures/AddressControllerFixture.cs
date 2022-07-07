@@ -31,11 +31,11 @@ namespace WebApi.Test.Fixtures
                 );
 
             UserId = 1;
-            FullAddress = new Address { UserId = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
-            FullAddressBaseViewModel = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
-            FullAddressCreateReadViewModel = new AddressCreateReadViewModel { Id = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
-            Addresses = new List<Address> { FullAddress };
-            AddressCreateReadViewModels = new List<AddressCreateReadViewModel> { FullAddressCreateReadViewModel };
+            FullAddress = GenerateAddress();
+            FullAddressBaseViewModel = GenerateAddressBaseViewModel();
+            FullAddressCreateReadViewModel = GenerateAddressCreateReadViewModel();
+            Addresses = GenerateListOfAddresses();
+            AddressCreateReadViewModels = GenerateListOfAddressCreateReadViewModels();
         }
 
         public AddressController MockAddressController { get; }
@@ -54,5 +54,40 @@ namespace WebApi.Test.Fixtures
         public AddressCreateReadViewModel FullAddressCreateReadViewModel { get; }
         public IEnumerable<Address> Addresses { get; }
         public IEnumerable<AddressCreateReadViewModel> AddressCreateReadViewModels { get; }
+
+        private Address GenerateAddress()
+        {
+            var address = new Address { UserId = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+
+            return address;
+        }
+
+        private AddressBaseViewModel GenerateAddressBaseViewModel()
+        {
+            var addressBaseViewModel = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+
+            return addressBaseViewModel;
+        }
+
+        private AddressCreateReadViewModel GenerateAddressCreateReadViewModel()
+        {
+            var addressCreateReadViewModel = new AddressCreateReadViewModel { Id = UserId, City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+
+            return addressCreateReadViewModel;
+        }
+
+        private IEnumerable<Address> GenerateListOfAddresses()
+        {
+            var addresses = new List<Address> { FullAddress };
+
+            return addresses;
+        }
+
+        private IEnumerable<AddressCreateReadViewModel> GenerateListOfAddressCreateReadViewModels()
+        {
+            var addressCreateReadViewModels = new List<AddressCreateReadViewModel> { FullAddressCreateReadViewModel };
+
+            return addressCreateReadViewModels;
+        }
     }
 }
