@@ -10,13 +10,35 @@ using Moq;
 
 namespace Application.Test;
 
-public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
+public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDisposable
 {
     private readonly ArticleServiceFixture _fixture;
+    private bool _disposed;
 
     public ArticleServiceTests(ArticleServiceFixture fixture)
     {
         _fixture = fixture;
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _fixture.MockArticleRepository.ResetCalls();
+        }
+
+        _disposed = true;
     }
     
     [Fact]
@@ -37,7 +59,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         Assert.NotEmpty(result);
         Assert.Equal(_fixture.ExpectedArticles, result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
     
     [Fact]
@@ -61,7 +82,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         Assert.NotNull(result);
         Assert.Empty(result);
         Assert.Equal(emptyArticles, result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
     
     [Fact]
@@ -80,7 +100,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         Assert.NotNull(result);
         Assert.Equal(_fixture.ExpectedArticle, result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
     
     [Fact]
@@ -98,7 +117,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -144,7 +162,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         Assert.NotEmpty(result);
         Assert.Equal(published, result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -169,7 +186,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -195,8 +211,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         _fixture.MockArticleRepository
             .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Once);
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -222,7 +236,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         _fixture.MockArticleRepository
             .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Never);
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -249,8 +262,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -283,7 +294,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -316,7 +326,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -347,7 +356,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -384,7 +392,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -421,6 +428,5 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 }

@@ -11,13 +11,36 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test;
 
-public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
+public class CommentsControllerTests : IClassFixture<CommentControllerFixture>, IDisposable
 {
     private readonly CommentControllerFixture _fixture;
+    private bool _disposed;
 
     public CommentsControllerTests(CommentControllerFixture fixture)
     {
         _fixture = fixture;
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _fixture.MockCommentService.Verify();
+            _fixture.MockUserManager.ResetCalls();       
+        }
+
+        _disposed = true;
     }
 
     [Fact]
@@ -187,7 +210,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         _fixture.MockCommentService.Verify();
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -219,7 +241,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -251,7 +272,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -295,7 +315,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockCreateMapper.Verify(m => m.Map(createCommentViewModel), Times.Once);
         _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
         _fixture.MockCommentService.Verify(s => s.CreateCommentAsync(_fixture.Comment), Times.Once);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -333,7 +352,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Assert
         _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
         _fixture.MockCommentService.Verify(s => s.UpdateCommentAsync(_fixture.Comment, _fixture.RequestUser), Times.Once);
-        _fixture.MockUserManager.ResetCalls();
     }
 
     [Fact]
@@ -365,7 +383,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -397,6 +414,5 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
 }

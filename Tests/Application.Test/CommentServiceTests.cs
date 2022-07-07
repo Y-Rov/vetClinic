@@ -8,13 +8,35 @@ using Moq;
 
 namespace Application.Test;
 
-public class CommentServiceTests : IClassFixture<CommentServiceFixture>
+public class CommentServiceTests : IClassFixture<CommentServiceFixture>, IDisposable
 {
     private readonly CommentServiceFixture _fixture;
+    private bool _disposed;
 
     public CommentServiceTests(CommentServiceFixture fixture)
     {
         _fixture = fixture;
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _fixture.MockCommentRepository.ResetCalls();
+        }
+
+        _disposed = true;
     }
 
     [Fact]
@@ -155,7 +177,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
             .Verify(r => r.InsertAsync(_fixture.ExpectedComment), Times.Once);
         _fixture.MockCommentRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -177,8 +198,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         _fixture.MockCommentRepository
             .Verify(r => r.InsertAsync(_fixture.ExpectedComment), Times.Once);
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -205,7 +224,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         //Assert
         _fixture.MockCommentRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -231,7 +249,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         
         //Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -257,7 +274,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
         [Fact]
@@ -282,7 +298,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
             .Verify(r => r.GetById(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
         _fixture.MockCommentRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -304,7 +319,6 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         
         //Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockCommentRepository.ResetCalls();
     }
     
     [Fact]
@@ -326,6 +340,5 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
         
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockCommentRepository.ResetCalls();
     }
 }
