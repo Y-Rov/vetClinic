@@ -6,13 +6,35 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
 {
-    public class AddressControllerTest : IClassFixture<AddressControllerFixture>
+    public class AddressControllerTest : IClassFixture<AddressControllerFixture>, IDisposable
     {
         private readonly AddressControllerFixture _fixture;
+        private bool _disposed;
 
         public AddressControllerTest(AddressControllerFixture fixture)
         {
             _fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            } 
+                
+            if (disposing)
+            {
+                _fixture.MockAddressService.ResetCalls();
+            }
+
+            _disposed = true;
         }
 
         [Fact]
@@ -41,8 +63,6 @@ namespace WebApi.Test
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.IsAssignableFrom<IEnumerable<AddressCreateReadViewModel>>(result);
-
-            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]
@@ -71,8 +91,6 @@ namespace WebApi.Test
             Assert.NotNull(result);
             Assert.Empty(result);
             Assert.IsAssignableFrom<IEnumerable<AddressCreateReadViewModel>>(result);
-
-            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]
@@ -163,8 +181,6 @@ namespace WebApi.Test
 
             Assert.NotNull(result);
             Assert.IsType<NoContentResult>(result);
-            
-            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]
