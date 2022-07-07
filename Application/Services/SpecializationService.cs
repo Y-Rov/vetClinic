@@ -12,6 +12,7 @@ namespace Application.Services
     public class SpecializationService : ISpecializationService
     {
         readonly ISpecializationRepository _repository;
+        readonly IUserRepository _userRepository;
         readonly ILoggerManager _logger;
 
         bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
@@ -22,9 +23,11 @@ namespace Application.Services
 
         public SpecializationService(
             ISpecializationRepository repository,
+            IUserRepository userRepository,
             ILoggerManager logger)
         {
             _repository = repository;
+            _userRepository = userRepository;
             _logger = logger;
         }
 
@@ -41,6 +44,12 @@ namespace Application.Services
             _logger.LogInfo($"specializations were recieved");
             return specializations;
             //return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
+        }
+
+        public async Task<IEnumerable<User>> GetEmployeesAsync()
+        {
+            return await _userRepository.GetByRolesAsync(
+                roleIds: new List<int>{ 2,3});
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
