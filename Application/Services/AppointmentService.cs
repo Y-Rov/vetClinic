@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using DataAccess.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
@@ -17,12 +19,13 @@ namespace Application.Services
             IAppointmentRepository appointmentRepository,
             IProcedureService procedureService,
             IUserService userService,
-            ILoggerManager logger)
+            ILoggerManager logger,
+            ClinicContext clinicContext)
         {
             _appointmentRepository = appointmentRepository;
             _procedureService = procedureService;
             _userService = userService;
-            _logger = logger;  
+            _logger = logger; 
         }
 
         public async Task CreateAsync(Appointment appointment, IEnumerable<int> procedureIds, IEnumerable<int> userIds, int animalId)
@@ -64,6 +67,7 @@ namespace Application.Services
         public async Task<IEnumerable<Appointment>> GetAsync()
         {
             var appointments = await _appointmentRepository.GetAsync(includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
+
             _logger.LogInfo("Appointments were getted in method GetAsync");
             return appointments;
         }
@@ -85,17 +89,12 @@ namespace Application.Services
         public async Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds)
         {
             if (!procedureIds.Any())
-                throw new ArgumentException("procedureId can't be empty");
-
-            try
             {
                 await _appointmentRepository.UpdateAppointmentProceduresAsync(appointmentId, procedureIds);
             }
-            catch (InvalidOperationException)
-            {
+        
                 _logger.LogWarn("At least one of the procedures from the given list does not exist");
-                throw new NotFoundException("At least one of the procedures from the given list does not exist");
-            }
+
             await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo($"Updated procedure list of the appointments with Id {appointmentId}");
         }
@@ -103,16 +102,11 @@ namespace Application.Services
         public async Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds)
         {
             if (!userIds.Any())
-                throw new ArgumentException("userIds can't be empty");
-            try
             {
                 await _appointmentRepository.UpdateAppointmentUsersAsync(appointmentId, userIds);
             }
-            catch (InvalidOperationException)
-            {
                 _logger.LogWarn("At least one of the users from the given list does not exist");
-                throw new NotFoundException("At least one of the users from the given list does not exist");
-            }
+                
             await _appointmentRepository.SaveChangesAsync();
             _logger.LogInfo($"Updated user list of the appointments with Id {appointmentId}");
         }
@@ -125,9 +119,7 @@ namespace Application.Services
             existingAppointment.MeetHasOccureding = appointment.MeetHasOccureding;
             existingAppointment.Disease = appointment.Disease;
             existingAppointment.AnimalId = appointment.AnimalId;
-            //existingAppointment.AppointmentUsers = appointment.AppointmentUsers;
-            //existingAppointment.AppointmentProcedures = appointment.AppointmentProcedures;
-
+          
             _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
         }
     }

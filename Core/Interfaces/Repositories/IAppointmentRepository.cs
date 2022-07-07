@@ -6,5 +6,6 @@ namespace Core.Interfaces.Repositories
     {
         Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds);
         Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds);
+        //IEnumerable<User> GetDoctorsAsync();
     }
 }

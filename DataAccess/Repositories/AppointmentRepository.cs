@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using DataAccess.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
@@ -8,6 +9,7 @@ namespace DataAccess.Repositories
     {
         private readonly IAppointmentUserRepository _appointmentUserRepository;
         private readonly IAppointmentProcedureRepository _appointmentProcedureRepository;
+        private readonly ClinicContext _clinicContext;
 
         public AppointmentRepository(ClinicContext context, 
            IAppointmentUserRepository appointmentUserRepository, 
@@ -15,6 +17,7 @@ namespace DataAccess.Repositories
         {
             _appointmentProcedureRepository = appointmentProcedureRepositor;
             _appointmentUserRepository = appointmentUserRepository;
+            _clinicContext = context;   
         }
 
         public async Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds)
