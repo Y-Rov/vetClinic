@@ -7,10 +7,10 @@ namespace Core.Interfaces.Services
     public interface IAnimalService
     {
         Task CreateAsync(Animal animal);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(int animalId);
         Task UpdateAsync(Animal animal);
-        Task<IEnumerable<Animal>> GetAsync();
-        Task<Animal> GetByIdAsync(int id);
+        Task<IEnumerable<Animal>> GetAsync(int ownerId);
+        Task<Animal> GetByIdAsync(int animalId);
         Task<PagedList<Appointment>> GetAllAppointmentsWithAnimalIdAsync(AnimalParameters animalParameters);
     }
 }
