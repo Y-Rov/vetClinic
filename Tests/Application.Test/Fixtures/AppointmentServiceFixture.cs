@@ -26,11 +26,15 @@ namespace Application.Test.Fixtures
             MockUserEntityService = fixture.Freeze<Mock<IUserService>>();
             MockAppointmentRepository = fixture.Freeze<Mock<IAppointmentRepository>>();
             MockLogger = fixture.Freeze<Mock<ILoggerManager>>();
+            MockAppointmentUserRepository = fixture.Freeze<Mock<IAppointmentUserRepository>>();
+            MockAppointmentProcedureRepository = fixture.Freeze<Mock<IAppointmentProcedureRepository>>();
 
             MockAppointmentEntityService = new AppointmentService(
                 MockAppointmentRepository.Object,
                 MockProcedureEntityService.Object,
                 MockUserEntityService.Object,
+                MockAppointmentUserRepository.Object,
+                MockAppointmentProcedureRepository.Object,
                 MockLogger.Object);
 
 
@@ -40,6 +44,8 @@ namespace Application.Test.Fixtures
         public Mock<IProcedureService> MockProcedureEntityService { get; }
         public Mock<IUserService> MockUserEntityService { get; }
         public Mock<IAppointmentRepository> MockAppointmentRepository { get; }
+        public Mock<IAppointmentUserRepository> MockAppointmentUserRepository { get; }
+        public Mock<IAppointmentProcedureRepository> MockAppointmentProcedureRepository { get; }
         public Mock<ILoggerManager> MockLogger { get; }
 
         public Appointment MockAppointment { get; set; }

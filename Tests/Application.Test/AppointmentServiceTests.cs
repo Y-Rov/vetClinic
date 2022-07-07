@@ -406,102 +406,43 @@ namespace Application.Test
         }
 
         [Fact]
-        public async Task UpdateAsync_whenSomeProcedureDontExist_thanThrowNotFound()
+        public async Task UpdateProceduresAsync_whenProceduresExist_thanExecute()
         {
-            var appointment = new Appointment
-            {
-                Id = 1,
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
             //Arrange
             var procedureIds = new List<int>()
-        {
-            1, 2, 5
-        };
-
-
-            _appointmentServiceFixture.MockAppointmentRepository.Setup
-                (repo => repo.UpdateAppointmentProceduresAsync(
-                    It.Is<int>(appointmentId => appointmentId == appointment.Id),
-                    It.Is<IEnumerable<int>>(procedures => procedures == procedureIds)))
-                .Throws<InvalidOperationException>();
-            
-            //Act
-            var result =  _appointmentServiceFixture.MockAppointmentEntityService
-                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
-
-            //Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => result);
-        }
-
-
-
-        [Fact]
-        public async Task UpdateAsync_whenSomeUserDontExist_thanThrowNotFound()
-        {
-            var appointment = new Appointment
             {
-                Id = 1,
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
+                1, 2
+            };
 
-                AppointmentUsers = new List<AppointmentUser>()
+            // SETUP THIS ONE
+            //var existing = await _appointmentProcedureRepository.GetAsync(
+            //       filter: app => app.AppointmentId == appointmentId);
+
+            var expectedRelationships = new List<AppointmentProcedure>()
+            {
+                new AppointmentProcedure
                 {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
+                    AppointmentId = _appointmentServiceFixture.MockAppointment.Id,
+                    ProcedureId = 1
+                },
+                new AppointmentProcedure
+                {
+                    AppointmentId = _appointmentServiceFixture.MockAppointment.Id,
+                    ProcedureId = 2
                 }
             };
 
-            //Arrange
-            var userIds = new List<int>()
-            {
-                1, 2, 5
-            };
+            _appointmentServiceFixture.MockAppointmentRepository.Setup(
+                repo => repo.GetById
+                    (It.Is<int>(id => id == _appointmentServiceFixture.MockAppointment.Id),
+                    It.IsAny<string>()))
+                .ReturnsAsync(_appointmentServiceFixture.MockAppointment);
 
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repository => repository.UpdateAppointmentUsersAsync(
-                    It.Is<int>(id => id == appointment.Id),
-                    It.Is<List<int>>(usersId => usersId == userIds)))
-                .Throws<InvalidOperationException>();
+            await _appointmentServiceFixture.MockAppointmentEntityService
+                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
 
-            //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.
-                UpdateAppointmentUsersAsync(appointment.Id, userIds);
-
-            //Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => result);
+             _appointmentServiceFixture.MockAppointmentRepository.Verify(
+                repo => repo.SaveChangesAsync(), Times.Once);
         }
 
 

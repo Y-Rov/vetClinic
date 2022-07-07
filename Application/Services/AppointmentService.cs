@@ -12,6 +12,8 @@ namespace Application.Services
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IProcedureService _procedureService;
+        private readonly IAppointmentUserRepository _appointmentUserRepository;
+        private readonly IAppointmentProcedureRepository _appointmentProcedureRepository;
         private readonly IUserService _userService;
         private readonly ILoggerManager _logger;
 
@@ -19,13 +21,16 @@ namespace Application.Services
             IAppointmentRepository appointmentRepository,
             IProcedureService procedureService,
             IUserService userService,
-            ILoggerManager logger,
-            ClinicContext clinicContext)
+            IAppointmentUserRepository appointmentUserRepository,
+            IAppointmentProcedureRepository appointmentProcedureRepository,
+            ILoggerManager logger)
         {
             _appointmentRepository = appointmentRepository;
             _procedureService = procedureService;
             _userService = userService;
-            _logger = logger; 
+            _logger = logger;
+            _appointmentProcedureRepository = appointmentProcedureRepository;
+            _appointmentUserRepository = appointmentUserRepository;
         }
 
         public async Task CreateAsync(Appointment appointment, IEnumerable<int> procedureIds, IEnumerable<int> userIds, int animalId)
@@ -88,27 +93,60 @@ namespace Application.Services
 
         public async Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds)
         {
-            if (!procedureIds.Any())
+            if (procedureIds.Any())
             {
-                await _appointmentRepository.UpdateAppointmentProceduresAsync(appointmentId, procedureIds);
-            }
-        
-                _logger.LogWarn("At least one of the procedures from the given list does not exist");
+                var existing = await _appointmentProcedureRepository.GetAsync(
+                   filter: app => app.AppointmentId == appointmentId);
 
-            await _appointmentRepository.SaveChangesAsync();
-            _logger.LogInfo($"Updated procedure list of the appointments with Id {appointmentId}");
+                foreach (var app in existing)
+                {
+                    _appointmentProcedureRepository.Delete(app);
+                }
+
+                await _appointmentProcedureRepository.SaveChangesAsync();
+
+                foreach (var procedureId in procedureIds)
+                {
+                    await _appointmentProcedureRepository.InsertAsync(new AppointmentProcedure()
+                    {
+                        AppointmentId = appointmentId,
+                        ProcedureId = procedureId
+                    });
+                }
+
+                await _appointmentRepository.SaveChangesAsync();
+                _logger.LogInfo($"Updated procedure list of the appointments with Id {appointmentId}");
+            }
         }
 
         public async Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds)
         {
-            if (!userIds.Any())
+            if (userIds.Any())
             {
-                await _appointmentRepository.UpdateAppointmentUsersAsync(appointmentId, userIds);
-            }
+                var existing = await _appointmentUserRepository.GetAsync(
+                filter: app => app.AppointmentId == appointmentId);
+                foreach (var app in existing)
+                {
+                    _appointmentUserRepository.Delete(app);
+                }
+
+                await _appointmentUserRepository.SaveChangesAsync();
+
+                foreach (var userId in userIds)
+                {
+                    await _appointmentUserRepository.InsertAsync(new AppointmentUser()
+                    {
+                        AppointmentId = appointmentId,
+                        UserId = userId
+                    });
+                }
+
+                await _appointmentRepository.SaveChangesAsync();
+
                 _logger.LogWarn("At least one of the users from the given list does not exist");
-                
-            await _appointmentRepository.SaveChangesAsync();
-            _logger.LogInfo($"Updated user list of the appointments with Id {appointmentId}");
+                _logger.LogInfo($"Updated user list of the appointments with Id {appointmentId}");
+
+            }
         }
 
         public async Task UpdateAsync(Appointment appointment)
