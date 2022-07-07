@@ -18,56 +18,13 @@ namespace WebApi.Test
         private readonly AnimalControllerFixture _animalControllerFixture;
 
         [Fact]
-        public async Task GetAnimalById_ShouldReturnStatusCodeOk()
-        {
-            //Arrange
-            int _id = 1;
-
-            _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetByIdAsync(It.Is<int>(id => id == _id)))
-                .ReturnsAsync(_animalControllerFixture.ExpectedAnimal);
-
-            _animalControllerFixture.MockAnimalMapper
-                .Setup(map => map.Map(It.Is<Animal>(x => x == _animalControllerFixture.ExpectedAnimal)))
-                .Returns(_animalControllerFixture.ExpectedAnimalViewModel);
-
-            //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync(_id);
-
-            //Assert
-            Assert.NotNull(actualResult);
-            Assert.Equal(_animalControllerFixture.ExpectedAnimalViewModel, actualResult);
-            Assert.Equal(_animalControllerFixture.ExpectedAnimalViewModel.NickName, actualResult.NickName);
-        }
-
-        [Fact]
-        public async Task GetAnimalById_ShouldReturnError()
-        {
-            //Arrange
-            int incorrectId = 0;
-
-            _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetByIdAsync(It.IsAny<int>()))
-                .Throws<NotFoundException>();
-
-            _animalControllerFixture.MockAnimalMapper
-                .Setup(map => map.Map(It.Is<Animal>(x => x == _animalControllerFixture.ExpectedAnimal)))
-                .Returns(_animalControllerFixture.ExpectedAnimalViewModel);
-
-            //Act
-            var actualResult = _animalControllerFixture.MockAnimalController.GetAsync(incorrectId);
-
-            //Assert
-            Assert.NotNull(actualResult);
-            await Assert.ThrowsAsync<NotFoundException>(() => actualResult);
-        }
-
-        [Fact]
         public async Task GetAllAnimals_ShouldReturnStatusCodeOk()
         {
             //Arrange
+            int _ownerId = 1;
+
             _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetAsync())
+                .Setup(ser => ser.GetAsync(It.IsAny<int>()))
                 .ReturnsAsync(_animalControllerFixture.ExpectedAnimals);
 
             _animalControllerFixture.MockAnimalListToListMapper
@@ -75,7 +32,7 @@ namespace WebApi.Test
                 .Returns(_animalControllerFixture.ExpectedAnimalViewModels);
 
             //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync();
+            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync(_ownerId);
 
             //Assert
             Assert.NotNull(actualResult);
@@ -86,8 +43,10 @@ namespace WebApi.Test
         public async Task GetAllAnimals_ShouldReturnEmptyList()
         {
             //Arrange
+            int _ownerId = 2;
+
             _animalControllerFixture.MockAnimalService
-                .Setup(ser => ser.GetAsync())
+                .Setup(ser => ser.GetAsync(It.IsAny<int>()))
                 .ReturnsAsync(_animalControllerFixture.ExpectedEmptyAnimals);
 
             _animalControllerFixture.MockAnimalListToListMapper
@@ -95,7 +54,7 @@ namespace WebApi.Test
                 .Returns(_animalControllerFixture.ExpectedAnimalEmptyViewModels);
 
             //Act
-            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync();
+            var actualResult = await _animalControllerFixture.MockAnimalController.GetAsync(_ownerId);
 
             //Assert
             Assert.NotNull(actualResult);

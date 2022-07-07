@@ -34,10 +34,10 @@ namespace WebApi.Controllers
             _pagedMedCardMapper = pagedMedCardMapper;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<AnimalViewModel>> GetAsync()
+        [HttpGet("{ownerId:int:min(1)}")]
+        public async Task<IEnumerable<AnimalViewModel>> GetAsync([FromRoute] int ownerId)
         {
-            var animals = await _animalService.GetAsync();
+            var animals = await _animalService.GetAsync(ownerId);
             var map = _mapperAnimalListToList.Map(animals);
             return map;
         }
@@ -47,14 +47,6 @@ namespace WebApi.Controllers
         {
             var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(animalParameters);
             var map = _pagedMedCardMapper.Map(appointments);
-            return map;
-        }
-
-        [HttpGet("{id:int:min(1)}")]
-        public async Task<AnimalViewModel> GetAsync([FromRoute]int id)
-        {
-            var animal = await _animalService.GetByIdAsync(id);
-            var map = _mapperMtoVM.Map(animal);
             return map;
         }
 

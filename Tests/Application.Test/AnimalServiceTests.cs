@@ -23,6 +23,8 @@ namespace Application.Test
         public async Task GetAllAnimalsAsync_ShouldReturnNormalAnimalList()
         {
             //Arrange
+            int _ownerId = 1;
+
             _animalServiceFixture.MockAnimalRepository
                 .Setup(rep => rep.GetAsync(
                     It.IsAny<Expression<Func<Animal, bool>>>(),
@@ -32,7 +34,7 @@ namespace Application.Test
                 .ReturnsAsync(_animalServiceFixture.ExpectedAnimals);
 
             //Act
-            var actualResult = await _animalServiceFixture.MockAnimalService.GetAsync();
+            var actualResult = await _animalServiceFixture.MockAnimalService.GetAsync(_ownerId);
 
             //Assert
             Assert.NotEmpty(actualResult);
@@ -45,6 +47,8 @@ namespace Application.Test
         public async Task GetAllAnimals_ShouldReturnEmptyAnimalList()
         {
             //Arrange
+            int _ownerId = 2;
+
             _animalServiceFixture.MockAnimalRepository
                 .Setup(rep => rep.GetAsync(
                     It.IsAny<Expression<Func<Animal, bool>>>(),
@@ -54,7 +58,7 @@ namespace Application.Test
                 .ReturnsAsync(_animalServiceFixture.ExpectedEmptyAnimals);
 
             //Act
-            var actualResult = await _animalServiceFixture.MockAnimalService.GetAsync();
+            var actualResult = await _animalServiceFixture.MockAnimalService.GetAsync(_ownerId);
 
             //Assert
             Assert.NotNull(actualResult);

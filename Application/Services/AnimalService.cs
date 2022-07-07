@@ -13,16 +13,19 @@ namespace Application.Services
         private readonly IAnimalRepository _animalRepository;
         private readonly ILoggerManager _loggerManager;
         private readonly IAnimalPhotoService _animalPhotoService;
+        private readonly IUserService _userService;
 
         public AnimalService(
             IAnimalRepository animalRepository,
             ILoggerManager loggerManager,
-            IAnimalPhotoService animalPhotoService
+            IAnimalPhotoService animalPhotoService,
+            IUserService userService
             )
         {
             _animalRepository = animalRepository;
             _loggerManager = loggerManager;
             _animalPhotoService = animalPhotoService;
+            _userService = userService;
         }
 
         public async Task CreateAsync(Animal animal)
@@ -50,9 +53,9 @@ namespace Application.Services
             _loggerManager.LogInfo("Animal info is up-to-date");
         }
 
-        public async Task<IEnumerable<Animal>> GetAsync()
+        public async Task<IEnumerable<Animal>> GetAsync(int ownerId)
         {
-            var animals = await _animalRepository.GetAsync();
+            var animals = await _animalRepository.GetAsync(filter: animal => animal.OwnerId == ownerId);
             _loggerManager.LogInfo($"A list of animals with lenght = {animals.Count()} is been returned");
             return animals;
         }
