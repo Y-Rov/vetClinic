@@ -82,7 +82,7 @@ namespace Application.Test
             // Arrange
             _fixture.MockUserRepository
                 .Setup(r => r.GetByRolesAsync(
-                    It.IsAny<List<string>>(),
+                    It.IsAny<List<int>>(),
                     It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(_fixture.Users);
