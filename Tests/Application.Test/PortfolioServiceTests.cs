@@ -6,13 +6,35 @@ using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class PortfolioServiceTests : IClassFixture<PortfolioServiceFixture>
+    public class PortfolioServiceTests : IClassFixture<PortfolioServiceFixture>, IDisposable
     {
         private readonly PortfolioServiceFixture _fixture;
+        private bool _disposed;
 
         public PortfolioServiceTests(PortfolioServiceFixture fixture)
         {
             _fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockPortfolioRepository.ResetCalls();
+            }
+
+            _disposed = true;
         }
 
         [Fact]
