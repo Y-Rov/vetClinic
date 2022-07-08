@@ -1,6 +1,10 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.ArticleViewModels;
+using Core.ViewModels.CommentViewModels;
 using Moq;
 using WebApi.Test.Fixtures;
 
@@ -37,7 +41,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         Edited = false,
     };
 
-    private readonly IEnumerable<ReadArticleViewModel> _readViewModels = new List<ReadArticleViewModel>()
+    private static readonly IEnumerable<ReadArticleViewModel> _readViewModels = new List<ReadArticleViewModel>()
     {
         new ReadArticleViewModel()
         {
@@ -71,7 +75,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         }
     };
     
-    private readonly IEnumerable<Article> _articles = new List<Article>()
+    private static readonly List<Article> _articles = new List<Article>()
     {
         new Article()
         {
@@ -104,7 +108,30 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
             Edited = false,
         }
     };
+
+    private static readonly PagedList<Article> _pagedArticles = new PagedList<Article>(_articles, 3, 1, 5);
+
+    private static readonly PagedReadViewModel<ReadArticleViewModel> _readPagedViewModels =
+        new PagedReadViewModel<ReadArticleViewModel>()
+        {
+            CurrentPage = 1,
+            Entities = _readViewModels,
+            HasNext = false,
+            HasPrevious = false,
+            PageSize = 5,
+            TotalCount = 3,
+            TotalPages = 1
+        };
     
+    private readonly ArticleParameters _parameters = new ArticleParameters()
+    {
+        FilterParam = "hello",
+        OrderByParam = "Title",
+        OrderByDirection = "desc",
+        PageNumber = 1,
+        PageSize = 5
+    };
+
     [Fact]
     public async Task GetArticleById_whenIdIsCorrect_thenStatusCodeOkReturned()
     {
@@ -149,42 +176,42 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         //  Arrange
         _fixture.MockArticleService
             .Setup(service =>
-                service.GetAllArticlesAsync())
-            .ReturnsAsync(_articles);
+                service.GetArticlesAsync(It.IsAny<ArticleParameters>()))
+            .ReturnsAsync(_pagedArticles);
 
-        _fixture.MockEnumerableViewModelMapper
+        _fixture.MockReadPagedMapper
             .Setup(mapper =>
-                mapper.Map(It.IsAny<IEnumerable<Article>>()))
-            .Returns(_readViewModels);
+                mapper.Map(It.IsAny<PagedList<Article>>()))
+            .Returns(_readPagedViewModels);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetAsync();
+        var result = await _fixture.MockArticleController.GetAsync(_parameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readViewModels);
+        Assert.Equal(result, _readPagedViewModels);
     }
 
     [Fact]
     public async Task GetAll_whenArticlesListIsEmpty_thenStatusOkReturned()
     {
         //  Arrange
-        var emptyArticles = new List<Article>();
+        var emptyArticles = new PagedList<Article>(new List<Article>(), 0, 0, 0);
 
-        var emptyArticleReadViewModels = new List<ReadArticleViewModel>();
+        var emptyArticleReadViewModels = new PagedReadViewModel<ReadArticleViewModel>();
 
         _fixture.MockArticleService
             .Setup(service =>
-                service.GetAllArticlesAsync())
+                service.GetArticlesAsync(It.IsAny<ArticleParameters>()))
             .ReturnsAsync(emptyArticles);
 
-        _fixture.MockEnumerableViewModelMapper
+        _fixture.MockReadPagedMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Article>>(p => p.Equals(emptyArticles))))
+                mapper.Map(It.Is<PagedList<Article>>(p => p.Equals(emptyArticles))))
             .Returns(emptyArticleReadViewModels);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetAsync();
+        var result = await _fixture.MockArticleController.GetAsync(_parameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -197,46 +224,46 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         //  Arrange
         _fixture.MockArticleService
             .Setup(service =>
-                service.GetPublishedArticlesAsync())
-            .ReturnsAsync(_articles);
+                service.GetPublishedArticlesAsync(It.IsAny<ArticleParameters>()))
+            .ReturnsAsync(_pagedArticles);
 
-        _fixture.MockEnumerableViewModelMapper
+        _fixture.MockReadPagedMapper
             .Setup(mapper =>
-                mapper.Map(It.IsAny<IEnumerable<Article>>()))
-            .Returns(_readViewModels);
+                mapper.Map(It.IsAny<PagedList<Article>>()))
+            .Returns(_readPagedViewModels);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetPublishedAsync();
+        var result = await _fixture.MockArticleController.GetPublishedAsync(_parameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readViewModels);
+        Assert.Equal(result, _readPagedViewModels);
     }
 
     [Fact]
     public async Task GetPublished_whenArticlesListIsEmpty_thenStatusOkReturned()
     {
         //  Arrange
-        var emptyPublishedArticles = new List<Article>();
+        var emptyArticles = new PagedList<Article>(new List<Article>(), 0, 0, 0);
 
-        var emptyPublishedArticleReadViewModels = new List<ReadArticleViewModel>();
+        var emptyArticleReadViewModels = new PagedReadViewModel<ReadArticleViewModel>();
 
         _fixture.MockArticleService
             .Setup(service =>
-                service.GetPublishedArticlesAsync())
-            .ReturnsAsync(emptyPublishedArticles);
+                service.GetPublishedArticlesAsync(It.IsAny<ArticleParameters>()))
+            .ReturnsAsync(emptyArticles);
 
-        _fixture.MockEnumerableViewModelMapper
+        _fixture.MockReadPagedMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Article>>(p => p.Equals(emptyPublishedArticles))))
-            .Returns(emptyPublishedArticleReadViewModels);
+                mapper.Map(It.IsAny<PagedList<Article>>()))
+            .Returns(emptyArticleReadViewModels);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetPublishedAsync();
+        var result = await _fixture.MockArticleController.GetPublishedAsync(_parameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, emptyPublishedArticleReadViewModels);
+        Assert.Equal(result, emptyArticleReadViewModels);
     }
     
     [Fact]

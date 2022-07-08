@@ -84,6 +84,9 @@ namespace Application.Services
 
         public async Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds)
         {
+            if (!procedureIds.Any())
+                throw new ArgumentException("procedureId can't be empty");
+
             try
             {
                 await _appointmentRepository.UpdateAppointmentProceduresAsync(appointmentId, procedureIds);
@@ -99,6 +102,8 @@ namespace Application.Services
 
         public async Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds)
         {
+            if (!userIds.Any())
+                throw new ArgumentException("userIds can't be empty");
             try
             {
                 await _appointmentRepository.UpdateAppointmentUsersAsync(appointmentId, userIds);

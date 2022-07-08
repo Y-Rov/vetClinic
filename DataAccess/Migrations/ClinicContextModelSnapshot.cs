@@ -236,6 +236,40 @@ namespace DataAccess.Migrations
                     b.ToTable("Exceptions", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entities.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PriceRate")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceRate")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Suggestions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupportRate")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Feedbacks", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.Portfolio", b =>
                 {
                     b.Property<int>("UserId")
@@ -427,7 +461,7 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "d40bd44f-933d-44d1-a1e7-7ea80d79ae23",
+                            ConcurrencyStamp = "bcba6d71-b947-47b9-a439-7818e0fe7845",
                             Email = "admin.mail@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
@@ -436,9 +470,10 @@ namespace DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN.MAIL@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKRkq7I0qLFP5ORAY8OUJAjgQSo4bELnkha8DXwN2FwoEW2/7CmMnt6bSTRBwxMhDA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEp1eelrPMJp6s1Uav47aXg9Q9ADls2zpi2pywhXIuclPyHpQ1PqCeKoEJGXawuHXA==",
+                            PhoneNumber = "00 000 000 0000",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b94e792b-c909-432b-818a-c029f23cd461",
+                            SecurityStamp = "c7170722-5339-4355-8ed6-db390f52e9c8",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -492,28 +527,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "e9c5351f-5789-48e2-bb4c-2e290ccc9225",
+                            ConcurrencyStamp = "9dd063db-3d8e-40c1-9287-51984bcdbde2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "edb63f2a-b150-47a9-8cc5-f8fba2773a23",
+                            ConcurrencyStamp = "9c8da7f5-7a4e-4e71-92bc-d04a7a5f4cc6",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "0c9349ea-a826-4ac6-9894-69a06cb964ef",
+                            ConcurrencyStamp = "74fa390e-7de9-40f0-a4ae-b587f94583b9",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "13bcffc7-2246-488c-a1de-7c9c09b7a6c1",
+                            ConcurrencyStamp = "e5dea3ab-e2ef-4d58-9cdd-aed73d0c678f",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -730,6 +765,17 @@ namespace DataAccess.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("Core.Entities.Feedback", b =>
+                {
+                    b.HasOne("Core.Entities.User", "User")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Core.Entities.Portfolio", b =>
                 {
                     b.HasOne("Core.Entities.User", "User")
@@ -883,6 +929,8 @@ namespace DataAccess.Migrations
                     b.Navigation("Articles");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("Feedbacks");
 
                     b.Navigation("Portfolio");
 

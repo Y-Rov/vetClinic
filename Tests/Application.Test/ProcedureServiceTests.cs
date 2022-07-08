@@ -3,6 +3,8 @@ using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
@@ -17,7 +19,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
     
     private readonly ProcedureServiceFixture _fixture;
     
-    private readonly List<Procedure> _procedures = new()
+    private static readonly List<Procedure> _procedures = new()
     {
         new Procedure()
         {
@@ -129,42 +131,54 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
         }
     }; 
 
+    private readonly ProcedureParameters _parameters = new ProcedureParameters()
+    {
+        FilterParam = "hello",
+        OrderByParam = "Cost",
+        OrderByDirection = "desc",
+        PageNumber = 1,
+        PageSize = 5
+    };
+    
+    private readonly PagedList<Procedure> _pagedProcedures = new PagedList<Procedure>(_procedures, 3, 1, 5);
 
     [Fact]
     public async Task GetAllProceduresAsync_whenProceduresListIsNotEmpty_thanReturnProceduresList()
     {
         _fixture.MockProcedureRepository
-            .Setup(repo => repo.GetAsync(
+            .Setup(repo => repo.GetPaged(
+                It.IsAny<ProcedureParameters>(),
                 It.IsAny<Expression<Func<Procedure, bool>>>(),
                 It.IsAny<Func<IQueryable<Procedure>, IOrderedQueryable<Procedure>>>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()))
-            .ReturnsAsync(_procedures);
+                It.IsAny<string>()
+            ))
+            .ReturnsAsync(_pagedProcedures);
         
         //Act
-        var result = await _fixture.MockProcedureService.GetAllProceduresAsync();
+        var result = await _fixture.MockProcedureService.GetAllProceduresAsync(_parameters);
         
         //Assert
         Assert.NotEmpty(result);
-        Assert.Equal(_procedures, result);
+        Assert.Equal(_pagedProcedures, result);
     }
     
     [Fact]
     public async Task GetAllProceduresAsync_whenProceduresListIsEmpty_thanReturnEmptyProceduresList()
     {
         //Arrange
-        var emptyProcedures = new List<Procedure>();
+        var emptyProcedures = new PagedList<Procedure>(new List<Procedure>(), 0, 0, 0);
         
         _fixture.MockProcedureRepository
-            .Setup(repo => repo.GetAsync(
+            .Setup(repo => repo.GetPaged(
+                It.IsAny<ProcedureParameters>(),
                 It.IsAny<Expression<Func<Procedure, bool>>>(),
                 It.IsAny<Func<IQueryable<Procedure>, IOrderedQueryable<Procedure>>>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()))
+                It.IsAny<string>()
+            ))
             .ReturnsAsync(emptyProcedures);
         
         //Act
-        var result = await _fixture.MockProcedureService.GetAllProceduresAsync();
+        var result = await _fixture.MockProcedureService.GetAllProceduresAsync(_parameters);
         
         //Assert
         Assert.NotNull(result);

@@ -6,13 +6,35 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
 {
-    public class PortfolioControllerTest : IClassFixture<PortfolioControllerFixture>
+    public class PortfolioControllerTest : IClassFixture<PortfolioControllerFixture>, IDisposable
     {
         private readonly PortfolioControllerFixture _fixture;
+        private bool _disposed;
 
         public PortfolioControllerTest(PortfolioControllerFixture fixture)
         {
             _fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockPortfolioService.ResetCalls();
+            }
+
+            _disposed = true;
         }
 
         [Fact]

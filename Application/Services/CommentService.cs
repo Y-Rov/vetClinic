@@ -3,6 +3,7 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
@@ -81,19 +82,19 @@ public class CommentService : ICommentService
         return comment;
     }
 
-    public async Task<IEnumerable<Comment>> GetAllCommentsAsync()
+    public async Task<IEnumerable<Comment>> GetAllCommentsAsync(CommentsParameters parameters)
     {
+        if (parameters.ArticleId != 0)
+        {
+            var publishedComments = await _commentRepository.GetAsync(
+                includeProperties:"Author",
+                filter: c => c.ArticleId == parameters.ArticleId);
+            _loggerManager.LogInfo($"Found all comments for article with id {parameters.ArticleId}");
+            return publishedComments;        
+        }
+        
         var comments = await _commentRepository.GetAsync(includeProperties:"Author");
         _loggerManager.LogInfo("Found all comments");
         return comments;
-    }
-
-    public async Task<IEnumerable<Comment>> GetAllArticleCommentsAsync(int articleId)
-    {
-        var publishedComments = await _commentRepository.GetAsync(
-            includeProperties:"Author",
-            filter: c => c.ArticleId == articleId);
-        _loggerManager.LogInfo($"Found all comments for article with id {articleId}");
-        return publishedComments;
     }
 }

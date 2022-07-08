@@ -10,8 +10,11 @@ namespace Application.Test.Fixtures
 {
     public class SpecializationServiceFixture
     {
+
         public SpecializationServiceFixture()
         {
+            Expected = GenerateSpecialization();
+
             var fixture =
                new Fixture().Customize(new AutoMoqCustomization());
 

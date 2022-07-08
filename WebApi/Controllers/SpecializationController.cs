@@ -2,8 +2,13 @@
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
+using Core.ViewModels.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
@@ -11,36 +16,53 @@ using WebApi.AutoMapper.Interface;
 namespace WebApi.Controllers
 {
     [Route("api/specialization")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class SpecializationController : ControllerBase
     {
         readonly ISpecializationService _service;
         readonly IViewModelMapper<SpecializationViewModel, Specialization> _mapper;
         readonly IViewModelMapper<Specialization, SpecializationViewModel> _viewModelMapper;
-        readonly IViewModelMapper<IEnumerable<Specialization>, IEnumerable<SpecializationViewModel>> _listMapper;
-        IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
-     _procedureEnumerableViewModelMapper;
+        readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
+            _procedureEnumerableViewModelMapper;
+        readonly IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> _pagedMapper;
+        readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _userListMapper;
+
         public SpecializationController(
             ISpecializationService service, 
-            IViewModelMapper<SpecializationViewModel, Specialization> mapper, 
-            IViewModelMapper<Specialization, SpecializationViewModel> viewModelMapper, 
-            IViewModelMapper<IEnumerable<Specialization>, IEnumerable<SpecializationViewModel>> listMapper,
-            IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> procedureEnumerableViewModelMapper)
+            IViewModelMapper<SpecializationViewModel, Specialization> mapper,
+            IViewModelMapper<Specialization, SpecializationViewModel> viewModelMapper,
+            IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> procedureEnumerableViewModelMapper,
+            IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> pagedMapper,
+            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> userListMapper)
         {
             _service = service;
             _mapper = mapper;
             _viewModelMapper = viewModelMapper;
-            _listMapper = listMapper;
             _procedureEnumerableViewModelMapper = procedureEnumerableViewModelMapper;
+            _pagedMapper = pagedMapper;
+            _userListMapper = userListMapper;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<SpecializationViewModel>> GetSpecializations()
+        public async Task<PagedReadViewModel<SpecializationViewModel>> GetSpecializations(
+            [FromQuery]SpecializationParameters specializationParameters)
         {
-            var specializations = await _service.GetAllSpecializationsAsync();
-            var mappedSpecializations = _listMapper.Map(specializations);
+            var specializations = 
+                await _service.GetAllSpecializationsAsync(specializationParameters);
+
+            var mappedSpecializations = _pagedMapper.Map(specializations);
+
             return mappedSpecializations;
         }
+
+        [HttpGet("employees")]
+        public async Task<IEnumerable<UserReadViewModel>> GetEmployees()
+        {
+            var employees = await _service.GetEmployeesAsync();
+            var mappedEmployees = _userListMapper.Map(employees);
+            return mappedEmployees;
+        } 
 
         [HttpGet("{id:int:min(1)}")]
         public async Task<SpecializationViewModel> GetSpecializationById([FromRoute] int id)
@@ -118,7 +140,6 @@ namespace WebApi.Controllers
             await _service.UpdateSpecializationAsync(id,_mapper.Map(updated));
             return NoContent();
         }
-
 
         [HttpDelete("{id:int:min(1)}")]
         public async Task<ActionResult> DeleteSpecialization([FromRoute] int id)

@@ -3,12 +3,16 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
     public class SpecializationService : ISpecializationService
     {
         readonly ISpecializationRepository _repository;
+        readonly IUserRepository _userRepository;
         readonly ILoggerManager _logger;
 
         bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
@@ -19,16 +23,33 @@ namespace Application.Services
 
         public SpecializationService(
             ISpecializationRepository repository,
+            IUserRepository userRepository,
             ILoggerManager logger)
         {
             _repository = repository;
+            _userRepository = userRepository;
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Specialization>> GetAllSpecializationsAsync()
+        public async Task<PagedList<Specialization>> GetAllSpecializationsAsync(SpecializationParameters parameters)
         {
+            var specializations =
+                await _repository.GetAllAsync(parameters, 
+                includeProperties: query => query
+                    .Include(specialization => specialization.UserSpecializations)
+                        .ThenInclude(us => us.User)
+                    .Include(specialization => specialization.ProcedureSpecializations)
+                        .ThenInclude(ps => ps.Procedure));
+
             _logger.LogInfo($"specializations were recieved");
-            return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
+            return specializations;
+            //return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
+        }
+
+        public async Task<IEnumerable<User>> GetEmployeesAsync()
+        {
+            return await _userRepository.GetByRolesAsync(
+                roleIds: new List<int>{ 2,3});
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)

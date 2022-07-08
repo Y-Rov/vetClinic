@@ -3,6 +3,8 @@ using Application.Test.Fixtures;
 using Azure;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
@@ -28,7 +30,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         Title = "Hello"
     };
 
-    private readonly IList<Article> _articles = new List<Article>()
+    private static readonly List<Article> _articles = new List<Article>()
     {
         new Article
         {
@@ -62,19 +64,21 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         }
     };
 
+    private readonly PagedList<Article> _pagedArticles = new PagedList<Article>(_articles, 3, 1, 5); 
+
     [Fact]
     public async Task GetAllArticlesAsync_whenArticlesListIsNotEmpty_thanReturnArticlesList()
     {
         _fixture.MockArticleRepository
-            .Setup(repo => repo.GetAsync(
+            .Setup(repo => repo.GetPaged(
+                It.IsAny<ArticleParameters>(),
                 It.IsAny<Expression<Func<Article, bool>>>(),
                 It.IsAny<Func<IQueryable<Article>, IOrderedQueryable<Article>>>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()))
-            .ReturnsAsync(_articles);
+                It.IsAny<string>()))
+            .ReturnsAsync(_pagedArticles);
         
         //Act
-        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        var result = await _fixture.MockArticleService.GetArticlesAsync(new ArticleParameters());
         
         //Assert
         Assert.NotEmpty(result);
@@ -86,18 +90,18 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
     public async Task GetAllArticlesAsync_whenArticlesListIsEmpty_thanReturnEmptyArticlesList()
     {
         //Arrange
-        var emptyArticles = new List<Article>();
+        var emptyArticles = new PagedList<Article>(new List<Article>(), 0, 0, 0);
         
         _fixture.MockArticleRepository
-            .Setup(repo => repo.GetAsync(
+            .Setup(repo => repo.GetPaged(
+                It.IsAny<ArticleParameters>(),
                 It.IsAny<Expression<Func<Article, bool>>>(),
                 It.IsAny<Func<IQueryable<Article>, IOrderedQueryable<Article>>>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()))
+                It.IsAny<string>()))
             .ReturnsAsync(emptyArticles);
         
         //Act
-        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        var result = await _fixture.MockArticleService.GetArticlesAsync(new ArticleParameters());
         
         //Assert
         Assert.NotNull(result);
@@ -146,7 +150,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
     [Fact]
     public async Task GetPublishedArticlesAsync_whenArticlesListIsNotEmpty_thanReturnArticlesList()
     {
-        var published = new List<Article>()
+        var articles = new List<Article>()
         {
             new Article
             {
@@ -169,17 +173,19 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
                 Title = "Hello"
             }
         };
-        
+
+        var published = new PagedList<Article>(articles, 2, 1, 5);
+
         _fixture.MockArticleRepository
-            .Setup(repo => repo.GetAsync(
+            .Setup(repo => repo.GetPaged(
+                It.IsAny<ArticleParameters>(),
                 It.IsAny<Expression<Func<Article, bool>>>(),
                 It.IsAny<Func<IQueryable<Article>, IOrderedQueryable<Article>>>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()))
+                It.IsAny<string>()))
             .ReturnsAsync(published);
         
         //Act
-        var result = await _fixture.MockArticleService.GetAllArticlesAsync();
+        var result = await _fixture.MockArticleService.GetArticlesAsync(new ArticleParameters());
         
         //Assert
         Assert.NotEmpty(result);
