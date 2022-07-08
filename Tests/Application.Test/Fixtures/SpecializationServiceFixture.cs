@@ -4,6 +4,8 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Moq;
 
 namespace Application.Test.Fixtures
@@ -20,20 +22,26 @@ namespace Application.Test.Fixtures
 
             Expected = GenerateSpecialization();
             ExpectedSpecializations = GenerateSpecializations();
+            TestParameters = GenerateParameters();
 
             MockRepository = fixture.Freeze<Mock<ISpecializationRepository>>();
-
+            MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
 
             MockService = 
-                new SpecializationService(MockRepository.Object,MockLoggerManager.Object);
+                new SpecializationService(
+                    MockRepository.Object,
+                    MockUserRepository.Object,
+                    MockLoggerManager.Object);
         }
 
         public SpecializationService MockService { get; }
         public Mock<ILoggerManager> MockLoggerManager { get; }
         public Mock<ISpecializationRepository> MockRepository { get; }
+        public Mock<IUserRepository> MockUserRepository { get; }
         public Specialization Expected { get; set; }
-        public List<Specialization> ExpectedSpecializations { get; set; }
+        public PagedList<Specialization> ExpectedSpecializations { get; set; }
+        public SpecializationParameters TestParameters { get; set; }
 
         private Specialization GenerateSpecialization()
         {
@@ -51,7 +59,7 @@ namespace Application.Test.Fixtures
             return specialization;
         }
 
-        private List<Specialization> GenerateSpecializations()
+        private PagedList<Specialization> GenerateSpecializations()
         {
             var specializations = new List<Specialization>()
             {
@@ -59,7 +67,21 @@ namespace Application.Test.Fixtures
                 new Specialization() { Id = 1, Name = "Cleaner"}
             };
 
-            return specializations;
+            var pagedList =
+                new PagedList<Specialization>(specializations,specializations.Count,1,4);
+
+            return pagedList;
+        }
+
+        private SpecializationParameters GenerateParameters()
+        {
+            var parameters = new SpecializationParameters
+            {
+                PageSize = 4,
+                PageNumber = 1
+            };
+
+            return parameters;
         }
     }
 }

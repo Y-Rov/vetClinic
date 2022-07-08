@@ -1,21 +1,47 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class SpecializationServiceTests : IClassFixture<SpecializationServiceFixture>
+    public class SpecializationServiceTests : IClassFixture<SpecializationServiceFixture>, IDisposable
     {
         private readonly SpecializationServiceFixture _fixture;
+        private bool _disposed;
 
         const string includeProperties = "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User";
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockRepository.ResetCalls();
+                _fixture.MockUserRepository.ResetCalls();
+            }
+
+            _disposed = true;
+        }
 
         public SpecializationServiceTests(SpecializationServiceFixture fixture)
         {
             _fixture = fixture;            
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         [Fact]
@@ -65,35 +91,37 @@ namespace Application.Test
         {
 
             _fixture.MockRepository.Setup(repository =>
-                repository.GetAsync(
+                repository.GetAllAsync(
+                    It.IsAny<SpecializationParameters>(),                    
                     It.IsAny<Expression<Func<Specialization, bool>>>(),
                     It.IsAny<Func<IQueryable<Specialization>, IOrderedQueryable<Specialization>>?>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<Func<IQueryable<Specialization>, IIncludableQueryable<Specialization, object>>>()))
             .ReturnsAsync(_fixture.ExpectedSpecializations);
 
 
-            var result = await _fixture.MockService.GetAllSpecializationsAsync();
+            var result = await _fixture.MockService.GetAllSpecializationsAsync(_fixture.TestParameters);
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.IsType<List<Specialization>>(result);
+            Assert.IsType<PagedList<Specialization>>(result);
         }
 
         [Fact]
         public async Task GetAllSpecializations_whenResultIsEmpty_thenReturnNothing()
         {
-            var emptyList = new List<Specialization>();
+            var emptyPagedList = 
+                    new PagedList<Specialization>(new List<Specialization>(), 0,1,4);
 
             _fixture.MockRepository.Setup(repository =>
-                repository.GetAsync(
+                repository.GetAllAsync(
+                    It.IsAny<SpecializationParameters>(),
                     It.IsAny<Expression<Func<Specialization, bool>>>(),
                     It.IsAny<Func<IQueryable<Specialization>, IOrderedQueryable<Specialization>>?>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
-            .ReturnsAsync(emptyList);
+                    It.IsAny<Func<IQueryable<Specialization>, IIncludableQueryable<Specialization, object>>>()))
+            .ReturnsAsync(emptyPagedList);
 
-            var result = await _fixture.MockService.GetAllSpecializationsAsync();
+            var result = 
+                await _fixture.MockService.GetAllSpecializationsAsync(_fixture.TestParameters);
 
             Assert.NotNull(result);
             Assert.Empty(result);
