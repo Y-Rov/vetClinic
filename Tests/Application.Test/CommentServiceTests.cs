@@ -2,6 +2,7 @@
 using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
@@ -82,7 +83,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
             .ReturnsAsync(_comments);
         
         //Act
-        var result = await _fixture.MockCommentService.GetAllCommentsAsync();
+        var result = await _fixture.MockCommentService.GetAllCommentsAsync(new CommentsParameters());
         
         //Assert
         Assert.NotEmpty(result);
@@ -104,7 +105,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
             .ReturnsAsync(emptyComments);
         
         //Act
-        var result = await _fixture.MockCommentService.GetAllCommentsAsync();
+        var result = await _fixture.MockCommentService.GetAllCommentsAsync(new CommentsParameters());
         
         //Assert
         Assert.NotNull(result);
@@ -181,7 +182,7 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>
             .ReturnsAsync(articleComments);
         
         //Act
-        var result = await _fixture.MockCommentService.GetAllCommentsAsync();
+        var result = await _fixture.MockCommentService.GetAllCommentsAsync(new CommentsParameters());
         
         //Assert
         Assert.NotEmpty(result);

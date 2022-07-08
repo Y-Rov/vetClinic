@@ -1,10 +1,13 @@
 ﻿using System.Drawing;
+using System.Linq.Expressions;
 using Azure;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -101,19 +104,67 @@ public class ArticleService : IArticleService
         return article;
     }
 
-    public async Task<IEnumerable<Article>> GetAllArticlesAsync()
+    public async Task<PagedList<Article>> GetArticlesAsync(ArticleParameters parameters)
     {
-        var articles = await _articleRepository.GetAsync(includeProperties:"Author");
+        var filterQuery = GetFilterQuery(parameters.FilterParam, false);
+        var orderByQuery = GetOrderByQuery(parameters.OrderByParam);
+
+        var articles = await _articleRepository.GetPaged(
+            parameters: parameters,
+            filter: filterQuery,
+            orderBy: orderByQuery,
+            includeProperties: "Author"
+        );
+        _loggerManager.LogInfo("Found all articles");
+        return articles;
+    }
+    
+    public async Task<PagedList<Article>> GetPublishedArticlesAsync(ArticleParameters parameters)
+    {
+        var filterQuery = GetFilterQuery(parameters.FilterParam, true);
+        var orderByQuery = GetOrderByQuery(parameters.OrderByParam);
+
+        var articles = await _articleRepository.GetPaged(
+            parameters: parameters,
+            filter: filterQuery,
+            orderBy: orderByQuery,
+            includeProperties: "Author"
+        );
         _loggerManager.LogInfo("Found all articles");
         return articles;
     }
 
-    public async Task<IEnumerable<Article>> GetPublishedArticlesAsync()
+    private static Expression<Func<Article, bool>>? GetFilterQuery(string? filterParam, bool isPublished)
     {
-        var publishedArticles = await _articleRepository.GetAsync(
-            includeProperties:"Author",
-            filter: article => article.Published);
-        _loggerManager.LogInfo("Found all published articles");
-        return publishedArticles;
+        Expression<Func<Article, bool>>? filterQuery = null;
+        
+        if (string.IsNullOrEmpty(filterParam))
+        {
+            if(isPublished)
+                filterQuery = art => art.Published;
+            
+            return filterQuery;
+        }
+        
+        var formattedFilter = filterParam.Trim().ToLower();
+        
+        if (isPublished)
+        {
+            filterQuery = art => (art.Title!.ToLower().Contains(formattedFilter)
+                                  || art.Body!.ToLower().Contains(formattedFilter)) && art.Published;
+        }
+        else
+        {
+            filterQuery = art => art.Title!.ToLower().Contains(formattedFilter)
+                                 || art.Body!.ToLower().Contains(formattedFilter);
+        }
+        return filterQuery;
     }
+
+    private static Func<IQueryable<Article>, IOrderedQueryable<Article>>? GetOrderByQuery(string? orderBy) => orderBy switch
+    {
+        "Title" => query => query.OrderBy(article => article.Title),
+        "Creation Time" => query => query.OrderBy(article => article.CreatedAt),
+        _ => null
+    };
 }
