@@ -10,62 +10,37 @@ using Moq;
 
 namespace Application.Test;
 
-public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
+public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDisposable
 {
     private readonly ArticleServiceFixture _fixture;
+    private bool _disposed;
 
     public ArticleServiceTests(ArticleServiceFixture fixture)
     {
         _fixture = fixture;
     }
-
-    private readonly Article _article = new Article
+    
+    public void Dispose()
     {
-        Id = 1,
-        AuthorId = 1,
-        Body = "<ul><li><p class=\"mat-title\">Hello</li><li>World</li></ul>",
-        CreatedAt = new DateTime(2020, 10, 10, 10, 10, 30),
-        Edited = false,
-        Published = true,
-        Title = "Hello"
-    };
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-    private static readonly List<Article> _articles = new List<Article>()
+    protected virtual void Dispose(bool disposing)
     {
-        new Article
+        if (_disposed)
         {
-            Id = 1,
-            AuthorId = 1,
-            Body = "<ul><li><p class=\"mat-title\">Hello</li><li>World</li></ul>",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-            Edited = true,
-            Published = true,
-            Title = "Hello"
-        },
-        new Article
-        {
-            Id = 2,
-            AuthorId = 1,
-            Body = "<ul><li><p class=\"mat-title\">Hello</li><li>World</li></ul>",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 30),
-            Edited = false,
-            Published = false,
-            Title = "Hello"
-        },
-        new Article
-        {
-            Id = 3,
-            AuthorId = 1,
-            Body = "<ul><li><p class=\"mat-title\">Hello</li><li>World</li></ul>",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 20),
-            Edited = false,
-            Published = true,
-            Title = "Hello"
+            return;
         }
-    };
 
-    private readonly PagedList<Article> _pagedArticles = new PagedList<Article>(_articles, 3, 1, 5); 
+        if (disposing)
+        {
+            _fixture.MockArticleRepository.ResetCalls();
+        }
 
+        _disposed = true;
+    }
+    
     [Fact]
     public async Task GetAllArticlesAsync_whenArticlesListIsNotEmpty_thanReturnArticlesList()
     {
@@ -75,15 +50,15 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
                 It.IsAny<Expression<Func<Article, bool>>>(),
                 It.IsAny<Func<IQueryable<Article>, IOrderedQueryable<Article>>>(),
                 It.IsAny<string>()))
-            .ReturnsAsync(_pagedArticles);
+            .ReturnsAsync(_fixture.PagedArticles
+            );
         
         //Act
         var result = await _fixture.MockArticleService.GetArticlesAsync(new ArticleParameters());
         
         //Assert
         Assert.NotEmpty(result);
-        Assert.Equal(_articles, result);
-        _fixture.MockArticleRepository.ResetCalls();
+        Assert.Equal(_fixture.ExpectedArticles, result);
     }
     
     [Fact]
@@ -107,7 +82,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         Assert.NotNull(result);
         Assert.Empty(result);
         Assert.Equal(emptyArticles, result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
     
     [Fact]
@@ -116,17 +90,16 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Arrange
         _fixture.MockArticleRepository
             .Setup(repo => repo.GetById(
-                It.Is<int>(x => x == _article.Id), 
+                It.Is<int>(x => x == _fixture.ExpectedArticle.Id), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_article);
+            .ReturnsAsync(_fixture.ExpectedArticle);
         
         //Act
-        var result = await _fixture.MockArticleService.GetByIdAsync(_article.Id);
+        var result = await _fixture.MockArticleService.GetByIdAsync(_fixture.ExpectedArticle.Id);
         
         //Assert
         Assert.NotNull(result);
-        Assert.Equal(_article, result);
-        _fixture.MockArticleRepository.ResetCalls();
+        Assert.Equal(_fixture.ExpectedArticle, result);
     }
     
     [Fact]
@@ -144,7 +117,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -190,7 +162,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         Assert.NotEmpty(result);
         Assert.Equal(published, result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -210,12 +181,11 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
 
         //Act
-        await _fixture.MockArticleService.CreateArticleAsync(_article);
+        await _fixture.MockArticleService.CreateArticleAsync(_fixture.ExpectedArticle);
         
         //Assert
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -235,14 +205,12 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Throws<DbUpdateException>();
 
         //Act
-        var result = _fixture.MockArticleService.CreateArticleAsync(_article);
+        var result = _fixture.MockArticleService.CreateArticleAsync(_fixture.ExpectedArticle);
         
         //Assert
         _fixture.MockArticleRepository
-            .Verify(r => r.InsertAsync(_article), Times.Once);
+            .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Once);
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -262,13 +230,12 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result = _fixture.MockArticleService.CreateArticleAsync(_article);
+        var result = _fixture.MockArticleService.CreateArticleAsync(_fixture.ExpectedArticle);
         
         //Assert
         _fixture.MockArticleRepository
-            .Verify(r => r.InsertAsync(_article), Times.Never);
+            .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Never);
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -279,7 +246,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Setup(r => r.GetById(
                 It.IsAny<int>(), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_article);
+            .ReturnsAsync(_fixture.ExpectedArticle);
 
         _fixture.MockImageParser
             .Setup(ip => ip.UploadImages(It.IsAny<string>()))
@@ -290,13 +257,11 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
 
         //Act
-        await _fixture.MockArticleService.UpdateArticleAsync(_article);
+        await _fixture.MockArticleService.UpdateArticleAsync(_fixture.ExpectedArticle);
         
         //Assert
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -307,7 +272,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Setup(r => r.GetById(
                 It.IsAny<int>(), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_article);
+            .ReturnsAsync(_fixture.ExpectedArticle);
         
         _fixture.MockImageParser
             .Setup(ip => ip.UploadImages(It.IsAny<string>()))
@@ -318,7 +283,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result = _fixture.MockArticleService.UpdateArticleAsync(_article);
+        var result = _fixture.MockArticleService.UpdateArticleAsync(_fixture.ExpectedArticle);
         
         //Assert
         _fixture.MockArticleRepository
@@ -329,7 +294,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -351,7 +315,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result = _fixture.MockArticleService.UpdateArticleAsync(_article);
+        var result = _fixture.MockArticleService.UpdateArticleAsync(_fixture.ExpectedArticle);
         
         //Assert
         _fixture.MockArticleRepository
@@ -362,7 +326,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -373,7 +336,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Setup(r => r.GetById(
                 It.IsAny<int>(), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_article);
+            .ReturnsAsync(_fixture.ExpectedArticle);
 
         _fixture.MockImageParser
             .Setup(ip => ip.DeleteImages(It.IsAny<string>()))
@@ -393,7 +356,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
         //Assert
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -404,7 +366,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Setup(r => r.GetById(
                 It.IsAny<int>(), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_article);
+            .ReturnsAsync(_fixture.ExpectedArticle);
         
         _fixture.MockImageParser
             .Setup(ip => ip.DeleteImages(It.IsAny<string>()))
@@ -430,7 +392,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 
     [Fact]
@@ -467,6 +428,5 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>
             .Verify(r => r.SaveChangesAsync(), Times.Never);
         
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockArticleRepository.ResetCalls();
     }
 }
