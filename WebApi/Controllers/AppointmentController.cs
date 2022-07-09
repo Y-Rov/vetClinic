@@ -55,7 +55,7 @@ namespace WebApi.Controllers
             return appointmentViewModel;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostAsync(AppointmentCreateViewModel appointmentViewModel)
         {
@@ -66,7 +66,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> PutAsync(AppointmentUpdateViewModel appointmentViewModel) 
         {
