@@ -1,5 +1,7 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.ViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using FluentAssertions;
 using Moq;
@@ -93,61 +95,53 @@ namespace WebApi.Test
         [Fact]
         public async Task GetAllSpecializations_whenResultIsNotEmpty_thenStatusCodeOk()
         {
-            IEnumerable<SpecializationViewModel> expected = new List<SpecializationViewModel>
-            {
-                new SpecializationViewModel() {Id = 0, Name = "surgeon"},
-                new SpecializationViewModel() {Id = 1, Name = "worker"}
-            };
-
-            IEnumerable<Specialization> returnedSpecializations = new List<Specialization>()
-            {
-                new Specialization {Id = 0, Name = "surgeon"},
-                new Specialization {Id = 1, Name = "worker"}
-            };
-
             _fixture.MockSpecializationService.Setup(service =>
-                service.GetAllSpecializationsAsync())
-            .ReturnsAsync(returnedSpecializations);
+                service.GetAllSpecializationsAsync(_fixture.TestParameters))
+            .ReturnsAsync(_fixture.ExpectedSpecializations);
 
-            _fixture.MockMapperListSpecializationViewModel.Setup(
+            _fixture.MockMapperPagedList.Setup(
                 mapper
-                    => mapper.Map(It.IsAny<IEnumerable<Specialization>>()))
-                .Returns(new List<SpecializationViewModel>
-            {
-                new SpecializationViewModel() {Id = 0, Name = "surgeon"},
-                new SpecializationViewModel() {Id = 1, Name = "worker"}
-            });
+                    => mapper.Map(It.IsAny<PagedList<Specialization>>()))
+                .Returns(_fixture.ExpectedViewModelSpecializations);
 
-            var specializations =
-                await _fixture.MockController.GetSpecializations();
+            var specializations = 
+                await _fixture.MockController.GetSpecializations(_fixture.TestParameters);
 
             Assert.NotNull(specializations);
-            Assert.NotEmpty(specializations);
+            Assert.NotEmpty(specializations.Entities);
         }
 
         [Fact]
         public async Task GetAllSpecializations_whenResultIsEmpty_thenStatusCodeOk()
         {
-            var expected = new List<SpecializationViewModel>();
+            PagedList<Specialization> emptyPagedList = new PagedList<Specialization>
+                (new List<Specialization>(), 0, 1, 4);
 
-            var empty = new List<Specialization>();
-
-            var emptyViewModels = new List<SpecializationViewModel>();
+            PagedReadViewModel<SpecializationViewModel> emptyViewModel = new PagedReadViewModel<SpecializationViewModel>
+            {
+                Entities = new List<SpecializationViewModel>(),
+                CurrentPage = 1,
+                TotalPages = 1,
+                PageSize = 4,
+                TotalCount = 0,
+                HasPrevious = false,
+                HasNext = false,
+            };
 
             _fixture.MockSpecializationService.Setup(service =>
-                service.GetAllSpecializationsAsync())
-            .ReturnsAsync(empty);
+                service.GetAllSpecializationsAsync(_fixture.TestParameters))
+            .ReturnsAsync(emptyPagedList);
 
-            _fixture.MockMapperListSpecializationViewModel.Setup(
+            _fixture.MockMapperPagedList.Setup(
                 mapper
-                    => mapper.Map(empty))
-                .Returns(emptyViewModels);
+                    => mapper.Map(It.IsAny<PagedList<Specialization>>()))
+                .Returns(emptyViewModel);
 
             var specializations =
-                await _fixture.MockController.GetSpecializations();
+                await _fixture.MockController.GetSpecializations(_fixture.TestParameters);
 
             Assert.NotNull(specializations);
-            Assert.Empty(specializations);
+            Assert.Empty(specializations.Entities);
         }
 
         [Fact]

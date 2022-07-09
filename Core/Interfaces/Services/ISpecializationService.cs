@@ -8,6 +8,7 @@ namespace Core.Interfaces.Services
     {
         Task<PagedList<Specialization>> GetAllSpecializationsAsync(SpecializationParameters parameters);
         Task<Specialization> GetSpecializationByIdAsync(int id);
+        Task<IEnumerable<User>> GetEmployeesAsync();
         Task<IEnumerable<Procedure>> GetSpecializationProcedures(int id);
         Task<Specialization> AddSpecializationAsync(Specialization specialization);
         Task AddProcedureToSpecialization(int specializationId, int procedureId);
