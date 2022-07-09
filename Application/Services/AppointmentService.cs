@@ -143,7 +143,7 @@ namespace Application.Services
 
                 await _appointmentRepository.SaveChangesAsync();
 
-                _logger.LogWarn("At least one of the users from the given list does not exist");
+                //_logger.LogWarn("At least one of the users from the given list does not exist");
                 _logger.LogInfo($"Updated user list of the appointments with Id {appointmentId}");
 
             }

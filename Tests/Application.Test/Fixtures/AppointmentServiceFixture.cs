@@ -50,6 +50,7 @@ namespace Application.Test.Fixtures
 
         public Appointment MockAppointment { get; set; }
         public Procedure MockProcedure { get; set; }
+        public AppointmentProcedure MockAppointmentProcedure { get; set; }
         public User MockUser { get; set; }
         public IList<Appointment> MockListAppointments { get; set; }
 
@@ -120,6 +121,24 @@ namespace Application.Test.Fixtures
     {
         1, 2, 5, 6
     };
+
+        public readonly IList<AppointmentProcedure> _appointmentProcedure = new List<AppointmentProcedure>()
+        {
+              new AppointmentProcedure
+            {
+                AppointmentId = 1,
+                ProcedureId = 1
+            }
+        };
+
+        public readonly IList<AppointmentUser> _appointmentUser = new List<AppointmentUser>() 
+        {
+            new AppointmentUser
+            {
+                AppointmentId = 1,
+                UserId = 1 
+            }
+        };
 
         private IList<Appointment> GenerateListAppointments()
         {

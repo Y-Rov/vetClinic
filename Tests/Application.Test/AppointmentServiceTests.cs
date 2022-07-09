@@ -414,34 +414,21 @@ namespace Application.Test
                 1, 2
             };
 
-            // SETUP THIS ONE
-            //var existing = await _appointmentProcedureRepository.GetAsync(
-            //       filter: app => app.AppointmentId == appointmentId);
+           _appointmentServiceFixture.MockAppointmentProcedureRepository.Setup(
+                repo => repo.GetAsync
+                    (
+                It.IsAny<Expression<Func<AppointmentProcedure, bool>>>(),
+                It.IsAny<Func<IQueryable<AppointmentProcedure>, IOrderedQueryable<AppointmentProcedure>>>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>()))
+                .ReturnsAsync(_appointmentServiceFixture._appointmentProcedure);
 
-            var expectedRelationships = new List<AppointmentProcedure>()
-            {
-                new AppointmentProcedure
-                {
-                    AppointmentId = _appointmentServiceFixture.MockAppointment.Id,
-                    ProcedureId = 1
-                },
-                new AppointmentProcedure
-                {
-                    AppointmentId = _appointmentServiceFixture.MockAppointment.Id,
-                    ProcedureId = 2
-                }
-            };
-
-            _appointmentServiceFixture.MockAppointmentRepository.Setup(
-                repo => repo.GetById
-                    (It.Is<int>(id => id == _appointmentServiceFixture.MockAppointment.Id),
-                    It.IsAny<string>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockAppointment);
-
+            // Act
             await _appointmentServiceFixture.MockAppointmentEntityService
                 .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
 
-             _appointmentServiceFixture.MockAppointmentRepository.Verify(
+            // Assert
+            _appointmentServiceFixture.MockAppointmentRepository.Verify(
                 repo => repo.SaveChangesAsync(), Times.Once);
         }
 
@@ -453,6 +440,9 @@ namespace Application.Test
 
             //Arrange
             var procedureIds = new List<int>();
+
+         
+
 
             //Act
             var result = 
@@ -468,6 +458,16 @@ namespace Application.Test
         {
             //Arrange
             var userIds = new List<int>();
+
+            //_appointmentServiceFixture.MockAppointmentUserRepository.Setup(
+            //repo => repo.GetAsync
+            //    (
+            //It.IsAny<Expression<Func<AppointmentUser, bool>>>(),
+            //It.IsAny<Func<IQueryable<AppointmentUser>, IOrderedQueryable<AppointmentUser>>>(),
+            //It.IsAny<string>(),
+            //It.IsAny<bool>()))
+            //.ReturnsAsync(_appointmentServiceFixture._appointmentUser);
+
 
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService
