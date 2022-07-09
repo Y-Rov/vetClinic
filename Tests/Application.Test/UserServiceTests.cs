@@ -10,13 +10,35 @@ using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class UserServiceTests : IClassFixture<UserServiceFixture>
+    public class UserServiceTests : IClassFixture<UserServiceFixture>, IDisposable
     {
         private readonly UserServiceFixture _fixture;
+        private bool _disposed;
 
         public UserServiceTests(UserServiceFixture fixture)
         {
             _fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockUserRepository.ResetCalls();
+            }
+
+            _disposed = true;
         }
 
         [Fact]
@@ -109,12 +131,11 @@ namespace Application.Test
                 .ReturnsAsync(IdentityResult.Success);
 
             // Act
-            var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Passowrd);
+            var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Password);
 
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once());
-            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -126,7 +147,7 @@ namespace Application.Test
                 .Throws<BadRequestException>();
 
             // Act
-            var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Passowrd);
+            var result = _fixture.MockUserService.CreateAsync(_fixture.User, _fixture.Password);
 
             // Assert
             Assert.NotNull(result);
@@ -147,7 +168,6 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.AssignRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once());
-            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -180,7 +200,6 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.UpdateAsync(It.IsAny<User>()), Times.Once());
-            _fixture.MockUserRepository.ResetCalls();
         }
 
         [Fact]
@@ -208,7 +227,6 @@ namespace Application.Test
             // Assert
             Assert.NotNull(result);
             _fixture.MockUserRepository.Verify(r => r.Delete(It.IsAny<User>()), Times.Once());
-            _fixture.MockUserRepository.ResetCalls();
         }
     }
 }
