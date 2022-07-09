@@ -9,6 +9,7 @@ namespace WebApi.Controllers
 {
     [Route("api/portfolios")]
     [ApiController]
+    [Authorize]
     public class PortfolioController : ControllerBase
     {
         private readonly IPortfolioService _portfolioService;

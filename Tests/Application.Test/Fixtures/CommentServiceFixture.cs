@@ -1,9 +1,10 @@
-﻿using Application.Services;
+using Application.Services;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 
 namespace Application.Test.Fixtures;
@@ -16,20 +17,23 @@ public class CommentServiceFixture
 
         MockCommentRepository = fixture.Freeze<Mock<ICommentRepository>>();
         MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
+        MockUserManager = fixture.Freeze<Mock<UserManager<User>>>();
 
         ExpectedComment = GetExpectedComment();
         UpdatedComment = GetUpdatedComment();
         ExpectedComments = GetExpectedComments();
         RequestUser = GetRequestUser();
-        
+
         MockCommentService = new CommentService(
             MockCommentRepository.Object,
-            MockLoggerManager.Object);
+            MockLoggerManager.Object,
+            MockUserManager.Object);
     }
 
-    public CommentService MockCommentService { get; }
-    public Mock<ICommentRepository> MockCommentRepository { get; }
-    public Mock<ILoggerManager> MockLoggerManager { get; }
+    public CommentService MockCommentService; 
+    public Mock<ICommentRepository> MockCommentRepository;
+    public Mock<ILoggerManager> MockLoggerManager;
+    public Mock<UserManager<User>> MockUserManager;
 
     public Comment ExpectedComment { get; }
     public Comment UpdatedComment { get; }

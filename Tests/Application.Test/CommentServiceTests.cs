@@ -218,6 +218,11 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>, IDispos
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
+        _fixture.MockUserManager
+            .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>(){"Doctor"});
+
+        
         //Act
         await _fixture.MockCommentService.DeleteCommentAsync(1, _fixture.RequestUser);
         
@@ -243,6 +248,10 @@ public class CommentServiceTests : IClassFixture<CommentServiceFixture>, IDispos
         _fixture.MockCommentRepository
             .Setup(r => r.SaveChangesAsync())
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+        _fixture.MockUserManager
+            .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>(){"Doctor"});
         
         //Act
         var result = _fixture.MockCommentService.DeleteCommentAsync(1, new User(){Id = 10});

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 using Core.ViewModels.AppointmentsViewModel;
 using Core.ViewModels;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace WebApi.Controllers
 {
@@ -16,43 +18,35 @@ namespace WebApi.Controllers
         private readonly IViewModelMapperUpdater<AnimalViewModel, Animal> _mapperVMtoM;
         private readonly IViewModelMapper<Animal, AnimalViewModel> _mapperMtoVM;
         private readonly IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> _mapperAnimalListToList;
-        private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>> _mapperMedCard;
+        private readonly IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>> _pagedMedCardMapper;
 
         public AnimalController(
             IAnimalService animalService,
             IViewModelMapperUpdater<AnimalViewModel, Animal> mapperVMtoM,
             IViewModelMapper<Animal, AnimalViewModel> mapperMtoVM,
             IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> mapperAnimalListToList,
-            IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AnimalMedCardViewModel>> mapperMedCard)
+            IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>> pagedMedCardMapper)
         {
             _animalService = animalService;
             _mapperVMtoM = mapperVMtoM;
             _mapperMtoVM = mapperMtoVM;
             _mapperAnimalListToList = mapperAnimalListToList;
-            _mapperMedCard = mapperMedCard;
+            _pagedMedCardMapper = pagedMedCardMapper;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<AnimalViewModel>> GetAsync()
+        [HttpGet("{ownerId:int:min(1)}")]
+        public async Task<IEnumerable<AnimalViewModel>> GetAsync([FromRoute] int ownerId)
         {
-            var animals = await _animalService.GetAsync();
+            var animals = await _animalService.GetAsync(ownerId);
             var map = _mapperAnimalListToList.Map(animals);
             return map;
         }
 
-        [HttpGet("medcard/{id:int:min(1)}")]
-        public async Task<IEnumerable<AnimalMedCardViewModel>> GetMedCardAsync([FromRoute] int id)
+        [HttpGet("medcard")]
+        public async Task<PagedReadViewModel<AnimalMedCardViewModel>> GetMedCardAsync([FromQuery] AnimalParameters animalParameters)
         {
-            var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(id);
-            var map = _mapperMedCard.Map(appointments);
-            return map;
-        }
-
-        [HttpGet("{id:int:min(1)}")]
-        public async Task<AnimalViewModel> GetAsync([FromRoute]int id)
-        {
-            var animal = await _animalService.GetByIdAsync(id);
-            var map = _mapperMtoVM.Map(animal);
+            var appointments = await _animalService.GetAllAppointmentsWithAnimalIdAsync(animalParameters);
+            var map = _pagedMedCardMapper.Map(appointments);
             return map;
         }
 
