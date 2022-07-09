@@ -28,13 +28,13 @@ namespace WebApi.Test.Fixtures
 
             MockMapperListProcedureViewModel = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>>>();
 
-           //MockController = new SpecializationController( 
-           //     MockSpecializationService.Object,
-           //     MockMapperSpecialization.Object,
-           //     MockMapperSpecializationViewModel.Object,
-           //     MockMapperListSpecializationViewModel.Object,
-           //     MockMapperListProcedureViewModel.Object
-           //     );
+            MockController = new SpecializationController(
+                 MockSpecializationService.Object,
+                 MockMapperSpecialization.Object,
+                 MockMapperSpecializationViewModel.Object,
+                 MockMapperListSpecializationViewModel.Object,
+                 MockMapperListProcedureViewModel.Object
+                 );
         }
 
         public SpecializationController MockController { get; }
