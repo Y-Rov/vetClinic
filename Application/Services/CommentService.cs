@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator.Parameters;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
@@ -11,13 +13,16 @@ public class CommentService : ICommentService
 {
     private readonly ICommentRepository _commentRepository;
     private readonly ILoggerManager _loggerManager;
+    private readonly UserManager<User> _userManager;
 
     public CommentService(
         ICommentRepository commentRepository, 
-        ILoggerManager loggerManager)
+        ILoggerManager loggerManager, 
+        UserManager<User> userManager)
     {
         _commentRepository = commentRepository;
         _loggerManager = loggerManager;
+        _userManager = userManager;
     }
     
     public async Task CreateCommentAsync(Comment comment)
@@ -55,7 +60,8 @@ public class CommentService : ICommentService
     public async Task DeleteCommentAsync(int commentId, User requestUser)
     {
         var commentToRemove = await GetByIdAsync(commentId);
-        if (commentToRemove.AuthorId != requestUser.Id)
+        var userRole = (await _userManager.GetRolesAsync(requestUser)).First();
+        if (commentToRemove.AuthorId != requestUser.Id && userRole != "Admin")
         {
             var message =
                 $"Deleting comment with different author: user id: {requestUser.Id}, author id: {commentToRemove.AuthorId}, comment id: {commentToRemove.Id}";
@@ -81,19 +87,19 @@ public class CommentService : ICommentService
         return comment;
     }
 
-    public async Task<IEnumerable<Comment>> GetAllCommentsAsync()
+    public async Task<IEnumerable<Comment>> GetAllCommentsAsync(CommentsParameters parameters)
     {
+        if (parameters.ArticleId != 0)
+        {
+            var publishedComments = await _commentRepository.GetAsync(
+                includeProperties:"Author",
+                filter: c => c.ArticleId == parameters.ArticleId);
+            _loggerManager.LogInfo($"Found all comments for article with id {parameters.ArticleId}");
+            return publishedComments;        
+        }
+        
         var comments = await _commentRepository.GetAsync(includeProperties:"Author");
         _loggerManager.LogInfo("Found all comments");
         return comments;
-    }
-
-    public async Task<IEnumerable<Comment>> GetAllArticleCommentsAsync(int articleId)
-    {
-        var publishedComments = await _commentRepository.GetAsync(
-            includeProperties:"Author",
-            filter: c => c.ArticleId == articleId);
-        _loggerManager.LogInfo($"Found all comments for article with id {articleId}");
-        return publishedComments;
     }
 }

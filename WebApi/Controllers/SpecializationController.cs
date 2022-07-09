@@ -7,6 +7,7 @@ using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
+using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -25,19 +26,22 @@ namespace WebApi.Controllers
         readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
             _procedureEnumerableViewModelMapper;
         readonly IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> _pagedMapper;
+        readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _userListMapper;
 
         public SpecializationController(
             ISpecializationService service, 
-            IViewModelMapper<SpecializationViewModel, Specialization> mapper, 
-            IViewModelMapper<Specialization, SpecializationViewModel> viewModelMapper, 
+            IViewModelMapper<SpecializationViewModel, Specialization> mapper,
+            IViewModelMapper<Specialization, SpecializationViewModel> viewModelMapper,
             IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>> procedureEnumerableViewModelMapper,
-            IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> pagedMapper)
+            IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> pagedMapper,
+            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> userListMapper)
         {
             _service = service;
             _mapper = mapper;
             _viewModelMapper = viewModelMapper;
             _procedureEnumerableViewModelMapper = procedureEnumerableViewModelMapper;
             _pagedMapper = pagedMapper;
+            _userListMapper = userListMapper;
         }
 
         [HttpGet]
@@ -51,6 +55,14 @@ namespace WebApi.Controllers
 
             return mappedSpecializations;
         }
+
+        [HttpGet("employees")]
+        public async Task<IEnumerable<UserReadViewModel>> GetEmployees()
+        {
+            var employees = await _service.GetEmployeesAsync();
+            var mappedEmployees = _userListMapper.Map(employees);
+            return mappedEmployees;
+        } 
 
         [HttpGet("{id:int:min(1)}")]
         public async Task<SpecializationViewModel> GetSpecializationById([FromRoute] int id)

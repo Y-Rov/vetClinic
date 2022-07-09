@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator.Parameters;
+using Core.ViewModels.ArticleViewModels;
 using Core.ViewModels.CommentViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,113 +11,37 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test;
 
-public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
+public class CommentsControllerTests : IClassFixture<CommentControllerFixture>, IDisposable
 {
     private readonly CommentControllerFixture _fixture;
+    private bool _disposed;
 
     public CommentsControllerTests(CommentControllerFixture fixture)
     {
         _fixture = fixture;
     }
-
-    private readonly Comment _comment = new Comment()
-    {
-        Id = 1,
-        ArticleId = 1,
-        AuthorId = 1,
-        Content = "hello",
-        CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-        Edited = false
-    };
-
-    private readonly ReadCommentViewModel _readViewModel = new ReadCommentViewModel()
-    {
-        Id = 1,
-        ArticleId = 1,
-        AuthorId = 1,
-        AuthorName = "Admin Admin",
-        Content = "hello",
-        CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-        Edited = false
-    };
-
-    private readonly IEnumerable<ReadCommentViewModel> _readViewModels = new List<ReadCommentViewModel>()
-    {
-        new ReadCommentViewModel()
-        {
-            Id = 1,
-            ArticleId = 1,
-            AuthorId = 1,
-            Content = "first hello",
-            AuthorName = "Admin Admin",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-            Edited = false
-        },
-        new ReadCommentViewModel()
-        {
-            Id = 2,
-            ArticleId = 1,
-            AuthorId = 1,
-            Content = "second hello",
-            AuthorName = "Admin Admin",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 20),
-            Edited = false
-        },
-        new ReadCommentViewModel()
-        {
-            Id = 1,
-            ArticleId = 2,
-            AuthorId = 1,
-            Content = "third hello",
-            AuthorName = "Admin Admin",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 30),
-            Edited = true
-        }
-    };
-
-    private readonly IEnumerable<Comment> _comments = new List<Comment>()
-    {
-        new Comment()
-        {
-            Id = 1,
-            ArticleId = 1,
-            AuthorId = 1,
-            Content = "first hello",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-            Edited = false
-        },
-        new Comment()
-        {
-            Id = 2,
-            ArticleId = 1,
-            AuthorId = 1,
-            Content = "second hello",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 20),
-            Edited = false
-        },
-        new Comment()
-        {
-            Id = 1,
-            ArticleId = 2,
-            AuthorId = 1,
-            Content = "third hello",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 30),
-            Edited = true
-        }
-    };
     
-    private readonly User _requestUser = new User()
+    public void Dispose()
     {
-        Id = 1,
-        FirstName = "Admin",
-        LastName = "Admin"
-    };
-    
-    private readonly UpdateCommentViewModel _updateCommentViewModel = new UpdateCommentViewModel()
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
     {
-        Id = 1,
-        Content = "hello"
-    };
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _fixture.MockCommentService.Verify();
+            _fixture.MockUserManager.ResetCalls();       
+        }
+
+        _disposed = true;
+    }
 
     [Fact]
     public async Task GetCommentById_whenIdIsCorrect_thenStatusCodeOkReturned()
@@ -124,16 +50,16 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockCommentService
             .Setup(service =>
                 service.GetByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(_comment);
+            .ReturnsAsync(_fixture.Comment);
         _fixture.MockReadMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<Comment>()))
-            .Returns(_readViewModel);
+            .Returns(_fixture.ExpectedReadViewModel);
         //Act
         var result = await _fixture.MockCommentsController.GetByIdAsync(1);
         //Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readViewModel);
+        Assert.Equal(result, _fixture.ExpectedReadViewModel);
     }
 
     [Fact]
@@ -147,7 +73,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockReadMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<Comment>()))
-            .Returns(_readViewModel);
+            .Returns(_fixture.ExpectedReadViewModel);
         //Act
         var result = _fixture.MockCommentsController.GetByIdAsync(1);
         //  Assert
@@ -161,20 +87,20 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllCommentsAsync())
-            .ReturnsAsync(_comments);
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
+            .ReturnsAsync(_fixture.Comments);
 
         _fixture.MockReadEnumMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<IEnumerable<Comment>>()))
-            .Returns(_readViewModels);
+            .Returns(_fixture.ExpectedReadViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAsync();
+        var result = await _fixture.MockCommentsController.GetAsync(_fixture.DefaultParameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readViewModels);
+        Assert.Equal(result, _fixture.ExpectedReadViewModels);
     }
 
     [Fact]
@@ -187,7 +113,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllCommentsAsync())
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
             .ReturnsAsync(emptyComments);
 
         _fixture.MockReadEnumMapper
@@ -196,7 +122,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
             .Returns(emptyCommentReadViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAsync();
+        var result = await _fixture.MockCommentsController.GetAsync(_fixture.DefaultParameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -209,20 +135,20 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Arrange
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllArticleCommentsAsync(It.IsAny<int>()))
-            .ReturnsAsync(_comments);
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
+            .ReturnsAsync(_fixture.Comments);
 
         _fixture.MockReadEnumMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<IEnumerable<Comment>>()))
-            .Returns(_readViewModels);
+            .Returns(_fixture.ExpectedReadViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAllArticleCommentsAsync(1);
+        var result = await _fixture.MockCommentsController.GetAsync(_fixture.ConcreteArticleParameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readViewModels);
+        Assert.Equal(result, _fixture.ExpectedReadViewModels);
     }
 
     [Fact]
@@ -235,7 +161,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         _fixture.MockCommentService
             .Setup(service =>
-                service.GetAllArticleCommentsAsync(It.IsAny<int>()))
+                service.GetAllCommentsAsync(It.IsAny<CommentsParameters>()))
             .ReturnsAsync(emptyPublishedComments);
 
         _fixture.MockReadEnumMapper
@@ -244,7 +170,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
             .Returns(emptyPublishedCommentReadViewModels);
 
         //  Act
-        var result = await _fixture.MockCommentsController.GetAllArticleCommentsAsync(1);
+        var result = await _fixture.MockCommentsController.GetAsync(_fixture.ConcreteArticleParameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -258,7 +184,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -284,7 +210,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         _fixture.MockCommentService.Verify();
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -294,7 +219,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -316,7 +241,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -326,7 +250,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -348,7 +272,6 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -364,12 +287,12 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
 
         _fixture.MockCreateMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<CreateCommentViewModel>()))
-            .Returns(_comment);
+            .Returns(_fixture.Comment);
 
         _fixture.MockCommentService
             .Setup(service =>
@@ -391,8 +314,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         //  Assert
         _fixture.MockCreateMapper.Verify(m => m.Map(createCommentViewModel), Times.Once);
         _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
-        _fixture.MockCommentService.Verify(s => s.CreateCommentAsync(_comment), Times.Once);
-        _fixture.MockUserManager.ResetCalls();
+        _fixture.MockCommentService.Verify(s => s.CreateCommentAsync(_fixture.Comment), Times.Once);
     }
     
     [Fact]
@@ -402,12 +324,12 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUpdateMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<UpdateCommentViewModel>()))
-            .Returns(_comment);
+            .Returns(_fixture.Comment);
         
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
 
         _fixture.MockCommentService
             .Setup(service =>
@@ -425,13 +347,11 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         };
         
         //  Act
-        await _fixture.MockCommentsController.UpdateAsync(_updateCommentViewModel);
+        await _fixture.MockCommentsController.UpdateAsync(_fixture.UpdateCommentViewModel);
 
         //  Assert
-        _fixture.MockUpdateMapper.Verify(m => m.Map(_updateCommentViewModel), Times.Once);
         _fixture.MockUserManager.Verify(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()), Times.Once);
-        _fixture.MockCommentService.Verify(s => s.UpdateCommentAsync(_comment, _requestUser), Times.Once);
-        _fixture.MockUserManager.ResetCalls();
+        _fixture.MockCommentService.Verify(s => s.UpdateCommentAsync(_fixture.Comment, _fixture.RequestUser), Times.Once);
     }
 
     [Fact]
@@ -441,7 +361,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -459,11 +379,10 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         };
        
         //  Act
-        var result =  _fixture.MockCommentsController.UpdateAsync(_updateCommentViewModel);
+        var result =  _fixture.MockCommentsController.UpdateAsync(_fixture.UpdateCommentViewModel);
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
     
     [Fact]
@@ -473,7 +392,7 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         _fixture.MockUserManager
             .Setup(um => um
                 .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(_requestUser).Verifiable();
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
         
         _fixture.MockCommentService
             .Setup(service =>
@@ -491,10 +410,9 @@ public class CommentsControllerTests : IClassFixture<CommentControllerFixture>
         };
        
         //  Act
-        var result =  _fixture.MockCommentsController.UpdateAsync(_updateCommentViewModel);
+        var result =  _fixture.MockCommentsController.UpdateAsync(_fixture.UpdateCommentViewModel);
 
         //  Assert
         await Assert.ThrowsAsync<BadRequestException>(() => result);
-        _fixture.MockUserManager.ResetCalls();
     }
 }

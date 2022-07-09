@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Paginator.Parameters;
 using Core.ViewModels.CommentViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -36,21 +37,13 @@ public class CommentsController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IEnumerable<ReadCommentViewModel>> GetAsync()
+    public async Task<IEnumerable<ReadCommentViewModel>> GetAsync([FromQuery] CommentsParameters parameters)
     {
-        var comments = await _commentService.GetAllCommentsAsync();
+        var comments = await _commentService.GetAllCommentsAsync(parameters);
         var viewModels = _readEnumMapper.Map(comments);
         return viewModels;
     }
-    
-    [HttpGet("article/{id:int:min(1)}")]
-    public async Task<IEnumerable<ReadCommentViewModel>> GetAllArticleCommentsAsync([FromRoute]int id)
-    {
-        var comments = await _commentService.GetAllArticleCommentsAsync(id);
-        var viewModels = _readEnumMapper.Map(comments);
-        return viewModels;
-    }
-    
+
     [HttpGet("{id:int:min(1)}")]
     public async Task<ReadCommentViewModel> GetByIdAsync([FromRoute]int id)
     {

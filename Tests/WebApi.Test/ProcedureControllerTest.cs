@@ -1,5 +1,10 @@
-﻿using Core.Entities;
+﻿using System.Configuration;
+using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
+using Core.ViewModels.CommentViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -17,158 +22,26 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
 
     private readonly ProcedureControllerFixture _fixture;
     
-    private readonly Procedure _procedure = new Procedure()
-    {
-        Id = 13,
-        Name = "leg surgery",
-        Description = "leg surgery description",
-        DurationInMinutes = 35,
-        ProcedureSpecializations = new List<ProcedureSpecialization>()
-        {
-            new ProcedureSpecialization() {ProcedureId = 13, SpecializationId = 17},
-            new ProcedureSpecialization() {ProcedureId = 13, SpecializationId = 18},
-        }
-    };
-    
-    private readonly ProcedureCreateViewModel _procedureCreateViewModel = new ()
-    {
-        Name = "leg surgery",
-        Description = "leg surgery description",
-        DurationInMinutes = 35,
-        SpecializationIds = new List<int>()
-        {
-            17, 18
-        }
-    };
-    
-    private readonly ProcedureUpdateViewModel _procedureUpdateViewModel = new ProcedureUpdateViewModel()
-    {
-        Id = 13,
-        Name = "leg surgery",
-        Description = "leg surgery description",
-        DurationInMinutes = 35,
-        SpecializationIds = new List<int>()
-        {
-            17, 18
-        }
-    };
-    
-    private readonly ProcedureReadViewModel _procedureReadViewModel = new ProcedureReadViewModel()
-    {
-        Id = 13,
-        Name = "leg surgery",
-        Description = "leg surgery description",
-        DurationInMinutes = 35,
-        Specializations = new List<SpecializationBaseViewModel>()
-        {
-            new SpecializationBaseViewModel() {Id = 17, Name = "Younger surgeon"},
-            new SpecializationBaseViewModel() {Id = 18, Name = "Master surgeon"},
-        }
-    };
-    
-    private readonly IEnumerable<Procedure> _procedures = new List<Procedure>()
-    {
-        new Procedure()
-        {
-            Id = 1,
-            Name = "haircut",
-            Description = "haircut description",
-            DurationInMinutes = 35
-        },
-        new Procedure()
-        {
-            Id = 2,
-            Name = "ears cleaning",
-            Description = "ears cleaning description",
-            DurationInMinutes = 35,
-            ProcedureSpecializations = new List<ProcedureSpecialization>()
-            {
-                new ProcedureSpecialization()
-                {
-                    ProcedureId = 2,
-                    SpecializationId = 15,
-                    Specialization = new Specialization() {Id = 15, Name = "Therapist"}
-                }
-            }
-        },
-        new Procedure()
-        {
-            Id = 3,
-            Name = "leg surgery",
-            Description = "leg surgery description",
-            DurationInMinutes = 35,
-            ProcedureSpecializations = new List<ProcedureSpecialization>()
-            {
-                new ProcedureSpecialization()
-                {
-                    ProcedureId = 3,
-                    SpecializationId = 17,
-                    Specialization = new Specialization() {Id = 17, Name = "Younger surgeon"}
-                },
-                new ProcedureSpecialization()
-                {
-                    ProcedureId = 3,
-                    SpecializationId = 18,
-                    Specialization = new Specialization() {Id = 18, Name = "Master surgeon"}
-                }
-            }
-        }
-    };
-    
-    private readonly IEnumerable<ProcedureReadViewModel> _procedureReadViewModels = new List<ProcedureReadViewModel>()
-    {
-        new ProcedureReadViewModel()
-        {
-            Id = 1,
-            Name = "haircut",
-            Description = "haircut description",
-            DurationInMinutes = 35
-        },
-        new ProcedureReadViewModel()
-        {
-            Id = 2,
-            Name = "ears cleaning",
-            Description = "ears cleaning description",
-            DurationInMinutes = 35,
-            Specializations = new List<SpecializationBaseViewModel>()
-            {
-                new SpecializationBaseViewModel() {Id = 15, Name = "Therapist"}
-            }
-        },
-        new ProcedureReadViewModel()
-        {
-            Id = 3,
-            Name = "leg surgery",
-            Description = "leg surgery description",
-            DurationInMinutes = 35,
-            Specializations = new List<SpecializationBaseViewModel>()
-            {
-                new SpecializationBaseViewModel() {Id = 17, Name = "Younger surgeon"},
-                new SpecializationBaseViewModel() {Id = 18, Name = "Master surgeon"}
-            }
-        }
-    };
-
     [Fact]
     public async Task GetProcedureById_whenIdIsCorrect_thenStatusCodeOkReturned()
     {
         //  Arrange
         _fixture.MockProcedureService
             .Setup(service =>
-                service.GetByIdAsync(It.Is<int>(x => x == _procedure.Id)))
-            .ReturnsAsync(_procedure);
+                service.GetByIdAsync(It.Is<int>(x => x == _fixture.Procedure.Id)))
+            .ReturnsAsync(_fixture.Procedure);
 
         _fixture.MockProcedureReadViewModelMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<Procedure>(x => x == _procedure)))
-            .Returns(_procedureReadViewModel);
+                mapper.Map(It.Is<Procedure>(x => x == _fixture.Procedure)))
+            .Returns(_fixture.ExpectedProcedureReadViewModel);
 
         //  Act
         var result = await _fixture.MockProcedureController.GetAsync(13);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _procedureReadViewModel);
+        Assert.Equal(result, _fixture.ExpectedProcedureReadViewModel);
     }
 
     [Fact]
@@ -184,8 +57,8 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
 
         _fixture.MockProcedureReadViewModelMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<Procedure>(p => p == _procedure)))
-            .Returns(_procedureReadViewModel);
+                mapper.Map(It.Is<Procedure>(p => p == _fixture.Procedure)))
+            .Returns(_fixture.ExpectedProcedureReadViewModel);
 
         //  Act
         var result =  _fixture.MockProcedureController.GetAsync(id);
@@ -201,46 +74,46 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         //  Arrange
         _fixture.MockProcedureService
             .Setup(service =>
-                service.GetAllProceduresAsync())
-            .ReturnsAsync(_procedures);
+                service.GetAllProceduresAsync(It.IsAny<ProcedureParameters>()))
+            .ReturnsAsync(_fixture.PagedProcedures);
 
-        _fixture.MockProcedureReadViewModelListMapper
+        _fixture.MockPagedListMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Procedure>>(p => p.Equals(_procedures))))
-            .Returns(_procedureReadViewModels);
+                mapper.Map(It.IsAny<PagedList<Procedure>>()))
+            .Returns(_fixture.PagedReadViewModel);
 
         //  Act
-        var result = await _fixture.MockProcedureController.GetAsync();
+        var result = await _fixture.MockProcedureController.GetAsync(new ProcedureParameters());
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _procedureReadViewModels);
+        Assert.Equal(result, _fixture.PagedReadViewModel);
     }
 
     [Fact]
     public async Task GetAll_whenProceduresListIsEmpty_thenStatusOkReturned()
     {
         //  Arrange
-        var emptyProcedures = new List<Procedure>();
+        var emptyPagedProcedures = new PagedList<Procedure>(new List<Procedure>(), 0, 0, 0);
 
-        var emptyProcedureReadViewModels = new List<ProcedureReadViewModel>();
+        var emptyPagedReadViewModel = new PagedReadViewModel<ProcedureReadViewModel>();
 
         _fixture.MockProcedureService
             .Setup(service =>
-                service.GetAllProceduresAsync())
-            .ReturnsAsync(emptyProcedures);
+                service.GetAllProceduresAsync(It.IsAny<ProcedureParameters>()))
+            .ReturnsAsync(emptyPagedProcedures);
 
-        _fixture.MockProcedureReadViewModelListMapper
+        _fixture.MockPagedListMapper
             .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Procedure>>(p => p.Equals(emptyProcedures))))
-            .Returns(emptyProcedureReadViewModels);
+                mapper.Map(It.IsAny<PagedList<Procedure>>()))
+            .Returns(emptyPagedReadViewModel);
 
         //  Act
-        var result = await _fixture.MockProcedureController.GetAsync();
+        var result = await _fixture.MockProcedureController.GetAsync(It.IsAny<ProcedureParameters>());
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, emptyProcedureReadViewModels);
+        Assert.Equal(result, emptyPagedReadViewModel);
     }
     
     [Fact]
@@ -250,7 +123,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockCreateProcedureMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<ProcedureCreateViewModel>()))
-            .Returns(_procedure);
+            .Returns(_fixture.Procedure);
 
         _fixture.MockProcedureService
             .Setup(service =>
@@ -260,7 +133,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //  Act
-        var result = _fixture.MockProcedureController.CreateAsync(_procedureCreateViewModel);
+        var result = _fixture.MockProcedureController.CreateAsync(_fixture.ProcedureCreateViewModel);
 
         //  Assert
         Assert.NotNull(result);
@@ -273,7 +146,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockCreateProcedureMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<ProcedureCreateViewModel>()))
-            .Returns(_procedure);
+            .Returns(_fixture.Procedure);
 
         _fixture.MockProcedureService
             .Setup(service =>
@@ -283,7 +156,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
             .Throws<NotFoundException>();
         
         //  Act
-        var result = _fixture.MockProcedureController.CreateAsync(_procedureCreateViewModel);
+        var result = _fixture.MockProcedureController.CreateAsync(_fixture.ProcedureCreateViewModel);
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -334,7 +207,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockUpdateProcedureMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<ProcedureUpdateViewModel>()))
-            .Returns(_procedure);
+            .Returns(_fixture.Procedure);
 
         _fixture.MockProcedureService
             .Setup(service =>
@@ -344,7 +217,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
 
         //  Act
-        await _fixture.MockProcedureController.UpdateAsync(_procedureUpdateViewModel);
+        await _fixture.MockProcedureController.UpdateAsync(_fixture.ProcedureUpdateViewModel);
 
         //  Assert
         _fixture.MockProcedureService.Verify();
@@ -357,7 +230,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockUpdateProcedureMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<ProcedureUpdateViewModel>()))
-            .Returns(_procedure);
+            .Returns(_fixture.Procedure);
 
         _fixture.MockProcedureService
             .Setup(service =>
@@ -367,7 +240,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
             .Throws<NotFoundException>();
 
         //  Act
-        var result =  _fixture.MockProcedureController.UpdateAsync(_procedureUpdateViewModel);
+        var result =  _fixture.MockProcedureController.UpdateAsync(_fixture.ProcedureUpdateViewModel);
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -380,7 +253,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
         _fixture.MockUpdateProcedureMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<ProcedureUpdateViewModel>()))
-            .Returns(_procedure);
+            .Returns(_fixture.Procedure);
 
         _fixture.MockProcedureService
             .Setup(service =>
@@ -390,7 +263,7 @@ public class ProcedureControllerTest : IClassFixture<ProcedureControllerFixture>
             .Throws<NotFoundException>();
         
         //  Act
-        var result =  _fixture.MockProcedureController.UpdateAsync(_procedureUpdateViewModel);
+        var result =  _fixture.MockProcedureController.UpdateAsync(_fixture.ProcedureUpdateViewModel);
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);

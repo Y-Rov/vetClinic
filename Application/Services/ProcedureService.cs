@@ -1,8 +1,11 @@
-﻿using Core.Entities;
+﻿using System.Linq.Expressions;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
@@ -108,11 +111,40 @@ public class ProcedureService : IProcedureService
         return procedure;
     }
 
-    public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
+    public async Task<PagedList<Procedure>> GetAllProceduresAsync(ProcedureParameters parameters)
     {
-        var procedures = await _procedureRepository.GetAsync(
+        var filterQuery = GetFilterQuery(parameters.FilterParam);
+        var orderByQuery = GetOrderByQuery(parameters.OrderByParam);
+
+        var procedures = await _procedureRepository.GetPaged(
+            parameters: parameters,
+            filter: filterQuery,
+            orderBy: orderByQuery,
             includeProperties: "ProcedureSpecializations.Specialization");
         _loggerManager.LogInfo("Found all procedures");
         return procedures;
     }
+    
+    private static Expression<Func<Procedure, bool>>? GetFilterQuery(string? filterParam)
+    {
+        Expression<Func<Procedure, bool>>? filterQuery = null;
+
+        if (filterParam is null) return filterQuery;
+        
+        var formattedFilter = filterParam.Trim().ToLower();
+
+        filterQuery = u => u.Name!.ToLower().Contains(formattedFilter)
+                           || u.Description!.ToLower().Contains(formattedFilter)
+                           || u.Cost.ToString().Contains(formattedFilter);
+
+        return filterQuery;
+    }
+
+    private static Func<IQueryable<Procedure>, IOrderedQueryable<Procedure>>? GetOrderByQuery(string? orderBy) => orderBy switch
+    {
+        "Cost" => query => query.OrderBy(procedure => procedure.Cost),
+        "Name" => query => query.OrderBy(procedure => procedure.Name),
+        "Description" => query => query.OrderBy(procedure => procedure.Description),
+        _ => null
+    };
 }

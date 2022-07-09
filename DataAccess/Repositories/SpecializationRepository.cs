@@ -67,47 +67,5 @@ namespace DataAccess.Repositories
 
             return specializations;
         }
-
-        public async Task UpdateProceduresAsync(int specializationId, IEnumerable<int> proceduresIds)
-        {
-            var current = await _procedureSpecializationRepository.GetAsync(
-                filter: relationship => relationship.SpecializationId == specializationId);
-
-            foreach (var relationship in current)
-                _procedureSpecializationRepository.Delete(relationship);
-
-            await _procedureSpecializationRepository.SaveChangesAsync();
-
-            foreach (var procedureId in proceduresIds)
-            {
-                await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
-                {
-                    ProcedureId = procedureId,
-                    SpecializationId = specializationId
-                });
-            }
-
-            await SaveChangesAsync();
-        }
-
-        public async Task UpdateUsersAsync(int specializationId, IEnumerable<int> userIds)
-        {
-            var related = await _usrerSpecializationRepository.GetAsync(
-                filter: relationship => relationship.SpecializationId == specializationId);
-
-            foreach (var relationship in related)
-                _usrerSpecializationRepository.Delete(relationship);
-
-            await _usrerSpecializationRepository.SaveChangesAsync();
-
-            foreach (var userId in userIds)
-                await _usrerSpecializationRepository.InsertAsync(new UserSpecialization
-                {
-                    UserId = userId,
-                    SpecializationId = specializationId
-                });
-
-            await SaveChangesAsync();
-        }
     }
 }
