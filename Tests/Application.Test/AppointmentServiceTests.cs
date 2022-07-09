@@ -441,15 +441,14 @@ namespace Application.Test
             //Arrange
             var procedureIds = new List<int>();
 
-         
-
-
             //Act
             var result = 
                 _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => result);
+            _appointmentServiceFixture
+                .MockAppointmentProcedureRepository.Verify(
+                repository => repository.InsertAsync(It.IsAny<AppointmentProcedure>()), Times.Never);
         }
 
 
@@ -459,22 +458,14 @@ namespace Application.Test
             //Arrange
             var userIds = new List<int>();
 
-            //_appointmentServiceFixture.MockAppointmentUserRepository.Setup(
-            //repo => repo.GetAsync
-            //    (
-            //It.IsAny<Expression<Func<AppointmentUser, bool>>>(),
-            //It.IsAny<Func<IQueryable<AppointmentUser>, IOrderedQueryable<AppointmentUser>>>(),
-            //It.IsAny<string>(),
-            //It.IsAny<bool>()))
-            //.ReturnsAsync(_appointmentServiceFixture._appointmentUser);
-
-
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService
                 .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => result);
+            _appointmentServiceFixture
+                .MockAppointmentUserRepository.Verify(
+                repository => repository.InsertAsync(It.IsAny<AppointmentUser>()), Times.Never);
         }
 
     }
