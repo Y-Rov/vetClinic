@@ -4,6 +4,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Paginator.Parameters;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
@@ -12,13 +13,16 @@ public class CommentService : ICommentService
 {
     private readonly ICommentRepository _commentRepository;
     private readonly ILoggerManager _loggerManager;
+    private readonly UserManager<User> _userManager;
 
     public CommentService(
         ICommentRepository commentRepository, 
-        ILoggerManager loggerManager)
+        ILoggerManager loggerManager, 
+        UserManager<User> userManager)
     {
         _commentRepository = commentRepository;
         _loggerManager = loggerManager;
+        _userManager = userManager;
     }
     
     public async Task CreateCommentAsync(Comment comment)
@@ -56,7 +60,8 @@ public class CommentService : ICommentService
     public async Task DeleteCommentAsync(int commentId, User requestUser)
     {
         var commentToRemove = await GetByIdAsync(commentId);
-        if (commentToRemove.AuthorId != requestUser.Id)
+        var userRole = (await _userManager.GetRolesAsync(requestUser)).First();
+        if (commentToRemove.AuthorId != requestUser.Id && userRole != "Admin")
         {
             var message =
                 $"Deleting comment with different author: user id: {requestUser.Id}, author id: {commentToRemove.AuthorId}, comment id: {commentToRemove.Id}";
