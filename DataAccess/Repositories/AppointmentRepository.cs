@@ -20,45 +20,45 @@ namespace DataAccess.Repositories
             _clinicContext = context;   
         }
 
-        public async Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds)
-        {
-            var existing = await _appointmentProcedureRepository.GetAsync(
-                filter: app => app.AppointmentId == appointmentId);
+        //public async Task UpdateAppointmentProceduresAsync(int appointmentId, IEnumerable<int> procedureIds)
+        //{
+        //    var existing = await _appointmentProcedureRepository.GetAsync(
+        //        filter: app => app.AppointmentId == appointmentId);
 
-            foreach (var app in existing) 
-            {
-                _appointmentProcedureRepository.Delete(app);
-            }
+        //    foreach (var app in existing) 
+        //    {
+        //        _appointmentProcedureRepository.Delete(app);
+        //    }
 
-            await _appointmentProcedureRepository.SaveChangesAsync();
+        //    await _appointmentProcedureRepository.SaveChangesAsync();
 
-            foreach (var procedureId in procedureIds) 
-            {
-                await _appointmentProcedureRepository.InsertAsync(new AppointmentProcedure()
-                {
-                    AppointmentId = appointmentId,
-                    ProcedureId = procedureId
-                });
-            }
-        }
+        //    foreach (var procedureId in procedureIds) 
+        //    {
+        //        await _appointmentProcedureRepository.InsertAsync(new AppointmentProcedure()
+        //        {
+        //            AppointmentId = appointmentId,
+        //            ProcedureId = procedureId
+        //        });
+        //    }
+        //}
 
-        public async Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds)
-        {
-            var existing = await _appointmentUserRepository.GetAsync(
-                filter: app => app.AppointmentId == appointmentId);
-            foreach (var app in existing)
-            {
-                _appointmentUserRepository.Delete(app);
-            }
-            await _appointmentUserRepository.SaveChangesAsync();
-            foreach (var userId in userIds)
-            {
-                await _appointmentUserRepository.InsertAsync(new AppointmentUser()
-                {
-                    AppointmentId = appointmentId,
-                    UserId = userId
-                });
-            }
-        }
+        //public async Task UpdateAppointmentUsersAsync(int appointmentId, IEnumerable<int> userIds)
+        //{
+        //    var existing = await _appointmentUserRepository.GetAsync(
+        //        filter: app => app.AppointmentId == appointmentId);
+        //    foreach (var app in existing)
+        //    {
+        //        _appointmentUserRepository.Delete(app);
+        //    }
+        //    await _appointmentUserRepository.SaveChangesAsync();
+        //    foreach (var userId in userIds)
+        //    {
+        //        await _appointmentUserRepository.InsertAsync(new AppointmentUser()
+        //        {
+        //            AppointmentId = appointmentId,
+        //            UserId = userId
+        //        });
+        //    }
+        //}
     }
 }
