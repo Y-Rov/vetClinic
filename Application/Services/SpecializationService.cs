@@ -75,7 +75,8 @@ namespace Application.Services
         {
             Specialization specialization = await GetSpecializationByIdAsync(id);
             _logger.LogInfo($"Specialization's procedures found");
-            return specialization.ProcedureSpecializations?.Select(ps => ps.Procedure);
+            return specialization.ProcedureSpecializations
+                .Select(ps => ps.Procedure);
         }
 
         public async Task<Specialization> AddSpecializationAsync(Specialization specialization)

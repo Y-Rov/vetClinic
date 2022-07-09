@@ -446,7 +446,7 @@ namespace Application.Test
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.IsType<List<Procedure>>(result);
+            Assert.IsType<List<Procedure>>(result.ToList());
         }
 
         [Fact]
@@ -467,6 +467,54 @@ namespace Application.Test
                 _fixture.MockService.GetSpecializationProcedures(id);
 
             await Assert.ThrowsAsync<NotFoundException>(() => result);
+        }
+
+        [Fact]
+        public async Task UpdateSpecializationProceduresAsync_whenSpecializationExists_thenExecute()
+        {
+            int specializationId = 2;
+            IEnumerable<int> proceduresIds = new List<int> { 6,4 };
+
+            _fixture.MockProcedureSpecializationRepository
+                .Setup(repository =>
+                    repository.GetAsync(
+                        It.IsAny<Expression<Func<ProcedureSpecialization, bool>>>(),
+                        It.IsAny<Func<IQueryable<ProcedureSpecialization>, IOrderedQueryable<ProcedureSpecialization>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(_fixture.Expected.ProcedureSpecializations.ToList());
+
+            await _fixture.MockService.UpdateSpecializationProceduresAsync(specializationId, proceduresIds);
+
+            _fixture.MockProcedureSpecializationRepository.Verify(
+                    repository => repository.SaveChangesAsync(), Times.Once);
+
+            _fixture.MockRepository.Verify(
+                repository => repository.SaveChangesAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateSpecializationUsersAsync_whenSpecializationExists_thenExecute()
+        {
+            int specializationId = 2;
+            IEnumerable<int> usersIds = new List<int> { 6, 4 };
+
+            _fixture.MockUserSpecializationRepository
+                .Setup(repository =>
+                    repository.GetAsync(
+                        It.IsAny<Expression<Func<UserSpecialization, bool>>>(),
+                        It.IsAny<Func<IQueryable<UserSpecialization>, IOrderedQueryable<UserSpecialization>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(_fixture.Expected.UserSpecializations.ToList());
+
+            await _fixture.MockService.UpdateSpecializationUsersAsync(specializationId, usersIds);
+
+            _fixture.MockUserSpecializationRepository.Verify(
+                    repository => repository.SaveChangesAsync(), Times.Once);
+
+            _fixture.MockRepository.Verify(
+                repository => repository.SaveChangesAsync(), Times.Once);
         }
     }
 }
