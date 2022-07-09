@@ -1,5 +1,4 @@
 ﻿using Core.Entities;
-using Core.Exceptions;
 using Core.Models.Finance;
 using Core.ViewModels.SalaryViewModel;
 using Moq;
@@ -237,7 +236,6 @@ namespace WebApi.Test
             //Assert
             _fixture.MockFinancialService.Verify();
         }
-
 
         [Fact]
         public async Task UpdateSalary_whenSalaryIsExist_thenStatusOkReturned()
