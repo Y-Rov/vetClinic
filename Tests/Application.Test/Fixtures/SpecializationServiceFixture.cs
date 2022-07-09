@@ -23,15 +23,20 @@ namespace Application.Test.Fixtures
             Expected = GenerateSpecialization();
             ExpectedSpecializations = GenerateSpecializations();
             TestParameters = GenerateParameters();
+            ExpectedEmployees = GenerateEmployees();
 
             MockRepository = fixture.Freeze<Mock<ISpecializationRepository>>();
             MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
+            MockProcedureSpecializationRepository = fixture.Freeze<Mock<IProcedureSpecializationRepository>>();
+            MockUserSpecializationRepository = fixture.Freeze<Mock<IUserSpecializationRepository>>();            
 
-            MockService = 
+            MockService =
                 new SpecializationService(
                     MockRepository.Object,
                     MockUserRepository.Object,
+                    MockProcedureSpecializationRepository.Object,
+                    MockUserSpecializationRepository.Object,
                     MockLoggerManager.Object);
         }
 
@@ -39,7 +44,10 @@ namespace Application.Test.Fixtures
         public Mock<ILoggerManager> MockLoggerManager { get; }
         public Mock<ISpecializationRepository> MockRepository { get; }
         public Mock<IUserRepository> MockUserRepository { get; }
+        public Mock<IProcedureSpecializationRepository> MockProcedureSpecializationRepository { get; }
+        public Mock<IUserSpecializationRepository> MockUserSpecializationRepository { get; }
         public Specialization Expected { get; set; }
+        public IEnumerable<User> ExpectedEmployees { get; set; }
         public PagedList<Specialization> ExpectedSpecializations { get; set; }
         public SpecializationParameters TestParameters { get; set; }
 
@@ -53,6 +61,11 @@ namespace Application.Test.Fixtures
                 {
                     new ProcedureSpecialization { ProcedureId = 1, SpecializationId = 2 },
                     new ProcedureSpecialization { ProcedureId = 0, SpecializationId = 2 }
+                },
+                UserSpecializations = new List<UserSpecialization>()
+                {
+                    new UserSpecialization { UserId = 1, SpecializationId = 2 },
+                    new UserSpecialization { UserId = 2, SpecializationId = 2 }
                 }
             };
 
@@ -82,6 +95,25 @@ namespace Application.Test.Fixtures
             };
 
             return parameters;
+        }
+
+        private IEnumerable<User> GenerateEmployees()
+        {
+            return new List<User>
+            {
+                new User
+                {
+                    FirstName = "Karen",
+                    LastName = "Errgghh",
+                    Email = "kk220@gmail.com"
+                },
+                new User
+                {
+                    FirstName = "Kujo",
+                    LastName = "Sasuw",
+                    Email = "gH220@gmail.com"
+                }
+            };
         }
     }
 }

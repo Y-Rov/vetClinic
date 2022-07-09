@@ -13,6 +13,9 @@ namespace Application.Services
     {
         readonly ISpecializationRepository _repository;
         readonly IUserRepository _userRepository;
+        readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
+        readonly IUserSpecializationRepository _userSpecializationRepository;
+
         readonly ILoggerManager _logger;
 
         bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
@@ -24,11 +27,15 @@ namespace Application.Services
         public SpecializationService(
             ISpecializationRepository repository,
             IUserRepository userRepository,
+            IProcedureSpecializationRepository procedureSpecializationRepository,
+            IUserSpecializationRepository usersSpecializationRepository,
             ILoggerManager logger)
         {
             _repository = repository;
             _userRepository = userRepository;
             _logger = logger;
+            _procedureSpecializationRepository = procedureSpecializationRepository;
+            _userSpecializationRepository = usersSpecializationRepository;
         }
 
         public async Task<PagedList<Specialization>> GetAllSpecializationsAsync(SpecializationParameters parameters)
@@ -49,7 +56,7 @@ namespace Application.Services
         public async Task<IEnumerable<User>> GetEmployeesAsync()
         {
             return await _userRepository.GetByRolesAsync(
-                roleIds: new List<int>{ 2,3});
+                roleIds: new List<int>{ 2, 3 });
         }
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
@@ -167,22 +174,44 @@ namespace Application.Services
             await UpdateSpecializationAsync(specializationId, specialization);
         }
 
-        public async Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> procedureIds)
+        public async Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> proceduresIds)
         {
-            try
+            var current = await _procedureSpecializationRepository.GetAsync(
+                filter: relationship => relationship.SpecializationId == specializationId);
+
+            foreach (var relationship in current)
+                _procedureSpecializationRepository.Delete(relationship);
+
+            await _procedureSpecializationRepository.SaveChangesAsync();
+
+            foreach (var procedureId in proceduresIds)
             {
-                await _repository.UpdateProceduresAsync(specializationId, procedureIds);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex);
+                await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
+                {
+                    ProcedureId = procedureId,
+                    SpecializationId = specializationId
+                });
             }
             await _repository.SaveChangesAsync();
         }
 
         public async Task UpdateSpecializationUsersAsync(int specializationId, IEnumerable<int> userIds)
         {
-            await _repository.UpdateUsersAsync(specializationId, userIds);
+            var related = await _userSpecializationRepository.GetAsync(
+                filter: relationship => relationship.SpecializationId == specializationId);
+
+            foreach (var relationship in related)
+                _userSpecializationRepository.Delete(relationship);
+
+            await _userSpecializationRepository.SaveChangesAsync();
+
+            foreach (var userId in userIds)
+                await _userSpecializationRepository.InsertAsync(new UserSpecialization
+                {
+                    UserId = userId,
+                    SpecializationId = specializationId
+                });
+
             await _repository.SaveChangesAsync();
         }
     }
