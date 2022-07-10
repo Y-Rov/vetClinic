@@ -18,129 +18,6 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
     }
     
     private readonly ProcedureServiceFixture _fixture;
-    
-    private static readonly List<Procedure> _procedures = new()
-    {
-        new Procedure()
-        {
-            Id = 1,
-            Name = "haircut",
-            Description = "haircut description",
-            DurationInMinutes = 35
-        },
-        new Procedure()
-        {
-            Id = 2,
-            Name = "ears cleaning",
-            Description = "ears cleaning description",
-            DurationInMinutes = 35,
-            ProcedureSpecializations = new List<ProcedureSpecialization>()
-            {
-                new ProcedureSpecialization()
-                {
-                    ProcedureId = 2,
-                    SpecializationId = 15,
-                    Specialization = new Specialization() {Id = 15, Name = "Therapist"}
-                }
-            }
-        },
-        new Procedure()
-        {
-            Id = 3,
-            Name = "leg surgery",
-            Description = "leg surgery description",
-            DurationInMinutes = 35,
-            ProcedureSpecializations = new List<ProcedureSpecialization>()
-            {
-                new ProcedureSpecialization()
-                {
-                    ProcedureId = 3,
-                    SpecializationId = 17,
-                    Specialization = new Specialization() {Id = 17, Name = "Younger surgeon"}
-                },
-                new ProcedureSpecialization()
-                {
-                    ProcedureId = 3,
-                    SpecializationId = 18,
-                    Specialization = new Specialization() {Id = 18, Name = "Master surgeon"}
-                }
-            }
-        }
-    };
-    
-    private readonly Procedure _procedure = new ()
-    {
-        Id = 18,
-        Name = "leg surgery",
-        Description = "leg surgery description",
-        DurationInMinutes = 35,
-        ProcedureSpecializations = new List<ProcedureSpecialization>()
-        {
-            new ProcedureSpecialization()
-            {
-                ProcedureId = 18,
-                SpecializationId = 17,
-                Specialization = new Specialization() {Id = 17, Name = "Younger surgeon"}
-            },
-            new ProcedureSpecialization()
-            {
-                ProcedureId = 18,
-                SpecializationId = 18,
-                Specialization = new Specialization() {Id = 18, Name = "Master surgeon"}
-            }
-        }
-    };
-    
-    private readonly Specialization _specialization = new()
-    {
-        Id = 1, 
-        Name = "Master surgeon"
-    };
-    
-    private readonly IEnumerable<int> _specializationIds = new List<int>()
-    {
-        1, 2, 5, 6
-    };
-    
-    private readonly IList<ProcedureSpecialization> _procedureSpecializations = new List<ProcedureSpecialization>()
-    {
-        new ProcedureSpecialization()
-        {
-            ProcedureId = 18,
-            SpecializationId = 1,
-            Specialization = new Specialization() {Id = 1, Name = "Younger surgeon"},
-
-        },
-        new ProcedureSpecialization()
-        {
-            ProcedureId = 18,
-            SpecializationId = 2,
-            Specialization = new Specialization() {Id = 2, Name = "Master surgeon"}
-        },
-        new ProcedureSpecialization()
-        {
-            ProcedureId = 18,
-            SpecializationId = 5,
-            Specialization = new Specialization() {Id = 5, Name = "Master surgeon"}
-        },
-        new ProcedureSpecialization()
-        {
-            ProcedureId = 18,
-            SpecializationId = 8,
-            Specialization = new Specialization() {Id = 8, Name = "Master surgeon"}
-        }
-    }; 
-
-    private readonly ProcedureParameters _parameters = new ProcedureParameters()
-    {
-        FilterParam = "hello",
-        OrderByParam = "Cost",
-        OrderByDirection = "desc",
-        PageNumber = 1,
-        PageSize = 5
-    };
-    
-    private readonly PagedList<Procedure> _pagedProcedures = new PagedList<Procedure>(_procedures, 3, 1, 5);
 
     [Fact]
     public async Task GetAllProceduresAsync_whenProceduresListIsNotEmpty_thanReturnProceduresList()
@@ -152,14 +29,14 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
                 It.IsAny<Func<IQueryable<Procedure>, IOrderedQueryable<Procedure>>>(),
                 It.IsAny<string>()
             ))
-            .ReturnsAsync(_pagedProcedures);
+            .ReturnsAsync(_fixture.PagedProcedures);
         
         //Act
-        var result = await _fixture.MockProcedureService.GetAllProceduresAsync(_parameters);
+        var result = await _fixture.MockProcedureService.GetAllProceduresAsync(_fixture.Parameters);
         
         //Assert
         Assert.NotEmpty(result);
-        Assert.Equal(_pagedProcedures, result);
+        Assert.Equal(_fixture.PagedProcedures, result);
     }
     
     [Fact]
@@ -178,7 +55,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .ReturnsAsync(emptyProcedures);
         
         //Act
-        var result = await _fixture.MockProcedureService.GetAllProceduresAsync(_parameters);
+        var result = await _fixture.MockProcedureService.GetAllProceduresAsync(_fixture.Parameters);
         
         //Assert
         Assert.NotNull(result);
@@ -191,16 +68,16 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
         //Arrange
         _fixture.MockProcedureRepository
             .Setup(repo => repo.GetById(
-                It.Is<int>(x => x == _procedure.Id), 
+                It.Is<int>(x => x == _fixture.ExpectedProcedure.Id), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_procedure);
+            .ReturnsAsync(_fixture.ExpectedProcedure);
         
         //Act
-        var result = await _fixture.MockProcedureService.GetByIdAsync(_procedure.Id);
+        var result = await _fixture.MockProcedureService.GetByIdAsync(_fixture.ExpectedProcedure.Id);
         
         //Assert
         Assert.NotNull(result);
-        Assert.Equal(_procedure, result);
+        Assert.Equal(_fixture.ExpectedProcedure, result);
     }
     
     [Fact]
@@ -226,7 +103,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
         //Arrange
         _fixture.MockSpecializationService
             .Setup(ss => ss.GetSpecializationByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(_specialization);
+            .ReturnsAsync(_fixture.Specialization);
         
         _fixture.MockProcedureRepository
             .Setup(repo => repo.InsertAsync(It.IsAny<Procedure>()))
@@ -237,7 +114,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result =  _fixture.MockProcedureService.CreateNewProcedureAsync(_procedure, _specializationIds);
+        var result =  _fixture.MockProcedureService.CreateNewProcedureAsync(_fixture.ExpectedProcedure, _fixture.SpecializationIds);
         
         //Assert
         Assert.NotNull(result);
@@ -260,7 +137,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result = _fixture.MockProcedureService.CreateNewProcedureAsync(_procedure, _specializationIds);
+        var result = _fixture.MockProcedureService.CreateNewProcedureAsync(_fixture.ExpectedProcedure, _fixture.SpecializationIds);
         
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -274,7 +151,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
 
         _fixture.MockSpecializationService
             .Setup(ss => ss.GetSpecializationByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(_specialization);
+            .ReturnsAsync(_fixture.Specialization);
         
         _fixture.MockProcedureRepository
             .Setup(repo => repo.InsertAsync(It.IsAny<Procedure>()))
@@ -285,7 +162,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result = _fixture.MockProcedureService.CreateNewProcedureAsync(_procedure, emptySpecializationIds);
+        var result = _fixture.MockProcedureService.CreateNewProcedureAsync(_fixture.ExpectedProcedure, emptySpecializationIds);
         
         //Assert
         Assert.NotNull(result);
@@ -309,7 +186,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
                 It.IsAny<Func<IQueryable<ProcedureSpecialization>, IOrderedQueryable<ProcedureSpecialization>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()))
-            .ReturnsAsync(_procedureSpecializations);
+            .ReturnsAsync(_fixture.ProcedureSpecializations);
         
         _fixture.MockProcedureSpecializationRepository
             .Setup(repo => repo.Delete(It.IsAny<ProcedureSpecialization>()))
@@ -334,7 +211,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             //.Throws<NotFoundException>();
         
         //Act
-        var result =  _fixture.MockProcedureService.UpdateProcedureAsync(_procedure, specializationIds);
+        var result =  _fixture.MockProcedureService.UpdateProcedureAsync(_fixture.ExpectedProcedure, specializationIds);
         
         //Assert
         Assert.NotNull(result);
@@ -355,7 +232,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
                 It.IsAny<Func<IQueryable<ProcedureSpecialization>, IOrderedQueryable<ProcedureSpecialization>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()))
-            .ReturnsAsync(_procedureSpecializations);
+            .ReturnsAsync(_fixture.ProcedureSpecializations);
         
         _fixture.MockProcedureSpecializationRepository
             .Setup(repo => repo.Delete(It.IsAny<ProcedureSpecialization>()))
@@ -378,7 +255,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //Act
-        var result = _fixture.MockProcedureService.UpdateProcedureAsync(_procedure, exclusiveSpecializationIds);
+        var result = _fixture.MockProcedureService.UpdateProcedureAsync(_fixture.ExpectedProcedure, exclusiveSpecializationIds);
         
         //Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -396,7 +273,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
                 It.IsAny<Func<IQueryable<ProcedureSpecialization>, IOrderedQueryable<ProcedureSpecialization>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()))
-            .ReturnsAsync(_procedureSpecializations);
+            .ReturnsAsync(_fixture.ProcedureSpecializations);
         
         _fixture.MockProcedureSpecializationRepository
             .Setup(repo => repo.Delete(It.IsAny<ProcedureSpecialization>()))
@@ -420,7 +297,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Verifiable();
         
         //Act
-        var result = _fixture.MockProcedureService.UpdateProcedureAsync(_procedure, emptySpecializationIds);
+        var result = _fixture.MockProcedureService.UpdateProcedureAsync(_fixture.ExpectedProcedure, emptySpecializationIds);
         
         //Assert
         Assert.NotNull(result);
@@ -463,7 +340,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Verifiable();
         
         //Act
-        var result = _fixture.MockProcedureService.UpdateProcedureAsync(_procedure, _specializationIds);
+        var result = _fixture.MockProcedureService.UpdateProcedureAsync(_fixture.ExpectedProcedure, _fixture.SpecializationIds);
         
         //Assert
         Assert.NotNull(result);
@@ -477,7 +354,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Setup(repo => repo.GetById(
                 It.IsAny<int>(), 
                 It.IsAny<string>()))
-            .ReturnsAsync(_procedure);
+            .ReturnsAsync(_fixture.ExpectedProcedure);
         
         _fixture.MockProcedureRepository
             .Setup(repo => repo.Delete(
@@ -490,7 +367,7 @@ public class ProcedureServiceTests : IClassFixture<ProcedureServiceFixture>
             .Verifiable();
         
         //Act
-        var result = _fixture.MockProcedureService.DeleteProcedureAsync(_procedure.Id);
+        var result = _fixture.MockProcedureService.DeleteProcedureAsync(_fixture.ExpectedProcedure.Id);
         
         //Assert
         Assert.NotNull(result);
