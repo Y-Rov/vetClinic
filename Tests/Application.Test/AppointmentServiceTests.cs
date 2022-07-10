@@ -6,14 +6,38 @@ using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class AppointmentServiceTests : IClassFixture<AppointmentServiceFixture>
+    public class AppointmentServiceTests : IClassFixture<AppointmentServiceFixture>, IDisposable
     {
+        private readonly AppointmentServiceFixture _appointmentServiceFixture;
+        private bool _disposed;
+
         public AppointmentServiceTests(AppointmentServiceFixture appointmentServiceFixture)
         {
             _appointmentServiceFixture = appointmentServiceFixture;
         }
 
-        private readonly AppointmentServiceFixture _appointmentServiceFixture;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _appointmentServiceFixture.MockAppointmentRepository.ResetCalls();
+                _appointmentServiceFixture.MockAppointmentProcedureRepository.ResetCalls();
+                _appointmentServiceFixture.MockAppointmentUserRepository.ResetCalls();
+            }
+
+            _disposed = true;
+        }
 
         [Fact]
         public async Task GetAppointmentsAsync_Appointments_ReturnsIEnumerableOfAppointment()
@@ -284,7 +308,7 @@ namespace Application.Test
                 It.IsAny<Func<IQueryable<AppointmentProcedure>, IOrderedQueryable<AppointmentProcedure>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()))
-                .ReturnsAsync(_appointmentServiceFixture._appointmentProcedure);
+                .ReturnsAsync(_appointmentServiceFixture.AppointmentProcedures);
 
             // Act
             await _appointmentServiceFixture.MockAppointmentEntityService
@@ -325,6 +349,31 @@ namespace Application.Test
                 .Verify(repository => repository.SaveChangesAsync(), Times.Never);
         }
 
+        [Fact]
+        public async Task UpdateAppointmentUsersAsync_WhenProceduresExist_ThanExecute()
+        {
+            //Arrange
+            var userIds = new List<int>()
+            {
+                1, 2
+            };
+
+            _appointmentServiceFixture.MockAppointmentUserRepository.Setup(
+                    repo => repo.GetAsync(
+                        It.IsAny<Expression<Func<AppointmentUser, bool>>>(),
+                        It.IsAny<Func<IQueryable<AppointmentUser>, IOrderedQueryable<AppointmentUser>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(_appointmentServiceFixture.AppointmentUsers);
+
+            // Act
+            await _appointmentServiceFixture.MockAppointmentEntityService
+                .UpdateAppointmentUsersAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
+
+            // Assert
+            _appointmentServiceFixture.MockAppointmentRepository.Verify(
+                repo => repo.SaveChangesAsync(), Times.Once);
+        }
     }
 }
 

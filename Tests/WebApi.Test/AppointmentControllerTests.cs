@@ -7,14 +7,36 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
 {
-    public class AppointmentControllerTests : IClassFixture<AppointmentControllerFixture>
+    public class AppointmentControllerTests : IClassFixture<AppointmentControllerFixture>, IDisposable
     {
+        private readonly AppointmentControllerFixture _fixture;
+        private bool _disposed;
+
         public AppointmentControllerTests(AppointmentControllerFixture fixture)
         {
             _fixture = fixture;
         }
 
-        private readonly AppointmentControllerFixture _fixture;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockAppointmentService.ResetCalls();
+            }
+
+            _disposed = true;
+        }
 
         [Fact]
         public async Task GetAppointmentById_whenIdIsCorrect_thenStatusCodeOkReturned()

@@ -121,16 +121,16 @@ namespace Application.Test.Fixtures
             1, 2, 5, 6
         };
 
-        public readonly IList<AppointmentProcedure> _appointmentProcedure = new List<AppointmentProcedure>()
+        public readonly IList<AppointmentProcedure> AppointmentProcedures = new List<AppointmentProcedure>()
         {
-              new AppointmentProcedure
+            new AppointmentProcedure
             {
                 AppointmentId = 1,
                 ProcedureId = 1
             }
         };
 
-        public readonly IList<AppointmentUser> _appointmentUser = new List<AppointmentUser>() 
+        public readonly IList<AppointmentUser> AppointmentUsers = new List<AppointmentUser>() 
         {
             new AppointmentUser
             {
