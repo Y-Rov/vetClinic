@@ -26,11 +26,15 @@ namespace Application.Test.Fixtures
             MockUserEntityService = fixture.Freeze<Mock<IUserService>>();
             MockAppointmentRepository = fixture.Freeze<Mock<IAppointmentRepository>>();
             MockLogger = fixture.Freeze<Mock<ILoggerManager>>();
+            MockAppointmentUserRepository = fixture.Freeze<Mock<IAppointmentUserRepository>>();
+            MockAppointmentProcedureRepository = fixture.Freeze<Mock<IAppointmentProcedureRepository>>();
 
             MockAppointmentEntityService = new AppointmentService(
                 MockAppointmentRepository.Object,
                 MockProcedureEntityService.Object,
                 MockUserEntityService.Object,
+                MockAppointmentUserRepository.Object,
+                MockAppointmentProcedureRepository.Object,
                 MockLogger.Object);
 
 
@@ -40,6 +44,8 @@ namespace Application.Test.Fixtures
         public Mock<IProcedureService> MockProcedureEntityService { get; }
         public Mock<IUserService> MockUserEntityService { get; }
         public Mock<IAppointmentRepository> MockAppointmentRepository { get; }
+        public Mock<IAppointmentUserRepository> MockAppointmentUserRepository { get; }
+        public Mock<IAppointmentProcedureRepository> MockAppointmentProcedureRepository { get; }
         public Mock<ILoggerManager> MockLogger { get; }
 
         public Appointment MockAppointment { get; set; }
@@ -106,14 +112,57 @@ namespace Application.Test.Fixtures
         }
 
         private readonly IEnumerable<int> _procedureIds = new List<int>()
-    {
+        {
         1, 2, 5, 6
-    };
+        };
 
         private readonly IEnumerable<int> _userIds = new List<int>()
-    {
-        1, 2, 5, 6
-    };
+        {
+            1, 2, 5, 6
+        };
+
+        public readonly IList<AppointmentProcedure> AppointmentProcedures = new List<AppointmentProcedure>()
+        {
+            new AppointmentProcedure
+            {
+                AppointmentId = 1,
+                ProcedureId = 1
+            }
+        };
+
+        public readonly IList<AppointmentUser> AppointmentUsers = new List<AppointmentUser>() 
+        {
+            new AppointmentUser
+            {
+                AppointmentId = 1,
+                UserId = 1 
+            }
+        };
+
+        public readonly Appointment existingAppointment = new Appointment
+        {
+            Date = DateTime.Now,
+            MeetHasOccureding = true,
+            Disease = "Broke a tail",
+            AnimalId = 3,
+            AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+            AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+
+        };
 
         private IList<Appointment> GenerateListAppointments()
         {

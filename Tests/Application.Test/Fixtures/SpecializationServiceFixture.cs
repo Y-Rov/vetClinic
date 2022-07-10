@@ -12,7 +12,6 @@ namespace Application.Test.Fixtures
 {
     public class SpecializationServiceFixture
     {
-
         public SpecializationServiceFixture()
         {
             Expected = GenerateSpecialization();
@@ -24,6 +23,7 @@ namespace Application.Test.Fixtures
             ExpectedSpecializations = GenerateSpecializations();
             TestParameters = GenerateParameters();
             ExpectedEmployees = GenerateEmployees();
+            TestIds = GenerateIds();
 
             MockRepository = fixture.Freeze<Mock<ISpecializationRepository>>();
             MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
@@ -50,6 +50,7 @@ namespace Application.Test.Fixtures
         public IEnumerable<User> ExpectedEmployees { get; set; }
         public PagedList<Specialization> ExpectedSpecializations { get; set; }
         public SpecializationParameters TestParameters { get; set; }
+        public IEnumerable<int> TestIds { get; set; }
 
         private Specialization GenerateSpecialization()
         {
@@ -114,6 +115,11 @@ namespace Application.Test.Fixtures
                     Email = "gH220@gmail.com"
                 }
             };
+        }
+
+        private IEnumerable<int> GenerateIds()
+        {
+            return new List<int> { 6, 4 };
         }
     }
 }

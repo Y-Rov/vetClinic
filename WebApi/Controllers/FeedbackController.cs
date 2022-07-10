@@ -12,20 +12,17 @@ namespace WebApi.Controllers
     [ApiController]
     public class FeedbackController : ControllerBase
     {
-        readonly IFeedbackService _service;
+        private readonly IFeedbackService _service;
 
-        readonly IViewModelMapper<Feedback, FeedbackReadViewModel> _feedbackMapper;
-        readonly IViewModelMapper<FeedbackCreateViewModel, Feedback> _createFeedbackMapper;
-        readonly IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> _listMapper;
+        private readonly IViewModelMapper<FeedbackCreateViewModel, Feedback> _createFeedbackMapper;
+        private readonly IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> _listMapper;
 
         public FeedbackController(
             IFeedbackService service, 
-            IViewModelMapper<Feedback, FeedbackReadViewModel> feedbackMapper, 
             IViewModelMapper<FeedbackCreateViewModel, Feedback> createFeedbackMapper,
             IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> listMapper)
         {
             _service = service;
-            _feedbackMapper = feedbackMapper;
             _createFeedbackMapper = createFeedbackMapper;
             _listMapper = listMapper;
         }
@@ -45,14 +42,14 @@ namespace WebApi.Controllers
 
         [Authorize(Roles = "Client")]
         [HttpPost]
-        public async Task AddFeedback(FeedbackCreateViewModel feedback)
+        public async Task<IActionResult> AddFeedback(FeedbackCreateViewModel feedback)
         {
             var mappedFeedback = 
                 _createFeedbackMapper.Map(feedback);
 
             await _service.AddFeedback(mappedFeedback);
 
-            Ok();
+            return Ok();
         }
     }
 }

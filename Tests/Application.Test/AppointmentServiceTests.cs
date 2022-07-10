@@ -1,50 +1,71 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class AppointmentServiceTests : IClassFixture<AppointmentServiceFixture>
+    public class AppointmentServiceTests : IClassFixture<AppointmentServiceFixture>, IDisposable
     {
-        public AppointmentServiceTests(AppointmentServiceFixture appointmentServiceFixture)
+        private readonly AppointmentServiceFixture _fixture;
+        private bool _disposed;
+
+        public AppointmentServiceTests(AppointmentServiceFixture fixture)
         {
-            _appointmentServiceFixture = appointmentServiceFixture;
+            _fixture = fixture;
         }
 
-        private readonly AppointmentServiceFixture _appointmentServiceFixture;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
 
+            if (disposing)
+            {
+                _fixture.MockAppointmentRepository.ResetCalls();
+                _fixture.MockAppointmentProcedureRepository.ResetCalls();
+                _fixture.MockAppointmentUserRepository.ResetCalls();
+            }
+
+            _disposed = true;
+        }
 
         [Fact]
         public async Task GetAppointmentsAsync_Appointments_ReturnsIEnumerableOfAppointment()
         {
             // Arrange
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(r => r.GetAsync(
                     It.IsAny<Expression<Func<Appointment, bool>>>(),
                     It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockListAppointments);
+                .ReturnsAsync(_fixture.MockListAppointments);
 
             // Act
-            var result = await _appointmentServiceFixture.MockAppointmentEntityService.GetAsync();
+            var result = await _fixture.MockAppointmentEntityService.GetAsync();
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_appointmentServiceFixture.MockListAppointments, result);
+            Assert.Equal(_fixture.MockListAppointments, result);
         }
 
         [Fact]
-        public async Task GetAppointmentsAsync_Appointments_Throw()
+        public async Task GetAppointmentsAsync_whenAppointmentsExist_thenReturn()
         {
             List<Appointment> emptyAppointments = new List<Appointment>();
 
             // Arrange
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(r => r.GetAsync(
                     It.IsAny<Expression<Func<Appointment, bool>>>(),
                     It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
@@ -53,74 +74,48 @@ namespace Application.Test
                 .ReturnsAsync(emptyAppointments);
 
             // Act
-            var result = await _appointmentServiceFixture.MockAppointmentEntityService.GetAsync();
+            var result = await _fixture.MockAppointmentEntityService.GetAsync();
 
             // Assert
             Assert.Empty(result);
         }
 
         [Fact]
-        public async Task GetAllAppointmentsAsync_whenAppointmentsListIsEmpty_thanReturnEmptyAppointmentsList()
-        {
-            //Arrange
-            var emptyAppointments = new List<Appointment>();
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(r => r.GetAsync(
-                    It.IsAny<Expression<Func<Appointment, bool>>>(),
-                    It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
-                .ReturnsAsync(emptyAppointments);
-
-            //Act
-            var result = await _appointmentServiceFixture.MockAppointmentEntityService.GetAsync();
-
-            //Assert
-            Assert.NotNull(result);
-            Assert.Equal(emptyAppointments, result);
-        }
-
-
-
-        [Fact]
         public async Task GetByIdAsync_Appointment_ReturnsOkObjectResult()
         {
             //Arrange
             var id = 1;
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.GetById(
                     It.IsAny<int>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockAppointment);
+                .ReturnsAsync(_fixture.MockAppointment);
 
             //Act
-            var result = await _appointmentServiceFixture.MockAppointmentEntityService
+            var result = await _fixture.MockAppointmentEntityService
                 .GetAsync(id);
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal(_appointmentServiceFixture.MockAppointment, result);
+            Assert.Equal(_fixture.MockAppointment, result);
         }
-
 
         [Fact]
         public async Task GetByIdAsync_whenAppointmentDoesNotExist_thanThrowNotFound()
         {
             //Arrange
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.GetById(
                     It.IsAny<int>(),
                     It.IsAny<string>()))
                 .ReturnsAsync(() => null);
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.GetAsync(10);
+            var result = _fixture.MockAppointmentEntityService.GetAsync(10);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
 
         [Fact]
         public async Task CreateAsync_whenNormal_thanSuccessResult()
@@ -129,26 +124,24 @@ namespace Application.Test
             var ids = new List<int> { 1, 2, 3, 4 };
             var animalId = 1;
 
-            _appointmentServiceFixture.MockProcedureEntityService
+            _fixture.MockProcedureEntityService
                 .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
+                .ReturnsAsync(_fixture.MockProcedure);
 
-
-            _appointmentServiceFixture.MockUserEntityService
+            _fixture.MockUserEntityService
                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
-               .ReturnsAsync(_appointmentServiceFixture.MockUser);
+               .ReturnsAsync(_fixture.MockUser);
 
             // Act
-            await _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(
-                _appointmentServiceFixture.MockAppointment,
+            await _fixture.MockAppointmentEntityService.CreateAsync(
+                _fixture.MockAppointment,
                 ids,
                 ids,
                 animalId);
 
             // Assert
-            _appointmentServiceFixture.MockAppointmentRepository.Verify(x => x.InsertAsync(_appointmentServiceFixture.MockAppointment), Times.Once);
+            _fixture.MockAppointmentRepository.Verify(x => x.InsertAsync(_fixture.MockAppointment), Times.Once);
         }
-
 
         [Fact]
         public async Task CreateAsync_whenProcedureListIsEmpty_thanSuccess()
@@ -158,21 +151,22 @@ namespace Application.Test
             var ids = new List<int> { 1, 2, 3, 4 };
             var animalId = 1;
 
-            _appointmentServiceFixture.MockProcedureEntityService
+            _fixture.MockProcedureEntityService
                 .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
+                .ReturnsAsync(_fixture.MockProcedure);
 
-            _appointmentServiceFixture.MockUserEntityService
+            _fixture.MockUserEntityService
                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
-               .ReturnsAsync(_appointmentServiceFixture.MockUser);
+               .ReturnsAsync(_fixture.MockUser);
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(_appointmentServiceFixture.MockAppointment,
+            var result =  _fixture.MockAppointmentEntityService.CreateAsync(_fixture.MockAppointment,
                 emptyprocedureIds, ids, animalId);
+            await result;
+
             //Assert
             Assert.NotNull(result);
         }
-
 
         [Fact]
         public async Task CreateAsync_whenUserListIsEmpty_thanSuccess()
@@ -182,17 +176,18 @@ namespace Application.Test
             var ids = new List<int> { 1, 2, 3, 4 };
             var animalId = 1;
 
-            _appointmentServiceFixture.MockProcedureEntityService
+            _fixture.MockProcedureEntityService
                 .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
+                .ReturnsAsync(_fixture.MockProcedure);
 
-            _appointmentServiceFixture.MockUserEntityService
+            _fixture.MockUserEntityService
                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
-               .ReturnsAsync(_appointmentServiceFixture.MockUser);
+               .ReturnsAsync(_fixture.MockUser);
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(_appointmentServiceFixture.MockAppointment,
+            var result = _fixture.MockAppointmentEntityService.CreateAsync(_fixture.MockAppointment,
                 ids, emptyUserIds, animalId);
+            await result;
 
             // Assert
             Assert.NotNull(result);
@@ -202,340 +197,183 @@ namespace Application.Test
         public async Task DeleteAsync_whenAppointmentExist_thanSuccess()
         {
             //Arrange
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.GetById(
                     It.IsAny<int>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(_appointmentServiceFixture.MockAppointment);
+                .ReturnsAsync(_fixture.MockAppointment);
 
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.Delete(
                     It.IsAny<Appointment>()))
                 .Verifiable();
 
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.SaveChangesAsync())
                 .Returns(Task.FromResult<object?>(null))
                 .Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.DeleteAsync(_appointmentServiceFixture.MockAppointment.Id);
+            var result = _fixture.MockAppointmentEntityService.DeleteAsync(_fixture.MockAppointment.Id);
+            await result;
 
             //Assert
             Assert.NotNull(result);
         }
-
 
         [Fact]
         public async Task DeleteAsync_whenAppointmentDoesNotExist_thanThrowNotFound()
         {
             //Arrange
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.GetById(
                     It.IsAny<int>(),
                     It.IsAny<string>()))
                 .ReturnsAsync(() => null);
 
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.Delete(
                     It.IsAny<Appointment>()))
                 .Verifiable();
 
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.SaveChangesAsync())
                 .Returns(Task.FromResult<object?>(null))
                 .Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.DeleteAsync(17);
+            var result = _fixture.MockAppointmentEntityService.DeleteAsync(17);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
 
         [Fact]
         public async Task UpdateAsync_whenNormal_thanSuccess()
         {
             //Arrange
-
-            var appointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
-            var existingAppointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a tail",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-
-            };
-
-
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
                         It.IsAny<string>()))
-                    .ReturnsAsync(existingAppointment);
+                    .ReturnsAsync(_fixture.existingAppointment);
 
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
             .Setup(repo => repo.Update(It.IsAny<Appointment>()))
             .Verifiable();
 
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                 .Setup(repo => repo.SaveChangesAsync())
                 .Returns(Task.FromResult<object?>(null))
                 .Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(appointment);
+            var result = _fixture.MockAppointmentEntityService.UpdateAsync(_fixture.MockAppointment);
+            await result;   
 
             //Assert
             Assert.NotNull(result);
         }
 
-
-
         [Fact]
         public async Task UpdateAsync_whenSomeAppointmentDontExist_thanThrowNotFound()
         {
             //Arrange
-
-            var appointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
-            var existingAppointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a tail",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-
-            };
-
-            _appointmentServiceFixture.MockAppointmentRepository
+            _fixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
                         It.IsAny<string>()))
-                    .ThrowsAsync(new DbUpdateException());
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null))
-                .Verifiable();
+               .ReturnsAsync(() => null);
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(appointment);
-
-            //Assert
-            await Assert.ThrowsAsync<DbUpdateException>(()=>result);
-        }
-
-        [Fact]
-        public async Task UpdateAsync_whenSomeProcedureDontExist_thanThrowNotFound()
-        {
-            var appointment = new Appointment
-            {
-                Id = 1,
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
-            //Arrange
-            var procedureIds = new List<int>()
-        {
-            1, 2, 5
-        };
-
-
-            _appointmentServiceFixture.MockAppointmentRepository.Setup
-                (repo => repo.UpdateAppointmentProceduresAsync(
-                    It.Is<int>(appointmentId => appointmentId == appointment.Id),
-                    It.Is<IEnumerable<int>>(procedures => procedures == procedureIds)))
-                .Throws<InvalidOperationException>();
-            
-            //Act
-            var result =  _appointmentServiceFixture.MockAppointmentEntityService
-                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
+            var result = _fixture.MockAppointmentEntityService.UpdateAsync(_fixture.MockAppointment);
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
 
+        [Fact]
+        public async Task UpdateProceduresAsync_whenProceduresExist_thanExecute()
+        {
+            //Arrange
+            var procedureIds = new List<int>()
+            {
+                1, 2
+            };
+
+           _fixture.MockAppointmentProcedureRepository.Setup(
+                repo => repo.GetAsync
+                    (
+                It.IsAny<Expression<Func<AppointmentProcedure, bool>>>(),
+                It.IsAny<Func<IQueryable<AppointmentProcedure>, IOrderedQueryable<AppointmentProcedure>>>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>()))
+                .ReturnsAsync(_fixture.AppointmentProcedures);
+
+            // Act
+            await _fixture.MockAppointmentEntityService
+                .UpdateAppointmentProceduresAsync(_fixture.MockAppointment.Id, procedureIds);
+
+            // Assert
+            _fixture.MockAppointmentRepository.Verify(
+                repo => repo.SaveChangesAsync(), Times.Once);
+        }
 
 
         [Fact]
-        public async Task UpdateAsync_whenSomeUserDontExist_thanThrowNotFound()
+        public async Task UpdateAppointmentProceduresAsync_WhenSomeProcedureListEmpty_ThenUpdateIsCanceled()
         {
-            var appointment = new Appointment
-            {
-                Id = 1,
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
+            //Act
+            await _fixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_fixture.MockAppointment.Id, new List<int>());
 
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
+            //Assert
+            _fixture.MockAppointmentProcedureRepository
+                .Verify(repository => repository.InsertAsync(It.IsAny<AppointmentProcedure>()), Times.Never);
+            _fixture.MockAppointmentProcedureRepository
+                .Verify(repository => repository.SaveChangesAsync(), Times.Never);
+        }
 
+
+        [Fact]
+        public async Task UpdateAsync_WhenSomeUserListEmpty_ThenUpdateIsCanceled()
+        {
+            //Act
+            await _fixture.MockAppointmentEntityService
+                .UpdateAppointmentProceduresAsync(_fixture.MockAppointment.Id, new List<int>());
+
+            //Assert
+            _fixture.MockAppointmentUserRepository
+                .Verify(repository => repository.InsertAsync(It.IsAny<AppointmentUser>()), Times.Never);
+
+            _fixture.MockAppointmentUserRepository
+                .Verify(repository => repository.SaveChangesAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateAppointmentUsersAsync_WhenProceduresExist_ThanExecute()
+        {
             //Arrange
             var userIds = new List<int>()
             {
-                1, 2, 5
+                1, 2
             };
 
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repository => repository.UpdateAppointmentUsersAsync(
-                    It.Is<int>(id => id == appointment.Id),
-                    It.Is<List<int>>(usersId => usersId == userIds)))
-                .Throws<InvalidOperationException>();
+            _fixture.MockAppointmentUserRepository.Setup(
+                    repo => repo.GetAsync(
+                        It.IsAny<Expression<Func<AppointmentUser, bool>>>(),
+                        It.IsAny<Func<IQueryable<AppointmentUser>, IOrderedQueryable<AppointmentUser>>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>()))
+                .ReturnsAsync(_fixture.AppointmentUsers);
 
-            //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.
-                UpdateAppointmentUsersAsync(appointment.Id, userIds);
+            // Act
+            await _fixture.MockAppointmentEntityService
+                .UpdateAppointmentUsersAsync(_fixture.MockAppointment.Id, userIds);
 
-            //Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => result);
+            // Assert
+            _fixture.MockAppointmentRepository.Verify(
+                repo => repo.SaveChangesAsync(), Times.Once);
         }
-
-
-        [Fact]
-        public async Task UpdateAppointmentProceduresAsync_whenSomeProcedureListEmpty_thenThrowException()
-        {
-            int appointmentId = 1;
-
-            //Arrange
-            var procedureIds = new List<int>();
-
-            //Act
-            var result = 
-                _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
-
-            //Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => result);
-        }
-
-
-        [Fact]
-        public async Task UpdateAsync_whenSomeUserListEmpty()
-        {
-            //Arrange
-            var userIds = new List<int>();
-
-            //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService
-                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
-
-            //Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => result);
-        }
-
     }
 }
 

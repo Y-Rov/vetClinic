@@ -7,15 +7,36 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
 {
-    public class AppointmentControllerTests : IClassFixture<AppointmentControllerFixture>
+    public class AppointmentControllerTests : IClassFixture<AppointmentControllerFixture>, IDisposable
     {
+        private readonly AppointmentControllerFixture _fixture;
+        private bool _disposed;
+
         public AppointmentControllerTests(AppointmentControllerFixture fixture)
         {
             _fixture = fixture;
         }
 
-        private readonly AppointmentControllerFixture _fixture;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockAppointmentService.ResetCalls();
+            }
+
+            _disposed = true;
+        }
 
         [Fact]
         public async Task GetAppointmentById_whenIdIsCorrect_thenStatusCodeOkReturned()
@@ -62,7 +83,6 @@ namespace WebApi.Test
             Assert.NotNull(result);
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
 
         [Fact]
         public async Task GetAll_whenAppointmentsListIsNotEmpty_thenStatusOkReturned()
@@ -129,12 +149,13 @@ namespace WebApi.Test
                         It.IsAny<IEnumerable<int>>(),
                         It.IsAny<int>())
                         )
-
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
 
             //  Act
             var result = _fixture.MockAppointmentController.PostAsync(_fixture.MockAppointmentCreateViewModel);
 
+            await result;
             //  Assert
             Assert.NotNull(result);
         }
@@ -169,42 +190,10 @@ namespace WebApi.Test
         public async Task Create_whenViewModelProcedureListIsEmpty_thenStatusOkReturned()
         {
             //  Arrange
-            var appointmentCreateViewModelWithoutProcedure = new AppointmentCreateViewModel()
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3
-            };
-
-            var appointmentWithoutProcedure = new Appointment()
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
             _fixture.MockCreateAppointmentMapper
                 .Setup(mapper =>
                     mapper.Map(It.IsAny<AppointmentCreateViewModel>()))
-                .Returns(appointmentWithoutProcedure);
+                .Returns(_fixture.appointmentWithoutProcedure);
 
             _fixture.MockAppointmentService
                 .Setup(service =>
@@ -216,7 +205,7 @@ namespace WebApi.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //  Act
-            await _fixture.MockAppointmentController.PostAsync(appointmentCreateViewModelWithoutProcedure);
+            await _fixture.MockAppointmentController.PostAsync(_fixture.MockAppointmentCreateViewModel);
 
             //  Assert
             _fixture.MockAppointmentService.Verify();
@@ -352,7 +341,5 @@ namespace WebApi.Test
             //  Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
-    };
+    }
 }
-
