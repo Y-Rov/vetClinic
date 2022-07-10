@@ -284,9 +284,6 @@ namespace Application.Test
         public async Task GetSalaryByUserId_whenSalaryIsNotExist_thanNotFoundException()
         {
             //Arrange
-            _fixture.MockLoggerManager
-                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
-                .Verifiable();
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetById(
                     It.Is<int>(x=> x==_fixture.UserId),
@@ -331,10 +328,6 @@ namespace Application.Test
         public async Task UpdateSalary_whenNewValueIsEqualOld_thanBadRequestException()
         {
             //Arrange
-            _fixture.MockLoggerManager
-                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
-                .Verifiable();
-
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetById(
                     It.Is<int>(x=>x==_fixture.SalaryModel.EmployeeId), 
