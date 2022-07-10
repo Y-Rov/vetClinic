@@ -43,6 +43,10 @@ namespace Application.Test.Fixtures
             AppoinmentEmptyList = GenerateAppoinmentEmptyList();
             SalaryWithZeroValue = GenerateSalaryWithZeroValue();
             SalaryWithValue = 2;
+            UserOne = GenerateFirstUser();
+            UserTwo = GenerateSecondUser();
+            ProcedureOne = GenerateFirstProcedure();
+            ProcedureTwo = GenerateSecondProcedure();
         }
 
         public IFinancialService MockFinancialService { get; }
@@ -65,6 +69,10 @@ namespace Application.Test.Fixtures
         public List<Appointment> AppoinmentEmptyList { get; }
         public Salary SalaryWithZeroValue { get; }
         public int SalaryWithValue { get; }
+        public User UserOne { get; }
+        public User UserTwo { get; }
+        public Procedure ProcedureOne { get; }
+        public Procedure ProcedureTwo { get; }
 
         private Salary GenerateSalary()
         {
@@ -204,6 +212,44 @@ namespace Application.Test.Fixtures
                 Value = 0
             };
             return salary;
+        }
+        private User GenerateFirstUser() {
+            var userOne = new User
+            {
+                Id = 1,
+                FirstName = "frst",
+                LastName = "scnd"
+            };
+            return userOne;
+        }
+        private User GenerateSecondUser() {
+            var userTwo = new User
+            {
+                Id = 2,
+                FirstName = "dfg",
+                LastName = "erg"
+            };
+            return userTwo;
+        }
+        private Procedure GenerateFirstProcedure() 
+        {
+            var procedureOne = new Procedure()
+            {
+                Id = 1,
+                Name = "One",
+                Cost = 5
+            };
+            return procedureOne;
+        }
+        private Procedure GenerateSecondProcedure() {
+
+            var procedureTwo = new Procedure()
+            {
+                Id = 2,
+                Name = "Two",
+                Cost = 10
+            };
+            return procedureTwo;
         }
     }
 }

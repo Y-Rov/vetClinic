@@ -106,10 +106,12 @@ namespace WebApi.Test
                 .Setup(service =>
                     service.GetUserByIdAsync(It.Is<int>(x => x == user1.Id)))
                 .ReturnsAsync(user1);
+
             _fixture.MockUserService
                 .Setup(service =>
                     service.GetUserByIdAsync(It.Is<int>(x => x == user2.Id)))
                 .ReturnsAsync(user2);
+
             _fixture.MockUserService
                 .Setup(service =>
                     service.GetUserByIdAsync(It.Is<int>(x => x == user3.Id)))
@@ -130,6 +132,7 @@ namespace WebApi.Test
         public async Task GetAllSalary_whenSalaryListIsEmpty_thenStatusCoseOkReturned()
         {
             //Arrange
+
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetSalaryAsync(null))
@@ -168,6 +171,7 @@ namespace WebApi.Test
 
 
             //Act
+
             var result = await _fixture.MockFinancialController.GetEmployeesAsync();
 
             //Assert
@@ -192,8 +196,8 @@ namespace WebApi.Test
                     mapper.Map(It.Is<IEnumerable<User>>(x => x.Equals(_fixture.EmployeeEmptyList))))
             .Returns(_fixture.EmployeeVMEmptyList);
 
-
             //Act
+
             var result = await _fixture.MockFinancialController.GetEmployeesAsync();
 
             //Assert
@@ -207,6 +211,7 @@ namespace WebApi.Test
         public async Task CreateSalary_WhenSalaryIsNotExist_thenStatusOkReturned()
         {
             //Arrange
+
             _fixture.MockSalary
                 .Setup(mapper =>
                     mapper.Map(It.Is<SalaryViewModel>(x=> x== _fixture.SalaryViewModel)))
@@ -216,8 +221,11 @@ namespace WebApi.Test
                 .Setup(service =>
                     service.CreateSalaryAsync(It.Is<Salary>(x=> x==_fixture.SalaryModel)))
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
+
             //Act
+
             await _fixture.MockFinancialController.PostAsync(_fixture.SalaryViewModel);
+
             //Assert
 
             _fixture.MockFinancialService.Verify();
@@ -227,13 +235,19 @@ namespace WebApi.Test
         public async Task DeleteSalary_WhenSalaryIsExist_thenStatusOkReturned()
         {
             //Arrange
+
             _fixture.MockFinancialService
                 .Setup(service=>
                     service.DeleteSalaryByUserIdAsync(It.Is<int>(x=> x==_fixture.UserId)))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
             //Act
+
             await _fixture.MockFinancialController.DeleteAsync(_fixture.UserId);
+
             //Assert
+
             _fixture.MockFinancialService.Verify();
         }
 
@@ -246,14 +260,18 @@ namespace WebApi.Test
                 .Setup(mapper =>
                     mapper.Map(It.Is<SalaryViewModel>(x=> x==_fixture.SalaryViewModel)))
                 .Returns(_fixture.SalaryModel);
+
             _fixture.MockFinancialService
                 .Setup(service=>
                     service.UpdateSalaryAsync(It.IsAny<Salary>()))
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //Act
+
             await _fixture.MockFinancialController.PutAsync(_fixture.SalaryViewModel);
+
             //Assert
+
             _fixture.MockFinancialService.Verify();
         }
 
@@ -266,13 +284,18 @@ namespace WebApi.Test
                 .Setup(service =>
                     service.GetFinancialStatement(It.IsAny<DatePeriod>()))
                 .ReturnsAsync(_fixture.FinStatList);
+
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper=>
                     mapper.Map(It.Is<IEnumerable<FinancialStatement>>(x=> x==_fixture.FinStatList)))
                 .Returns(_fixture.FinStatVMList);
+
             //Act
+
             var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(_fixture.Date);
+
             //Assert
+
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.IsAssignableFrom<IEnumerable<FinancialStatementForMonthViewModel>>(result);
@@ -287,13 +310,18 @@ namespace WebApi.Test
                 .Setup(service =>
                     service.GetFinancialStatement(It.IsAny<DatePeriod>()))
                 .ReturnsAsync(_fixture.FinStatEmpty);
+
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper =>
                     mapper.Map(It.Is<IEnumerable<FinancialStatement>>(x=> x==_fixture.FinStatEmpty)))
                 .Returns(_fixture.FinStatVMEmpty);
+
             //Act
+
             var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(_fixture.Date);
+
             //Assert
+
             Assert.NotNull(result);
             Assert.Empty(result);
             Assert.IsAssignableFrom<IEnumerable<FinancialStatementForMonthViewModel>>(result);
