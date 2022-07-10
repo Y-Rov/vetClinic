@@ -473,7 +473,6 @@ namespace Application.Test
         public async Task UpdateSpecializationProceduresAsync_whenSpecializationExists_thenExecute()
         {
             int specializationId = 2;
-            IEnumerable<int> proceduresIds = new List<int> { 6,4 };
 
             _fixture.MockProcedureSpecializationRepository
                 .Setup(repository =>
@@ -484,7 +483,7 @@ namespace Application.Test
                         It.IsAny<bool>()))
                 .ReturnsAsync(_fixture.Expected.ProcedureSpecializations.ToList());
 
-            await _fixture.MockService.UpdateSpecializationProceduresAsync(specializationId, proceduresIds);
+            await _fixture.MockService.UpdateSpecializationProceduresAsync(specializationId, _fixture.TestIds);
 
             _fixture.MockProcedureSpecializationRepository.Verify(
                     repository => repository.SaveChangesAsync(), Times.Once);
@@ -497,7 +496,6 @@ namespace Application.Test
         public async Task UpdateSpecializationUsersAsync_whenSpecializationExists_thenExecute()
         {
             int specializationId = 2;
-            IEnumerable<int> usersIds = new List<int> { 6, 4 };
 
             _fixture.MockUserSpecializationRepository
                 .Setup(repository =>
@@ -508,7 +506,7 @@ namespace Application.Test
                         It.IsAny<bool>()))
                 .ReturnsAsync(_fixture.Expected.UserSpecializations.ToList());
 
-            await _fixture.MockService.UpdateSpecializationUsersAsync(specializationId, usersIds);
+            await _fixture.MockService.UpdateSpecializationUsersAsync(specializationId, _fixture.TestIds);
 
             _fixture.MockUserSpecializationRepository.Verify(
                     repository => repository.SaveChangesAsync(), Times.Once);

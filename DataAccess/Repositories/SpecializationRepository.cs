@@ -12,9 +12,6 @@ namespace DataAccess.Repositories
 {
     public class SpecializationRepository : Repository<Specialization>, ISpecializationRepository
     {
-        private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
-        private readonly IUserSpecializationRepository _usrerSpecializationRepository;
-
         private IQueryable<Specialization> GetQuery(
            Expression<Func<Specialization, bool>>? filter = null,
            Func<IQueryable<Specialization>, IOrderedQueryable<Specialization>>? orderBy = null,
@@ -41,15 +38,6 @@ namespace DataAccess.Repositories
 
         public SpecializationRepository(ClinicContext clinicContext) : base(clinicContext)
         {
-        }
-
-        public SpecializationRepository(ClinicContext context,
-            IProcedureSpecializationRepository procedureSpecializationRepository,
-            IUserSpecializationRepository userSpecializationRepository)
-            : base(context)
-        {
-            _procedureSpecializationRepository = procedureSpecializationRepository;
-            _usrerSpecializationRepository = userSpecializationRepository;
         }
 
         public async Task<PagedList<Specialization>> GetAllAsync(
