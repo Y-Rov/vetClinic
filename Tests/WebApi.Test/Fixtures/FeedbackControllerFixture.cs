@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.ViewModels.FeedbackViewModels;
 using Moq;
 using WebApi.AutoMapper.Interface;
@@ -18,6 +19,8 @@ namespace WebApi.Test.Fixtures
             ExpectedFeedbacks = GenerateFeedbacks();
             ExpectedFeedbacksViewModel = GenerateFeedbacksViewModel();
             TestFeedbackCreateViewModel = GenerateCreateFeedbackViewModel();
+            TestParameters = GenerateParameters();
+            TestFeedback = GenerateFeedback();
 
             MockFeedbackService = fixture.Freeze<Mock<IFeedbackService>>();
             MockCreateFeedbackMapper = fixture.Freeze<Mock<IViewModelMapper<FeedbackCreateViewModel, Feedback>>>();
@@ -37,6 +40,8 @@ namespace WebApi.Test.Fixtures
         public IEnumerable<Feedback> ExpectedFeedbacks { get; set; }
         public IEnumerable<FeedbackReadViewModel> ExpectedFeedbacksViewModel { get; set; }
         public FeedbackCreateViewModel TestFeedbackCreateViewModel { get; set; }
+        public Feedback TestFeedback { get; set; }
+        public CollateParameters TestParameters { get; set; }
 
         private IEnumerable<Feedback> GenerateFeedbacks()
         {
@@ -96,6 +101,31 @@ namespace WebApi.Test.Fixtures
                 SupportRate = 4,
                 Suggestions = "Please be more careful with animals!",
                 UserId = 4
+            };
+        }
+
+        private Feedback GenerateFeedback()
+        {
+            return new Feedback
+            {
+                Email = "farefg22@gmail.com",
+                ServiceRate = 3,
+                PriceRate = 3,
+                SupportRate = 4,
+                Suggestions = "Please be more careful with animals!",
+                UserId = 4
+            };
+        }
+
+
+        private CollateParameters GenerateParameters()
+        {
+            return new CollateParameters
+            {
+                FilterParam = null,
+                OrderByParam = null,
+                TakeCount = 20,
+                SkipCount = 0
             };
         }
     }
