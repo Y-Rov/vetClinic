@@ -1,7 +1,6 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Linq.Expressions;
 
@@ -15,8 +14,6 @@ namespace Application.Test
         }
 
         private readonly AppointmentServiceFixture _appointmentServiceFixture;
-
-
 
         [Fact]
         public async Task GetAppointmentsAsync_Appointments_ReturnsIEnumerableOfAppointment()
@@ -59,7 +56,6 @@ namespace Application.Test
             Assert.Empty(result);
         }
 
-
         [Fact]
         public async Task GetByIdAsync_Appointment_ReturnsOkObjectResult()
         {
@@ -80,7 +76,6 @@ namespace Application.Test
             Assert.Equal(_appointmentServiceFixture.MockAppointment, result);
         }
 
-
         [Fact]
         public async Task GetByIdAsync_whenAppointmentDoesNotExist_thanThrowNotFound()
         {
@@ -98,7 +93,6 @@ namespace Application.Test
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
 
-
         [Fact]
         public async Task CreateAsync_whenNormal_thanSuccessResult()
         {
@@ -109,7 +103,6 @@ namespace Application.Test
             _appointmentServiceFixture.MockProcedureEntityService
                 .Setup(ss => ss.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(_appointmentServiceFixture.MockProcedure);
-
 
             _appointmentServiceFixture.MockUserEntityService
                .Setup(ss => ss.GetUserByIdAsync(It.IsAny<int>()))
@@ -125,7 +118,6 @@ namespace Application.Test
             // Assert
             _appointmentServiceFixture.MockAppointmentRepository.Verify(x => x.InsertAsync(_appointmentServiceFixture.MockAppointment), Times.Once);
         }
-
 
         [Fact]
         public async Task CreateAsync_whenProcedureListIsEmpty_thanSuccess()
@@ -151,7 +143,6 @@ namespace Application.Test
             //Assert
             Assert.NotNull(result);
         }
-
 
         [Fact]
         public async Task CreateAsync_whenUserListIsEmpty_thanSuccess()
@@ -206,7 +197,6 @@ namespace Application.Test
             Assert.NotNull(result);
         }
 
-
         [Fact]
         public async Task DeleteAsync_whenAppointmentDoesNotExist_thanThrowNotFound()
         {
@@ -233,7 +223,6 @@ namespace Application.Test
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
 
         [Fact]
         public async Task UpdateAsync_whenNormal_thanSuccess()
@@ -262,29 +251,21 @@ namespace Application.Test
             Assert.NotNull(result);
         }
 
-
-
         [Fact]
         public async Task UpdateAsync_whenSomeAppointmentDontExist_thanThrowNotFound()
         {
             //Arrange
-
             _appointmentServiceFixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
                         It.IsAny<string>()))
-                    .ThrowsAsync(new DbUpdateException());
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null))
-                .Verifiable();
+               .ReturnsAsync(() => null);
 
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(_appointmentServiceFixture.MockAppointment);
 
             //Assert
-            await Assert.ThrowsAsync<DbUpdateException>(()=>result);
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
 
         [Fact]
@@ -316,38 +297,32 @@ namespace Application.Test
 
 
         [Fact]
-        public async Task UpdateAppointmentProceduresAsync_whenSomeProcedureListEmpty_thenThrowException()
+        public async Task UpdateAppointmentProceduresAsync_WhenSomeProcedureListEmpty_ThenUpdateIsCanceled()
         {
-            int appointmentId = 1;
-
-            //Arrange
-            var procedureIds = new List<int>();
-
             //Act
-            var result = 
-                _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, procedureIds);
+            await _appointmentServiceFixture.MockAppointmentEntityService.UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, new List<int>());
 
             //Assert
-            _appointmentServiceFixture
-                .MockAppointmentProcedureRepository.Verify(
-                repository => repository.InsertAsync(It.IsAny<AppointmentProcedure>()), Times.Never);
+            _appointmentServiceFixture.MockAppointmentProcedureRepository
+                .Verify(repository => repository.InsertAsync(It.IsAny<AppointmentProcedure>()), Times.Never);
+            _appointmentServiceFixture.MockAppointmentProcedureRepository
+                .Verify(repository => repository.SaveChangesAsync(), Times.Never);
         }
 
 
         [Fact]
-        public async Task UpdateAsync_whenSomeUserListEmpty()
+        public async Task UpdateAsync_WhenSomeUserListEmpty_ThenUpdateIsCanceled()
         {
-            //Arrange
-            var userIds = new List<int>();
-
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService
-                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, userIds);
+            await _appointmentServiceFixture.MockAppointmentEntityService
+                .UpdateAppointmentProceduresAsync(_appointmentServiceFixture.MockAppointment.Id, new List<int>());
 
             //Assert
-            _appointmentServiceFixture
-                .MockAppointmentUserRepository.Verify(
-                repository => repository.InsertAsync(It.IsAny<AppointmentUser>()), Times.Never);
+            _appointmentServiceFixture.MockAppointmentUserRepository
+                .Verify(repository => repository.InsertAsync(It.IsAny<AppointmentUser>()), Times.Never);
+
+            _appointmentServiceFixture.MockAppointmentUserRepository
+                .Verify(repository => repository.SaveChangesAsync(), Times.Never);
         }
 
     }

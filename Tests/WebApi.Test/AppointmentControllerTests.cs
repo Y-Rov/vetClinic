@@ -16,7 +16,6 @@ namespace WebApi.Test
 
         private readonly AppointmentControllerFixture _fixture;
 
-
         [Fact]
         public async Task GetAppointmentById_whenIdIsCorrect_thenStatusCodeOkReturned()
         {
@@ -62,7 +61,6 @@ namespace WebApi.Test
             Assert.NotNull(result);
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
 
         [Fact]
         public async Task GetAll_whenAppointmentsListIsNotEmpty_thenStatusOkReturned()
@@ -129,12 +127,13 @@ namespace WebApi.Test
                         It.IsAny<IEnumerable<int>>(),
                         It.IsAny<int>())
                         )
-
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
 
             //  Act
             var result = _fixture.MockAppointmentController.PostAsync(_fixture.MockAppointmentCreateViewModel);
 
+            await result;
             //  Assert
             Assert.NotNull(result);
         }
@@ -320,7 +319,5 @@ namespace WebApi.Test
             //  Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
-
-    };
+    }
 }
-

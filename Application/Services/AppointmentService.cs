@@ -38,7 +38,7 @@ namespace Application.Services
                 appointment.AppointmentProcedures.Add(new AppointmentProcedure()
                 {
                     Appointment = appointment,
-                    Procedure = await _procedureService.GetByIdAsync(procedureId),
+                    Procedure = await _procedureService.GetByIdAsync(procedureId)
                 });
             }
 
@@ -47,7 +47,7 @@ namespace Application.Services
                 appointment.AppointmentUsers.Add(new AppointmentUser()
                 {
                     Appointment = appointment,
-                    User = await _userService.GetUserByIdAsync(userId),
+                    User = await _userService.GetUserByIdAsync(userId)
                 });
             }
 
@@ -60,7 +60,7 @@ namespace Application.Services
 
         public async Task DeleteAsync(int appointmentId)
         {
-            Appointment? appointment = await GetAsync(appointmentId);
+            var appointment = await GetAsync(appointmentId);
 
              _appointmentRepository.Delete(appointment);
             await _appointmentRepository.SaveChangesAsync();
@@ -85,7 +85,7 @@ namespace Application.Services
                 throw new NotFoundException($"Appointment with Id {appointmentId} does not exist");
             }
 
-            _logger.LogInfo($"appointment with {appointmentId} was fetched in method GetAsync");
+            _logger.LogInfo($"Appointment with {appointmentId} was fetched in method GetAsync");
             return appointment;
         }
 
