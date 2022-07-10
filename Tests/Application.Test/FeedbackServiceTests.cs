@@ -2,12 +2,7 @@
 using Core.Entities;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Test
 {
@@ -73,7 +68,7 @@ namespace Application.Test
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksDontExist_thenReturnEmptyList()
         {
-            string filterParam = null;
+            string? filterParam = null;
             int takeCount = 10;
             int skipCount = 0;
 

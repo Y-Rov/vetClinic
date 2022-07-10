@@ -175,7 +175,7 @@ namespace Application.Services
             await UpdateSpecializationAsync(specializationId, specialization);
         }
 
-        public async Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> proceduresIds)
+        public async Task UpdateSpecializationProceduresAsync(int specializationId, IEnumerable<int> procedureIds)
         {
             var current = await _procedureSpecializationRepository.GetAsync(
                 filter: relationship => relationship.SpecializationId == specializationId);
@@ -185,7 +185,7 @@ namespace Application.Services
 
             await _procedureSpecializationRepository.SaveChangesAsync();
 
-            foreach (var procedureId in proceduresIds)
+            foreach (var procedureId in procedureIds)
             {
                 await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
                 {

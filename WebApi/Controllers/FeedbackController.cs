@@ -14,18 +14,15 @@ namespace WebApi.Controllers
     {
         readonly IFeedbackService _service;
 
-        readonly IViewModelMapper<Feedback, FeedbackReadViewModel> _feedbackMapper;
         readonly IViewModelMapper<FeedbackCreateViewModel, Feedback> _createFeedbackMapper;
         readonly IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> _listMapper;
 
         public FeedbackController(
             IFeedbackService service, 
-            IViewModelMapper<Feedback, FeedbackReadViewModel> feedbackMapper, 
             IViewModelMapper<FeedbackCreateViewModel, Feedback> createFeedbackMapper,
             IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> listMapper)
         {
             _service = service;
-            _feedbackMapper = feedbackMapper;
             _createFeedbackMapper = createFeedbackMapper;
             _listMapper = listMapper;
         }
