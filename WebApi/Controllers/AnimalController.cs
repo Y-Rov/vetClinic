@@ -16,20 +16,17 @@ namespace WebApi.Controllers
     {
         private readonly IAnimalService _animalService;
         private readonly IViewModelMapperUpdater<AnimalViewModel, Animal> _mapperVMtoM;
-        private readonly IViewModelMapper<Animal, AnimalViewModel> _mapperMtoVM;
         private readonly IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> _mapperAnimalListToList;
         private readonly IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>> _pagedMedCardMapper;
 
         public AnimalController(
             IAnimalService animalService,
             IViewModelMapperUpdater<AnimalViewModel, Animal> mapperVMtoM,
-            IViewModelMapper<Animal, AnimalViewModel> mapperMtoVM,
             IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>> mapperAnimalListToList,
             IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>> pagedMedCardMapper)
         {
             _animalService = animalService;
             _mapperVMtoM = mapperVMtoM;
-            _mapperMtoVM = mapperMtoVM;
             _mapperAnimalListToList = mapperAnimalListToList;
             _pagedMedCardMapper = pagedMedCardMapper;
         }

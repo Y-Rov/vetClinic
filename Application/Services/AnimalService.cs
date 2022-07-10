@@ -13,19 +13,16 @@ namespace Application.Services
         private readonly IAnimalRepository _animalRepository;
         private readonly ILoggerManager _loggerManager;
         private readonly IAnimalPhotoService _animalPhotoService;
-        private readonly IUserService _userService;
 
         public AnimalService(
             IAnimalRepository animalRepository,
             ILoggerManager loggerManager,
-            IAnimalPhotoService animalPhotoService,
-            IUserService userService
+            IAnimalPhotoService animalPhotoService
             )
         {
             _animalRepository = animalRepository;
             _loggerManager = loggerManager;
             _animalPhotoService = animalPhotoService;
-            _userService = userService;
         }
 
         public async Task CreateAsync(Animal animal)
