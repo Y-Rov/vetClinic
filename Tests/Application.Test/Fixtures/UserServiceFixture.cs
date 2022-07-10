@@ -29,28 +29,14 @@ namespace Application.Test.Fixtures
 
             Id = 1;
             Role = "Client";
-            Passowrd = "test_pass";
+            Password = "test_pass";
             SpecializationName = "test_spec";
-            UserParameters = new();
-            Specialization = new() { Name = SpecializationName };
-
-            UserSpecializations = new List<UserSpecialization>()
-            {
-                new UserSpecialization()
-                {
-                    Specialization = Specialization
-                }
-            };
-
-            User = new() {
-                Id = Id,
-                FirstName = "Ren",
-                LastName = "Amamiya",
-                UserSpecializations = UserSpecializations
-            };
-
-            Users = new List<User>() { User };
-            PagedUsers = new(Users, 5, 1, 5);
+            User = GetUser();
+            UserParameters = GetUserParameters();
+            Specialization = GetSpecialization();
+            UserSpecializations = GetUserSpecializations();
+            Users = GetUsers();
+            PagedUsers = GetPagedUsers();
         }
 
         public UserService MockUserService { get; }
@@ -60,7 +46,7 @@ namespace Application.Test.Fixtures
 
         public int Id { get; set; }
         public string Role { get; set; }
-        public string Passowrd { get; set; }
+        public string Password { get; set; }
         public string SpecializationName { get; set; }
         public UserParameters UserParameters { get; set; }
         public Specialization Specialization { get; set; }
@@ -68,5 +54,59 @@ namespace Application.Test.Fixtures
         public User User { get; set; }
         public List<User> Users { get; set; }
         public PagedList<User> PagedUsers { get; set; }
+
+        private User GetUser()
+        {
+            return new User()
+            {
+                Id = Id,
+                FirstName = "Ren",
+                LastName = "Amamiya"
+            };
+        }
+
+        private List<User> GetUsers()
+        {
+            return new List<User>()
+            {
+                GetUser(),
+                GetUser()
+            };
+        }
+
+        private UserParameters GetUserParameters()
+        {
+            return new UserParameters()
+            {
+                FilterParam = "Ophthalmology",
+                OrderByParam = "FirstName",
+                PageNumber = 1,
+                PageSize = 5
+            };
+        }
+
+        private Specialization GetSpecialization()
+        {
+            return new Specialization()
+            {
+                Name = SpecializationName
+            };
+        }
+
+        private List<UserSpecialization> GetUserSpecializations()
+        {
+            return new List<UserSpecialization>()
+            {
+                new UserSpecialization()
+                {
+                    Specialization = GetSpecialization()
+                }
+            };
+        }
+
+        private PagedList<User> GetPagedUsers()
+        {
+            return new PagedList<User>(GetUsers(), 5, 1, 5);
+        }
     }
 }
