@@ -30,7 +30,7 @@ namespace DataAccess.Repositories
 
             var blobItems = blobContainer.GetBlobs(prefix: $"profile-pictures/{email}");
 
-            if (blobItems.Count() > 0)
+            if (blobItems.Any())
             {
                 await DeleteAsync(blobItems.First().Name);
             }
