@@ -57,7 +57,7 @@ namespace Application.Test
                 .ReturnsAsync(_fixture.Expected);
 
 
-            var result = 
+            var result =
                 await _fixture.MockService.GetSpecializationByIdAsync(id);
 
             Assert.NotNull(result);
@@ -206,7 +206,7 @@ namespace Application.Test
                 repository.Delete(It.Is<Specialization>(spec => _fixture.Expected == spec)))
             .Verifiable();
 
-            _fixture.MockRepository.Setup(repository => 
+            _fixture.MockRepository.Setup(repository =>
                 repository.GetById(
                     It.Is<int>(specId => specId == id),
                     It.Is<string>(props => props == includeProperties)))
@@ -226,7 +226,7 @@ namespace Application.Test
         {
             int id = 40;
 
-            Specialization notFound = null; 
+            Specialization notFound = null;
 
             _fixture.MockRepository.Setup(repository =>
                 repository.GetById(
@@ -258,7 +258,7 @@ namespace Application.Test
                     It.Is<Specialization>(spec => spec == _fixture.Expected)))
                 .Verifiable();
 
-            await _fixture.MockService.RemoveProcedureFromSpecialization(specializationId,procedureId);
+            await _fixture.MockService.RemoveProcedureFromSpecialization(specializationId, procedureId);
 
             Assert.DoesNotContain(relationshipToRemove, _fixture.Expected.ProcedureSpecializations);
             _fixture.MockRepository.Verify(method => method.Update(_fixture.Expected), Times.Once);
