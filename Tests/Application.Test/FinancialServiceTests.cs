@@ -425,8 +425,19 @@ namespace Application.Test
         public async Task GetFinancialStatement_WhenAppoinmentsExist_thenReturnOk()
         {
             //Arrange
-            
-            var procedure = new Procedure();
+
+            var procedureOne = new Procedure()
+            {
+                Id = 1,
+                Name = "One",
+                Cost = 5
+            };
+            var procedureTwo = new Procedure()
+            {
+                Id = 2,
+                Name = "Two",
+                Cost = 10
+            };
 
             var userOne = new User
             {
@@ -452,9 +463,15 @@ namespace Application.Test
             _fixture.MockProcedureRepository
                 .Setup(repo =>
                     repo.GetById(
-                        It.IsAny<int>(),
+                        It.Is<int>(x=> x==procedureOne.Id),
                         It.IsAny<string>()))
-                .ReturnsAsync(procedure);
+                .ReturnsAsync(procedureOne);
+            _fixture.MockProcedureRepository
+                .Setup(repo =>
+                     repo.GetById(
+                        It.Is<int>(x => x == procedureTwo.Id),
+                        It.IsAny<string>()))
+                .ReturnsAsync(procedureTwo);
             _fixture.MockSalaryRepository
                 .Setup(repo
                     => repo.GetAsync(

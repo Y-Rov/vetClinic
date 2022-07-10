@@ -160,12 +160,16 @@ namespace Application.Test.Fixtures
                     Id = 1,
                     AnimalId = 1,
                     Disease ="first",
+                    AppointmentProcedures =new List<AppointmentProcedure>(){new AppointmentProcedure(){AppointmentId=1,ProcedureId =1} },
+                    AppointmentUsers =new List<AppointmentUser>(){new AppointmentUser(){AppointmentId=1,UserId =1} }
                 },
                 new Appointment
                 {
                     Id = 2,
                     AnimalId = 1,
-                    Disease ="second"
+                    Disease ="second",
+                    AppointmentProcedures =new List<AppointmentProcedure>(){new AppointmentProcedure(){AppointmentId=2,ProcedureId =2} },
+                    AppointmentUsers =new List<AppointmentUser>(){new AppointmentUser(){AppointmentId=2,UserId =2} }
                 }
             };
             return appointments;
