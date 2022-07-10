@@ -18,119 +18,6 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
     {
         _fixture = fixture;
     }
-    
-    private readonly Article _article = new Article()
-    {
-        Id = 1,
-        AuthorId = 1,
-        Body = "article body",
-        Title = "article title",
-        CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-        Published = true,
-        Edited = false,
-    };
-
-    private readonly ReadArticleViewModel _readViewModel = new ReadArticleViewModel()
-    {
-        Id = 1,
-        AuthorId = 1,
-        Body = "article body",
-        Title = "article title",
-        CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-        Published = true,
-        Edited = false,
-    };
-
-    private static readonly IEnumerable<ReadArticleViewModel> _readViewModels = new List<ReadArticleViewModel>()
-    {
-        new ReadArticleViewModel()
-        {
-            Id = 1,
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-            Published = true,
-            Edited = false,
-        },
-        new ReadArticleViewModel()
-        {
-            Id = 2,
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            CreatedAt = new DateTime(2020, 10, 11, 10, 10, 10),
-            Published = false,
-            Edited = true,
-        },
-        new ReadArticleViewModel()
-        {
-            Id = 3,
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            CreatedAt = new DateTime(2020, 10, 12, 10, 10, 10),
-            Published = false,
-            Edited = false,
-        }
-    };
-    
-    private static readonly List<Article> _articles = new List<Article>()
-    {
-        new Article()
-        {
-            Id = 1,
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            CreatedAt = new DateTime(2020, 10, 10, 10, 10, 10),
-            Published = true,
-            Edited = false,
-        },
-        new Article()
-        {
-            Id = 2,
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            CreatedAt = new DateTime(2020, 10, 11, 10, 10, 10),
-            Published = false,
-            Edited = true,
-        },
-        new Article()
-        {
-            Id = 3,
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            CreatedAt = new DateTime(2020, 10, 12, 10, 10, 10),
-            Published = false,
-            Edited = false,
-        }
-    };
-
-    private static readonly PagedList<Article> _pagedArticles = new PagedList<Article>(_articles, 3, 1, 5);
-
-    private static readonly PagedReadViewModel<ReadArticleViewModel> _readPagedViewModels =
-        new PagedReadViewModel<ReadArticleViewModel>()
-        {
-            CurrentPage = 1,
-            Entities = _readViewModels,
-            HasNext = false,
-            HasPrevious = false,
-            PageSize = 5,
-            TotalCount = 3,
-            TotalPages = 1
-        };
-    
-    private readonly ArticleParameters _parameters = new ArticleParameters()
-    {
-        FilterParam = "hello",
-        OrderByParam = "Title",
-        OrderByDirection = "desc",
-        PageNumber = 1,
-        PageSize = 5
-    };
 
     [Fact]
     public async Task GetArticleById_whenIdIsCorrect_thenStatusCodeOkReturned()
@@ -139,16 +26,16 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         _fixture.MockArticleService
             .Setup(service =>
                 service.GetByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(_article);
+            .ReturnsAsync(_fixture.Article);
         _fixture.MockReadMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<Article>()))
-            .Returns(_readViewModel);
+            .Returns(_fixture.ExpectedReadArticleViewModel);
         //Act
         var result = await _fixture.MockArticleController.GetByIdAsync(1);
         //Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readViewModel);
+        Assert.Equal(result, _fixture.ExpectedReadArticleViewModel);
     }
 
     [Fact]
@@ -162,7 +49,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         _fixture.MockReadMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<Article>()))
-            .Returns(_readViewModel);
+            .Returns(_fixture.ExpectedReadArticleViewModel);
         //Act
         var result = _fixture.MockArticleController.GetByIdAsync(1);
         //  Assert
@@ -177,19 +64,19 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         _fixture.MockArticleService
             .Setup(service =>
                 service.GetArticlesAsync(It.IsAny<ArticleParameters>()))
-            .ReturnsAsync(_pagedArticles);
+            .ReturnsAsync(_fixture.PagedArticles);
 
         _fixture.MockReadPagedMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<PagedList<Article>>()))
-            .Returns(_readPagedViewModels);
+            .Returns(_fixture.PagedReadViewModel);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetAsync(_parameters);
+        var result = await _fixture.MockArticleController.GetAsync(_fixture.Parameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readPagedViewModels);
+        Assert.Equal(result, _fixture.PagedReadViewModel);
     }
 
     [Fact]
@@ -211,7 +98,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
             .Returns(emptyArticleReadViewModels);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetAsync(_parameters);
+        var result = await _fixture.MockArticleController.GetAsync(_fixture.Parameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -225,19 +112,19 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         _fixture.MockArticleService
             .Setup(service =>
                 service.GetPublishedArticlesAsync(It.IsAny<ArticleParameters>()))
-            .ReturnsAsync(_pagedArticles);
+            .ReturnsAsync(_fixture.PagedArticles);
 
         _fixture.MockReadPagedMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<PagedList<Article>>()))
-            .Returns(_readPagedViewModels);
+            .Returns(_fixture.PagedReadViewModel);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetPublishedAsync(_parameters);
+        var result = await _fixture.MockArticleController.GetPublishedAsync(_fixture.Parameters);
 
         //  Assert
         Assert.NotNull(result);
-        Assert.Equal(result, _readPagedViewModels);
+        Assert.Equal(result, _fixture.PagedReadViewModel);
     }
 
     [Fact]
@@ -259,7 +146,7 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
             .Returns(emptyArticleReadViewModels);
 
         //  Act
-        var result = await _fixture.MockArticleController.GetPublishedAsync(_parameters);
+        var result = await _fixture.MockArticleController.GetPublishedAsync(_fixture.Parameters);
 
         //  Assert
         Assert.NotNull(result);
@@ -304,18 +191,10 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
     public async Task Create_whenOk_thenStatusOkReturned()
     {
         //  Arrange
-        var createArticleViewModel = new CreateArticleViewModel()
-        {
-            AuthorId = 1,
-            Body = "article body",
-            Title = "article title",
-            Published = true
-        };
-        
         _fixture.MockCreateMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<CreateArticleViewModel>()))
-            .Returns(_article);
+            .Returns(_fixture.Article);
 
         _fixture.MockArticleService
             .Setup(service =>
@@ -324,29 +203,21 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //  Act
-        await _fixture.MockArticleController.CreateAsync(createArticleViewModel);
+        await _fixture.MockArticleController.CreateAsync(_fixture.CreateArticleViewModel);
 
         //  Assert
-        _fixture.MockCreateMapper.Verify(m => m.Map(createArticleViewModel), Times.Once);
-        _fixture.MockArticleService.Verify(s => s.CreateArticleAsync(_article), Times.Once);
+        _fixture.MockCreateMapper.Verify(m => m.Map(_fixture.CreateArticleViewModel), Times.Once);
+        _fixture.MockArticleService.Verify(s => s.CreateArticleAsync(_fixture.Article), Times.Once);
     }
     
     [Fact]
     public async Task Update_whenOk_thenStatusOkReturned()
     {
         //  Arrange
-        var updateArticleViewModel = new UpdateArticleViewModel()
-        {
-            Id = 1,
-            Body = "article body",
-            Title = "article title",
-            Published = true
-        };
-        
         _fixture.MockUpdateMapper
             .Setup(mapper =>
                 mapper.Map(It.IsAny<UpdateArticleViewModel>()))
-            .Returns(_article);
+            .Returns(_fixture.Article);
 
         _fixture.MockArticleService
             .Setup(service =>
@@ -355,11 +226,11 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
             .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         //  Act
-        await _fixture.MockArticleController.UpdateAsync(updateArticleViewModel);
+        await _fixture.MockArticleController.UpdateAsync(_fixture.UpdateArticleViewModel);
 
         //  Assert
-        _fixture.MockUpdateMapper.Verify(m => m.Map(updateArticleViewModel), Times.Once);
-        _fixture.MockArticleService.Verify(s => s.UpdateArticleAsync(_article), Times.Once);
+        _fixture.MockUpdateMapper.Verify(m => m.Map(_fixture.UpdateArticleViewModel), Times.Once);
+        _fixture.MockArticleService.Verify(s => s.UpdateArticleAsync(_fixture.Article), Times.Once);
     }
 
     [Fact]
