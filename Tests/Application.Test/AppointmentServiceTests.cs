@@ -144,8 +144,10 @@ namespace Application.Test
                .ReturnsAsync(_appointmentServiceFixture.MockUser);
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(_appointmentServiceFixture.MockAppointment,
+            var result =  _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(_appointmentServiceFixture.MockAppointment,
                 emptyprocedureIds, ids, animalId);
+            await result;
+
             //Assert
             Assert.NotNull(result);
         }
@@ -170,6 +172,7 @@ namespace Application.Test
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService.CreateAsync(_appointmentServiceFixture.MockAppointment,
                 ids, emptyUserIds, animalId);
+            await result;
 
             // Assert
             Assert.NotNull(result);
@@ -197,6 +200,7 @@ namespace Application.Test
 
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService.DeleteAsync(_appointmentServiceFixture.MockAppointment.Id);
+            await result;
 
             //Assert
             Assert.NotNull(result);
@@ -225,6 +229,7 @@ namespace Application.Test
 
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService.DeleteAsync(17);
+            await result;
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
@@ -252,6 +257,7 @@ namespace Application.Test
 
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(_appointmentServiceFixture.MockAppointment);
+            await result;   
 
             //Assert
             Assert.NotNull(result);
