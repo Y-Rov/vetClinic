@@ -85,7 +85,7 @@ namespace Application.Services
                 throw new NotFoundException($"Appointment with Id {appointmentId} does not exist");
             }
 
-            _logger.LogInfo("appointment with appointmentId was fetched in method GetAsync");
+            _logger.LogInfo($"appointment with {appointmentId} was fetched in method GetAsync");
             return appointment;
         }
 
@@ -155,7 +155,7 @@ namespace Application.Services
             existingAppointment.Disease = appointment.Disease;
             existingAppointment.AnimalId = appointment.AnimalId;
           
-            _logger.LogInfo("Getting Appointment by appointmentId in method UpdateAsync");
+            _logger.LogInfo($"Updated Appointment by {appointment.Id} in method UpdateAsync");
         }
     }
 }
