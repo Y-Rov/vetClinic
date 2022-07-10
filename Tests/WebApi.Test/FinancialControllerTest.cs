@@ -64,7 +64,7 @@ namespace WebApi.Test
             //Assert
 
             Assert.NotNull(result);
-            Assert.Equal(_fixture.SalaryWithNameViewModel, result);
+            Assert.IsAssignableFrom<SalaryViewModel>(result);
         }
 
         [Fact]
@@ -264,7 +264,7 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetFinancialStatement(It.Is<DatePeriod>(x => x.Equals(_fixture.Date))))
+                    service.GetFinancialStatement(It.IsAny<DatePeriod>()))
                 .ReturnsAsync(_fixture.FinStatList);
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper=>
@@ -285,7 +285,7 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetFinancialStatement(It.Is<DatePeriod>(x => x.Equals(_fixture.Date))))
+                    service.GetFinancialStatement(It.IsAny<DatePeriod>()))
                 .ReturnsAsync(_fixture.FinStatEmpty);
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper =>
