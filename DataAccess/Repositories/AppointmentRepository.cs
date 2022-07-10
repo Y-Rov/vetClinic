@@ -1,7 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using DataAccess.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {

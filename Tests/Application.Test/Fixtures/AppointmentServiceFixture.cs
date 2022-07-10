@@ -140,6 +140,31 @@ namespace Application.Test.Fixtures
             }
         };
 
+        public readonly Appointment existingAppointment = new Appointment
+        {
+            Date = DateTime.Now,
+            MeetHasOccureding = true,
+            Disease = "Broke a tail",
+            AnimalId = 3,
+            AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+            AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+
+        };
+
         private IList<Appointment> GenerateListAppointments()
         {
             var appointments = new List<Appointment>

@@ -57,6 +57,30 @@ namespace WebApi.Test.Fixtures
         public IEnumerable<AppointmentReadViewModel> MockAppointmentReadViewModels { get; set; }
 
 
+        public readonly Appointment appointmentWithoutProcedure = new Appointment()
+        {
+            Date = DateTime.Now,
+            MeetHasOccureding = true,
+            Disease = "Broke a leg",
+            AnimalId = 3,
+            AppointmentProcedures = new List<AppointmentProcedure>()
+                {
+                    new AppointmentProcedure() {
+                        AppointmentId = 1,
+                        ProcedureId = 2,
+                    }
+                },
+
+            AppointmentUsers = new List<AppointmentUser>()
+                {
+                    new AppointmentUser()
+                    {
+                        AppointmentId = 1,
+                        UserId = 1,
+                    }
+                }
+        };
+
         private Appointment GenerateAppointment()
         {
             var appointment = new Appointment()

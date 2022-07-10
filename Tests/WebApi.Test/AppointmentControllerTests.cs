@@ -169,42 +169,10 @@ namespace WebApi.Test
         public async Task Create_whenViewModelProcedureListIsEmpty_thenStatusOkReturned()
         {
             //  Arrange
-            var appointmentCreateViewModelWithoutProcedure = new AppointmentCreateViewModel()
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3
-            };
-
-            var appointmentWithoutProcedure = new Appointment()
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
             _fixture.MockCreateAppointmentMapper
                 .Setup(mapper =>
                     mapper.Map(It.IsAny<AppointmentCreateViewModel>()))
-                .Returns(appointmentWithoutProcedure);
+                .Returns(_fixture.appointmentWithoutProcedure);
 
             _fixture.MockAppointmentService
                 .Setup(service =>
@@ -216,7 +184,7 @@ namespace WebApi.Test
                 .Returns(Task.FromResult<object?>(null)).Verifiable();
 
             //  Act
-            await _fixture.MockAppointmentController.PostAsync(appointmentCreateViewModelWithoutProcedure);
+            await _fixture.MockAppointmentController.PostAsync(_fixture.MockAppointmentCreateViewModel);
 
             //  Assert
             _fixture.MockAppointmentService.Verify();

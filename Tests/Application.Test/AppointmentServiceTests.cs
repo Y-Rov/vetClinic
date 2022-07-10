@@ -39,7 +39,7 @@ namespace Application.Test
         }
 
         [Fact]
-        public async Task GetAppointmentsAsync_Appointments_Throw()
+        public async Task GetAppointmentsAsync_whenAppointmentsExist_thenReturn()
         {
             List<Appointment> emptyAppointments = new List<Appointment>();
 
@@ -258,62 +258,11 @@ namespace Application.Test
         public async Task UpdateAsync_whenNormal_thanSuccess()
         {
             //Arrange
-
-            var appointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
-            var existingAppointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a tail",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-
-            };
-
-
             _appointmentServiceFixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
                         It.IsAny<string>()))
-                    .ReturnsAsync(existingAppointment);
+                    .ReturnsAsync(_appointmentServiceFixture.existingAppointment);
 
             _appointmentServiceFixture.MockAppointmentRepository
             .Setup(repo => repo.Update(It.IsAny<Appointment>()))
@@ -325,7 +274,7 @@ namespace Application.Test
                 .Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(appointment);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(_appointmentServiceFixture.MockAppointment);
 
             //Assert
             Assert.NotNull(result);
@@ -337,56 +286,6 @@ namespace Application.Test
         public async Task UpdateAsync_whenSomeAppointmentDontExist_thanThrowNotFound()
         {
             //Arrange
-
-            var appointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a leg",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-            };
-
-            var existingAppointment = new Appointment
-            {
-                Date = DateTime.Now,
-                MeetHasOccureding = true,
-                Disease = "Broke a tail",
-                AnimalId = 3,
-                AppointmentProcedures = new List<AppointmentProcedure>()
-                {
-                    new AppointmentProcedure() {
-                        AppointmentId = 1,
-                        ProcedureId = 2,
-                    }
-                },
-
-                AppointmentUsers = new List<AppointmentUser>()
-                {
-                    new AppointmentUser()
-                    {
-                        AppointmentId = 1,
-                        UserId = 1,
-                    }
-                }
-
-            };
-
             _appointmentServiceFixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
@@ -399,7 +298,7 @@ namespace Application.Test
                 .Verifiable();
 
             //Act
-            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(appointment);
+            var result = _appointmentServiceFixture.MockAppointmentEntityService.UpdateAsync(_appointmentServiceFixture.MockAppointment);
 
             //Assert
             await Assert.ThrowsAsync<DbUpdateException>(()=>result);

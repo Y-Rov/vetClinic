@@ -3,8 +3,6 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using DataAccess.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
@@ -143,7 +141,6 @@ namespace Application.Services
 
                 await _appointmentRepository.SaveChangesAsync();
 
-                //_logger.LogWarn("At least one of the users from the given list does not exist");
                 _logger.LogInfo($"Updated user list of the appointments with Id {appointmentId}");
 
             }
