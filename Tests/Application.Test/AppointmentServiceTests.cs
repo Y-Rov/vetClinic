@@ -229,7 +229,6 @@ namespace Application.Test
 
             //Act
             var result = _appointmentServiceFixture.MockAppointmentEntityService.DeleteAsync(17);
-            await result;
 
             //Assert
             await Assert.ThrowsAsync<NotFoundException>(() => result);
