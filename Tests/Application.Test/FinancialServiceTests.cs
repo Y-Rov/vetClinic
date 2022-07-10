@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 namespace Application.Test
 {
-    public class FinancialServiceTests: IClassFixture<FinancialServiceFixture>
+    public class FinancialServiceTests: IClassFixture<FinancialServiceFixture>, IDisposable
     {
         public FinancialServiceTests(FinancialServiceFixture fixture)
         {
@@ -18,60 +18,121 @@ namespace Application.Test
         }
 
         readonly FinancialServiceFixture _fixture;
+        private bool _disposed;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _fixture.MockSalaryRepository.ResetCalls();
+            }
+
+            _disposed = true;
+        }
 
         [Fact]
         public async Task CreateSalary_whenSalaryIsNotExist_thanCreate()
         {
             //Arrange
-            var salary = new Salary()
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 5
-            };
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(new Salary());
+                .Setup(repo => repo.GetById(
+                    It.IsAny<int>(), 
+                    It.IsAny<string>()))
+                .ReturnsAsync(()=> null)
+                .Verifiable();
+
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
             _fixture.MockSalaryRepository
                 .Setup(repo=>repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
 
             //Act
-            await _fixture.MockFinancialService.CreateSalaryAsync(salary);
+            await _fixture.MockFinancialService.CreateSalaryAsync(_fixture.SalaryModel);
 
             //Assert
-            _fixture.MockSalaryRepository.Verify();
-            
+
+            _fixture.MockLoggerManager.Verify();
+            _fixture.MockSalaryRepository.Verify(repo => repo.GetById(_fixture.UserId, ""), Times.Once);
+            _fixture.MockSalaryRepository.Verify(repo => repo.InsertAsync(_fixture.SalaryModel), Times.Once);
+            _fixture.MockSalaryRepository.Verify(repo => repo.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
         public async Task CreateSalary_whenSalaryIsExist_thanBadRequestException()
         {
             //Arrange
-            var salary = new Salary()
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 5
-            };
 
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(salary);
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Setup(repo => repo.GetById(It.Is<int>(x=> x==_fixture.UserId), It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryModel);
 
             //Act
             //Assert
-            await Assert.ThrowsAsync<BadRequestException>(async()=> await _fixture.MockFinancialService.CreateSalaryAsync(salary));
+
+            await Assert.ThrowsAsync<BadRequestException>(async()=> 
+                await _fixture.MockFinancialService.CreateSalaryAsync(_fixture.SalaryModel));
+
+        }
+
+        [Fact]
+        public async Task CreateSalary_whenSalaryValueIsZero_thanCreate()
+        {
+            //Arrange
+
+            _fixture.MockSalaryRepository
+                .Setup(repo => repo.GetById(It.Is<int>(x => x == _fixture.UserId), It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryWithZeroValue);
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo => repo.GetById(It.Is<int>(x => x == _fixture.UserId), It.IsAny<string>()))
+                .ReturnsAsync(() => null)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo => repo.SaveChangesAsync())
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
+            //Act
+
+            await _fixture.MockFinancialService.CreateSalaryAsync(_fixture.SalaryModel);
+
+            //Assert
+
+            _fixture.MockLoggerManager.Verify();
+            _fixture.MockSalaryRepository.Verify(repo => repo.GetById(_fixture.UserId, ""), Times.Once);
+            _fixture.MockSalaryRepository.Verify(repo => repo.InsertAsync(_fixture.SalaryModel), Times.Once);
+            _fixture.MockSalaryRepository.Verify(repo => repo.SaveChangesAsync(), Times.Once);
 
         }
 
@@ -80,28 +141,35 @@ namespace Application.Test
         {
             //Arrange
 
-            var salary = new Salary
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 10
-            };
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(salary);
+                .Setup(repo => repo.GetById(
+                    It.Is<int>(x=> x==_fixture.SalaryModel.EmployeeId), 
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryModel);
+
             _fixture.MockSalaryRepository
                 .Setup(repo=> repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
             //Act
-            await _fixture.MockFinancialService.DeleteSalaryByUserIdAsync(salary.EmployeeId);
+
+            await _fixture.MockFinancialService.DeleteSalaryByUserIdAsync(_fixture.SalaryModel.EmployeeId);
 
             //Assert
 
-            _fixture.MockSalaryRepository.VerifyAll();
+            _fixture.MockLoggerManager.Verify();
+            _fixture.MockSalaryRepository.Verify(repo => repo.GetById(_fixture.UserId, ""), Times.Once);
+            _fixture.MockSalaryRepository.Verify(repo => repo.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
@@ -109,78 +177,51 @@ namespace Application.Test
         {
             //Arrange
 
-            var salary = new Salary
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 0
-            };
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(salary);
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Setup(repo => repo.GetById(
+                    It.Is<int>(x=> x==_fixture.SalaryWithZeroValue.EmployeeId), 
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryWithZeroValue);
+
             //Act
-            
-
             //Assert
 
-            await Assert.ThrowsAsync<NotFoundException>(async() => await _fixture.MockFinancialService.DeleteSalaryByUserIdAsync(salary.EmployeeId));
+            await Assert.ThrowsAsync<NotFoundException>(async() => 
+                await _fixture.MockFinancialService.DeleteSalaryByUserIdAsync(_fixture.SalaryWithZeroValue.EmployeeId));
         }
 
         [Fact]
         public async Task DeleteSalary_whenSalaryIsNotExist_thanNotFoundException()
         {
             //Arrange
-            int id = 1;
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
+                .Verifiable();
+
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(repo => repo.GetById(It.Is<int>(x=> x==_fixture.UserId), It.IsAny<string>()))
                 .ReturnsAsync(()=>null);
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+
             //Act
-
-
             //Assert
 
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _fixture.MockFinancialService.DeleteSalaryByUserIdAsync(id));
+            await Assert.ThrowsAsync<NotFoundException>(async () => 
+                await _fixture.MockFinancialService.DeleteSalaryByUserIdAsync(_fixture.UserId));
         }
 
         [Fact]
         public async Task GetListSalary_whenListIsNotEmpty_thanSucceed()
         {
             //Arrange
-            int salariesWithValue = 2;
-            var salaryList = new List<Salary>()
-            {
-                new Salary()
-                {
-                    Id = 1,
-                    EmployeeId = 1,
-                    Value = 10
-                },
-                new Salary()
-                {
-                    Id = 2,
-                    EmployeeId = 2,
-                    Value = 0
-                },
-                new Salary()
-                {
-                    Id = 3,
-                    EmployeeId = 3,
-                    Value = 30
-                }
-            };
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
                 .Setup(repo=> repo.GetAsync(
@@ -188,21 +229,29 @@ namespace Application.Test
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(salaryList);
+                .ReturnsAsync(_fixture.SalaryListFromRepo);
 
             //Act
+
             var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
 
             //Assert
+
             Assert.NotNull(result);
-            Assert.Equal(salariesWithValue, result.Count());
+            Assert.NotEmpty(result);
+            _fixture.MockLoggerManager.Verify();
+            Assert.IsAssignableFrom<IEnumerable<Salary>>(result);
+            Assert.Equal(_fixture.SalaryWithValue, result.Count());
         }
 
         [Fact]
         public async Task GetListSalary_whenListIsEmpty_thanSucceed()
         {
             //Arrange
-            var emptysalaryList = new List<Salary>();
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
@@ -210,78 +259,85 @@ namespace Application.Test
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(emptysalaryList);
+                .ReturnsAsync(_fixture.SalaryEmptyList);
 
             //Act
+
             var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
 
             //Assert
+
             Assert.NotNull(result);
+            Assert.Empty(result);
+            _fixture.MockLoggerManager.Verify();
+            Assert.IsAssignableFrom<IEnumerable<Salary>>(result);
+
         }
 
         [Fact]
         public async Task GetSalaryByUserId_whenSalaryIsOk_thanSucceed()
         {
             //Arrange
-            var salary = new Salary()
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 10
-            };
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetById(
-                    It.IsAny<int>(),
+                    It.Is<int>(x=> x==_fixture.SalaryModel.EmployeeId),
                     It.IsAny<string>()))
-                .ReturnsAsync(salary);
+                .ReturnsAsync(_fixture.SalaryModel);
 
             //Act
-            var result = await _fixture.MockFinancialService.GetSalaryByUserIdAsync(salary.EmployeeId);
+
+            var result = await _fixture.MockFinancialService.GetSalaryByUserIdAsync(_fixture.SalaryModel.EmployeeId);
 
             //Assert
+
             Assert.NotNull(result);
-            Assert.Equal(salary, result);
+            Assert.IsAssignableFrom<Salary>(result);
+            _fixture.MockLoggerManager.Verify();
         }
 
         [Fact]
         public async Task GetSalaryByUserId_whenSalaryValueIsZero_thanNotFoundException()
         {
             //Arrange
-            var salaryWithValueIsZero = new Salary()
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 0
-            };
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetById(
                     It.IsAny<int>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(salaryWithValueIsZero);
+                .ReturnsAsync(_fixture.SalaryWithZeroValue);
 
             //Act
             //Assert
+
             await Assert.ThrowsAsync<NotFoundException>(async()=> await _fixture.MockFinancialService
-                .GetSalaryByUserIdAsync(salaryWithValueIsZero.EmployeeId));
+                .GetSalaryByUserIdAsync(_fixture.SalaryWithZeroValue.EmployeeId));
         }
 
         [Fact]
         public async Task GetSalaryByUserId_whenSalaryIsNotExist_thanNotFoundException()
         {
-            int id = 1;
             //Arrange
+
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetById(
-                    It.IsAny<int>(),
+                    It.Is<int>(x=> x==_fixture.UserId),
                     It.IsAny<string>()))
                 .ReturnsAsync(()=>null);
 
             //Act
             //Assert
+
             await Assert.ThrowsAsync<NotFoundException>(async () => await _fixture.MockFinancialService
-                .GetSalaryByUserIdAsync(id));
+                .GetSalaryByUserIdAsync(_fixture.UserId));
         }
 
         [Fact]
@@ -289,35 +345,35 @@ namespace Application.Test
         {
             //Arrange
 
-            var salary = new Salary
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 10
-            };
-
-            var oldSalary = new Salary 
-            { 
-               Id = 1, 
-               EmployeeId = 1,
-               Value = 20
-            };
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(salary);
+                .Setup(repo => repo.GetById(
+                    It.Is<int>(x=> x==_fixture.UserId), 
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryModel);
+
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Returns(Task.FromResult<object?>(null))
+                .Verifiable();
+
             //Act
-            await _fixture.MockFinancialService.UpdateSalaryAsync(oldSalary);
+
+            await _fixture.MockFinancialService.UpdateSalaryAsync(_fixture.UpdatedSalary);
 
             //Assert
 
-            _fixture.MockSalaryRepository.VerifyAll();
+            _fixture.MockLoggerManager.Verify();
+            _fixture.MockSalaryRepository.Verify(repo => repo.GetById(_fixture.UserId, ""), Times.Once);
+            _fixture.MockSalaryRepository.Verify(repo => repo.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
@@ -325,20 +381,17 @@ namespace Application.Test
         {
             //Arrange
 
-            var salary = new Salary
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 10
-            };
-
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(salary);
+                .Setup(repo => repo.GetById(
+                    It.Is<int>(x=>x==_fixture.SalaryModel.EmployeeId), 
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryModel);
 
             //Act
             //Assert
-            await Assert.ThrowsAsync<BadRequestException>(async () => await _fixture.MockFinancialService.UpdateSalaryAsync(salary));
+
+            await Assert.ThrowsAsync<BadRequestException>(async () => 
+                await _fixture.MockFinancialService.UpdateSalaryAsync(_fixture.SalaryModel));
         }
 
         [Fact]
@@ -346,110 +399,55 @@ namespace Application.Test
         {
             //Arrange
 
-            var salary = new Salary
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 0
-            };
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(salary);
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+                .Setup(repo => repo.GetById(
+                    It.Is<int>(x=> x==_fixture.SalaryWithZeroValue.EmployeeId), 
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryWithZeroValue);
+
             //Act
-
-
             //Assert
 
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _fixture.MockFinancialService
-                .UpdateSalaryAsync(salary));
+            await Assert.ThrowsAsync<NotFoundException>(async () => 
+                await _fixture.MockFinancialService.UpdateSalaryAsync(_fixture.SalaryModel));
         }
 
         [Fact]
         public async Task UpdateSalary_whenSalaryIsNotExist_thanNotFoundException()
         {
             //Arrange
-            var salary = new Salary
-            {
-                Id = 1,
-                EmployeeId = 1,
-                Value = 10
-            };
+
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogWarn(It.IsAny<string>()))
+                .Verifiable();
+
             _fixture.MockSalaryRepository
-                .Setup(repo => repo.GetById(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(repo => repo.GetById(
+                    It.Is<int>(x=> x==_fixture.SalaryModel.EmployeeId), 
+                    It.IsAny<string>()))
                 .ReturnsAsync(() => null);
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.InsertAsync(It.IsAny<Salary>()))
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
-            _fixture.MockSalaryRepository
-                .Setup(repo => repo.SaveChangesAsync())
-                .Returns(Task.FromResult<object?>(null)).Verifiable();
+
             //Act
-
-
             //Assert
 
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _fixture.MockFinancialService
-                .UpdateSalaryAsync(salary));
+            await Assert.ThrowsAsync<NotFoundException>(async () => 
+                await _fixture.MockFinancialService.UpdateSalaryAsync(_fixture.SalaryModel));
         }
 
         [Fact] 
-        public async Task GetListEmployeeWithoutSalary_whenItIsEmpty_thanSucceed()
+        public async Task GetListEmployeeWithoutSalary_whenItIsNotEmpty_thanSucceed()
         {
             //Arrange
-            var salaryList = new List<Salary>()
-            {
-                new Salary()
-                {
-                    Id = 1,
-                    EmployeeId = 1,
-                    Value = 10
-                },
-                new Salary()
-                {
-                    Id = 2,
-                    EmployeeId = 2,
-                    Value = 0
-                },
-                new Salary()
-                {
-                    Id = 3,
-                    EmployeeId = 3,
-                    Value = 30
-                }
-            };
-            var employeesId = new List<int>()
-            {
-                1,2,3
-            };
 
-            var listEmployees = new List<User>()
-            {
-                new User()
-                {
-                    Id = 1,
-                    FirstName = "first"
-                },
-                new User()
-                {
-                    Id = 2,
-                    FirstName = "second"
-                },
-                new User()
-                {
-                    Id = 3,
-                    FirstName = "third"
-                }
-            };
+            var pagedEmployees = new PagedList<User>(_fixture.EmployeeList, 5, 1, 5);
 
-            var pagedEmployees = new PagedList<User>(listEmployees, 5, 1, 5);
-
+            _fixture.MockLoggerManager
+                .Setup(logger => logger.LogInfo(It.IsAny<string>()))
+                .Verifiable();
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
@@ -457,10 +455,13 @@ namespace Application.Test
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
                     It.IsAny<string>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(salaryList);
+                .ReturnsAsync(_fixture.SalaryListFromRepo);
+
             _fixture.MockSalaryRepository
                 .Setup(repo=> repo.GetEmployees())
-                .ReturnsAsync(employeesId);
+                .ReturnsAsync(_fixture.EmployeeIdList)
+                .Verifiable();
+
             _fixture.MockUserRepository
                 .Setup(repo => repo.GetAllAsync(
                     It.IsAny<UserParameters>(),
@@ -470,63 +471,22 @@ namespace Application.Test
                 .ReturnsAsync(pagedEmployees);
 
             //Act
+
             var result = await _fixture.MockFinancialService.GetEmployeesWithoutSalary();
 
             //Assert
+
+            _fixture.MockLoggerManager.Verify();
             Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            _fixture.MockSalaryRepository.Verify(x => x.GetEmployees(), Times.Once);
+            Assert.IsAssignableFrom<IEnumerable<User>>(result);
         }
 
         [Fact]
         public async Task GetFinancialStatement_WhenAppoinmentsExist_thenReturnOk()
         {
             //Arrange
-            var date = new DatePeriod()
-            {
-                StartDate = new DateTime(2022, 5, 1),
-                EndDate = new DateTime(2022, 6, 1)
-            };
-            var appointments = new List<Appointment>
-            {
-                new Appointment
-                {
-                    Id = 1,
-                    AnimalId = 1,
-                    Disease ="first"
-                },
-                new Appointment
-                {
-                    Id = 2,
-                    AnimalId = 1,
-                    Disease ="second"
-                }
-            };
-            var procedure = new Procedure();
-            var salaries = new List<Salary>
-            { 
-                new Salary()
-                {
-                    EmployeeId =1,
-                    Value = 1,
-                },
-                new Salary()
-                {
-                    EmployeeId = 2,
-                    Value =1
-                }
-            };
-
-            var userOne = new User
-            {
-                Id=1,
-                FirstName = "frst",
-                LastName ="scnd"
-            };
-            var userTwo = new User
-            {
-                Id = 2,
-                FirstName = "dfg",
-                LastName = "erg"
-            };
 
             _fixture.MockAppointmentRepository
                 .Setup(repo =>
@@ -535,13 +495,22 @@ namespace Application.Test
                         It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
                         It.IsAny<string>(),
                         It.IsAny<bool>()))
-                .ReturnsAsync(appointments);
+                .ReturnsAsync(_fixture.AppointmentList);
+
             _fixture.MockProcedureRepository
                 .Setup(repo =>
                     repo.GetById(
-                        It.IsAny<int>(),
+                        It.Is<int>(x=> x==_fixture.ProcedureOne.Id),
                         It.IsAny<string>()))
-                .ReturnsAsync(procedure);
+                .ReturnsAsync(_fixture.ProcedureOne);
+
+            _fixture.MockProcedureRepository
+                .Setup(repo =>
+                     repo.GetById(
+                        It.Is<int>(x => x == _fixture.ProcedureTwo.Id),
+                        It.IsAny<string>()))
+                .ReturnsAsync(_fixture.ProcedureTwo);
+
             _fixture.MockSalaryRepository
                 .Setup(repo
                     => repo.GetAsync(
@@ -549,63 +518,36 @@ namespace Application.Test
                         It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
                         It.IsAny<string>(),
                         It.IsAny<bool>()))
-                .ReturnsAsync(salaries);
+                .ReturnsAsync(_fixture.SalaryList);
+
             _fixture.MockUserRepository
                 .Setup(repo=>
                     repo.GetByIdAsync(
-                        It.Is<int>(x=> x.Equals(userOne.Id)),
+                        It.Is<int>(x=> x.Equals(_fixture.UserOne.Id)),
                         It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(userOne);
+                .ReturnsAsync(_fixture.UserOne);
 
             _fixture.MockUserRepository
                 .Setup(repo =>
                     repo.GetByIdAsync(
-                        It.Is<int>(x => x.Equals(userTwo.Id)),
+                        It.Is<int>(x => x.Equals(_fixture.UserTwo.Id)),
                         It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(userTwo);
+                .ReturnsAsync(_fixture.UserTwo);
+
             //Act
-            var result = await _fixture.MockFinancialService.GetFinancialStatement(date);
+
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.Date);
             //Assert
+
             Assert.NotNull(result);
-            Assert.IsType<List<FinancialStatement>>(result);
+            Assert.NotEmpty(result);
+            Assert.IsAssignableFrom<IEnumerable<FinancialStatement>>(result);
         }
 
         [Fact]
         public async Task GetFinancialStatement_WhenAppoinmentsNotExist_thenReturnOk()
         {
             //Arrange
-            var date = new DatePeriod()
-            {
-                StartDate = new DateTime(2022, 5, 1),
-                EndDate = new DateTime(2022, 6, 1)
-            };
-            var appointments = new List<Appointment>();
-            var salaries = new List<Salary>
-            {
-                new Salary()
-                {
-                    EmployeeId =1,
-                    Value = 1,
-                },
-                new Salary()
-                {
-                    EmployeeId = 2,
-                    Value =1
-                }
-            };
-
-            var userOne = new User
-            {
-                Id = 1,
-                FirstName = "frst",
-                LastName = "scnd"
-            };
-            var userTwo = new User
-            {
-                Id = 2,
-                FirstName = "dfg",
-                LastName = "erg"
-            };
 
             _fixture.MockAppointmentRepository
                 .Setup(repo =>
@@ -614,7 +556,7 @@ namespace Application.Test
                         It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
                         It.IsAny<string>(),
                         It.IsAny<bool>()))
-                .ReturnsAsync(appointments);
+                .ReturnsAsync(_fixture.AppoinmentEmptyList);
 
             _fixture.MockSalaryRepository
                 .Setup(repo
@@ -623,25 +565,30 @@ namespace Application.Test
                         It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
                         It.IsAny<string>(),
                         It.IsAny<bool>()))
-                .ReturnsAsync(salaries);
-            _fixture.MockUserRepository
-                .Setup(repo =>
-                    repo.GetByIdAsync(
-                        It.Is<int>(x => x.Equals(userOne.Id)),
-                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(userOne);
+                .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockUserRepository
                 .Setup(repo =>
                     repo.GetByIdAsync(
-                        It.Is<int>(x => x.Equals(userTwo.Id)),
+                        It.Is<int>(x => x.Equals(_fixture.UserOne.Id)),
                         It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(userTwo);
+                .ReturnsAsync(_fixture.UserOne);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x.Equals(_fixture.UserTwo.Id)),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(_fixture.UserTwo);
+
             //Act
-            var result = await _fixture.MockFinancialService.GetFinancialStatement(date);
+
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.Date);
+
             //Assert
+
             Assert.NotNull(result);
-            Assert.IsType<List<FinancialStatement>>(result);
+            Assert.IsAssignableFrom<IEnumerable<FinancialStatement>>(result);
         }
     }
 }
