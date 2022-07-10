@@ -63,8 +63,6 @@ namespace WebApi.Test
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.IsAssignableFrom<IEnumerable<PortfolioCreateReadViewModel>>(result);
-
-            _fixture.MockPortfolioService.ResetCalls();
         }
 
         [Fact]
@@ -93,8 +91,6 @@ namespace WebApi.Test
             Assert.NotNull(result);
             Assert.Empty(result);
             Assert.IsAssignableFrom<IEnumerable<PortfolioCreateReadViewModel>>(result);
-
-            _fixture.MockPortfolioService.ResetCalls();
         }
 
         [Fact]
@@ -122,8 +118,6 @@ namespace WebApi.Test
 
             Assert.NotNull(result);
             Assert.IsType<PortfolioBaseViewModel>(result);
-
-            _fixture.MockPortfolioService.ResetCalls();
         }
 
         [Fact]
@@ -185,8 +179,6 @@ namespace WebApi.Test
 
             Assert.NotNull(result);
             Assert.IsType<NoContentResult>(result);
-
-            _fixture.MockPortfolioService.ResetCalls();
         }
 
         [Fact]

@@ -26,13 +26,13 @@ namespace DataAccess.Repositories
             string imageFormat)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
-            var fileName = $"profile-pictures/{email}.{imageFormat}";
+            var fileName = $"profile-pictures/{email}-{Guid.NewGuid()}.{imageFormat}";
 
-            var blobClient = blobContainer.GetBlobClient(fileName);
+            var blobItems = blobContainer.GetBlobs(prefix: $"profile-pictures/{email}");
 
-            if (await blobClient.ExistsAsync())
+            if (blobItems.Any())
             {
-                await DeleteAsync(fileName);
+                await DeleteAsync(blobItems.First().Name);
             }
 
             using (MemoryStream ms = new())
@@ -40,7 +40,7 @@ namespace DataAccess.Repositories
                 image.Save(ms, image.RawFormat);
                 ms.Position = 0;
 
-                await blobClient.UploadAsync(ms);
+                await blobContainer.UploadBlobAsync(fileName, ms);
             }
 
             fileName = $"{_configuration["Azure:ContainerLink"]}/{_containerName}/{fileName}";
