@@ -16,9 +16,9 @@ namespace Application.Services
         private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
         private readonly IUserSpecializationRepository _userSpecializationRepository;
 
-        readonly ILoggerManager _logger;
+        private readonly ILoggerManager _logger;
 
-        bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
+        private bool IsProcedureExistsInSpecialization(Specialization specialization, int procedureId)
         {
             return specialization.ProcedureSpecializations
                 .Any(pair => pair.SpecializationId == specialization.Id && pair.ProcedureId == procedureId);
@@ -48,7 +48,7 @@ namespace Application.Services
                     .Include(specialization => specialization.ProcedureSpecializations)
                         .ThenInclude(ps => ps.Procedure));
 
-            _logger.LogInfo($"specializations were recieved");
+            _logger.LogInfo("Specializations were received");
             return specializations;
         }
 
@@ -60,7 +60,7 @@ namespace Application.Services
 
         public async Task<Specialization> GetSpecializationByIdAsync(int id)
         {
-            Specialization specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User");
+            var specialization = await _repository.GetById(id, "ProcedureSpecializations.Procedure,ProcedureSpecializations,UserSpecializations.User");
             if (specialization is null)
             {
                 _logger.LogWarn($"Specialization with id: {id} not found");
@@ -72,8 +72,8 @@ namespace Application.Services
 
         public async Task<IEnumerable<Procedure>> GetSpecializationProcedures(int id)
         {
-            Specialization specialization = await GetSpecializationByIdAsync(id);
-            _logger.LogInfo($"Specialization's procedures found");
+            var specialization = await GetSpecializationByIdAsync(id);
+            _logger.LogInfo("Specialization's procedures found");
             return specialization.ProcedureSpecializations
                 .Select(ps => ps.Procedure);
         }
@@ -130,7 +130,7 @@ namespace Application.Services
 
         public async Task UpdateSpecializationAsync(int id, Specialization updated)
         {
-            Specialization specialization = await GetSpecializationByIdAsync(id);
+            var specialization = await GetSpecializationByIdAsync(id);
             specialization.Name = updated.Name;
             _repository.Update(specialization);
             _logger.LogInfo($"Specialization with id: {updated.Id} updated");

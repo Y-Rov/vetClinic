@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Core.Entities;
-using Core.Exceptions;
+﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Paginator;
 using Core.Paginator.Parameters;
@@ -9,7 +7,6 @@ using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SpecializationViewModels;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 

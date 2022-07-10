@@ -40,7 +40,7 @@ namespace Application.Test
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksExist_thenReturnFeedbacks()
         {
-            string filterParam = null;
+            string? filterParam = null;
             int takeCount = 10;
             int skipCount = 0;
 

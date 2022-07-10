@@ -12,7 +12,7 @@ namespace Application.Services
         private readonly IFeedbackRepository _repository;
         private readonly ILoggerManager _logger;
 
-        Expression<Func<Feedback, bool>> GetFilterQuery (string? filterParam)
+        private Expression<Func<Feedback, bool>>? GetFilterQuery (string? filterParam)
         {
             Expression<Func<Feedback, bool>>? filterQuery = null;
             
@@ -28,7 +28,7 @@ namespace Application.Services
         }
 
         public FeedbackService(
-            IFeedbackRepository repository, 
+            IFeedbackRepository repository,
             ILoggerManager logger)
         {
             _repository = repository;
@@ -41,7 +41,7 @@ namespace Application.Services
 
             await _repository.SaveChangesAsync();
 
-            _logger.LogInfo($"feedback was added");
+            _logger.LogInfo($"The new feedback with ID = {feedback.Id} was added");
         }
 
         public async Task<IEnumerable<Feedback>> GetAllFeedbacks(
@@ -49,7 +49,7 @@ namespace Application.Services
             int? takeCount, 
             int skipCount = 0)
         {
-            _logger.LogInfo($"feedbacks were recieved");
+            _logger.LogInfo("All feedbacks were received");
 
             return await _repository.QueryAsync(
                 asNoTracking: true,
