@@ -11,10 +11,10 @@ namespace Application.Services
 {
     public class SpecializationService : ISpecializationService
     {
-        readonly ISpecializationRepository _repository;
-        readonly IUserRepository _userRepository;
-        readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
-        readonly IUserSpecializationRepository _userSpecializationRepository;
+        private readonly ISpecializationRepository _repository;
+        private readonly IUserRepository _userRepository;
+        private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
+        private readonly IUserSpecializationRepository _userSpecializationRepository;
 
         readonly ILoggerManager _logger;
 
@@ -50,7 +50,6 @@ namespace Application.Services
 
             _logger.LogInfo($"specializations were recieved");
             return specializations;
-            //return await _repository.GetAsync(asNoTracking: true, includeProperties: "ProcedureSpecializations.Procedure,UserSpecializations,UserSpecializations.User");
         }
 
         public async Task<IEnumerable<User>> GetEmployeesAsync()

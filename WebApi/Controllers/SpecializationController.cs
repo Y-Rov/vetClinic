@@ -20,13 +20,13 @@ namespace WebApi.Controllers
     [ApiController]
     public class SpecializationController : ControllerBase
     {
-        readonly ISpecializationService _service;
-        readonly IViewModelMapper<SpecializationViewModel, Specialization> _mapper;
-        readonly IViewModelMapper<Specialization, SpecializationViewModel> _viewModelMapper;
-        readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
+        private readonly ISpecializationService _service;
+        private readonly IViewModelMapper<SpecializationViewModel, Specialization> _mapper;
+        private readonly IViewModelMapper<Specialization, SpecializationViewModel> _viewModelMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Procedure>, IEnumerable<ProcedureReadViewModel>>
             _procedureEnumerableViewModelMapper;
-        readonly IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> _pagedMapper;
-        readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _userListMapper;
+        private readonly IViewModelMapper<PagedList<Specialization>, PagedReadViewModel<SpecializationViewModel>> _pagedMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _userListMapper;
 
         public SpecializationController(
             ISpecializationService service, 

@@ -9,8 +9,8 @@ namespace Application.Services
 {
     public class FeedbackService : IFeedbackService
     {
-        readonly IFeedbackRepository _repository;
-        readonly ILoggerManager _logger;
+        private readonly IFeedbackRepository _repository;
+        private readonly ILoggerManager _logger;
 
         Expression<Func<Feedback, bool>> GetFilterQuery (string? filterParam)
         {
