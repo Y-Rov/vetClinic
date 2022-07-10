@@ -59,29 +59,6 @@ namespace Application.Test
             Assert.Empty(result);
         }
 
-        [Fact]
-        public async Task GetAllAppointmentsAsync_whenAppointmentsListIsEmpty_thanReturnEmptyAppointmentsList()
-        {
-            //Arrange
-            var emptyAppointments = new List<Appointment>();
-
-            _appointmentServiceFixture.MockAppointmentRepository
-                .Setup(r => r.GetAsync(
-                    It.IsAny<Expression<Func<Appointment, bool>>>(),
-                    It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
-                .ReturnsAsync(emptyAppointments);
-
-            //Act
-            var result = await _appointmentServiceFixture.MockAppointmentEntityService.GetAsync();
-
-            //Assert
-            Assert.NotNull(result);
-            Assert.Equal(emptyAppointments, result);
-        }
-
-
 
         [Fact]
         public async Task GetByIdAsync_Appointment_ReturnsOkObjectResult()
@@ -286,6 +263,7 @@ namespace Application.Test
         public async Task UpdateAsync_whenSomeAppointmentDontExist_thanThrowNotFound()
         {
             //Arrange
+
             _appointmentServiceFixture.MockAppointmentRepository
                .Setup(repo => repo.GetById(
                         It.IsAny<int>(),
