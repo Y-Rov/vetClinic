@@ -71,7 +71,7 @@ namespace Application.Services
         {
             var appointments = await _appointmentRepository.GetAsync(includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
 
-            _logger.LogInfo("Appointments were getted in method GetAsync");
+            _logger.LogInfo("Getting all Appointments in method GetAsync");
             return appointments;
         }
 
@@ -85,7 +85,7 @@ namespace Application.Services
                 throw new NotFoundException($"Appointment with Id {appointmentId} does not exist");
             }
 
-            _logger.LogInfo("Appointment was getted by appointmentId in method GetAsync");
+            _logger.LogInfo("appointment with appointmentId was fetched in method GetAsync");
             return appointment;
         }
 
@@ -155,7 +155,7 @@ namespace Application.Services
             existingAppointment.Disease = appointment.Disease;
             existingAppointment.AnimalId = appointment.AnimalId;
           
-            _logger.LogInfo("Appointment was getted by appointmentId in method UpdateAsync");
+            _logger.LogInfo("Getting Appointment by appointmentId in method UpdateAsync");
         }
     }
 }
