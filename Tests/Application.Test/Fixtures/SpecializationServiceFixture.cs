@@ -1,4 +1,4 @@
-﻿using Application.Services;
+using Application.Services;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using Core.Entities;

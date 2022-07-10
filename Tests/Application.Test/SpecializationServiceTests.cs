@@ -1,4 +1,4 @@
-﻿using Application.Test.Fixtures;
+using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Paginator;

@@ -26,13 +26,13 @@ namespace DataAccess.Context
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
             
-            modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-            modelBuilder.SeedRoles();
-            modelBuilder.SeedAdmin();
+            builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+            builder.SeedRoles();
+            builder.SeedAdmin();
         }
     }
 }

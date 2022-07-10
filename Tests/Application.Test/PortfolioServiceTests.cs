@@ -97,8 +97,6 @@ namespace Application.Test
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockPortfolioRepository.ResetCalls();
-
             Assert.NotNull(result);
             Assert.IsType<Portfolio>(result);
         }
@@ -123,8 +121,6 @@ namespace Application.Test
             // Assert
             _fixture.MockLoggerManager
                 .Verify();
-
-            _fixture.MockPortfolioRepository.ResetCalls();
 
             await Assert.ThrowsAsync<NotFoundException>(() => result);
             Assert.True(result.IsFaulted);
@@ -170,8 +166,6 @@ namespace Application.Test
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockPortfolioRepository.ResetCalls();
-
             await result;
             Assert.True(result.IsCompletedSuccessfully);
         }
@@ -195,8 +189,6 @@ namespace Application.Test
             // Assert
             _fixture.MockLoggerManager
                 .Verify();
-
-            _fixture.MockPortfolioRepository.ResetCalls();
 
             await Assert.ThrowsAsync<BadRequestException>(() => result);
             Assert.True(result.IsFaulted);
@@ -226,8 +218,6 @@ namespace Application.Test
 
             _fixture.MockLoggerManager
                 .Verify();
-
-            _fixture.MockPortfolioRepository.ResetCalls();
 
             await result;
             Assert.True(result.IsCompletedSuccessfully);
@@ -271,8 +261,6 @@ namespace Application.Test
             _fixture.MockLoggerManager
                 .Verify();
 
-            _fixture.MockPortfolioRepository.ResetCalls();
-
             await result;
             Assert.True(result.IsCompletedSuccessfully);
         }
@@ -296,8 +284,6 @@ namespace Application.Test
             // Assert
             _fixture.MockLoggerManager
                 .Verify();
-
-            _fixture.MockPortfolioRepository.ResetCalls();
 
             await Assert.ThrowsAsync<NotFoundException>(() => result);
             Assert.True(result.IsFaulted);

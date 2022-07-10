@@ -118,8 +118,6 @@ namespace WebApi.Test
 
             Assert.NotNull(result);
             Assert.IsType<AddressBaseViewModel>(result);
-
-            _fixture.MockAddressService.ResetCalls();
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿using Core.Entities;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Paginator;
 using Core.ViewModels;
