@@ -38,7 +38,6 @@ public class ProcedureRepository : Repository<Procedure>, IProcedureRepository
         string includeProperties = "")
     {
         IQueryable<Procedure> procedureQuery = _clinicContext.Procedures;
-            //(await GetAsync(includeProperties: includeProperties)).AsQueryable();
 
         if (!string.IsNullOrEmpty(includeProperties))
         {
