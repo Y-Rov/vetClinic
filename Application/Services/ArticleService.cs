@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Azure;
 using Core.Entities;
 using Core.Exceptions;
@@ -8,8 +7,6 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Paginator;
 using Core.Paginator.Parameters;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
@@ -35,13 +32,6 @@ public class ArticleService : IArticleService
         try
         {
             article.Body = await _imageParser.UploadImages(article.Body!);
-            await _articleRepository.InsertAsync(article);
-            await _articleRepository.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            _loggerManager.LogWarn($"user with id {article.AuthorId} not found");
-            throw new NotFoundException($"user with id {article.AuthorId} not found");
         }
         catch (RequestFailedException)
         {
@@ -49,6 +39,8 @@ public class ArticleService : IArticleService
             throw new BadRequestException("Error while uploading files to the blob");
         }
         
+        await _articleRepository.InsertAsync(article);
+        await _articleRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Created new article with title {article.Title}");
     }
     
@@ -58,7 +50,7 @@ public class ArticleService : IArticleService
         updatingArticle.Title = article.Title;
         try
         {
-            updatingArticle.Body = await _imageParser.UploadImages(article.Body);
+            updatingArticle.Body = await _imageParser.UploadImages(article.Body!);
         }
         catch (RequestFailedException)
         {
@@ -78,7 +70,7 @@ public class ArticleService : IArticleService
 
         try
         {
-            articleToRemove.Body = await _imageParser.DeleteImages(articleToRemove.Body);
+            await _imageParser.DeleteImages(articleToRemove.Body!);
         }
         catch (RequestFailedException)
         {

@@ -55,6 +55,7 @@ public class ProcedureService : IProcedureService
 
         foreach (var specializationId in specializationIds)
         {
+            var specialization = await _specializationService.GetSpecializationByIdAsync(specializationId);
             await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
             {
                 ProcedureId = newProcedureId,
@@ -66,20 +67,7 @@ public class ProcedureService : IProcedureService
     
     public async Task UpdateProcedureAsync(Procedure newProcedure, IEnumerable<int> specializationIds)
     {
-        try
-        {
-            await UpdateProcedureSpecializationsAsync(newProcedure.Id, specializationIds);
-        }
-        catch (InvalidOperationException)
-        {
-            _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
-            throw new NotFoundException("At least one of the specializations from the given list does not exist");
-        }
-        catch (DbUpdateException)
-        {
-            _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
-            throw new NotFoundException("At least one of the specializations from the given list does not exist");
-        }
+        await UpdateProcedureSpecializationsAsync(newProcedure.Id, specializationIds);
 
         _procedureRepository.Update(newProcedure);
         await _procedureRepository.SaveChangesAsync();

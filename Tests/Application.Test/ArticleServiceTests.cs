@@ -189,31 +189,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     }
 
     [Fact]
-    public async Task CreateArticleAsync_whenUserDontExist_thenThrowNotFound()
-    {
-        //Arrange
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ReturnsAsync("article body");
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.InsertAsync(It.IsAny<Article>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.SaveChangesAsync())
-            .Throws<DbUpdateException>();
-
-        //Act
-        var result = _fixture.MockArticleService.CreateArticleAsync(_fixture.ExpectedArticle);
-        
-        //Assert
-        _fixture.MockArticleRepository
-            .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Once);
-        await Assert.ThrowsAsync<NotFoundException>(() => result);
-    }
-
-    [Fact]
     public async Task CreateArticleAsync_whenBlobError_thenThrowBadRequest()
     {
         //Arrange
