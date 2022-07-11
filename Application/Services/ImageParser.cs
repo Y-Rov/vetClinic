@@ -1,4 +1,6 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Azure;
+using Core.Exceptions;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 
@@ -66,10 +68,19 @@ public class ImageParser : IImageParser
             ParseImgTag(tag, out bool isBase64, out var base64, out var format, out var link, out var isOuterLink);
             if (isBase64)
             {
-                var fileName = await _imageRepository.UploadFromBase64Async(
-                    base64: base64,
-                    folder: "articles",
-                    imageFormat: format);
+                string fileName;
+                try
+                {
+                     fileName = await _imageRepository.UploadFromBase64Async(
+                        base64: base64,
+                        folder: "articles",
+                        imageFormat: format);
+                }
+                catch (RequestFailedException)
+                {
+                    throw new BadRequestException("Error while uploading files to the blob");
+                }
+
                 var newLink = _configuration["Azure:ContainerLink"] + "/" + _configuration["Azure:ContainerName"] + "/" + fileName;
                 
                 body = body.Remove(
@@ -109,9 +120,16 @@ public class ImageParser : IImageParser
             {
                 int nameIndex = link.LastIndexOf('/');
                 var name = link.Substring(nameIndex + 1);
-                await _imageRepository.DeleteAsync(
-                    imageName: name,
-                    folder: "articles");
+                try
+                {
+                    await _imageRepository.DeleteAsync(
+                        imageName: name,
+                        folder: "articles");
+                }
+                catch (RequestFailedException)
+                {
+                    throw new BadRequestException("Error while uploading files to the blob");
+                }
             }
 
             body = body.Remove(

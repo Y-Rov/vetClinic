@@ -29,16 +29,8 @@ public class ArticleService : IArticleService
 
     public async Task CreateArticleAsync(Article article)
     {
-        try
-        {
-            article.Body = await _imageParser.UploadImages(article.Body!);
-        }
-        catch (RequestFailedException)
-        {
-            _loggerManager.LogWarn("Error while uploading files to the blob");
-            throw new BadRequestException("Error while uploading files to the blob");
-        }
-        
+        article.Body = await _imageParser.UploadImages(article.Body!);
+
         await _articleRepository.InsertAsync(article);
         await _articleRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Created new article with title {article.Title}");
@@ -48,15 +40,8 @@ public class ArticleService : IArticleService
     {
         var updatingArticle = await GetByIdAsync(article.Id);
         updatingArticle.Title = article.Title;
-        try
-        {
-            updatingArticle.Body = await _imageParser.UploadImages(article.Body!);
-        }
-        catch (RequestFailedException)
-        {
-            _loggerManager.LogWarn("Error while uploading files to the blob");
-            throw new BadRequestException("Error while uploading files to the blob");
-        }
+        updatingArticle.Body = await _imageParser.UploadImages(article.Body!);
+
         updatingArticle.Published = article.Published;
         updatingArticle.Edited = true;
 
@@ -67,17 +52,8 @@ public class ArticleService : IArticleService
     public async Task DeleteArticleAsync(int articleId)
     {
         var articleToRemove = await GetByIdAsync(articleId);
+        await _imageParser.DeleteImages(articleToRemove.Body!);
 
-        try
-        {
-            await _imageParser.DeleteImages(articleToRemove.Body!);
-        }
-        catch (RequestFailedException)
-        {
-            _loggerManager.LogWarn("Error while deleting files from the blob");
-            throw new BadRequestException("Error while deleting files from the blob");
-        }
-        
         _articleRepository.Delete(articleToRemove);
         await _articleRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Deleted article with id {articleId}");
