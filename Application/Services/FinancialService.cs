@@ -65,22 +65,24 @@ namespace Application.Services
 
         public async Task<IEnumerable<Salary>> GetSalaryAsync(Expression<Func<Salary, bool>>? filter)
         {
-            _logger.LogInfo($"salaries were recieved");
-            var allSalary = await _repository.GetAsync(filter, x => x.OrderBy(y => y.EmployeeId).ThenByDescending(y => y.Date));
-            var result = new List<Salary>();
-            int? id = null;
+            //var allSalary = await _repository.GetAsync(null, x => x.OrderBy(y => y.EmployeeId).ThenByDescending(y => y.Date));
+            //var result = new List<Salary>();
+            //int? id = null;
 
-            foreach (var salary in allSalary)
-            {
-                if((id!=salary.EmployeeId))
-                {
-                    id = salary.EmployeeId;
-                    if(salary.Value !=0)
-                    {
-                        result.Add(salary);
-                    }
-                }
-            }
+            //foreach (var salary in allSalary)
+            //{
+            //    if((id!=salary.EmployeeId))
+            //    {
+            //        id = salary.EmployeeId;
+            //        if(salary.Value !=0)
+            //        {
+            //            result.Add(salary);
+            //        }
+            //    }
+            //}
+
+            var result = await _repository.GetAsync(filter);
+            _logger.LogInfo($"salaries were recieved");
             return result;
         }
 
@@ -122,8 +124,9 @@ namespace Application.Services
         public async Task<IEnumerable<User>> GetEmployeesWithoutSalary()
         {
             var salaries = await GetSalaryAsync(null);
-            var employeesId = await _repository.GetEmployees();
-            var employees = await _userRepository.GetAllAsync(new UserParameters(), filter: x=> employeesId.Contains(x.Id));
+            var employees = await _userRepository.GetByRolesAsync(new List<int> { 1, 2, 3 });
+            //var employeesId = await _repository.GetEmployees();
+            //var employees = await _userRepository.GetAllAsync(new UserParameters(), filter: x=> employeesId.Contains(x.Id));
 
             var res = from salary in salaries
                       join employee in employees on salary.EmployeeId equals employee.Id
