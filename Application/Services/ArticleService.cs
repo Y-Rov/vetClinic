@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Azure;
 using Core.Entities;
 using Core.Exceptions;
@@ -9,7 +8,6 @@ using Core.Interfaces.Services;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
@@ -17,24 +15,24 @@ public class ArticleService : IArticleService
 {
     private readonly IArticleRepository _articleRepository;
     private readonly ILoggerManager _loggerManager;
-    private readonly IImageParser _imageParser;
+    private readonly IImageService _imageService;
 
     public ArticleService(
         IArticleRepository articleRepository,
         ILoggerManager loggerManager,
-        IImageParser imageParser
+        IImageService imageService
         )
     {
         _articleRepository = articleRepository;
         _loggerManager = loggerManager;
-        _imageParser = imageParser;
+        _imageService = imageService;
     }
 
     public async Task CreateArticleAsync(Article article)
     {
         try
         {
-            article.Body = await _imageParser.UploadImages(article.Body!);
+            article.Body = _imageService.TrimArticleImages(article.Body!);
             await _articleRepository.InsertAsync(article);
             await _articleRepository.SaveChangesAsync();
         }
@@ -58,7 +56,8 @@ public class ArticleService : IArticleService
         updatingArticle.Title = article.Title;
         try
         {
-            updatingArticle.Body = await _imageParser.UploadImages(article.Body);
+            await _imageService.ClearUnusedImagesAsync(article.Body, article.AuthorId);
+            updatingArticle.Body = await _imageService.UpdateArticleImagesAsync(article.Body, updatingArticle.Body);
         }
         catch (RequestFailedException)
         {
@@ -78,7 +77,7 @@ public class ArticleService : IArticleService
 
         try
         {
-            articleToRemove.Body = await _imageParser.DeleteImages(articleToRemove.Body);
+            articleToRemove.Body = await _imageService.DeleteImagesAsync(articleToRemove.Body);
         }
         catch (RequestFailedException)
         {

@@ -20,7 +20,7 @@ public class ArticleServiceFixture
 
         MockArticleRepository = fixture.Freeze<Mock<IArticleRepository>>();
         MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
-        MockImageParser = fixture.Freeze<Mock<IImageParser>>();
+        MockImageParser = fixture.Freeze<Mock<IImageService>>();
 
         ExpectedArticle = GetArticle();
         ExpectedArticles = GetArticles();
@@ -35,7 +35,7 @@ public class ArticleServiceFixture
     public ArticleService MockArticleService { get; }
     public Mock<IArticleRepository> MockArticleRepository { get; }
     public Mock<ILoggerManager> MockLoggerManager { get; }
-    public Mock<IImageParser> MockImageParser { get; }
+    public Mock<IImageService> MockImageParser { get; }
     
     public Article ExpectedArticle { get; }
     public List<Article> ExpectedArticles { get; }

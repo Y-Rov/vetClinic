@@ -19,7 +19,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img src=\"data:image/png;base64,***base 64 string***\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -36,7 +36,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img alt=\"hello\" src=\"data:image/png;base64,***base 64 string***\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -53,7 +53,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img src=\"data:image/png;base64,***base 64 string***\" alt=\"hello\" style=\"hello: hello\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -70,7 +70,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img alt=\"hello\" src=\"data:image/png;base64,***base 64 string***\" style=\"hello: hello\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -87,7 +87,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img src=\"data:image/jpeg;base64,***base 64 string***\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -104,7 +104,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img alt=\"hello\" src=\"data:image/jpeg;base64,***base 64 string***\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -121,7 +121,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img src=\"data:image/jpeg;base64,***base 64 string***\" alt=\"hello\" style=\"hello: hello\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -138,7 +138,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
         var tag = "<img alt=\"hello\" src=\"data:image/jpeg;base64,***base 64 string***\" style=\"hello: hello\">";
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.True(isBase64);
@@ -159,7 +159,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("http://127.0.0.1:10000/devstoreaccount1");
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.False(isBase64);
@@ -180,7 +180,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("http://127.0.0.1:10000/devstoreaccount1");
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.False(isBase64);
@@ -201,7 +201,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("http://127.0.0.1:10000/devstoreaccount1");
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.False(isBase64);
@@ -222,7 +222,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("http://127.0.0.1:10000/devstoreaccount1");
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.False(isBase64);
@@ -243,7 +243,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("http://127.0.0.1:10000/devstoreaccount1");
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.False(isBase64);
@@ -264,7 +264,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("http://127.0.0.1:10000/devstoreaccount1");
         
         //Act
-        _fixture.ImageParser.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
+        _fixture.ImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
         
         //Assert
         Assert.False(isBase64);
@@ -301,7 +301,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.UploadImages(tag);
+        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
                 It.IsAny<string>(),
@@ -343,7 +343,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.UploadImages(tag);
+        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
@@ -386,7 +386,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.UploadImages(tag);
+        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
@@ -429,7 +429,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.UploadImages(tag);
+        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
                 It.IsAny<string>(),
@@ -468,7 +468,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.DeleteImages(tag);
+        var result = await _fixture.ImageService.DeleteImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
@@ -505,7 +505,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.DeleteImages(tag);
+        var result = await _fixture.ImageService.DeleteImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
@@ -542,7 +542,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageParser.DeleteImages(tag);
+        var result = await _fixture.ImageService.DeleteImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                

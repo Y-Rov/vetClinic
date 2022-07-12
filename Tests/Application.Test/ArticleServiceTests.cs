@@ -169,7 +169,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     {
         //Arrange
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository
@@ -193,7 +193,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     {
         //Arrange
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository
@@ -218,7 +218,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     {
         //Arrange
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ThrowsAsync(new BadRequestException());
         
         _fixture.MockArticleRepository
@@ -249,7 +249,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
             .ReturnsAsync(_fixture.ExpectedArticle);
 
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository
@@ -275,7 +275,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
             .ReturnsAsync(_fixture.ExpectedArticle);
         
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ThrowsAsync(new RequestFailedException(""));
 
         _fixture.MockArticleRepository
@@ -307,7 +307,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
             .ThrowsAsync(new NotFoundException());
         
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
 
         _fixture.MockArticleRepository
@@ -339,7 +339,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
             .ReturnsAsync(_fixture.ExpectedArticle);
 
         _fixture.MockImageParser
-            .Setup(ip => ip.DeleteImages(It.IsAny<string>()))
+            .Setup(ip => ip.DeleteImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository
@@ -369,7 +369,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
             .ReturnsAsync(_fixture.ExpectedArticle);
         
         _fixture.MockImageParser
-            .Setup(ip => ip.DeleteImages(It.IsAny<string>()))
+            .Setup(ip => ip.DeleteImagesAsync(It.IsAny<string>()))
             .ThrowsAsync(new RequestFailedException(""));
         
         _fixture.MockArticleRepository
@@ -405,7 +405,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
             .ThrowsAsync(new NotFoundException());
         
         _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+            .Setup(ip => ip.UpdateArticleImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository

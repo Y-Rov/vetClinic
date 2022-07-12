@@ -17,10 +17,10 @@ public class ImageParserFixture
         MockConfiguration = fixture.Freeze<Mock<IConfiguration>>();
         MockImageRepository = fixture.Freeze<Mock<IImageRepository>>();
 
-        ImageParser = new ImageParser(MockConfiguration.Object, MockImageRepository.Object);
+        ImageService = new ImageService(MockConfiguration.Object, MockImageRepository.Object);
     }
     
     public Mock<IConfiguration> MockConfiguration { get; }
     public Mock<IImageRepository> MockImageRepository { get; }
-    public ImageParser ImageParser { get; }
+    public ImageService ImageService { get; }
 }
