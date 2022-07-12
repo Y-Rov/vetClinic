@@ -6,6 +6,7 @@ using Core.Interfaces.Services;
 using Core.Paginator.Parameters;
 using Core.Models.Finance;
 using System.Linq.Expressions;
+using Core.Paginator;
 
 namespace Application.Services
 {
@@ -63,25 +64,10 @@ namespace Application.Services
             _logger.LogInfo($"Salary with id: {id} deleted");
         }
 
-        public async Task<IEnumerable<Salary>> GetSalaryAsync(Expression<Func<Salary, bool>>? filter)
+        public async Task<PagedList<Salary>> GetSalaryAsync(SalaryParametrs parametrs)
         {
-            //var allSalary = await _repository.GetAsync(null, x => x.OrderBy(y => y.EmployeeId).ThenByDescending(y => y.Date));
-            //var result = new List<Salary>();
-            //int? id = null;
 
-            //foreach (var salary in allSalary)
-            //{
-            //    if((id!=salary.EmployeeId))
-            //    {
-            //        id = salary.EmployeeId;
-            //        if(salary.Value !=0)
-            //        {
-            //            result.Add(salary);
-            //        }
-            //    }
-            //}
-
-            var result = await _repository.GetAsync(filter);
+            var result = await _repository.GetAsync(parametrs);
             _logger.LogInfo($"salaries were recieved");
             return result;
         }
@@ -125,8 +111,6 @@ namespace Application.Services
         {
             var salaries = await GetSalaryAsync(null);
             var employees = await _userRepository.GetByRolesAsync(new List<int> { 1, 2, 3 });
-            //var employeesId = await _repository.GetEmployees();
-            //var employees = await _userRepository.GetAllAsync(new UserParameters(), filter: x=> employeesId.Contains(x.Id));
 
             var res = from salary in salaries
                       join employee in employees on salary.EmployeeId equals employee.Id
@@ -193,9 +177,13 @@ namespace Application.Services
                 }
 
             }
-
+            SalaryParametrs parametrs = new SalaryParametrs()
+            {
+                PageNumber = 1,
+                PageSize = 100
+            };
             //Get all Salaries where we need to pay in Period
-            var salaries = await GetSalaryAsync(x => x.Date < date.StartDate);
+            var salaries = await _repository.GetAsync(parametrs,filter:x => x.Date < date.StartDate);
 
             var _expences = new List<Expences>();
             foreach(var salary in salaries)

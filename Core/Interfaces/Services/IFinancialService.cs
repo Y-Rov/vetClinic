@@ -1,16 +1,15 @@
 ﻿using Core.Entities;
 using Core.Models.Finance;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using System.Linq.Expressions;
 
 namespace Core.Interfaces.Services
 {
     public interface IFinancialService
     {
-        //public void GenerateFinancialStatementForMonth();
-        //public void GenerateFinancialStatementForHalfOfYear();
-        //public void GenerateFinancialStatementForYear();
         Task<Salary> GetSalaryByUserIdAsync(int id);
-        Task<IEnumerable<Salary>> GetSalaryAsync(Expression<Func<Salary, bool>>? filter);
+        Task<PagedList<Salary>> GetSalaryAsync(SalaryParametrs paramerts);
         Task CreateSalaryAsync(Salary salary);
         Task UpdateSalaryAsync(Salary salary);
         Task DeleteSalaryByUserIdAsync(int id);

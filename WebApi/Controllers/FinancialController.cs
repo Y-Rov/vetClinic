@@ -1,6 +1,9 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models.Finance;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +20,7 @@ namespace WebApi.Controllers
         private readonly IUserService _userService;
         private readonly IViewModelMapper<Salary, SalaryViewModel> _readSalary;
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
-        private readonly IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> _readSalaryList;
+        private readonly IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
         private readonly IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> _finStatViewModel;
 
@@ -26,7 +29,7 @@ namespace WebApi.Controllers
             IUserService userService,
             IViewModelMapper<Salary, SalaryViewModel> readSalary,
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
-            IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>> readSalaryList,
+            IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
             IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> finStatViewModel
             )
@@ -41,11 +44,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<SalaryViewModel>> GetAsync()
+        public async Task<PagedReadViewModel<SalaryViewModel>> GetAsync([FromQuery] SalaryParametrs parametrs)
         {
-            var salaries = await _financialService.GetSalaryAsync(null);
+            var salaries = await _financialService.GetSalaryAsync(parametrs);
             var readSalary = _readSalaryList.Map(salaries);
-            foreach(var res in readSalary)
+            foreach(var res in readSalary.Entities)
             {
                 var user = await _userService.GetUserByIdAsync(res.Id);
                 res.Name = user.FirstName + " " + user.LastName;
