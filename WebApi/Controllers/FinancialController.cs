@@ -13,7 +13,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Accountant")]
+    //[Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
@@ -22,7 +22,7 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<SalaryViewModel, Salary> _writeSalary;
         private readonly IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
-        private readonly IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> _finStatViewModel;
+        private readonly IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> _finStatViewModel;
 
         public FinancialController(
             IFinancialService financialService,
@@ -31,7 +31,7 @@ namespace WebApi.Controllers
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
             IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
-            IViewModelMapper<IEnumerable<FinancialStatement>, IEnumerable<FinancialStatementForMonthViewModel>> finStatViewModel
+            IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> finStatViewModel
             )
         {
             _financialService = financialService;
@@ -97,14 +97,16 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("/api/financialStatements")]
-        public async Task<IEnumerable<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(DatePeriod incomeDate)
+        public async Task<PagedReadViewModel<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(
+            DatePeriod incomeDate, 
+            [FromQuery] FinancialStatementParameters parameters)
         {
             var date = new DatePeriod()
             {
                 StartDate = incomeDate.StartDate.ToLocalTime(),
                 EndDate = incomeDate.EndDate.ToLocalTime()
             };
-            var result = await _financialService.GetFinancialStatement(date);
+            var result = await _financialService.GetFinancialStatement(date, parameters);
             var finViewModel = _finStatViewModel.Map(result);
             return finViewModel;
         }
