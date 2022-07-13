@@ -33,6 +33,7 @@ public class ArticleService : IArticleService
         try
         {
             article.Body = _imageService.TrimArticleImages(article.Body!);
+            await _imageService.ClearUnusedImagesAsync(article.Body, article.AuthorId);
             await _articleRepository.InsertAsync(article);
             await _articleRepository.SaveChangesAsync();
         }
@@ -56,8 +57,9 @@ public class ArticleService : IArticleService
         updatingArticle.Title = article.Title;
         try
         {
-            await _imageService.ClearUnusedImagesAsync(article.Body, article.AuthorId);
-            updatingArticle.Body = await _imageService.UpdateArticleImagesAsync(article.Body, updatingArticle.Body);
+            updatingArticle.Body = _imageService.TrimArticleImages(article.Body);
+            await _imageService.ClearUnusedImagesAsync(article.Body, updatingArticle.AuthorId);
+            await _imageService.ClearOutdatedImagesAsync(article.Body, updatingArticle.Body);
         }
         catch (RequestFailedException)
         {

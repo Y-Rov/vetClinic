@@ -1,5 +1,7 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.Exceptions;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
@@ -59,32 +61,17 @@ public class ImageService : IImageService
         return body;
     }
     
-    public async Task<string> UpdateArticleImagesAsync(string newBody, string oldBody)
+    public async Task ClearOutdatedImagesAsync(string newBody, string oldBody)
     {
-        var tagSplitter = new TagSplitter(newBody);
-        while (tagSplitter.TryGetNextTag(out string tag, out var startIndex, out var length))
-        {
-            ParseImgTag(tag, out var link, out _ , out var isOuterLink);
-            if (isOuterLink)
-            {
-                //avoid writing
-                newBody = newBody.Remove(
-                    startIndex: startIndex ,
-                    count: length);
-                newBody = newBody.Insert(startIndex, "<img src=\"" +link + '"');
-            }
-        }
-
-        tagSplitter.Reset(oldBody);
+        var tagSplitter = new TagSplitter(oldBody);
         while (tagSplitter.TryGetNextTag(out var tag))
         {
             ParseImgTag(tag, out _, out var possibleFileName, out _);
-            if (!string.IsNullOrEmpty(possibleFileName) && newBody.Contains(possibleFileName))
+            if (!string.IsNullOrEmpty(possibleFileName) && !newBody.Contains(possibleFileName))
             {
                 await _imageRepository.DeleteAsync(possibleFileName, "articles");
             }
         }
-        return newBody;
     }
     
     
@@ -139,5 +126,35 @@ public class ImageService : IImageService
             }
         }
         _memoryCache.Remove(authorId);
+    }
+
+    public async Task<string> UploadImageAsync(IFormFile file, int authorId)
+    {
+        var imageFormat = file.ContentType.Split('/').Last();
+        var formats = new String[]
+        {
+            "png", "jpg", "jpeg", "webp", "gif"
+        };
+        if (!formats.Contains(imageFormat))
+        {
+            throw new BadRequestException("Wrong image format!");
+        }
+
+        var link = await _imageRepository.UploadFromIFormFile(file, "articles");
+        var fileName = link.Split('/').Last();
+        
+        var currentList = _memoryCache.Get<List<string>>(authorId);
+      
+        if (currentList is null || currentList.Count == 0)
+        {
+            _memoryCache.Set(authorId, new List<string> { fileName },TimeSpan.FromMinutes(30));
+        }
+        else
+        {
+            currentList.Add(fileName);
+            _memoryCache.Set(authorId, currentList,TimeSpan.FromMinutes(30));
+        }
+
+        return link;
     }
 }

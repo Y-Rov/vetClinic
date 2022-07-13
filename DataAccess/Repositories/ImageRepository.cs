@@ -23,7 +23,7 @@ public class ImageRepository : IImageRepository
         _memoryCache = memoryCache;
     }
 
-  public async Task<string> UploadFromIFormFile(IFormFile file, int authorId,  string folder, string fileName = "")
+  public async Task<string> UploadFromIFormFile(IFormFile file, string folder, string fileName = "")
   {
       var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
       if(string.IsNullOrEmpty(fileName))
@@ -32,35 +32,16 @@ public class ImageRepository : IImageRepository
       }
 
       var imageFormat = file.ContentType.Split('/').Last();
-      var formats = new String[]
-      {
-          "png", "jpg", "jpeg", "webp", "gif"
-      };
-      if (!formats.Contains(imageFormat))
-      {
-          throw new BadRequestException("Wrong image format!");
-      }
-      
-      fileName = $"{folder}/{fileName}.{imageFormat}";
+
+      var fullFilePath = $"{folder}/{fileName}.{imageFormat}";
       var ms = new MemoryStream();
-      var blobClient = blobContainer.GetBlobClient(fileName);
+      var blobClient = blobContainer.GetBlobClient(fullFilePath);
       await file.CopyToAsync(ms);
       ms.Position = 0;
 
       await blobClient.UploadAsync(ms);
-      var currentList = _memoryCache.Get<List<string>>(authorId);
-      
-      if (currentList is null || currentList.Count == 0)
-      {
-          _memoryCache.Set(authorId, new List<string> { fileName },TimeSpan.FromMinutes(30));
-      }
-      else
-      {
-          currentList.Add(fileName);
-          _memoryCache.Set(authorId, currentList,TimeSpan.FromMinutes(30));
-      }
 
-      return $"{_configuration["Azure:ContainerLink"]}/{_configuration["Azure:ContainerName"]}/{fileName}";
+      return $"{_configuration["Azure:ContainerLink"]}/{_configuration["Azure:ContainerName"]}/{fullFilePath}";
   }
 
   public async Task DeleteAsync(string imageName, string folder)

@@ -301,7 +301,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
+        var result = await _fixture.ImageService.ClearOutdatedImagesAsync(tag);
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
                 It.IsAny<string>(),
@@ -343,7 +343,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
+        var result = await _fixture.ImageService.ClearOutdatedImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
@@ -386,7 +386,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
+        var result = await _fixture.ImageService.ClearOutdatedImagesAsync(tag);
         
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
@@ -429,7 +429,7 @@ public class ImageParserTests : IClassFixture<ImageParserFixture>
             .Returns("vet-clinic");
         
         //Act
-        var result = await _fixture.ImageService.UpdateArticleImagesAsync(tag);
+        var result = await _fixture.ImageService.ClearOutdatedImagesAsync(tag);
         //Assert
         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
                 It.IsAny<string>(),

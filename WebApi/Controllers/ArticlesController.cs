@@ -22,7 +22,6 @@ public class ArticlesController : ControllerBase
     private readonly IViewModelMapper<UpdateArticleViewModel, Article> _updateMapper;
     private readonly IViewModelMapper<Article, ReadArticleViewModel> _readMapper;
     private readonly IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> _readPagedMapper;
-    private readonly IImageRepository _imageRepository;
     private readonly UserManager<User> _userManager;
     private readonly IImageService _imageService;
 
@@ -33,7 +32,6 @@ public class ArticlesController : ControllerBase
         IViewModelMapper<UpdateArticleViewModel, Article> updateMapper,
         IViewModelMapper<Article, ReadArticleViewModel> readMapper,
         IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> readPagedMapper,
-        IImageRepository imageRepository,
         UserManager<User> userManager, IImageService imageService)
     {
         _articleService = articleService;
@@ -41,7 +39,6 @@ public class ArticlesController : ControllerBase
         _updateMapper = updateMapper;
         _readMapper = readMapper;
         _readPagedMapper = readPagedMapper;
-        _imageRepository = imageRepository;
         _userManager = userManager;
         _imageService = imageService;
     }
@@ -99,7 +96,7 @@ public class ArticlesController : ControllerBase
     public async Task<ImageViewModel> UploadImage(IFormFile file)
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
-        var link = await _imageRepository.UploadFromIFormFile(file, user.Id, "articles");
+        var link = await _imageService.UploadImageAsync(file, user.Id);
         return new ImageViewModel()
         {
             ImageUrl = link
