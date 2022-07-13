@@ -23,7 +23,6 @@ namespace WebApi.Controllers
         public FeedbackController(
             IFeedbackService service, 
             IViewModelMapper<FeedbackCreateViewModel, Feedback> createFeedbackMapper,
-            IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> listMapper,
             IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>> pagedListMapper)
         {
             _service = service;

@@ -3,6 +3,8 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Paginator;
+using Core.ViewModels;
 using Core.ViewModels.FeedbackViewModels;
 using Moq;
 using WebApi.AutoMapper.Interface;
@@ -24,18 +26,18 @@ namespace WebApi.Test.Fixtures
 
             MockFeedbackService = fixture.Freeze<Mock<IFeedbackService>>();
             MockCreateFeedbackMapper = fixture.Freeze<Mock<IViewModelMapper<FeedbackCreateViewModel, Feedback>>>();
-            MockListFeedbackMapper = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>>>>();
+            MockPagedMapper = fixture.Freeze<Mock<IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>>>>();
 
             MockController = new FeedbackController(
                 MockFeedbackService.Object,
                 MockCreateFeedbackMapper.Object,
-                MockListFeedbackMapper.Object);
+                MockPagedMapper.Object);
         }
 
         public FeedbackController MockController { get; }
         public Mock<IFeedbackService> MockFeedbackService { get; }
         public Mock<IViewModelMapper<FeedbackCreateViewModel, Feedback>> MockCreateFeedbackMapper { get; }
-        public Mock<IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>>> MockListFeedbackMapper { get; }
+        public Mock<IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>>> MockPagedMapper { get; }
 
         public IEnumerable<Feedback> ExpectedFeedbacks { get; set; }
         public IEnumerable<FeedbackReadViewModel> ExpectedFeedbacksViewModel { get; set; }

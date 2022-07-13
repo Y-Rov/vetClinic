@@ -1,5 +1,6 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System.Linq.Expressions;
@@ -40,24 +41,16 @@ namespace Application.Test
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksExist_thenReturnFeedbacks()
         {
-            string? filterParam = null;
-            int takeCount = 10;
-            int skipCount = 0;
 
             _fixture.MockRepository.Setup(repository =>
-                repository.QueryAsync(
+                repository.GetPaged(
+                    It.IsAny<FeedbackParameters>(),
                     It.IsAny<Expression<Func<Feedback, bool>>>(),
-                    It.IsAny<Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>>>(),
-                    It.IsAny<Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>>(),
-                    It.Is<int>(take => take == takeCount),
-                    It.Is<int>(skip => skip == skipCount),
-                    It.IsAny<bool>()))
+                    It.IsAny<Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>>()))
                 .ReturnsAsync(_fixture.ExpectedFeedbacks);
 
             var result = await _fixture.MockService.GetAllFeedbacks(
-                    filterParam,
-                    takeCount,
-                    skipCount
+                    _fixture.TestParameters
                 );
 
             Assert.NotNull(result);
@@ -68,27 +61,17 @@ namespace Application.Test
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksDontExist_thenReturnEmptyList()
         {
-            string? filterParam = null;
-            int takeCount = 10;
-            int skipCount = 0;
-
-            List<Feedback> emptyFeedbacks = new List<Feedback>();
-
+            
             _fixture.MockRepository.Setup(repository =>
-                repository.QueryAsync(
-                    It.IsAny<Expression<Func<Feedback, bool>>>(),
-                    It.IsAny<Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>>>(),
-                    It.IsAny<Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>>(),
-                    It.Is<int>(take => take == takeCount),
-                    It.Is<int>(skip => skip == skipCount),
-                    It.IsAny<bool>()))
-                .ReturnsAsync(emptyFeedbacks);
+                repository.GetPaged(
+                It.IsAny<FeedbackParameters>(),
+                It.IsAny<Expression<Func<Feedback, bool>>>(),
+                It.IsAny<Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>>()))
+            .ReturnsAsync(_fixture.ExpectedEmptyFeedbacks);
 
-            var result = await _fixture.MockService.GetAllFeedbacks(
-                    filterParam,
-                    takeCount,
-                    skipCount
-                );
+
+
+            var result = await _fixture.MockService.GetAllFeedbacks(_fixture.TestParameters);
 
             Assert.NotNull(result);
             Assert.Empty(result);
