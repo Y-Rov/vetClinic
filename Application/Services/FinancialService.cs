@@ -240,7 +240,9 @@ namespace Application.Services
             }
         }
 
-        public async Task<PagedList<FinancialStatement>> GetFinancialStatement(DatePeriod date, FinancialStatementParameters parametrs)
+        public async Task<PagedList<FinancialStatement>> GetFinancialStatement(
+            DatePeriod date, 
+            FinancialStatementParameters parametrs)
         {
             var countMonth = GetMonthsBetween(date.StartDate, date.EndDate);
             var finStatList = new List<FinancialStatement>();
