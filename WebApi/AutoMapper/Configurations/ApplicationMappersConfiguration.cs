@@ -104,7 +104,8 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Appointment, AppointmentReadViewModel>, AppointmentReadMapper>();
         services.AddScoped<IViewModelMapper<AppointmentCreateViewModel, Appointment>, AppointmentCreateMapper>();
         services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();
-        services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>, AppointmentPagedMapper>();
 
         services.AddScoped<IViewModelMapper<Feedback, FeedbackReadViewModel>, FeedbackMapper>();
         services.AddScoped<IViewModelMapper<FeedbackCreateViewModel, Feedback>, FeedbackCreateMapper>();
