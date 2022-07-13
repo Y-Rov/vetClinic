@@ -11,7 +11,6 @@ namespace Core.Interfaces.Repositories
         public Task<PagedList<Feedback>> GetPaged(
             FeedbackParameters parameters,
             Expression<Func<Feedback, bool>>? filter = null,
-            Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>>? orderBy = null,
             Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>? includeProperties = null);
     }
 }

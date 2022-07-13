@@ -43,12 +43,10 @@ namespace DataAccess.Repositories
         public async Task<PagedList<Feedback>> GetPaged(
             FeedbackParameters parameters,
             Expression<Func<Feedback, bool>>? filter = null,
-            Func<IQueryable<Feedback>, IOrderedQueryable<Feedback>>? orderBy = null,
             Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>? includeProperties = null)
         {
             var feedbacks = await GetQuery(
                 filter: filter,
-                orderBy: orderBy,
                 includeProperties: includeProperties,
                 asNoTracking:true).ToPagedListAsync(parameters.PageNumber, parameters.PageSize);
 

@@ -1,6 +1,9 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.FeedbackViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,27 +18,28 @@ namespace WebApi.Controllers
         private readonly IFeedbackService _service;
 
         private readonly IViewModelMapper<FeedbackCreateViewModel, Feedback> _createFeedbackMapper;
-        private readonly IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> _listMapper;
+        private readonly IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>> _pagedListMapper;
 
         public FeedbackController(
             IFeedbackService service, 
             IViewModelMapper<FeedbackCreateViewModel, Feedback> createFeedbackMapper,
-            IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> listMapper)
+            IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>> listMapper,
+            IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>> pagedListMapper)
         {
             _service = service;
             _createFeedbackMapper = createFeedbackMapper;
-            _listMapper = listMapper;
+            _pagedListMapper = pagedListMapper;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IEnumerable<FeedbackReadViewModel>> GetAllFeedbacks(
-            [FromQuery] CollateParameters parameters)
+        public async Task<PagedReadViewModel<FeedbackReadViewModel>> GetAllFeedbacks(
+            [FromQuery] FeedbackParameters parameters)
         {
             var feedbacks = 
-                    await _service.GetAllFeedbacks(parameters.FilterParam, parameters.TakeCount, parameters.SkipCount);
+                    await _service.GetAllFeedbacks(parameters);
 
-            var mappedFeedbacks = _listMapper.Map(feedbacks);
+            var mappedFeedbacks = _pagedListMapper.Map(feedbacks);
 
             return mappedFeedbacks;
         }
