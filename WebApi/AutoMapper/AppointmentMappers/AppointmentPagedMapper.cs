@@ -5,7 +5,7 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AppointmentMappers
 {
-    public class AppointmentPagedMapper : IEnumerableViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>
+    public class AppointmentPagedMapper : IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>
     {
         readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>
             _listMapper;
