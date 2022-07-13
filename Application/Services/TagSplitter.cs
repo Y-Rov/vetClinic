@@ -28,10 +28,9 @@ public class TagSplitter
 
         _previousTagIndex = tagIndex + 1;
 
-        var closingQuoteIndex = _articleBody.Span.Slice(tagIndex).IndexOf(">", StringComparison.Ordinal);
-        tag = _articleBody.Slice(tagIndex, closingQuoteIndex - tagIndex + 1);
+        length = _articleBody.Span.Slice(tagIndex).IndexOf(">", StringComparison.Ordinal) + 1;
+        tag = _articleBody.Slice(tagIndex, length);
         startIndex = tagIndex;
-        length = closingQuoteIndex - tagIndex;
         return true;
     }
 

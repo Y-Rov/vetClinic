@@ -57,9 +57,9 @@ public class ArticleService : IArticleService
         updatingArticle.Title = article.Title;
         try
         {
-            updatingArticle.Body = _imageService.TrimArticleImages(article.Body);
             await _imageService.ClearUnusedImagesAsync(article.Body, updatingArticle.AuthorId);
             await _imageService.ClearOutdatedImagesAsync(article.Body, updatingArticle.Body);
+            updatingArticle.Body = _imageService.TrimArticleImages(article.Body);
         }
         catch (RequestFailedException)
         {

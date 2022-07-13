@@ -28,9 +28,9 @@ public class ImageService : IImageService
         isOuterLink = false;
         int srcOffset = tag.Span.IndexOf("src", StringComparison.Ordinal) - 5;
         
-        int possibleQueryIndex = tag.Span.Slice(11 + srcOffset).IndexOf("?", StringComparison.Ordinal);
-        int closingQuoteIndex = tag.Span.Slice(11 + srcOffset).IndexOf("\"", StringComparison.Ordinal);
-        int linkEndingIndex = possibleQueryIndex > 0 && possibleQueryIndex < closingQuoteIndex
+        int possibleQueryIndex = tag.Span.Slice(11 + srcOffset).IndexOf("?", StringComparison.Ordinal) + 11 + srcOffset;
+        int closingQuoteIndex = tag.Span.Slice(11 + srcOffset).IndexOf("\"", StringComparison.Ordinal) + 11 + srcOffset;
+        int linkEndingIndex = possibleQueryIndex > 11 && possibleQueryIndex < closingQuoteIndex
             ? possibleQueryIndex
             : closingQuoteIndex;
         link = tag.Slice(10 + srcOffset, linkEndingIndex - 10 - srcOffset);
@@ -40,7 +40,7 @@ public class ImageService : IImageService
         if (!isOuterLink)
         {
             int nameStartIndex = link.Span.LastIndexOf("/", StringComparison.Ordinal);
-            fileName = link.Slice(nameStartIndex);        
+            fileName = link.Slice(nameStartIndex + 1);        
         }
     }
 
@@ -65,12 +65,16 @@ public class ImageService : IImageService
     
     public async Task ClearOutdatedImagesAsync(string newBody, string oldBody)
     {
+        if (oldBody == newBody)
+        {
+            return;
+        }
         var tagSplitter = new TagSplitter(oldBody);
         while (tagSplitter.TryGetNextTag(out var tag))
         {
             ParseImgTag(tag, out _, out var possibleFileName, out _);
             var fileName = possibleFileName.ToString();
-            if (!possibleFileName.IsEmpty && !newBody.Contains(fileName))
+            if (!string.IsNullOrEmpty(fileName) && !newBody.Contains(fileName))
             {
                 await _imageRepository.DeleteAsync(possibleFileName.ToString(), "articles");
             }
