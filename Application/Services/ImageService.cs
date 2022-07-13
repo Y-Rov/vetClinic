@@ -21,31 +21,33 @@ public class ImageService : IImageService
         _imageRepository = imageRepository;
         _memoryCache = memoryCache;
     }
-    public void ParseImgTag(string tag, out string link, out string fileName, out bool isOuterLink)
+    void ParseImgTag(ReadOnlyMemory<char> tag, out ReadOnlyMemory<char> link, out ReadOnlyMemory<char> fileName, out bool isOuterLink)
     {
-        link = string.Empty;
-        fileName = string.Empty;
+        link = ReadOnlyMemory<char>.Empty;
+        fileName = ReadOnlyMemory<char>.Empty;
         isOuterLink = false;
-        int srcOffset = tag.IndexOf("src", StringComparison.Ordinal) - 5;
-
-        int possibleQueryIndex = tag.IndexOf('?', 11 + srcOffset);
-        int closingQuoteIndex = tag.IndexOf('"', 11+ srcOffset);
+        int srcOffset = tag.Span.IndexOf("src", StringComparison.Ordinal) - 5;
+        
+        int possibleQueryIndex = tag.Span.Slice(11 + srcOffset).IndexOf("?", StringComparison.Ordinal);
+        int closingQuoteIndex = tag.Span.Slice(11 + srcOffset).IndexOf("\"", StringComparison.Ordinal);
         int linkEndingIndex = possibleQueryIndex > 0 && possibleQueryIndex < closingQuoteIndex
             ? possibleQueryIndex
             : closingQuoteIndex;
-        link = tag.Substring(10 + srcOffset, linkEndingIndex - 10 - srcOffset);
-        isOuterLink = link.Substring(0, _configuration["Azure:ContainerLink"].Length) != _configuration["Azure:ContainerLink"];
+        link = tag.Slice(10 + srcOffset, linkEndingIndex - 10 - srcOffset);
+        isOuterLink = link.Slice(0, _configuration["Azure:ContainerLink"].Length).ToString() !=
+                      _configuration["Azure:ContainerLink"];
 
         if (!isOuterLink)
         {
-            fileName = link.Split('/').Last();
+            int nameStartIndex = link.Span.LastIndexOf("/", StringComparison.Ordinal);
+            fileName = link.Slice(nameStartIndex);        
         }
     }
 
     public string TrimArticleImages(string body)
     {
         var tagSplitter = new TagSplitter(body);
-        while (tagSplitter.TryGetNextTag(out string tag, out var startIndex, out var length))
+        while (tagSplitter.TryGetNextTag(out var tag, out var startIndex, out var length))
         {
             ParseImgTag(tag, out var link, out _ , out var isOuterLink);
             if (isOuterLink)
@@ -54,7 +56,7 @@ public class ImageService : IImageService
                 body = body.Remove(
                     startIndex: startIndex ,
                     count: length);
-                body = body.Insert(startIndex, "<img src=\"" +link + '"');
+                body = body.Insert(startIndex, "<img src=\"" + link.ToString() + '"');
             }
         }
 
@@ -67,9 +69,10 @@ public class ImageService : IImageService
         while (tagSplitter.TryGetNextTag(out var tag))
         {
             ParseImgTag(tag, out _, out var possibleFileName, out _);
-            if (!string.IsNullOrEmpty(possibleFileName) && !newBody.Contains(possibleFileName))
+            var fileName = possibleFileName.ToString();
+            if (!possibleFileName.IsEmpty && !newBody.Contains(fileName))
             {
-                await _imageRepository.DeleteAsync(possibleFileName, "articles");
+                await _imageRepository.DeleteAsync(possibleFileName.ToString(), "articles");
             }
         }
     }
@@ -78,13 +81,13 @@ public class ImageService : IImageService
     public async Task<string> DeleteImagesAsync(string body)
     {
         var tagSplitter = new TagSplitter(body);
-        while (tagSplitter.TryGetNextTag(out string tag, out var startIndex, out var length))
+        while (tagSplitter.TryGetNextTag(out var tag, out var startIndex, out var length))
         {
             ParseImgTag(tag, out var link, out var fileName, out var isOuterLink);
 
             if (!isOuterLink)
             {
-                await _imageRepository.DeleteAsync( fileName, folder: "articles");
+                await _imageRepository.DeleteAsync(fileName.ToString(), folder: "articles");
             }
 
             body = body.Remove(

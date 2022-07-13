@@ -3,43 +3,33 @@
 public class TagSplitter
 {
     private int _previousTagIndex = 0;
-    private string _articleBody;
-    
+    private ReadOnlyMemory<char> _articleBody;
+
     public TagSplitter(string articleBody)
     {
-        _articleBody = articleBody;
+        _articleBody = articleBody.ToCharArray();
     }
 
-    public bool TryGetNextTag(out string tag)
+    public bool TryGetNextTag(out ReadOnlyMemory<char> tag)
     {
-        tag = string.Empty;
-        var tagIndex = _articleBody.IndexOf("<img", _previousTagIndex, StringComparison.Ordinal);
-        if (tagIndex == -1)
-        {
-            return false;
-        }
+        return TryGetNextTag(out tag, out _, out _);
+    }
 
-        _previousTagIndex = tagIndex + 1;
-            
-        var closingQuoteIndex = _articleBody.IndexOf('>', tagIndex);
-        tag = _articleBody.Substring(tagIndex, closingQuoteIndex - tagIndex + 1);
-        return true;
-    }    
-    public bool TryGetNextTag(out string tag, out int startIndex, out int length)
+    public bool TryGetNextTag(out ReadOnlyMemory<char> tag, out int startIndex, out int length)
     {
         startIndex = 0;
         length = 0;
-        tag = string.Empty;
-        var tagIndex = _articleBody.IndexOf("<img", _previousTagIndex, StringComparison.Ordinal);
+        tag = ReadOnlyMemory<char>.Empty;
+        var tagIndex = _articleBody.Span.Slice(_previousTagIndex).IndexOf("<img", StringComparison.Ordinal);
         if (tagIndex == -1)
         {
             return false;
         }
 
         _previousTagIndex = tagIndex + 1;
-            
-        var closingQuoteIndex = _articleBody.IndexOf('>', tagIndex);
-        tag = _articleBody.Substring(tagIndex, closingQuoteIndex - tagIndex + 1);
+
+        var closingQuoteIndex = _articleBody.Span.Slice(tagIndex).IndexOf(">", StringComparison.Ordinal);
+        tag = _articleBody.Slice(tagIndex, closingQuoteIndex - tagIndex + 1);
         startIndex = tagIndex;
         length = closingQuoteIndex - tagIndex;
         return true;
@@ -53,6 +43,6 @@ public class TagSplitter
     public void Reset(string newBody)
     {
         Reset();
-        _articleBody = newBody;
+        _articleBody = newBody.ToCharArray();
     }
 }

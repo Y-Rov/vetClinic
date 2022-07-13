@@ -4,7 +4,6 @@ namespace Core.Interfaces.Services;
 
 public interface IImageService
 {
-    public void ParseImgTag(string tag, out string link, out string fileName, out bool isOuterLink);
     public string TrimArticleImages(string body);
     Task ClearOutdatedImagesAsync(string newBody, string oldBody);
     Task<string> UploadImageAsync(IFormFile file, int authorId);
