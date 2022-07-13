@@ -247,8 +247,13 @@ namespace Application.Services
             var monthDate = new DatePeriod();
 
 
-            for (int i = (parametrs.PageNumber-1)*parametrs.PageSize; i < parametrs.PageSize; i++)
+            for (int i = (parametrs.PageNumber-1)*parametrs.PageSize; i < parametrs.PageNumber*parametrs.PageSize; i++)
             {
+                if(monthDate.EndDate == date.EndDate)
+                {
+                    break;
+                }
+
                 monthDate.StartDate = date.StartDate.AddMonths(i);
                 monthDate.EndDate = date.StartDate.AddMonths(i+1);
 
