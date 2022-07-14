@@ -4,6 +4,7 @@ using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.FeedbackViewModels;
 using Moq;
@@ -18,9 +19,11 @@ namespace WebApi.Test.Fixtures
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            ExpectedFeedbacks = GenerateFeedbacks();
-            ExpectedFeedbacksViewModel = GenerateFeedbacksViewModel();
+            ExpectedFeedbacks = GeneratePagedList();
+            ExpectedFeedbacksViewModel = GeneratePagedReadList();
             TestFeedbackCreateViewModel = GenerateCreateFeedbackViewModel();
+            EmptyFeedbacks = GenerateEmptyPagedList();
+            EmptyReadFeedbacks = GenerateEmptyReadPagedList();
             TestParameters = GenerateParameters();
             TestFeedback = GenerateFeedback();
 
@@ -39,11 +42,14 @@ namespace WebApi.Test.Fixtures
         public Mock<IViewModelMapper<FeedbackCreateViewModel, Feedback>> MockCreateFeedbackMapper { get; }
         public Mock<IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>>> MockPagedMapper { get; }
 
-        public IEnumerable<Feedback> ExpectedFeedbacks { get; set; }
-        public IEnumerable<FeedbackReadViewModel> ExpectedFeedbacksViewModel { get; set; }
+        public PagedList<Feedback> ExpectedFeedbacks { get; set; }
+        public PagedReadViewModel<FeedbackReadViewModel> ExpectedFeedbacksViewModel { get; set; }
+        public PagedList<Feedback> EmptyFeedbacks { get; set; }
+        public PagedReadViewModel<FeedbackReadViewModel> EmptyReadFeedbacks { get; set; }
+
         public FeedbackCreateViewModel TestFeedbackCreateViewModel { get; set; }
         public Feedback TestFeedback { get; set; }
-        public CollateParameters TestParameters { get; set; }
+        public FeedbackParameters TestParameters { get; set; }
 
         private IEnumerable<Feedback> GenerateFeedbacks()
         {
@@ -68,6 +74,27 @@ namespace WebApi.Test.Fixtures
                     SupportRate = 4,
                     UserId = 6
                 }
+            };
+        }
+
+        public PagedList<Feedback> GeneratePagedList()
+        {
+            List<Feedback> feedbacks = GenerateFeedbacks().ToList();
+            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 4);
+        }
+
+        public PagedReadViewModel<FeedbackReadViewModel> GeneratePagedReadList()
+        {
+            List<FeedbackReadViewModel> feedbacks = GenerateFeedbacksViewModel().ToList();
+            return new PagedReadViewModel<FeedbackReadViewModel>
+            {
+                CurrentPage = 1,
+                TotalPages = 10,
+                PageSize = 4,
+                TotalCount = feedbacks.Count,
+                HasPrevious = false,
+                HasNext = true,
+                Entities = feedbacks
             };
         }
 
@@ -119,15 +146,33 @@ namespace WebApi.Test.Fixtures
             };
         }
 
-
-        private CollateParameters GenerateParameters()
+        public PagedList<Feedback> GenerateEmptyPagedList()
         {
-            return new CollateParameters
+            List<Feedback> feedbacks = new List<Feedback>();
+            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 4);
+        }
+
+        public PagedReadViewModel<FeedbackReadViewModel> GenerateEmptyReadPagedList()
+        {
+            List<FeedbackReadViewModel> feedbacks = new List<FeedbackReadViewModel>();
+            return new PagedReadViewModel<FeedbackReadViewModel>()
             {
-                FilterParam = null,
-                OrderByParam = null,
-                TakeCount = 20,
-                SkipCount = 0
+                Entities = feedbacks,
+                TotalCount = feedbacks.Count,
+                CurrentPage = 1,
+                TotalPages = 10,
+                PageSize = 4,
+                HasPrevious = false,
+                HasNext = true
+            };
+        }
+
+        private FeedbackParameters GenerateParameters()
+        {
+            return new FeedbackParameters()
+            {
+                PageSize = 4,
+                PageNumber = 1
             };
         }
     }
