@@ -1,6 +1,6 @@
 ﻿namespace Core.ViewModels.ArticleViewModels;
 
-public class ImageViewModel
+public class ImageLinkViewModel
 {
     public string ImageUrl { get; set; }
 }

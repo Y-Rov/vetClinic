@@ -92,11 +92,11 @@ public class ArticlesController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("upload")]
-    public async Task<ImageViewModel> UploadImage(IFormFile file)
+    public async Task<ImageLinkViewModel> UploadImage(IFormFile file)
     {
         var user = await _userManager.GetUserAsync(HttpContext.User);
         var link = await _imageService.UploadImageAsync(file, user.Id);
-        return new ImageViewModel()
+        return new ImageLinkViewModel()
         {
             ImageUrl = link
         };

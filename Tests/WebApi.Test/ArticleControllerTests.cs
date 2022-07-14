@@ -1,10 +1,13 @@
-﻿using Core.Entities;
+﻿using System.Security.Claims;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ArticleViewModels;
 using Core.ViewModels.CommentViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebApi.Test.Fixtures;
 
@@ -255,5 +258,60 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
 
         //  Assert
         await Assert.ThrowsAsync<NotFoundException>(() => result);
+    }
+
+    [Fact]
+    public async Task UploadImage_whenOk_thenImageLinkViewModelReturned()
+    {
+        //Arrange
+        _fixture.MockUserManager
+            .Setup(um => um
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
+        
+        _fixture.MockArticleController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext()
+            {
+                User = new ClaimsPrincipal()
+            }
+        };
+
+        _fixture.MockImageService
+            .Setup(img => img.UploadImageAsync(
+                It.IsAny<IFormFile>(),
+                It.IsAny<int>()))
+            .ReturnsAsync(_fixture.ImageLink);
+        //Act
+        var result = await _fixture.MockArticleController.UploadImage(It.IsAny<IFormFile>());
+        //Assert
+        Assert.Equal(_fixture.ImageLink, result.ImageUrl);
+    }
+    
+    [Fact]
+    public async Task DeleteImage_whenOk_thenSuccess()
+    {
+        //Arrange
+        _fixture.MockUserManager
+            .Setup(um => um
+                .GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(_fixture.RequestUser).Verifiable();
+        
+        _fixture.MockArticleController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext()
+            {
+                User = new ClaimsPrincipal()
+            }
+        };
+
+        _fixture.MockImageService
+            .Setup(img => img.DiscardCachedImagesAsync(It.IsAny<int>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+        //Act
+        await _fixture.MockArticleController.DiscardEditing();
+        //Assert
+        _fixture.MockImageService
+            .Verify(img => img.DiscardCachedImagesAsync(It.IsAny<int>()), Times.Once);
     }
 }
