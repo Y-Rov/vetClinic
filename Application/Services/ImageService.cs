@@ -14,7 +14,7 @@ public class ImageService : IImageService
     private readonly IConfiguration _configuration;
     private readonly IImageRepository _imageRepository;
     private readonly IMemoryCache _memoryCache;
-    private ILoggerManager _loggerManager;
+    private readonly ILoggerManager _loggerManager;
 
     public ImageService(
         IConfiguration configuration,
@@ -96,7 +96,6 @@ public class ImageService : IImageService
             }
         }
     }
-    
     
     public async Task<string> DeleteImagesAsync(string body)
     {

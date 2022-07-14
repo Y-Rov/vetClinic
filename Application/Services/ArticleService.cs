@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Azure;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
@@ -30,18 +29,10 @@ public class ArticleService : IArticleService
 
     public async Task CreateArticleAsync(Article article)
     {
-        try
-        {
-            article.Body = _imageService.TrimArticleImages(article.Body!);
-            await _imageService.ClearUnusedImagesAsync(article.Body, article.AuthorId);
-            await _articleRepository.InsertAsync(article);
-            await _articleRepository.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            _loggerManager.LogWarn($"user with id {article.AuthorId} not found");
-            throw new NotFoundException($"user with id {article.AuthorId} not found");
-        }
+        article.Body = _imageService.TrimArticleImages(article.Body!);
+        await _imageService.ClearUnusedImagesAsync(article.Body, article.AuthorId);
+        await _articleRepository.InsertAsync(article);
+        await _articleRepository.SaveChangesAsync();
 
         _loggerManager.LogInfo($"Created new article with title {article.Title}");
     }
