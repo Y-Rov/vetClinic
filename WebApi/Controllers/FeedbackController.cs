@@ -1,6 +1,5 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
-using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
