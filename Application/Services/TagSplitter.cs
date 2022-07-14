@@ -20,12 +20,12 @@ public class TagSplitter
         startIndex = 0;
         length = 0;
         tag = ReadOnlyMemory<char>.Empty;
+        
         var tagIndex = _articleBody.Span.Slice(_previousTagIndex).IndexOf("<img", StringComparison.Ordinal);
         if (tagIndex == -1)
         {
             return false;
         }
-
         _previousTagIndex = tagIndex + 1;
 
         length = _articleBody.Span.Slice(tagIndex).IndexOf(">", StringComparison.Ordinal) + 1;

@@ -1,4 +1,6 @@
-﻿using Core.Exceptions;
+﻿using Azure;
+using Core.Exceptions;
+using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -12,14 +14,16 @@ public class ImageService : IImageService
     private readonly IConfiguration _configuration;
     private readonly IImageRepository _imageRepository;
     private readonly IMemoryCache _memoryCache;
+    private ILoggerManager _loggerManager;
 
     public ImageService(
         IConfiguration configuration,
-        IImageRepository imageRepository, IMemoryCache memoryCache)
+        IImageRepository imageRepository, IMemoryCache memoryCache, ILoggerManager loggerManager)
     {
         _configuration = configuration;
         _imageRepository = imageRepository;
         _memoryCache = memoryCache;
+        _loggerManager = loggerManager;
     }
     void ParseImgTag(ReadOnlyMemory<char> tag, out ReadOnlyMemory<char> link, out ReadOnlyMemory<char> fileName, out bool isOuterLink)
     {
@@ -30,12 +34,17 @@ public class ImageService : IImageService
         
         int possibleQueryIndex = tag.Span.Slice(11 + srcOffset).IndexOf("?", StringComparison.Ordinal) + 11 + srcOffset;
         int closingQuoteIndex = tag.Span.Slice(11 + srcOffset).IndexOf("\"", StringComparison.Ordinal) + 11 + srcOffset;
-        int linkEndingIndex = possibleQueryIndex > 11 && possibleQueryIndex < closingQuoteIndex
-            ? possibleQueryIndex
-            : closingQuoteIndex;
+        int linkEndingIndex;
+        if (possibleQueryIndex > 11 && possibleQueryIndex < closingQuoteIndex)
+        {
+            linkEndingIndex = possibleQueryIndex;
+        }
+        else
+        {
+            linkEndingIndex = closingQuoteIndex;
+        }        
         link = tag.Slice(10 + srcOffset, linkEndingIndex - 10 - srcOffset);
-        isOuterLink = link.Slice(0, _configuration["Azure:ContainerLink"].Length).ToString() !=
-                      _configuration["Azure:ContainerLink"];
+        isOuterLink = link.Slice(0, _configuration["Azure:ContainerLink"].Length).ToString() != _configuration["Azure:ContainerLink"];
 
         if (!isOuterLink)
         {
@@ -52,11 +61,10 @@ public class ImageService : IImageService
             ParseImgTag(tag, out var link, out _ , out var isOuterLink);
             if (isOuterLink)
             {
-                //avoid writing
                 body = body.Remove(
                     startIndex: startIndex ,
                     count: length);
-                body = body.Insert(startIndex, "<img src=\"" + link.ToString() + '"');
+                body = body.Insert(startIndex, "<img src=\"" + link + '"');
             }
         }
 
@@ -76,7 +84,15 @@ public class ImageService : IImageService
             var fileName = possibleFileName.ToString();
             if (!string.IsNullOrEmpty(fileName) && !newBody.Contains(fileName))
             {
-                await _imageRepository.DeleteAsync(possibleFileName.ToString(), "articles");
+                try
+                {
+                    await _imageRepository.DeleteAsync(possibleFileName.ToString(), "articles");
+                }
+                catch (RequestFailedException)
+                {
+                    _loggerManager.LogWarn("Error while deleting file from the blob");
+                    throw new BadRequestException("Error while deleting file from the blob");
+                }
             }
         }
     }
@@ -91,7 +107,15 @@ public class ImageService : IImageService
 
             if (!isOuterLink)
             {
-                await _imageRepository.DeleteAsync(fileName.ToString(), folder: "articles");
+                try
+                {
+                    await _imageRepository.DeleteAsync(fileName.ToString(), folder: "articles");
+                }
+                catch (RequestFailedException)
+                {
+                    _loggerManager.LogWarn("Error while deleting file from the blob");
+                    throw new BadRequestException("Error while deleting file from the blob");
+                }
             }
 
             body = body.Remove(
@@ -112,7 +136,15 @@ public class ImageService : IImageService
 
         foreach (var fileName in cachedList)
         {
-            await _imageRepository.DeleteAsync(fileName, "articles");
+            try
+            {
+                await _imageRepository.DeleteAsync(fileName, "articles");
+            }
+            catch (RequestFailedException)
+            {
+                _loggerManager.LogWarn("Error while deleting file from the blob");
+                throw new BadRequestException("Error while deleting file from the blob");
+            }
         }
         _memoryCache.Remove(authorId);
     }
@@ -129,7 +161,15 @@ public class ImageService : IImageService
         {
             if (!body.Contains(fileName))
             {
-                await _imageRepository.DeleteAsync(fileName, "articles");
+                try
+                {
+                    await _imageRepository.DeleteAsync(fileName, "articles");
+                }
+                catch (RequestFailedException)
+                {
+                    _loggerManager.LogWarn("Error while deleting file from the blob");
+                    throw new BadRequestException("Error while deleting file from the blob");
+                }
             }
         }
         _memoryCache.Remove(authorId);
@@ -138,20 +178,24 @@ public class ImageService : IImageService
     public async Task<string> UploadImageAsync(IFormFile file, int authorId)
     {
         var imageFormat = file.ContentType.Split('/').Last();
-        var formats = new String[]
-        {
-            "png", "jpg", "jpeg", "webp", "gif"
-        };
+        var formats = new [] { "png", "jpg", "jpeg", "webp", "gif"};
         if (!formats.Contains(imageFormat))
         {
             throw new BadRequestException("Wrong image format!");
         }
 
-        var link = await _imageRepository.UploadFromIFormFile(file, "articles");
+        string link;
+        try
+        {
+             link = await _imageRepository.UploadFromIFormFile(file, "articles");
+        }
+        catch (RequestFailedException)
+        {
+            _loggerManager.LogWarn("Error while uploading file to the blob");
+            throw new BadRequestException("Error while uploading file to the blob");
+        }
         var fileName = link.Split('/').Last();
-        
         var currentList = _memoryCache.Get<List<string>>(authorId);
-      
         if (currentList is null || currentList.Count == 0)
         {
             _memoryCache.Set(authorId, new List<string> { fileName },TimeSpan.FromMinutes(30));

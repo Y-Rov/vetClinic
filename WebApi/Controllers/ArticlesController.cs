@@ -1,5 +1,4 @@
 ﻿using Core.Entities;
-using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Paginator;
 using Core.Paginator.Parameters;
@@ -91,7 +90,7 @@ public class ArticlesController : ControllerBase
         await _articleService.UpdateArticleAsync(updatedArticle);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("upload")]
     public async Task<ImageViewModel> UploadImage(IFormFile file)
     {
@@ -103,7 +102,7 @@ public class ArticlesController : ControllerBase
         };
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("discard")]
     public async Task DiscardEditing()
     {
