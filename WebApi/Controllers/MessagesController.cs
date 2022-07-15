@@ -15,32 +15,36 @@ namespace WebApi.Controllers;
 [Route("api/messages")]
 public class MessagesController : ControllerBase
 {
-    private readonly int _userId;
     private readonly IMessageService _messageService;
+    private readonly UserManager<User> _userManager;
     private readonly IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>> 
         _enumMessageMapper;
 
     public MessagesController(
         IMessageService messageService, 
-        IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>> enumMessageMapper)
+        IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>> enumMessageMapper, UserManager<User> userManager)
     {
-        Int32.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out _userId);
         _messageService = messageService;
         _enumMessageMapper = enumMessageMapper;
+        _userManager = userManager;
     }
     
     [HttpGet("{chatRoomId:int:min(1)}/{skip:int:min(0)}/{take:int:min(1)}")]
     public async Task<IEnumerable<MessageGetViewModel>> GetMessagesInChatRoom(int chatRoomId, int skip, int take)
     {
+        var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
+        
         var messages = await _messageService
-            .GetMessagesInChatRoomAsync(_userId, chatRoomId, skip, take);
+            .GetMessagesInChatRoomAsync(userId, chatRoomId, skip, take);
         return _enumMessageMapper.Map(messages);
     }
     
-    [HttpGet]
+    [HttpGet("unread")]
     public async Task<IEnumerable<MessageGetViewModel>> GetUnreadMessages()
     {
-        var messages = await _messageService.GetUnreadMessagesAsync(_userId);
+        var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
+
+        var messages = await _messageService.GetUnreadMessagesAsync(userId);
         return _enumMessageMapper.Map(messages);
     }
 }

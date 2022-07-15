@@ -1,8 +1,9 @@
 ﻿using System.Security.Claims;
 using Core.Entities;
 using Core.Interfaces.Services;
-using Core.ViewModel.ChatRoomViewModels;
+using Core.ViewModels.ChatRoomViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -13,24 +14,26 @@ namespace WebApi.Controllers;
 [Route("api/chats")]
 public class ChatsController : ControllerBase
 {
-    private readonly int _userId;
     private readonly IChatRoomService _chatRoomService;
+    private readonly UserManager<User> _userManager;
+
+    private readonly IUserOrientedEnumerableViewModelMapper<ChatRoom, ChatRoomGetViewModel> _enumChatRoomMapper;
     
-    private readonly IEnumerableViewModelMapper<IEnumerable<ChatRoom>, IEnumerable<ChatRoomGetViewModel>>
-        _enumChatRoomMapper;
-    
-    public ChatsController(IChatRoomService chatRoomService, IEnumerableViewModelMapper<IEnumerable<ChatRoom>, IEnumerable<ChatRoomGetViewModel>> enumChatRoomMapper)
+    public ChatsController(
+        IChatRoomService chatRoomService,
+        IUserOrientedEnumerableViewModelMapper<ChatRoom, ChatRoomGetViewModel> enumChatRoomMapper,
+        UserManager<User> userManager)
     {
-        Int32.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out _userId);
         _chatRoomService = chatRoomService;
         _enumChatRoomMapper = enumChatRoomMapper;
+        _userManager = userManager;
     }
     
     [HttpGet]
     public async Task<IEnumerable<ChatRoomGetViewModel>> Get()
     {
-        var chatRooms = await _chatRoomService.GetChatRoomsForUserAsync(_userId);
-        return _enumChatRoomMapper.Map(chatRooms);
-
+        var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
+        var chatRooms = await _chatRoomService.GetChatRoomsForUserAsync(userId);
+        return _enumChatRoomMapper.Map(chatRooms, userId);
     }
 }
