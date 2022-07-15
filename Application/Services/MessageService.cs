@@ -45,14 +45,24 @@ public class MessageService : IMessageService
             take: take
         );
 
-        await _messageRepository.SaveChangesAsync();
-
         return messagesToRead;
     }
 
     public async Task<IEnumerable<Message>> GetUnreadMessagesAsync(int userId)
     {
-        return await _messageRepository.GetUnreadMessagesAsync(userId);
+        var userChatRooms = await _userChatRoomRepository.QueryAsync(
+            include: q => 
+                q.Include(ur => ur.LastReadMessage!)
+                    .Include(ur => ur.ChatRoom)
+                    .ThenInclude(cr => cr.Messages),
+            filter: ur => ur.UserId == userId
+        );
+
+        return userChatRooms.SelectMany(ur => ur.ChatRoom.Messages.Where(m =>
+        {
+            var lastReadDateTime = ur.LastReadMessage?.SentAt ?? DateTime.MinValue;
+            return (m.SentAt > lastReadDateTime && m.SenderId != userId);
+        }));
     }
 
     public async Task CreateAsync(Message message)
@@ -61,6 +71,7 @@ public class MessageService : IMessageService
             throw new NotFoundException($"Chat room with id {message.ChatRoomId} does not exist");
 
         await _messageRepository.InsertAsync(message);
+        await _messageRepository.SaveChangesAsync();
     }
 
     public async Task ReadMessageAsync(int readerId, int messageId)
@@ -77,6 +88,7 @@ public class MessageService : IMessageService
         if (userChatRoom!.LastReadMessage is null || userChatRoom.LastReadMessage.SentAt < message.SentAt)
         {
             userChatRoom.LastReadMessageId = message.Id;
+            await _messageRepository.SaveChangesAsync();
         }
     }
 }
