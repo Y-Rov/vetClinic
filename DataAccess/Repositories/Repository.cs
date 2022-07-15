@@ -71,7 +71,7 @@ namespace DataAccess.Repositories
             int? take = null, int skip = 0,
             bool asNoTracking = false)
         {
-            var query = DbSet.AsQueryable().Skip(skip);
+            var query = DbSet.AsQueryable();
 
             if (asNoTracking)
                 query = query.AsNoTracking();
@@ -84,10 +84,12 @@ namespace DataAccess.Repositories
             
             if (orderBy is not null)
                 query = orderBy(query);
-
+            
             if (take is not null)
                 query = query.Take(take.Value);
 
+            query = query.Skip(skip);
+            
             return await query.ToListAsync();
         }
         
