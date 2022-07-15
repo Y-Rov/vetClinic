@@ -1,5 +1,8 @@
 ﻿using Core.Entities;
 using Core.Models.Finance;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.SalaryViewModel;
 using Moq;
 using WebApi.Test.Fixtures;
@@ -10,9 +13,9 @@ namespace WebApi.Test
     {
         private readonly FinancialControllerFixture _fixture;
         private bool _disposed;
-        public FinancialControllerTest(FinancialControllerFixture fixtire)
+        public FinancialControllerTest(FinancialControllerFixture fixture)
         {
-            _fixture = fixtire;
+            _fixture = fixture;
         }
         public void Dispose()
         {
@@ -99,7 +102,7 @@ namespace WebApi.Test
 
             _fixture.MockListSalaryViewModels
                 .Setup(mapper =>
-                mapper.Map(It.Is<IEnumerable<Salary>>(p => p.Equals(_fixture.SalaryList))))
+                mapper.Map(It.Is<PagedList<Salary>>(p => p.Equals(_fixture.SalaryList))))
             .Returns(_fixture.SalaryVMList);
 
             _fixture.MockUserService
@@ -119,13 +122,13 @@ namespace WebApi.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetAsync();
+            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParametrs);
 
             //Assert
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.IsAssignableFrom<IEnumerable<SalaryViewModel>>(result);
+            Assert.NotNull(result.Entities);
+            Assert.NotEmpty(result.Entities);
+            Assert.IsAssignableFrom<PagedReadViewModel<SalaryViewModel>>(result);
         }
 
         [Fact]
@@ -140,18 +143,18 @@ namespace WebApi.Test
 
             _fixture.MockListSalaryViewModels
                 .Setup(mapper =>
-                    mapper.Map(It.Is<IEnumerable<Salary>>(x => x.Equals(_fixture.SalaryEmptyList))))
+                    mapper.Map(It.Is<PagedList<Salary>>(x => x.Equals(_fixture.SalaryEmptyList))))
                 .Returns(_fixture.SalaryVMEmptyList);
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetAsync();
+            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParametrs);
 
             //Assert
 
-            Assert.NotNull(result);
-            Assert.Empty(result);
-            Assert.IsAssignableFrom<IEnumerable<SalaryViewModel>>(result);
+            Assert.NotNull(result.Entities);
+            Assert.Empty(result.Entities);
+            Assert.IsAssignableFrom<PagedReadViewModel<SalaryViewModel>>(result);
         }
 
         [Fact]
@@ -282,23 +285,26 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetFinancialStatement(It.IsAny<DatePeriod>()))
+                    service.GetFinancialStatement(
+                        It.IsAny<DatePeriod>(),
+                        It.IsAny<FinancialStatementParameters>()))
                 .ReturnsAsync(_fixture.FinStatList);
 
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper=>
-                    mapper.Map(It.Is<IEnumerable<FinancialStatement>>(x=> x==_fixture.FinStatList)))
+                    mapper.Map(It.Is<PagedList<FinancialStatement>>(x=> x==_fixture.FinStatList)))
                 .Returns(_fixture.FinStatVMList);
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(_fixture.Date);
+            var result = await _fixture.MockFinancialController
+                .GetFinancialStatementAsync(_fixture.Date, _fixture.FinancialStatementParameters);
 
             //Assert
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.IsAssignableFrom<IEnumerable<FinancialStatementForMonthViewModel>>(result);
+            Assert.NotNull(result.Entities);
+            Assert.NotEmpty(result.Entities);
+            Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
         }
 
         [Fact]
@@ -308,23 +314,26 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetFinancialStatement(It.IsAny<DatePeriod>()))
+                    service.GetFinancialStatement(
+                        It.IsAny<DatePeriod>(),
+                        It.IsAny<FinancialStatementParameters>()))
                 .ReturnsAsync(_fixture.FinStatEmpty);
 
             _fixture.MockFinancialStatementViewModel
                 .Setup(mapper =>
-                    mapper.Map(It.Is<IEnumerable<FinancialStatement>>(x=> x==_fixture.FinStatEmpty)))
+                    mapper.Map(It.Is<PagedList<FinancialStatement>>(x=> x==_fixture.FinStatEmpty)))
                 .Returns(_fixture.FinStatVMEmpty);
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetFinancialStatementAsync(_fixture.Date);
+            var result = await _fixture.MockFinancialController
+                .GetFinancialStatementAsync(_fixture.Date,_fixture.FinancialStatementParameters);
 
             //Assert
 
-            Assert.NotNull(result);
-            Assert.Empty(result);
-            Assert.IsAssignableFrom<IEnumerable<FinancialStatementForMonthViewModel>>(result);
+            Assert.NotNull(result.Entities);
+            Assert.Empty(result.Entities);
+            Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
         }
     }
 }
