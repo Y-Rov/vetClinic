@@ -18,14 +18,17 @@ public class ImageService : IImageService
 
     public ImageService(
         IConfiguration configuration,
-        IImageRepository imageRepository, IMemoryCache memoryCache, ILoggerManager loggerManager)
+        IImageRepository imageRepository, 
+        IMemoryCache memoryCache, 
+        ILoggerManager loggerManager)
     {
         _configuration = configuration;
         _imageRepository = imageRepository;
         _memoryCache = memoryCache;
         _loggerManager = loggerManager;
     }
-    void ParseImgTag(ReadOnlyMemory<char> tag, out ReadOnlyMemory<char> link, out ReadOnlyMemory<char> fileName, out bool isOuterLink)
+    
+    private void ParseImgTag(ReadOnlyMemory<char> tag, out ReadOnlyMemory<char> link, out ReadOnlyMemory<char> fileName, out bool isOuterLink)
     {
         link = ReadOnlyMemory<char>.Empty;
         fileName = ReadOnlyMemory<char>.Empty;
@@ -35,7 +38,7 @@ public class ImageService : IImageService
         int possibleQueryIndex = tag.Span.Slice(11 + srcOffset).IndexOf("?", StringComparison.Ordinal) + 11 + srcOffset;
         int closingQuoteIndex = tag.Span.Slice(11 + srcOffset).IndexOf("\"", StringComparison.Ordinal) + 11 + srcOffset;
         int linkEndingIndex;
-        if (possibleQueryIndex > 11 && possibleQueryIndex < closingQuoteIndex)
+        if (possibleQueryIndex > 11 + srcOffset && possibleQueryIndex < closingQuoteIndex)
         {
             linkEndingIndex = possibleQueryIndex;
         }
@@ -62,9 +65,10 @@ public class ImageService : IImageService
             if (isOuterLink)
             {
                 body = body.Remove(
-                    startIndex: startIndex ,
+                    startIndex: startIndex,
                     count: length);
-                body = body.Insert(startIndex, "<img src=\"" + link + '"');
+                body = body.Insert(startIndex, $"<img src=\"{link}\">");
+                tagSplitter.UpdateBody(body);
             }
         }
 
@@ -118,8 +122,10 @@ public class ImageService : IImageService
             }
 
             body = body.Remove(
-                startIndex: startIndex ,
-                count: length + 1);        
+                startIndex: startIndex,
+                count: length);
+            tagSplitter.UpdateBody(body);
+            tagSplitter.RemoveTag(body);
         }
 
         return body;

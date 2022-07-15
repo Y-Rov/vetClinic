@@ -21,27 +21,33 @@ public class TagSplitter
         length = 0;
         tag = ReadOnlyMemory<char>.Empty;
         
-        var tagIndex = _articleBody.Span.Slice(_previousTagIndex).IndexOf("<img", StringComparison.Ordinal);
+        var tagIndex = _articleBody.Span
+            .Slice(_previousTagIndex)
+            .IndexOf("<img", StringComparison.Ordinal);
         if (tagIndex == -1)
         {
             return false;
         }
+
+        tagIndex += _previousTagIndex;
         _previousTagIndex = tagIndex + 1;
 
-        length = _articleBody.Span.Slice(tagIndex).IndexOf(">", StringComparison.Ordinal) + 1;
+        length = _articleBody.Span
+            .Slice(tagIndex)
+            .IndexOf(">", StringComparison.Ordinal) + 1;
         tag = _articleBody.Slice(tagIndex, length);
         startIndex = tagIndex;
         return true;
     }
 
-    public void Reset()
+    public void UpdateBody(string body)
     {
-        _previousTagIndex = 0;
+        _articleBody = body.ToCharArray();
     }
 
-    public void Reset(string newBody)
+    public void RemoveTag(string body)
     {
-        Reset();
-        _articleBody = newBody.ToCharArray();
+        UpdateBody(body);
+        _previousTagIndex--;
     }
 }
