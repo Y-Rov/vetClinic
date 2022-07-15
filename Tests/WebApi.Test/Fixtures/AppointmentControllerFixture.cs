@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Paginator;
 using Core.ViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.AppointmentsViewModel;
@@ -32,13 +33,16 @@ namespace WebApi.Test.Fixtures
             MockAppointmentsViewModelMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>>>();
             MockAppointmentReadMapper = fixture.Freeze<Mock<IViewModelMapper<Appointment, AppointmentReadViewModel>>>();
             MockAppointmentUpdateMapper = fixture.Freeze<Mock<IViewModelMapper<AppointmentUpdateViewModel, Appointment>>>();
+            MockViewModelIEnumMapper = fixture.Freeze <Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>>>();
 
             MockAppointmentController = new AppointmentController(
                 MockAppointmentService.Object,
                 MockCreateAppointmentMapper.Object,
                 MockAppointmentsViewModelMapper.Object,
                 MockAppointmentReadMapper.Object,
-                MockAppointmentUpdateMapper.Object);
+                MockAppointmentUpdateMapper.Object,
+                MockViewModelIEnumMapper.Object
+                );
         }
 
 
@@ -48,8 +52,9 @@ namespace WebApi.Test.Fixtures
         public Mock<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>> MockAppointmentsViewModelMapper;
         public Mock<IViewModelMapper<Appointment, AppointmentReadViewModel>> MockAppointmentReadMapper { get; }
         public Mock<IViewModelMapper<AppointmentUpdateViewModel, Appointment>> MockAppointmentUpdateMapper { get; }
+        public Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>> MockViewModelIEnumMapper { get; }
 
-        public Appointment MockAppointment { get; set; }
+    public Appointment MockAppointment { get; set; }
         public AppointmentCreateViewModel MockAppointmentCreateViewModel { get; set; }
         public AppointmentReadViewModel MockAppointmentReadViewModel { get; set; }
         public AppointmentUpdateViewModel MockAppointmentUpdateViewModel { get; set; }
