@@ -156,7 +156,7 @@ namespace WebApi.Test.Fixtures
                     Value = 30
                 }
             };
-            var res = new PagedList<Salary>(salaryList, salaryList.Count, SalaryParametrs.PageNumber, SalaryParametrs.PageSize);
+            var res = new PagedList<Salary>(salaryList, salaryList.Count, 1, salaryList.Count);
             return res;
         }
         private PagedReadViewModel<SalaryViewModel> GenerateSalaryVMList()

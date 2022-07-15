@@ -108,7 +108,12 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetEmployeesWithoutSalary()
         {
-            var salaries = await GetSalaryAsync(null);
+            var parametrs = new SalaryParametrs()
+            {
+                PageNumber = 1,
+                PageSize = 100
+            };
+            var salaries = await GetSalaryAsync(parametrs);
             var employees = await _userRepository.GetByRolesAsync(new List<int> { 1, 2, 3 });
 
             var res = from salary in salaries

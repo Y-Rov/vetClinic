@@ -255,15 +255,16 @@ namespace Application.Test
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
+                    It.IsAny<SalaryParametrs>(),
                     It.IsAny<Expression<Func<Salary, bool>>>(),
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<bool>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(_fixture.SalaryEmptyList);
 
             //Act
 
-            var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(_fixture.SalaryParametrs);
 
             //Assert
 
@@ -449,11 +450,12 @@ namespace Application.Test
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
+                    It.IsAny<SalaryParametrs>(),
                     It.IsAny<Expression<Func<Salary, bool>>>(),
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
-                .ReturnsAsync(_fixture.SalaryListFromRepo);
+                    It.IsAny<bool>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockUserRepository
                 .Setup(repo => repo.GetByRolesAsync(
@@ -505,10 +507,11 @@ namespace Application.Test
             _fixture.MockSalaryRepository
                 .Setup(repo
                     => repo.GetAsync(
+                        It.IsAny<SalaryParametrs>(),
                         It.IsAny<Expression<Func<Salary, bool>>>(),
                         It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>()))
+                        It.IsAny<bool>(),
+                        It.IsAny<string>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockUserRepository

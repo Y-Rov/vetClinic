@@ -97,7 +97,8 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetSalaryAsync(null))
+                    service.GetSalaryAsync(
+                        It.IsAny<SalaryParametrs>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockListSalaryViewModels
@@ -138,7 +139,8 @@ namespace WebApi.Test
 
             _fixture.MockFinancialService
                 .Setup(service =>
-                    service.GetSalaryAsync(null))
+                    service.GetSalaryAsync(
+                        It.IsAny<SalaryParametrs>()))
                 .ReturnsAsync(_fixture.SalaryEmptyList);
 
             _fixture.MockListSalaryViewModels

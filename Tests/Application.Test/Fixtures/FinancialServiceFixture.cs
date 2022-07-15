@@ -108,11 +108,12 @@ namespace Application.Test.Fixtures
                     Value = 30
                 }
             };
-            return new PagedList<Salary>(salaryList,salaryList.Count, SalaryParametrs.PageNumber,SalaryParametrs.PageSize);
+            return new PagedList<Salary>(salaryList,salaryList.Count, 1, salaryList.Count);
         }
         private PagedList<Salary> GenerateSalaryEmptyList()
         {
-            return new PagedList<Salary>(new List<Salary>(),0,SalaryParametrs.PageNumber, SalaryParametrs.PageSize);
+            var res = new PagedList<Salary>(new List<Salary>(), 0, 1, 1);
+            return res;
         }
         private Salary GenerateUpdatedSalary()
         {
@@ -201,7 +202,7 @@ namespace Application.Test.Fixtures
                     Value =30
                 }
             };
-            return new PagedList<Salary>(salaries,salaries.Count,SalaryParametrs.PageNumber,SalaryParametrs.PageSize);
+            return new PagedList<Salary>(salaries,salaries.Count,1,salaries.Count);
         }
         private List<Appointment> GenerateAppoinmentEmptyList()
         {
