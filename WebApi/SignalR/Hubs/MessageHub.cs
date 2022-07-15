@@ -30,9 +30,10 @@ public class MessageHub : Hub
     {
         if (TryParseUserId(out int senderId))
         {
-            await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
+            var chatRoom = await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
 
             var messageMap = _sendMessageMapper.Map(message);
+            messageMap.ChatRoomId = chatRoom.Id;
             messageMap.SenderId = senderId;
             messageMap.SentAt = DateTime.Now;
             await _messageService.CreateAsync(messageMap);
