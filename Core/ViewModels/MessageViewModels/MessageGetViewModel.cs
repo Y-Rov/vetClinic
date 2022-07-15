@@ -6,7 +6,6 @@ public class MessageGetViewModel : MessageViewModelBase
     public DateTime SentAt { get; set; }
 
     public int SenderId { get; set; }
-    public string? SenderName { get; set; }
     
     public int ChatRoomId { get; set; }
 }
