@@ -4,6 +4,7 @@ using Core.ViewModel.MessageViewModels;
 using Core.ViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
+using Core.ViewModels.ChatRoomViewModels;
 using Core.ViewModels.PortfolioViewModels;
 using Core.ViewModels.ProcedureViewModels;
 using Core.ViewModels.SalaryViewModel;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WebApi.AutoMapper.AddressMappers;
 using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.AppointmentMappers;
+using WebApi.AutoMapper.ChatMappers;
 using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.Interface;
 using WebApi.AutoMapper.MessageMappers;
@@ -75,5 +77,9 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Message, MessageGetViewModel>, MessageGetMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>>,
             MessageGetEnumerableMapper>();
+
+        services.AddScoped<IUserOrientedViewModelMapper<ChatRoom, ChatRoomGetViewModel>, ChatRoomGetMapper>();
+        services.AddScoped<IUserOrientedEnumerableViewModelMapper<ChatRoom, ChatRoomGetViewModel>,
+            ChatRoomGetEnumerableMapper>();
     }
 }
