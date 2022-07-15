@@ -26,12 +26,14 @@ public class ChatRoomService : IChatRoomService
     public async Task CreateAsync(ChatRoom chatRoom)
     {
         await _chatRoomRepository.InsertAsync(chatRoom);
+        await _chatRoomRepository.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<ChatRoom>> GetChatRoomsForUserAsync(int userId)
     {
         return await _chatRoomRepository.QueryAsync(
-            include: q => q.Include(cr => cr.UserChatRooms),
+            include: q => q.Include(cr => cr.UserChatRooms)
+                            .ThenInclude(ur => ur.User),
             filter: cr => cr.UserChatRooms.Select(ur => ur.UserId).Contains(userId));
     }
 
