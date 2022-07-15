@@ -19,9 +19,8 @@ namespace Application.Configuration
             services.AddScoped<IProcedureService, ProcedureService>();
             services.AddScoped<IFinancialService, FinancialService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
-            services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
-            services.AddScoped<IUserChatRoomRepository, UserChatRoomRepository>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IChatRoomService, ChatRoomService>();
         }
     }
 }
