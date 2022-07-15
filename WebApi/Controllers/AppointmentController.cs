@@ -38,7 +38,7 @@ namespace WebApi.Controllers
             _appointmentPagedViewModel = appointmentPagedViewModel; 
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<PagedReadViewModel<AppointmentReadViewModel>> GetAsync([FromQuery] AppointmentParameters parameter)
         {
@@ -49,7 +49,7 @@ namespace WebApi.Controllers
             return appointmentsViewModel;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("{appointmentId:int:min(1)}")]
         public async Task<AppointmentReadViewModel> GetAsync([FromRoute] int appointmentId)
         {
