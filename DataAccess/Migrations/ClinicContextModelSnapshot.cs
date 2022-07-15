@@ -72,6 +72,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
@@ -154,6 +157,76 @@ namespace DataAccess.Migrations
                     b.ToTable("ChatRooms", (string)null);
                 });
 
+             modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(6000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Articles", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Comments", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.ExceptionEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -207,6 +280,40 @@ namespace DataAccess.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("Messages", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PriceRate")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceRate")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Suggestions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupportRate")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Portfolio", b =>
@@ -369,6 +476,9 @@ namespace DataAccess.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -397,15 +507,19 @@ namespace DataAccess.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "b41815ce-208b-40c1-9860-4a584d18ad3f",
+                            ConcurrencyStamp = "bcba6d71-b947-47b9-a439-7818e0fe7845",
+                            Email = "admin.mail@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "AdminFirstName",
                             IsActive = true,
+                            LastName = "AdminLastName",
                             LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN.MAIL@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBIfcWGfWU8YmD1TStBTpw2I3ofuDBFVv96rFPx+l1K7Dz8ukybx4metn+frr3edWw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEp1eelrPMJp6s1Uav47aXg9Q9ADls2zpi2pywhXIuclPyHpQ1PqCeKoEJGXawuHXA==",
+                            PhoneNumber = "00 000 000 0000",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5d9cb06a-ad67-4432-aae2-f790256c069a",
+                            SecurityStamp = "c7170722-5339-4355-8ed6-db390f52e9c8",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -479,28 +593,28 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "3ecd03c3-9fda-4bc5-acb6-c76555235559",
+                            ConcurrencyStamp = "9dd063db-3d8e-40c1-9287-51984bcdbde2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "cd15a105-fd4c-4913-96bd-ed7873e1873f",
+                            ConcurrencyStamp = "9c8da7f5-7a4e-4e71-92bc-d04a7a5f4cc6",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "f9b361e8-af9d-40d0-8e5b-12e0641289f3",
+                            ConcurrencyStamp = "74fa390e-7de9-40f0-a4ae-b587f94583b9",
                             Name = "Accountant",
                             NormalizedName = "ACCOUNTANT"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "1d147f2f-339a-4fbe-9588-e4423c2e3af4",
+                            ConcurrencyStamp = "e5dea3ab-e2ef-4d58-9cdd-aed73d0c678f",
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -706,6 +820,47 @@ namespace DataAccess.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.HasOne("Core.Entities.User", "Author")
+                        .WithMany("Articles")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Core.Entities.Comment", b =>
+                {
+                    b.HasOne("Core.Entities.Article", "Article")
+                        .WithMany("Comments")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.User", "Author")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Core.Entities.Feedback", b =>
+                {
+                    b.HasOne("Core.Entities.User", "User")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Core.Entities.Portfolio", b =>
                 {
                     b.HasOne("Core.Entities.User", "User")
@@ -864,6 +1019,11 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Core.Entities.Message", b =>
                 {
                     b.Navigation("LastReadByUsers");
+                 });
+
+            modelBuilder.Entity("Core.Entities.Article", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Core.Entities.Procedure", b =>
@@ -887,8 +1047,14 @@ namespace DataAccess.Migrations
                     b.Navigation("Animals");
 
                     b.Navigation("AppointmentUsers");
-
+ 
                     b.Navigation("Messages");
+
+                    b.Navigation("Articles");
+
+                    b.Navigation("Comments");
+
+                    b.Navigation("Feedbacks");
 
                     b.Navigation("Portfolio");
 

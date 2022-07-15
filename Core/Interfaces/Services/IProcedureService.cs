@@ -1,16 +1,14 @@
 ﻿using Core.Entities;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Core.Interfaces.Services;
 
 public interface IProcedureService
 {
-    Task CreateNewProcedureAsync(Procedure procedure);
-    Task UpdateProcedureAsync(Procedure newProcedure);
-    Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds);
-
+    Task CreateNewProcedureAsync(Procedure procedure, IEnumerable<int> specializationIds);
+    Task UpdateProcedureAsync(Procedure newProcedure, IEnumerable<int> specializationIds);
     Task DeleteProcedureAsync(int procedureId);
-
     Task<Procedure> GetByIdAsync(int procedureId);
-    
-    Task<IEnumerable<Procedure>> GetAllProceduresAsync();
+    Task<PagedList<Procedure>> GetAllProceduresAsync(ProcedureParameters parameters);
 }

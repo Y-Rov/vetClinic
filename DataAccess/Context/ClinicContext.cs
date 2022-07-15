@@ -22,17 +22,20 @@ namespace DataAccess.Context
         public DbSet<Message> Messages { get; set; }
         public DbSet<ChatRoom> ChatRooms { get; set; }
         public DbSet<UserChatRoom> UserChatRooms { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
         public ClinicContext(DbContextOptions<ClinicContext> options) 
             : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
             
-            modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-            modelBuilder.SeedRoles();
-            modelBuilder.SeedAdmin();
+            builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+            builder.SeedRoles();
+            builder.SeedAdmin();
         }
     }
 }

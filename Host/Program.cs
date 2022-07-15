@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
+using System.Text.Json.Serialization;
+using Azure.Storage.Blobs;
 using WebApi.AutoMapper.Configurations;
 using WebApi.Hubs.Configurations;
 using WebApi.SignalR.Hubs;
-
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
@@ -21,12 +22,15 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nl
 builder.Services.AddControllers(options =>
 {
     options.SuppressAsyncSuffixInActionNames = false;
-});
+}).AddJsonOptions(jsonOptions =>
+                jsonOptions.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddSystemServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddApplicationMappers();
+
+builder.Services.AddScoped(_ => new BlobServiceClient(builder.Configuration.GetConnectionString("BlobConnection")));
 
 builder.Services.AddDbContext<ClinicContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

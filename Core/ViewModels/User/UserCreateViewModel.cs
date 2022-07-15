@@ -2,7 +2,8 @@
 {
     public record UserCreateViewModel : UserBaseViewModel
     {
-        public string? Email { get; set; }
+        public string? Email { get; init; }
+        public string? ProfilePicture { get; init; }
         public string? Password { get; init; }
         public string? ConfirmPassword { get; init; }
     }

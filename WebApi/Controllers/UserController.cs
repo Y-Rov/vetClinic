@@ -1,5 +1,9 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,27 +20,31 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<UserCreateViewModel, User> _createMapper;
         private readonly IViewModelMapperUpdater<UserUpdateViewModel, User> _updateMapper;
         private readonly IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> _readEnumerableMapper;
+        private readonly IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>> _readPagedMapper;
 
         public UserController(
             IUserService userService,
             IViewModelMapper<User, UserReadViewModel> readMapper,
             IViewModelMapper<UserCreateViewModel, User> createMapper,
             IViewModelMapperUpdater<UserUpdateViewModel, User> updateMapper,
-            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> readEnumerableMapper)
+            IEnumerableViewModelMapper<IEnumerable<User>, IEnumerable<UserReadViewModel>> readEnumerableMapper,
+            IViewModelMapper<PagedList<User>, PagedReadViewModel<UserReadViewModel>> readPagedMapper)
         {
             _userService = userService;
             _readMapper = readMapper;
             _createMapper = createMapper;
             _updateMapper = updateMapper;
             _readEnumerableMapper = readEnumerableMapper;
+            _readPagedMapper = readPagedMapper;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetAsync()
+        public async Task<ActionResult<PagedReadViewModel<UserReadViewModel>>> GetAsync(
+            [FromQuery] UserParameters userParameters)
         {
-            var users = await _userService.GetAllUsersAsync();
-            var readModels = _readEnumerableMapper.Map(users);
+            var users = await _userService.GetAllUsersAsync(userParameters);
+            var readModels = _readPagedMapper.Map(users);
 
             return Ok(readModels);
         }
@@ -50,20 +58,46 @@ namespace WebApi.Controllers
             return Ok(readModel);
         }
 
+        [HttpGet("doctors")]
+        public async Task<ActionResult<IEnumerable<UserReadViewModel>>> GetDoctorsAsync(
+            [FromQuery(Name = "specialization")] string? specialization)
+        {
+            var users = await _userService.GetDoctorsAsync(specialization!);
+            var readModels = _readEnumerableMapper.Map(users);
+
+            return Ok(readModels);
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromBody] UserCreateViewModel createModel)
         {
             var user = _createMapper.Map(createModel);
             await _userService.CreateAsync(user, createModel.Password!);
-            await _userService.AssignToRoleAsync(user, "Client");
+            await _userService.AssignRoleAsync(user, "Client");
 
             var readModel = _readMapper.Map(user);
 
             return CreatedAtAction(nameof(GetAsync), new { id = readModel.Id }, readModel);
         }
 
+        [HttpPost("register/{role}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<UserReadViewModel>> CreateAsync(
+            [FromRoute] string role,
+            [FromBody] UserCreateViewModel createModel)
+        {
+            var user = _createMapper.Map(createModel);
+            await _userService.CreateAsync(user, createModel.Password!);
+            await _userService.AssignRoleAsync(user, role);
+
+            var readDto = _readMapper.Map(user);
+
+            return CreatedAtAction(nameof(GetAsync), new { id = readDto.Id }, readDto);
+        }
+
         [HttpPut("{id:int:min(1)}")]
-        public async Task<ActionResult> UpdateAsync([FromRoute] int id, 
+        public async Task<ActionResult> UpdateAsync(
+            [FromRoute] int id, 
             [FromBody] UserUpdateViewModel updateModel)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -81,20 +115,6 @@ namespace WebApi.Controllers
             await _userService.DeleteAsync(user!);
 
             return NoContent();
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost("register/{role}")]
-        public async Task<ActionResult<UserReadViewModel>> CreateAsync([FromRoute] string role, 
-            [FromBody] UserCreateViewModel createModel)
-        {
-            var user = _createMapper.Map(createModel);
-            await _userService.CreateAsync(user, createModel.Password!);
-            await _userService.AssignToRoleAsync(user, role);
-
-            var readDto = _readMapper.Map(user);
-
-            return CreatedAtAction(nameof(GetAsync), new { id = readDto.Id }, readDto);
         }
     }
 }

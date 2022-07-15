@@ -1,5 +1,4 @@
-﻿using Core.Entities;
-using Core.Interfaces.Repositories;
+﻿using Core.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.Repositories.Configuration
@@ -21,6 +20,14 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
             services.AddScoped<IUserChatRoomRepository, UserChatRoomRepository>();
+            services.AddScoped<IUserSpecializationRepository, UserSpecializationRepository>();
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IUserProfilePictureRepository, UserProfilePictureRepository>();
+            services.AddScoped<IAppointmentProcedureRepository, AppointmentProcedureRepository>();
+            services.AddScoped<IAppointmentUserRepository, AppointmentUserRepository>();
+            services.AddScoped<IFeedbackRepository, FeedbackRepository>();
         }
     }
 }

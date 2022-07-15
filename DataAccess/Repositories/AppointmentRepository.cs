@@ -4,11 +4,10 @@ using DataAccess.Context;
 
 namespace DataAccess.Repositories
 {
-    public class AppointmentRepository : Repository<Appointment> , IAppointmentRepository
+    public class AppointmentRepository : Repository<Appointment>, IAppointmentRepository
     {
-       public AppointmentRepository(ClinicContext context) : base(context)
+        public AppointmentRepository(ClinicContext context) : base(context)
         {
-
         }
     }
 }

@@ -1,52 +1,89 @@
-﻿using Core.Entities;
+﻿using System.Linq.Expressions;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
 public class ProcedureService : IProcedureService
 {
     private readonly IProcedureRepository _procedureRepository;
+    private readonly ISpecializationService _specializationService;
+    private readonly IProcedureSpecializationRepository _procedureSpecializationRepository;
     private readonly ILoggerManager _loggerManager;
 
     public ProcedureService(
         IProcedureRepository procedureRepository,
+        ISpecializationService specializationService, 
+        IProcedureSpecializationRepository procedureSpecializationRepository, 
         ILoggerManager loggerManager)
     {
         _procedureRepository = procedureRepository;
+        _specializationService = specializationService;
+        _procedureSpecializationRepository = procedureSpecializationRepository;
         _loggerManager = loggerManager;
     }
 
-    public async Task CreateNewProcedureAsync(Procedure procedure)
+    public async Task CreateNewProcedureAsync(Procedure procedure, IEnumerable<int> specializationIds)
     {
+        foreach (var specializationId in specializationIds)
+        {
+            procedure.ProcedureSpecializations.Add( new ProcedureSpecialization()
+            {
+                Procedure = procedure,
+                Specialization = await _specializationService.GetSpecializationByIdAsync(specializationId)
+            });
+        }
         await _procedureRepository.InsertAsync(procedure);
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Created new procedure with name: {procedure.Name}");
     }
 
-    public async Task UpdateProcedureAsync(Procedure newProcedure)
+    private async Task UpdateProcedureSpecializationsAsync(int newProcedureId, IEnumerable<int> specializationIds)
     {
-        _procedureRepository.Update(newProcedure);
-        await _procedureRepository.SaveChangesAsync();
-        _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
-    }
+        var existing = await _procedureSpecializationRepository.GetAsync(
+            filter: pr => pr.ProcedureId == newProcedureId);
+        foreach (var ps in existing)
+        {
+            _procedureSpecializationRepository.Delete(ps);
+        }
 
-    public async Task UpdateProcedureSpecializationsAsync(int procedureId, IEnumerable<int> specializationIds)
+        foreach (var specializationId in specializationIds)
+        {
+            await _procedureSpecializationRepository.InsertAsync(new ProcedureSpecialization()
+            {
+                ProcedureId = newProcedureId,
+                SpecializationId = specializationId
+            });
+        }
+        await _procedureSpecializationRepository.SaveChangesAsync();
+    }
+    
+    public async Task UpdateProcedureAsync(Procedure newProcedure, IEnumerable<int> specializationIds)
     {
         try
         {
-            await _procedureRepository.UpdateProcedureSpecializationsAsync(procedureId, specializationIds);
+            await UpdateProcedureSpecializationsAsync(newProcedure.Id, specializationIds);
         }
         catch (InvalidOperationException)
         {
             _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
             throw new NotFoundException("At least one of the specializations from the given list does not exist");
         }
+        catch (DbUpdateException)
+        {
+            _loggerManager.LogWarn("At least one of the specializations from the given list does not exist");
+            throw new NotFoundException("At least one of the specializations from the given list does not exist");
+        }
 
+        _procedureRepository.Update(newProcedure);
         await _procedureRepository.SaveChangesAsync();
-        _loggerManager.LogInfo($"Updated specializations list of the procedure with Id {procedureId}");
+        _loggerManager.LogInfo($"Updated procedure with id {newProcedure.Id}");
     }
 
     public async Task DeleteProcedureAsync(int procedureId)
@@ -57,8 +94,7 @@ public class ProcedureService : IProcedureService
         await _procedureRepository.SaveChangesAsync();
         _loggerManager.LogInfo($"Deleted procedure with Id {procedureId}");
     }
-
-
+    
     public async Task<Procedure> GetByIdAsync(int procedureId)
     {
         var procedure = await _procedureRepository.GetById(
@@ -75,11 +111,40 @@ public class ProcedureService : IProcedureService
         return procedure;
     }
 
-    public async Task<IEnumerable<Procedure>> GetAllProceduresAsync()
+    public async Task<PagedList<Procedure>> GetAllProceduresAsync(ProcedureParameters parameters)
     {
-        var procedures = await _procedureRepository.GetAsync(
+        var filterQuery = GetFilterQuery(parameters.FilterParam);
+        var orderByQuery = GetOrderByQuery(parameters.OrderByParam);
+
+        var procedures = await _procedureRepository.GetPaged(
+            parameters: parameters,
+            filter: filterQuery,
+            orderBy: orderByQuery,
             includeProperties: "ProcedureSpecializations.Specialization");
         _loggerManager.LogInfo("Found all procedures");
         return procedures;
     }
+    
+    private static Expression<Func<Procedure, bool>>? GetFilterQuery(string? filterParam)
+    {
+        Expression<Func<Procedure, bool>>? filterQuery = null;
+
+        if (filterParam is null) return filterQuery;
+        
+        var formattedFilter = filterParam.Trim().ToLower();
+
+        filterQuery = u => u.Name!.ToLower().Contains(formattedFilter)
+                           || u.Description!.ToLower().Contains(formattedFilter)
+                           || u.Cost.ToString().Contains(formattedFilter);
+
+        return filterQuery;
+    }
+
+    private static Func<IQueryable<Procedure>, IOrderedQueryable<Procedure>>? GetOrderByQuery(string? orderBy) => orderBy switch
+    {
+        "Cost" => query => query.OrderBy(procedure => procedure.Cost),
+        "Name" => query => query.OrderBy(procedure => procedure.Name),
+        "Description" => query => query.OrderBy(procedure => procedure.Description),
+        _ => null
+    };
 }

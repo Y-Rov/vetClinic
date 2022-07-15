@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModels.AddressViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -8,58 +9,64 @@ namespace WebApi.Controllers
 {
     [Route("api/addresses")]
     [ApiController]
+    [Authorize]
     public class AddressController : ControllerBase
     {
         private readonly IAddressService _addressService;
-        private readonly IViewModelMapper<Address, AddressViewModel> _addressViewModelMapper;
-        private readonly IViewModelMapper<AddressViewModel, Address> _addressMapper;
-        private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>>
-            _enumerableAddressViewModelMapper;
+        private readonly IViewModelMapper<AddressCreateReadViewModel, Address> _addressCreateMapper;
+        private readonly IViewModelMapper<Address, AddressBaseViewModel> _addressReadViewModelMapper;
+        private readonly IViewModelMapperUpdater<AddressBaseViewModel, Address> _addressUpdateMapper;
+        private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>
+            _addressReadEnumerableViewModelMapper;
 
         public AddressController(
             IAddressService addressService,
-            IViewModelMapper<Address, AddressViewModel> addressViewModelMapper,
-            IViewModelMapper<AddressViewModel, Address> addressMapper,
-            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressViewModel>> enumerableAddressViewModelMapper)
+            IViewModelMapper<AddressCreateReadViewModel, Address> addressCreateMapper,
+            IViewModelMapper<Address, AddressBaseViewModel> addressReadViewModelMapper,
+            IViewModelMapperUpdater<AddressBaseViewModel, Address> addressUpdateMapper,
+            IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>> addressReadEnumerableViewModelMapper)
         {
             _addressService = addressService;
-            _addressViewModelMapper = addressViewModelMapper;
-            _addressMapper = addressMapper;
-            _enumerableAddressViewModelMapper = enumerableAddressViewModelMapper;
+            _addressCreateMapper = addressCreateMapper;
+            _addressReadViewModelMapper = addressReadViewModelMapper;
+            _addressUpdateMapper = addressUpdateMapper;
+            _addressReadEnumerableViewModelMapper = addressReadEnumerableViewModelMapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AddressViewModel>>> GetAsync()
+        [Authorize(Roles = "Admin")]
+        public async Task<IEnumerable<AddressCreateReadViewModel>> GetAsync()
         {
             var addresses = await _addressService.GetAllAddressesAsync();
 
-            var viewModels = _enumerableAddressViewModelMapper.Map(addresses);
-            return Ok(viewModels);
+            var mappedAddresses = _addressReadEnumerableViewModelMapper.Map(addresses);
+            return mappedAddresses;
         }
 
         [HttpGet("{id:int:min(1)}")]
-        public async Task<ActionResult<AddressViewModel>> GetAsync([FromRoute] int id)
+        public async Task<AddressBaseViewModel> GetAsync([FromRoute] int id)
         {
             var address = await _addressService.GetAddressByUserIdAsync(id);
 
-            var viewModel = _addressViewModelMapper.Map(address);
-            return Ok(viewModel);
+            var mappedAddress = _addressReadViewModelMapper.Map(address);
+            return mappedAddress;
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync(AddressViewModel addressViewModel)
+        public async Task<ActionResult> CreateAsync([FromBody] AddressCreateReadViewModel addressCreateReadViewModel)
         {
-            var address = _addressMapper.Map(addressViewModel);
+            var address = _addressCreateMapper.Map(addressCreateReadViewModel);
 
             await _addressService.CreateAddressAsync(address);
             return NoContent();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateAsync(AddressViewModel addressViewModel)
+        [HttpPut("{id:int:min(1)}")]
+        public async Task<ActionResult> UpdateAsync([FromRoute] int id, [FromBody] AddressBaseViewModel addressBaseViewModel)
         {
-            var address = _addressMapper.Map(addressViewModel);
-
+            var address = await _addressService.GetAddressByUserIdAsync(id);
+            _addressUpdateMapper.Map(addressBaseViewModel, address);
+            
             await _addressService.UpdateAddressAsync(address);
             return NoContent();
         }

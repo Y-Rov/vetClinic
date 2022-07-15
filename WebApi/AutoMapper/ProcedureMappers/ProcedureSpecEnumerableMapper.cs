@@ -5,17 +5,15 @@ using WebApi.AutoMapper.Interface;
 namespace WebApi.AutoMapper.ProcedureMappers;
 
 public class ProcedureSpecEnumerableMapper : 
-    IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationViewModel>>
+    IEnumerableViewModelMapper<IEnumerable<ProcedureSpecialization>, IEnumerable<SpecializationBaseViewModel>>
 {
-    private readonly IViewModelMapper<Specialization, SpecializationViewModel> _specMapper;
-
-    public ProcedureSpecEnumerableMapper(IViewModelMapper<Specialization, SpecializationViewModel> specMapper)
+    public IEnumerable<SpecializationBaseViewModel> Map(IEnumerable<ProcedureSpecialization> source)
     {
-        _specMapper = specMapper;
-    }
-    public IEnumerable<SpecializationViewModel> Map(IEnumerable<ProcedureSpecialization> source)
-    {
-        var specViewModels = source.Select(spec => _specMapper.Map(spec.Specialization));
+        var specViewModels = source.Select(spec => new SpecializationBaseViewModel()
+        {
+            Id = spec.SpecializationId,
+            Name = spec.Specialization.Name
+        });
         return specViewModels;
     }
 }

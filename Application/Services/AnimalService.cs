@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Application.Services
 {
@@ -10,13 +12,17 @@ namespace Application.Services
     {
         private readonly IAnimalRepository _animalRepository;
         private readonly ILoggerManager _loggerManager;
+        private readonly IAnimalPhotoService _animalPhotoService;
 
         public AnimalService(
             IAnimalRepository animalRepository,
-            ILoggerManager loggerManager)
+            ILoggerManager loggerManager,
+            IAnimalPhotoService animalPhotoService
+            )
         {
             _animalRepository = animalRepository;
             _loggerManager = loggerManager;
+            _animalPhotoService = animalPhotoService;
         }
 
         public async Task CreateAsync(Animal animal)
@@ -30,6 +36,9 @@ namespace Application.Services
         {
             var animalToDelete = await GetByIdAsync(animalId);
             _animalRepository.Delete(animalToDelete);
+
+            await _animalPhotoService.DeleteAsync(animalToDelete.PhotoUrl!);
+
             await _animalRepository.SaveChangesAsync();
             _loggerManager.LogInfo("Animal deleted");
         }
@@ -41,16 +50,16 @@ namespace Application.Services
             _loggerManager.LogInfo("Animal info is up-to-date");
         }
 
-        public async Task<IEnumerable<Animal>> GetAsync()
+        public async Task<IEnumerable<Animal>> GetAsync(int ownerId)
         {
-            var animals = await _animalRepository.GetAsync();
+            var animals = await _animalRepository.GetAsync(filter: animal => animal.OwnerId == ownerId);
             _loggerManager.LogInfo($"A list of animals with lenght = {animals.Count()} is been returned");
             return animals;
         }
 
-        public async Task<IEnumerable<Appointment>> GetAllAppointmentsWithAnimalIdAsync(int id)
+        public async Task<PagedList<Appointment>> GetAllAppointmentsWithAnimalIdAsync(AnimalParameters animalParameters)
         {
-            var appointments = await _animalRepository.GetAllAppointmentsWithAnimalIdAsync(id);
+            var appointments = await _animalRepository.GetAllAppointmentsWithAnimalIdAsync(animalParameters);
             _loggerManager.LogInfo($"A list of animal-specific appointments with lenght = {appointments.Count()} is been returned");
             return appointments;
         }

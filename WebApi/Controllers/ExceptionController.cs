@@ -1,9 +1,13 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.ViewModel;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
+using Core.ViewModels.ExceptionViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers
@@ -14,32 +18,37 @@ namespace WebApi.Controllers
     public class ExceptionController : ControllerBase
     {
         private readonly IExceptionEntityService _exceptionEntityService;
-        private readonly IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> _exceptionModel;
-
+        private readonly IViewModelMapper<PagedList<ExceptionEntity>, PagedReadViewModel<ExceptionEntityReadViewModel>> _exceptionToPagedModel;
+        private readonly IViewModelMapper<PagedList<ExceptionStats>, PagedReadViewModel<ExceptionStatsReadViewModel>> _exceptionStatsToPagedModel;
         public ExceptionController(
             IExceptionEntityService exceptionEntityService,
-            IEnumerableViewModelMapper<IEnumerable<ExceptionEntity>, IEnumerable<ExceptionEntityReadViewModel>> exceptionModel)
+            IViewModelMapper<PagedList<ExceptionEntity>, PagedReadViewModel<ExceptionEntityReadViewModel>> exceptionToPagedModel,
+            IViewModelMapper<PagedList<ExceptionStats>, PagedReadViewModel<ExceptionStatsReadViewModel>> exceptionStatsToPagedModel)
         {
             _exceptionEntityService = exceptionEntityService;
-            _exceptionModel = exceptionModel;
+            _exceptionToPagedModel = exceptionToPagedModel;
+            _exceptionStatsToPagedModel = exceptionStatsToPagedModel;
         }
 
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetAsync()
+        public async Task<ActionResult<PagedReadViewModel<ExceptionEntityReadViewModel>>> GetAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var allExceptions = await _exceptionEntityService.GetAsync();
+            var allExceptions = await _exceptionEntityService.GetAsync(exceptionParameters);
 
-            var readDtos = _exceptionModel.Map(allExceptions);
+            var exceptionsReadModel = _exceptionToPagedModel.Map(allExceptions);
 
-            return Ok(readDtos);
+            return Ok(exceptionsReadModel);
         }
 
         [HttpGet("stats")]
-        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetStatsAsync()
+        public async Task<ActionResult<PagedReadViewModel<ExceptionStatsReadViewModel>>> GetStatsAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var exceptionsStats = await _exceptionEntityService.GetStatsAsync();
+            var exceptionsStats = await _exceptionEntityService.GetStatsAsync(exceptionParameters);
 
-            return Ok(exceptionsStats);
+            var exceptionStatsReadModel = _exceptionStatsToPagedModel.Map(exceptionsStats);
+
+            return Ok(exceptionStatsReadModel);
 
         }
 
@@ -53,22 +62,24 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("today")]
-        public async Task<ActionResult<IEnumerable<ExceptionEntityReadViewModel>>> GetTodayAsync()
+        public async Task<ActionResult<PagedReadViewModel<ExceptionEntityReadViewModel>>> GetTodayAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var allExceptions = await _exceptionEntityService.GetTodayAsync();
+            var allExceptions = await _exceptionEntityService.GetTodayAsync(exceptionParameters);
 
-            var readDtos = _exceptionModel.Map(allExceptions);
+            var exceptionsReadModel = _exceptionToPagedModel.Map(allExceptions);
 
-            return Ok(readDtos);
+            return Ok(exceptionsReadModel);
 
         }
 
         [HttpGet("stats/today")]
-        public async Task<ActionResult<IEnumerable<ExceptionStats>>> GetTodayStatsAsync()
+        public async Task<ActionResult<PagedReadViewModel<ExceptionStatsReadViewModel>>> GetTodayStatsAsync([FromQuery] ExceptionParameters exceptionParameters)
         {
-            var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync();
+            var exceptionsStats = await _exceptionEntityService.GetTodayStatsAsync(exceptionParameters);
 
-            return Ok(exceptionsStats);
+            var exceptionStatsReadModel = _exceptionStatsToPagedModel.Map(exceptionsStats);
+
+            return Ok(exceptionStatsReadModel);
 
         }
     }

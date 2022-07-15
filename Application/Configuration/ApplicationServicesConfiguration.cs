@@ -21,6 +21,12 @@ namespace Application.Configuration
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IChatRoomService, ChatRoomService>();
+            services.AddScoped<IArticleService, ArticleService>();
+            services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IUserProfilePictureService, UserProfilePictureService>();
+            services.AddScoped<IImageParser, ImageParser>();
+            services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
         }
     }
 }

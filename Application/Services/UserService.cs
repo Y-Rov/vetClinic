@@ -3,6 +3,10 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -10,16 +14,19 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _loggerManager;
+        private readonly IUserProfilePictureService _userProfilePictureService;
 
         public UserService(
             IUserRepository userRepository, 
-            ILoggerManager loggerManager)
+            ILoggerManager loggerManager,
+            IUserProfilePictureService userProfilePictureService)
         {
             _userRepository = userRepository;
             _loggerManager = loggerManager;
+            _userProfilePictureService = userProfilePictureService;
         }
 
-        public async Task AssignToRoleAsync(User user, string role)
+        public async Task AssignRoleAsync(User user, string role)
         {
             var assignResult = await _userRepository.AssignRoleAsync(user, role);
 
@@ -51,21 +58,57 @@ namespace Application.Services
         {
             _userRepository.Delete(user);
             await _userRepository.UpdateAsync(user);
+            await _userProfilePictureService.DeleteAsync(user.ProfilePicture!);
 
             _loggerManager.LogInfo($"Successfully deleted the user with id {user.Id}");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<PagedList<User>> GetAllUsersAsync(UserParameters userParameters)
         {
-            var users = await _userRepository.GetAllAsync();
+            var filterQuery = GetFilterQuery(userParameters.FilterParam);
+            var orderByQuery = GetOrderByQuery(userParameters.OrderByParam);
+
+            var users = await _userRepository.GetAllAsync(
+                userParameters: userParameters,
+                filter: filterQuery,
+                orderBy: orderByQuery,
+                includeProperties: query => query
+                    .Include(u => u.Address)
+                    .Include(u => u.Portfolio!));
+
             _loggerManager.LogInfo("Successfully retrieved all users");
 
             return users;
         }
 
+        public async Task<IEnumerable<User>> GetDoctorsAsync(string specialization = "")
+        {
+            const int DOCTOR_ID = 2;
+
+            var doctors = await _userRepository.GetByRolesAsync(
+                roleIds: new List<int>() { DOCTOR_ID },
+                includeProperties: query => query
+                    .Include(u => u.Address)
+                    .Include(u => u.Portfolio)
+                    .Include(u => u.UserSpecializations)
+                        .ThenInclude(us => us.Specialization!));
+
+            if (!string.IsNullOrEmpty(specialization))
+            {
+                doctors = _userRepository.FilterBySpecialization(doctors, specialization);
+            }
+
+            _loggerManager.LogInfo("Successfully retrieved all doctors");
+
+            return doctors;
+        }
+
         public async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id, 
+                query => query
+                    .Include(u => u.Address)
+                    .Include(u => u.Portfolio!));
 
             if (user is null)
             {
@@ -90,5 +133,32 @@ namespace Application.Services
 
             _loggerManager.LogInfo($"Successfully updated the user with id {user.Id}");
         }
+
+        private static Expression<Func<User, bool>>? GetFilterQuery(string? filterParam)
+        {
+            Expression<Func<User, bool>>? filterQuery = null;
+
+            if (filterParam is not null)
+            {
+                string formatedFilter = filterParam.Trim().ToLower();
+
+                filterQuery = u => u.FirstName!.ToLower().Contains(formatedFilter)
+                    || u.LastName!.ToLower().Contains(formatedFilter)
+                    || u.Email.ToLower().Contains(formatedFilter)
+                    || u.PhoneNumber.Contains(formatedFilter);
+            }
+
+            return filterQuery;
+        }
+
+        private static Func<IQueryable<User>, IOrderedQueryable<User>>? GetOrderByQuery(string? orderBy) => orderBy switch
+        {
+            "FirstName" => query => query.OrderBy(u => u.FirstName),
+            "LastName" => query => query.OrderBy(u => u.LastName),
+            "Email" => query => query.OrderBy(u => u.Email),
+            "PhoneNumber" => query => query.OrderBy(u => u.PhoneNumber),
+            "BirthDate" => query => query.OrderBy(u => u.BirthDate),
+            _ => null
+        };
     }
 }

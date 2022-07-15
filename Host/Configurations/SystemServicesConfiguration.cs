@@ -1,18 +1,17 @@
 ﻿using Application.Services;
 using Core.Interfaces;
-using Core.ViewModels.User;
 using FluentValidation.AspNetCore;
 using WebApi.Validators;
-using WebApi.Validators.User;
 
 namespace Host.Configurations
 {
     public static class SystemServicesConfiguration
     {
-        static public string AllowedOrigins = "frontend";
+        public const string AllowedOrigins = "frontend";
 
         public static void AddSystemServices(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddSingleton<ILoggerManager, LoggerManager>();
 
             services.AddFluentValidation(fv =>
@@ -28,6 +27,7 @@ namespace Host.Configurations
                     policy.WithOrigins("http://localhost:4200");
                     policy.WithHeaders("*");
                     policy.WithMethods("*");
+                    policy.WithExposedHeaders("X-Pagination");
                 });
             });
         }
