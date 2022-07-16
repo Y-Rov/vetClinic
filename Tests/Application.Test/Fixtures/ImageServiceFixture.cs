@@ -43,7 +43,8 @@ public class ImageServiceFixture
     CachedFileNamesListWithUnusedImages = GetCachedFileNamesListWithUnusedImages();
     ListOfImagesExpectedToDelete = GetListOfImagesExpectedToDelete();
     BodyWithUsedAndUnusedImages = GetBodyWithUsedAndUnusedImages();
-
+    CachedFileNamesListWithAllUnusedImages = GetCachedFileNamesListWithAllUnusedImages();
+    
         MockImageService = new ImageService(
             MockConfiguration.Object, 
             MockImageRepository.Object,
@@ -71,11 +72,12 @@ public class ImageServiceFixture
     public string BodyWithAllImagesChanged { get; }
     public string ExpectedNewFileName { get; }
     public string ExpectedLink { get; }
-    public object DefaultCachedFileNamesList { get; }
-    public object EmptyCachedFileNamesList { get; }
+    public object DefaultCachedFileNamesList;
+    public object EmptyCachedFileNamesList;
     public string BodyWithAllCachedImagesUsed { get; }
     public string BodyWithUnusedCachedImages { get; }
-    public object CachedFileNamesListWithUnusedImages { get; }
+    public object CachedFileNamesListWithUnusedImages; 
+    public object CachedFileNamesListWithAllUnusedImages; 
     public List<string> ListOfImagesExpectedToDelete { get; }
     public string BodyWithUsedAndUnusedImages { get; }
 
@@ -234,5 +236,17 @@ public class ImageServiceFixture
         var body = 
             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
         return body;
+    }
+
+    private object GetCachedFileNamesListWithAllUnusedImages()
+    {
+        var currentFileNames = new List<string>()
+        {
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png", 
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        } as object;
+        return currentFileNames;
     }
 }
