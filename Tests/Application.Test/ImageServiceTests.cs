@@ -303,8 +303,7 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
     public async Task UploadImageAsync_whenCacheIsNotEmpty_thenAddImageToCacheAndReturnLink()
     {
         //Arrange
-        var mockFile = new Mock<IFormFile>();
-        mockFile
+        _fixture.MockFormFile
             .Setup(f => f.ContentType)
             .Returns("image/png");
 
@@ -345,7 +344,7 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
              .Returns(mockCacheEntry.Object);
          
          //Act
-         var actualLink = await _fixture.MockImageService.UploadImageAsync(mockFile.Object, 12);
+         var actualLink = await _fixture.MockImageService.UploadImageAsync(_fixture.MockFormFile.Object, 12);
          
          //Assert
          Assert.NotNull(actualNewFileNames);
