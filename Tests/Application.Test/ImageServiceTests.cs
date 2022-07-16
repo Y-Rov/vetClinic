@@ -34,6 +34,7 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
         if (disposing)
         {
             _fixture.MockImageRepository.ResetCalls();
+            _fixture.MockMemoryCache.ResetCalls();
         }
 
         _disposed = true;
@@ -193,8 +194,10 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
                 It.IsAny<string>(), 
                 It.IsAny<string>()))
             .Returns(Task.FromResult<object?>(null)).Verifiable();
+        
         //Act
         await _fixture.MockImageService.ClearOutdatedImagesAsync(newBody, oldBody);
+        
         //Assert
         _fixture.MockImageRepository
             .Verify(repo => repo.DeleteAsync(
@@ -295,443 +298,462 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
         //Assert
         await Assert.ThrowsAsync<BadRequestException>(() => resultTask);
     }
+
+    [Fact]
+    public async Task UploadImageAsync_whenCacheIsNotEmpty_thenAddImageToCacheAndReturnLink()
+    {
+        //Arrange
+        var mockFile = new Mock<IFormFile>();
+        mockFile
+            .Setup(f => f.ContentType)
+            .Returns("image/png");
+
+        var expectedNewFileName = "439e7759-7de1-42e8-ad6d-8bed3723b676.png";
+        var expectedLink = $"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/{expectedNewFileName}";
+        
+        _fixture.MockImageRepository
+            .Setup(repo => repo.UploadFromIFormFile(
+                It.IsAny<IFormFile>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(expectedLink);
+
+        var currentFileNames = new List<string>()
+        {
+            "492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png",
+            "0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg",
+            "45025163-0b68-4ea0-9fd6-e74a5e49a894.png", 
+            "e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp"
+        } as object;
+
+         _fixture.MockMemoryCache
+             .Setup(cache => cache.TryGetValue(
+                 It.IsAny<object>(), 
+                 out currentFileNames));
+
+         var mockCacheEntry = new Mock<ICacheEntry>();
+         mockCacheEntry
+             .SetupSet(entry => entry.AbsoluteExpirationRelativeToNow = It.IsAny<TimeSpan>());
+
+         List<string>? actualNewFileNames = null;
+         mockCacheEntry
+             .SetupSet(entry => entry.Value = It.IsAny<object>())
+             .Callback<object>((o) => actualNewFileNames = o as List<string>);
+
+         _fixture.MockMemoryCache
+             .Setup(cache => cache.CreateEntry(It.IsAny<object>()))
+             .Returns(mockCacheEntry.Object);
+         
+         //Act
+         var actualLink = await _fixture.MockImageService.UploadImageAsync(mockFile.Object, 12);
+         
+         //Assert
+         Assert.NotNull(actualNewFileNames);
+         Assert.Contains(actualNewFileNames!, fileName => fileName == expectedNewFileName);
+         Assert.Equal(expectedLink, actualLink);
+    }
+    
+    [Fact]
+    public async Task UploadImageAsync_whenCacheIsEmpty_thenAddImageToCacheAndReturnLink()
+    {
+        //Arrange
+        var mockFile = new Mock<IFormFile>();
+        mockFile
+            .Setup(f => f.ContentType)
+            .Returns("image/png");
+
+        var expectedNewFileName = "439e7759-7de1-42e8-ad6d-8bed3723b676.png";
+        var expectedLink = $"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/{expectedNewFileName}";
+        
+        _fixture.MockImageRepository
+            .Setup(repo => repo.UploadFromIFormFile(
+                It.IsAny<IFormFile>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(expectedLink);
+
+        var currentFileNames = null as object;
+
+         _fixture.MockMemoryCache
+             .Setup(cache => cache.TryGetValue(
+                 It.IsAny<object>(), 
+                 out currentFileNames));
+
+         var mockCacheEntry = new Mock<ICacheEntry>();
+         mockCacheEntry
+             .SetupSet(entry => entry.AbsoluteExpirationRelativeToNow = It.IsAny<TimeSpan>());
+
+         List<string>? actualNewFileNames = null;
+         mockCacheEntry
+             .SetupSet(entry => entry.Value = It.IsAny<object>())
+             .Callback<object>((o) => actualNewFileNames = o as List<string>);
+
+         _fixture.MockMemoryCache
+             .Setup(cache => cache.CreateEntry(It.IsAny<object>()))
+             .Returns(mockCacheEntry.Object);
+         
+         //Act
+         var actualLink = await _fixture.MockImageService.UploadImageAsync(mockFile.Object, 12);
+         
+         //Assert
+         Assert.NotNull(actualNewFileNames);
+         Assert.Contains(actualNewFileNames!, fileName => fileName == expectedNewFileName);
+         Assert.Equal(expectedLink, actualLink);
+    }
+    
+    [Fact]
+    public async Task UploadImageAsync_whenRepoThrows_thenThrowBadRequest()
+    {
+        //Arrange
+        var mockFile = new Mock<IFormFile>();
+        mockFile
+            .Setup(f => f.ContentType)
+            .Returns("image/png");
+        
+        _fixture.MockImageRepository
+            .Setup(repo => repo.UploadFromIFormFile(
+                It.IsAny<IFormFile>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .Throws(new RequestFailedException(""));
+        
+        //Act
+        var resultTask = _fixture.MockImageService.UploadImageAsync(mockFile.Object, 12);
+        //Assert
+        await Assert.ThrowsAsync<BadRequestException>(() => resultTask);
+    }
+    
+    [Fact]
+    public async Task ClearUnusedImagesAsync_whenCacheIsEmpty_thenReturn()
+    {
+        //Arrange
+        var currentFileNames = null as object;
+        
+        var body = 
+            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
+
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+
+        //Act
+        await _fixture.MockImageService.ClearUnusedImagesAsync(body, 17);
+        
+        //Assert
+        _fixture.MockImageRepository
+            .Verify( 
+                repo => repo.DeleteAsync(
+                    It.IsAny<string>(), 
+                    It.IsAny<string>()), 
+                Times.Never);
+        
+        _fixture.MockMemoryCache
+            .Verify(
+                cache => cache.Remove(It.IsAny<Object>()), 
+                Times.Never);
+    }
+
+    [Fact]
+    public async Task ClearUnusedImagesAsync_whenCacheIsNotEmptyAndAllCachedImagesPresentInBody_thenClearCache()
+    {
+        //Arrange
+        var currentFileNames = new List<string>()
+        {
+            "492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png",
+            "0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg",
+            "45025163-0b68-4ea0-9fd6-e74a5e49a894.png", 
+            "e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp"
+        } as object;
+        
+        var body = 
+            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
+
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.Remove(It.IsAny<Object>()))
+            .Verifiable();
+        
+        _fixture.MockImageRepository
+            .Setup(repo => repo.DeleteAsync(
+                It.IsAny<string>(), 
+                It.IsAny<string>()))
+            .Returns(Task.FromResult<object?>(null))
+            .Verifiable();
+        
+        //Act
+        await _fixture.MockImageService.ClearUnusedImagesAsync(body, 17);
+        
+        //Assert
+        _fixture.MockImageRepository
+            .Verify( 
+                repo => repo.DeleteAsync(
+                    It.IsAny<string>(), 
+                    It.IsAny<string>()), 
+                Times.Never);
+        
+        _fixture.MockMemoryCache
+            .Verify(
+                cache => cache.Remove(It.IsAny<Object>()), 
+                Times.Once);
+    }
+
+    [Fact]
+    public async Task ClearUnusedImagesAsync_whenCacheIsNotEmptyAndNotAllCachedImagesPresentInBody_thenClearCacheAndDeleteUnused()
+    {
+        var currentFileNames = new List<string>()
+        {
+            //Used
+            "492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png",
+            "0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg",
+            "45025163-0b68-4ea0-9fd6-e74a5e49a894.png", 
+            "e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp",
+            //Unused
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png", 
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        } as object;
+
+        var expectedDeletedImages = new List<string>()
+        {
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png",
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        };
+        
+        var body = 
+            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
+
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.Remove(It.IsAny<Object>()))
+            .Verifiable();
+
+        var actualDeletedImages = new List<string>();
+        _fixture.MockImageRepository
+            .Setup(repo => repo.DeleteAsync(
+                It.IsAny<string>(), 
+                It.IsAny<string>()))
+            .Callback<string, string>((arg1, arg2) => actualDeletedImages.Add(arg1))
+            .Returns(Task.FromResult<object?>(null))
+            .Verifiable();
+        
+        //Act
+        await _fixture.MockImageService.ClearUnusedImagesAsync(body, 17);
+        
+        //Assert
+        Assert.Equal(expectedDeletedImages, actualDeletedImages);
+        
+        _fixture.MockMemoryCache
+            .Verify(
+                cache => cache.Remove(It.IsAny<Object>()), 
+                Times.Once);
+    }
+    
+    [Fact]
+    public async Task ClearUnusedImagesAsync_whenCacheIsNotEmptyAndNoCachedImagesPresentInBody_thenClearCacheAndDeleteAllCachedImages()
+    {
+        var currentFileNames = new List<string>()
+        {
+            //Unused
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png", 
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        } as object;
+
+        var expectedDeletedImages = new List<string>()
+        {
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png",
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        };
+        
+        var body = 
+            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
+
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.Remove(It.IsAny<Object>()))
+            .Verifiable();
+
+        var actualDeletedImages = new List<string>();
+        _fixture.MockImageRepository
+            .Setup(repo => repo.DeleteAsync(
+                It.IsAny<string>(), 
+                It.IsAny<string>()))
+            .Callback<string, string>((arg1, arg2) => actualDeletedImages.Add(arg1))
+            .Returns(Task.FromResult<object?>(null))
+            .Verifiable();
+        
+        //Act
+        await _fixture.MockImageService.ClearUnusedImagesAsync(body, 17);
+        
+        //Assert
+        Assert.Equal(expectedDeletedImages, actualDeletedImages);
+        
+        _fixture.MockMemoryCache
+            .Verify(
+                cache => cache.Remove(It.IsAny<Object>()), 
+                Times.Once);
+    }
+    
+    [Fact]
+    public async Task ClearUnusedImagesAsync_whenCacheIsNotEmptyAndRepositoryThrows_thenThrowBadRequest()
+    {
+        var currentFileNames = new List<string>()
+        {
+            //Used
+            "492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png",
+            "0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg",
+            "45025163-0b68-4ea0-9fd6-e74a5e49a894.png", 
+            "e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp",
+            //Unused
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png", 
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        } as object;
+
+        var body = 
+            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
+
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+
+        _fixture.MockImageRepository
+            .Setup(repo => repo.DeleteAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .Throws(new RequestFailedException(""));
+        
+        //Act
+        var resultTask = _fixture.MockImageService.ClearUnusedImagesAsync(body, 17);
+        
+        //Assert
+        await Assert.ThrowsAsync<BadRequestException>(() => resultTask);
+    }
+
+    [Fact]
+    public async Task DiscardCachedImagesAsync_whenCacheIsEmpty_thenReturn()
+    {
+        //Arrange
+        var currentFileNames = null as object;
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+
+        //Act
+        await _fixture.MockImageService.DiscardCachedImagesAsync(17);
+        
+        //Assert
+        _fixture.MockImageRepository
+            .Verify( 
+                repo => repo.DeleteAsync(
+                    It.IsAny<string>(), 
+                    It.IsAny<string>()), 
+                Times.Never);
+        
+        _fixture.MockMemoryCache
+            .Verify(
+                cache => cache.Remove(It.IsAny<Object>()), 
+                Times.Never);
+    }
+    
+    [Fact]
+    public async Task DiscardCachedImagesAsync_whenCacheIsNotEmptyAndRepositoryThrows_thenThrowBadRequest()
+    {
+        var currentFileNames = new List<string>()
+        {
+            "492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png",
+            "0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg",
+            "45025163-0b68-4ea0-9fd6-e74a5e49a894.png", 
+            "e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp",
+        } as object;
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+
+        _fixture.MockImageRepository
+            .Setup(repo => repo.DeleteAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .Throws(new RequestFailedException(""));
+        
+        //Act
+        var resultTask = _fixture.MockImageService.DiscardCachedImagesAsync(17);
+        
+        //Assert
+        await Assert.ThrowsAsync<BadRequestException>(() => resultTask);
+    }
+
+    [Fact]
+    public async Task DiscardCachedImagesAsync_whenCacheIsNotEmpty_thenDeleteAllImages()
+    {
+        var currentFileNames = new List<string>()
+        {
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png", 
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        } as object;
+
+        var expectedDeletedImages = new List<string>()
+        {
+            "378b330c-5fe7-4ee2-aa4e-5668473bce5c.png",
+            "aa84fb1c-f0e8-4925-a98e-94c67849605e.jpg",
+            "6f850056-9032-4ecf-9e2c-b7f531ecdd62.png",
+            "79938366-258d-4f0f-8dd2-61efc84e19b2.webp"
+        };
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.TryGetValue(
+                It.IsAny<object>(), 
+                out currentFileNames));
+        
+        _fixture.MockMemoryCache
+            .Setup(cache => cache.Remove(It.IsAny<Object>()))
+            .Verifiable();
+
+        var actualDeletedImages = new List<string>();
+        _fixture.MockImageRepository
+            .Setup(repo => repo.DeleteAsync(
+                It.IsAny<string>(), 
+                It.IsAny<string>()))
+            .Callback<string, string>((arg1, arg2) => actualDeletedImages.Add(arg1))
+            .Returns(Task.FromResult<object?>(null))
+            .Verifiable();
+        
+        //Act
+        await _fixture.MockImageService.DiscardCachedImagesAsync(17);
+        
+        //Assert
+        Assert.Equal(expectedDeletedImages, actualDeletedImages);
+        
+        _fixture.MockMemoryCache
+            .Verify(
+                cache => cache.Remove(It.IsAny<Object>()), 
+                Times.Once);
+    }
 }
-//
-//     [Fact]
-//     public async Task UploadImageAsync_whenMemoryCacheIsInitialized_thenSuccess()
-//     {
-//         //Arrange
-//         IFormFile file = new FormFile(
-//             new MemoryStream(new byte[0]), 0, 0, "article_image", "new-image.png");
-//
-//         var mockFile = new Mock<IFormFile>();
-//         mockFile.Setup(f => f.ContentType).Returns("image/png");
-//
-//         var currentFileNames = new List<string>()
-//         {
-//             "492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png",
-//             "0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg",
-//             "45025163-0b68-4ea0-9fd6-e74a5e49a894.png",
-//             "e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp"
-//         };
-//         
-//         _fixture.MockImageRepository
-//             .Setup(repo => repo.UploadFromIFormFile(
-//                 It.IsAny<IFormFile>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .ReturnsAsync("http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/439e7759-7de1-42e8-ad6d-8bed3723b676.png");
-//         
-//         //Act
-//         var link = await _fixture.MockImageService.UploadImageAsync(mockFile.Object, 12);
-//         //Assert
-//         Assert.Equal("http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/439e7759-7de1-42e8-ad6d-8bed3723b676.png", link);
-//     }
-//
-//     [Fact]
-//     public void ParseImgTag_whenInnerLinkWithoutAttributes()
-//     {
-//         //Arrange
-//         var tag = "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/439e7759-7de1-42e8-ad6d-8bed3723b676.png\">";
-//     
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         //Act
-//         _fixture.MockImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
-//         
-//         //Assert
-//         Assert.False(isBase64);
-//         Assert.Equal("http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/439e7759-7de1-42e8-ad6d-8bed3723b676.png", link);
-//         Assert.Empty(format);
-//         Assert.Empty(base64);
-//         Assert.False(isOuter);
-//     }
-//     
-//     [Fact]
-//     public void ParseImgTag_whenOuterLinkWithoutAttributes()
-//     {
-//         //Arrange
-//         var tag = "<img src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg\">";
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         //Act
-//         _fixture.MockImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
-//         
-//         //Assert
-//         Assert.False(isBase64);
-//         Assert.Equal("https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg", link);
-//         Assert.Empty(format);
-//         Assert.Empty(base64);
-//         Assert.True(isOuter);
-//     }
-//     
-//     [Fact]
-//     public void ParseImgTag_whenOuterLinkWithAttributesAtTheBeginning()
-//     {
-//         //Arrange
-//         var tag = "<img alt=\"hello\" style=\"hello: hello\" src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg\">";
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         //Act
-//         _fixture.MockImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
-//         
-//         //Assert
-//         Assert.False(isBase64);
-//         Assert.Equal("https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg", link);
-//         Assert.Empty(format);
-//         Assert.Empty(base64);
-//         Assert.True(isOuter);
-//     }
-//     
-//     [Fact]
-//     public void ParseImgTag_whenOuterLinkWithAttributesAtTheEnd()
-//     {
-//         //Arrange
-//         var tag = "<img    src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg\" alt=\"hello\" style=\"hello: hello\">";
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         //Act
-//         _fixture.MockImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
-//         
-//         //Assert
-//         Assert.False(isBase64);
-//         Assert.Equal("https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg", link);
-//         Assert.Empty(format);
-//         Assert.Empty(base64);
-//         Assert.True(isOuter);
-//     }
-//     
-//     [Fact]
-//     public void ParseImgTag_whenOuterLinkWithAttributesAtTheBeginningAndAtTheEnd()
-//     {
-//         //Arrange
-//         var tag = "<img  alt=\"hello\"  src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg\"  style=\"hello: hello\">";
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         //Act
-//         _fixture.MockImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
-//         
-//         //Assert
-//         Assert.False(isBase64);
-//         Assert.Equal("https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg", link);
-//         Assert.Empty(format);
-//         Assert.Empty(base64);
-//         Assert.True(isOuter);
-//     }
-//     
-//     [Fact]
-//     public void ParseImgTag_whenOuterLinkWithQueryParametersAndAttributesAtTheBeginningAndAtTheEnd()
-//     {
-//         //Arrange
-//         var tag = "<img alt=\"hello\"  src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg?fit=fill&amp;w=800&amp;h=300\"  style=\"hello: hello\">";
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         //Act
-//         _fixture.MockImageService.ParseImgTag(tag, out var isBase64, out var base64, out var format, out var link, out var isOuter );
-//         
-//         //Assert
-//         Assert.False(isBase64);
-//         Assert.Equal("https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg", link);
-//         Assert.Empty(format);
-//         Assert.Empty(base64);
-//         Assert.True(isOuter);
-//     }
-//     
-//     [Fact]
-//     public async Task UploadImages_when1Base64ImagesWithAttributesAtTheBeginningAndAtTheEnd_surroundedByOtherTags()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\">Plain text plain text<span class=\"mat-display-1\"></span>" +
-//             "<img class=\"div class\"    alt=\"222hello222\" src=\"data:image/png;base64,***the SECOND string***\" style=\"222hello222: hello333\">" +
-//             "<div><ul><li>Hello</li><li>World</li></ul><div></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.UploadFromBase64Async(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .ReturnsAsync("folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format")
-//             .Verifiable();
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.ClearOutdatedImagesAsync(tag);
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Exactly(1));
-//     
-//         Assert.Equal("<div class=\"div class\">Plain text plain text<span class=\"mat-display-1\"></span>" +
-//                      "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
-//                      "<div><ul><li>Hello</li><li>World</li></ul><div></div>", result);
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-//     
-//     [Fact]
-//     public async Task UploadImages_when3Base64ImagesWithAttributesAtTheBeginningAndAtTheEnd_inARow()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\"><img alt=\"111hello111\" src=\"data:image/jpeg;base64,***the FIRST string***\" style=\"111hello111: hello111\">" +
-//             "<img class=\"div class\"    alt=\"222hello222\" src=\"data:image/png;base64,***the SECOND string***\" style=\"222hello222: hello333\">" +
-//             "<img class=\"div class\" alt=\"333hello333\" src=\"data:image/webp;base64,***the THIRD string***\" style=\"333hello333: hello333\"></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.UploadFromBase64Async(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .ReturnsAsync("folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format")
-//             .Verifiable();
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.ClearOutdatedImagesAsync(tag);
-//         
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Exactly(3));
-//     
-//         Assert.Equal("<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
-//                             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
-//                             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>", result);
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-//     
-//     [Fact]
-//     public async Task UploadImages_when3Base64ImagesWithAttributesAtTheBeginningAndAtTheEnd_insideSeparateTags()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\"><img alt=\"111hello111\" src=\"data:image/jpeg;base64,***the FIRST string***\" style=\"111hello111: hello111\"></div>" +
-//             "<div class=\"div class\"><img alt=\"222hello222\" src=\"data:image/png;base64,***the SECOND string***\" style=\"222hello222: hello333\"></div>" +
-//             "<div class=\"div class\"><img alt=\"333hello333\" src=\"data:image/webp;base64,***the THIRD string***\" style=\"333hello333: hello333\"></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.UploadFromBase64Async(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .ReturnsAsync("folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format")
-//             .Verifiable();
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.ClearOutdatedImagesAsync(tag);
-//         
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Exactly(3));
-//     
-//         Assert.Equal("<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>" +
-//                             "<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>" +
-//                             "<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>", result);
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-//     
-//     [Fact]
-//     public async Task UploadImages_when3DifferentImagesWithAttributesAtTheBeginningAndAtTheEnd_inARow()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\"><img alt=\"111hello111\" src=\"data:image/jpeg;base64,***the FIRST string***\" style=\"111hello111: hello111\">" +
-//             "<img class=\"second image div class\" alt=\"222hello222\" src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg?fit=fill&amp;w=800&amp;h=300\" style=\"222hello222: hello333\">" +
-//             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/another-inner-file-name.format\"></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.UploadFromBase64Async(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .ReturnsAsync("folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format")
-//             .Verifiable();
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.ClearOutdatedImagesAsync(tag);
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.UploadFromBase64Async(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Exactly(1));
-//     
-//         Assert.Equal("<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
-//                             "<img src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg\">" +
-//                             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/another-inner-file-name.format\"></div>", result);
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-//     
-//     [Fact]
-//     public async Task DeleteImages_when3InnerLinks_inARow()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
-//             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\">" +
-//             "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.DeleteAsync(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .Returns(Task.FromResult<object?>(null)).Verifiable();
-//     
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.DeleteImagesAsync(tag);
-//         
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Exactly(3));
-//     
-//         Assert.Equal("<div class=\"div class\"></div>", result);
-//         
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-//     
-//     [Fact]
-//     public async Task DeleteImages_when3InnerLinks_insideSeparateTags()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>" +
-//             "<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>" +
-//             "<div class=\"div class\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/folder/439e7759-7de1-42e8-ad6d-8bed3723b676.format\"></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.DeleteAsync(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .Returns(Task.FromResult<object?>(null)).Verifiable();
-//     
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.DeleteImagesAsync(tag);
-//         
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Exactly(3));
-//     
-//         Assert.Equal("<div class=\"div class\"></div><div class=\"div class\"></div><div class=\"div class\"></div>", result);
-//         
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-//     
-//     [Fact]
-//     public async Task DeleteImages_when3OuterLinks_inARow()
-//     {
-//         //Arrange
-//         var tag =
-//             "<div class=\"div class\"><img src=\"https://image.shutterstock.com/image-photo/mountains-under-mist-morning-amazing-260nw-1725825019.jpg\">" +
-//             "<img src=\"https://helpx.adobe.com/content/dam/help/en/stock/how-to/visual-reverse-image-search/jcr_content/main-pars/image/visual-reverse-image-search-v2_intro.jpg\">" +
-//             "<img src=\"https://cdn.pixabay.com/photo/2014/02/27/16/10/tree-276014__340.jpg\"></div>";
-//         
-//         _fixture.MockImageRepository
-//             .Setup(r => r.DeleteAsync(
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()))
-//             .Returns(Task.FromResult<object?>(null)).Verifiable();
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerLink")])
-//             .Returns("http://127.0.0.1:10000/devstoreaccount1");
-//         
-//         _fixture.MockConfiguration
-//             .Setup(conf => conf[It.Is<string>(s => s == "Azure:ContainerName")])
-//             .Returns("vet-clinic");
-//         
-//         //Act
-//         var result = await _fixture.MockImageService.DeleteImagesAsync(tag);
-//         
-//         //Assert
-//         _fixture.MockImageRepository.Verify(repo => repo.DeleteAsync(                
-//                 It.IsAny<string>(),
-//                 It.IsAny<string>()),
-//             Times.Never);
-//     
-//         Assert.Equal("<div class=\"div class\"></div>", result);
-//         
-//         _fixture.MockImageRepository.ResetCalls();
-//     }
-// }
