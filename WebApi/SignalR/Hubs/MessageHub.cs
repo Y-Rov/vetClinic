@@ -28,32 +28,25 @@ public class MessageHub : Hub
 
     public async Task SendPrivateMessage(MessageSendViewModel message)
     {
-        if (TryParseUserId(out int senderId))
-        {
-            var chatRoom = await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
+        int senderId = Int32.Parse(Context.UserIdentifier);
+        
+        var chatRoom = await _chatRoomService.EnsurePrivateRoomCreatedAsync(senderId, message.ReceiverId);
 
-            var messageMap = _sendMessageMapper.Map(message);
-            messageMap.ChatRoomId = chatRoom.Id;
-            messageMap.SenderId = senderId;
-            messageMap.SentAt = DateTime.Now;
-            await _messageService.CreateAsync(messageMap);
+        var messageMap = _sendMessageMapper.Map(message);
+        messageMap.ChatRoomId = chatRoom.Id;
+        messageMap.SenderId = senderId;
+        messageMap.SentAt = DateTime.Now;
+        await _messageService.CreateAsync(messageMap);
             
-            var messageGetMap = _getMessageMapper.Map(messageMap);
-            await Clients.User(message.ReceiverId.ToString())
-                .SendAsync("getMessage", messageGetMap);
-        }
+        var messageGetMap = _getMessageMapper.Map(messageMap);
+        await Clients.User(message.ReceiverId.ToString())
+            .SendAsync("getMessage", messageGetMap);
     }
 
     public async Task ReadMessage(int messageId)
     {
-        if (TryParseUserId(out int readerId))
-        {
-            await _messageService.ReadMessageAsync(readerId, messageId);
-        }
+        int readerId = Int32.Parse(Context.UserIdentifier);
+        await _messageService.ReadMessageAsync(readerId, messageId);
     }
 
-    private bool TryParseUserId(out int userId)
-    {
-        return Int32.TryParse(Context.UserIdentifier, out userId);
-    }
 }
