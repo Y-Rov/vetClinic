@@ -3,12 +3,14 @@ using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.SqlServer.Diagnostics.Internal;
 
 namespace DataAccess.Repositories
 {
     public class Repository<T> : IRepository<T>
         where T : class
     {
+
         private readonly ClinicContext _clinicContext;
         protected readonly DbSet<T> DbSet;
         
@@ -62,7 +64,7 @@ namespace DataAccess.Repositories
             return trackingResult;
 
         }
-        
+
         public async Task<IList<T>> QueryAsync(
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
@@ -70,7 +72,7 @@ namespace DataAccess.Repositories
             int? take = null, int skip = 0,
             bool asNoTracking = false)
         {
-            var query = DbSet.AsQueryable().Skip(skip);
+            var query = DbSet.AsQueryable();
 
             if (asNoTracking)
                 query = query.AsNoTracking();
@@ -83,13 +85,15 @@ namespace DataAccess.Repositories
             
             if (orderBy is not null)
                 query = orderBy(query);
-
+            
             if (take is not null)
                 query = query.Take(take.Value);
 
+            query = query.Skip(skip);
+            
             return await query.ToListAsync();
         }
-
+        
         public async Task<T?> GetFirstOrDefaultAsync(
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
@@ -99,9 +103,9 @@ namespace DataAccess.Repositories
                 filter: filter,
                 include: include,
                 asNoTracking: asNoTracking
-            );
-
-            return query.SingleOrDefault();
+                );
+            
+            return query.FirstOrDefault();
         }
 
         public async Task<T?> GetById(int id, string includeProperties = "")
@@ -141,7 +145,7 @@ namespace DataAccess.Repositories
 
             _clinicContext.Entry(entity).State = EntityState.Modified;
         }
-
+        
         public async Task InsertAsync(T entity)
         {
             await _clinicContext.Set<T>().AddAsync(entity);
