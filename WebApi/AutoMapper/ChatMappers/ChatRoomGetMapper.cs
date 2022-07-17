@@ -15,9 +15,12 @@ public class ChatRoomGetMapper : IUserOrientedViewModelMapper<ChatRoom, ChatRoom
             Type = ChatType.Private
         };
         var user = source.UserChatRooms.Select(ur => ur.User).FirstOrDefault(u => u.Id != userId);
-        
-        if(user is not null)
+
+        if (user is not null)
+        {
             map.Name = $"{user.FirstName} {user.LastName}";
+            map.InterlocutorId = userId;
+        }
 
         return map;
     }
