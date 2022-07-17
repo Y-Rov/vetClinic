@@ -1,6 +1,7 @@
 ﻿using Core.Emuns;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
@@ -12,38 +13,43 @@ public class ChatRoomService : IChatRoomService
     private readonly IChatRoomRepository _chatRoomRepository;
     private readonly IUserChatRoomRepository _userChatRoomRepository;
     private readonly IUserService _userService;
-
+    private readonly ILoggerManager _loggerManager;
+    
     public ChatRoomService(
         IChatRoomRepository chatRoomRepository, 
         IUserChatRoomRepository userChatRoomRepository,
-        IUserService userService)
+        IUserService userService, 
+        ILoggerManager loggerManager)
     {
         _chatRoomRepository = chatRoomRepository;
         _userChatRoomRepository = userChatRoomRepository;
         _userService = userService;
+        _loggerManager = loggerManager;
     }
     
     public async Task CreateAsync(ChatRoom chatRoom)
     {
         await _chatRoomRepository.InsertAsync(chatRoom);
         await _chatRoomRepository.SaveChangesAsync();
+        _loggerManager.LogInfo($"Created new chat room with id {chatRoom.Id}");
     }
 
     public async Task<IEnumerable<ChatRoom>> GetChatRoomsForUserAsync(int userId)
     {
-        return await _chatRoomRepository.QueryAsync(
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user is null)
+        {
+            _loggerManager.LogWarn($"User with id {userId} does not exist");
+            throw new NotFoundException($"User with id {userId} does not exist");
+        }
+
+        var chatRooms = await _chatRoomRepository.QueryAsync(
             include: q => q.Include(cr => cr.UserChatRooms)
                             .ThenInclude(ur => ur.User),
             filter: cr => cr.UserChatRooms.Select(ur => ur.UserId).Contains(userId));
-    }
-
-    public async Task<IEnumerable<User>> GetParticipantsAsync(int chatRoomId)
-    {
-        var userChatRooms = await _userChatRoomRepository.QueryAsync(
-            filter: ur => ur.ChatRoomId == chatRoomId,
-            include: q => q.Include(ur => ur.User),
-            asNoTracking: true);
-        return userChatRooms.Select(ur => ur.User);
+        
+        _loggerManager.LogInfo($"Returned all chats for user with id {userId}");
+        return chatRooms;
     }
 
     public async Task<UserChatRoom?> GetUserChatRoomAsync(int userId, int chatRoomId)
@@ -54,40 +60,22 @@ public class ChatRoomService : IChatRoomService
                 && ur.ChatRoomId == chatRoomId);
     }
     
-    public async Task AddMemberAsync(int chatRoomId, int userId)
-    {
-        if (!await _chatRoomRepository.ExistsAsync(chatRoomId))
-            throw new NotFoundException($"Chatroom with id {chatRoomId} does not exist");
-
-        var userChatRoom = new UserChatRoom()
-        {
-            UserId = userId,
-            ChatRoomId = chatRoomId
-        };
-        await _userChatRoomRepository.InsertAsync(userChatRoom);
-    }
-
-    public async Task KickMemberAsync(int roomId, int userId)
-    {
-        var userChatRoom = await _userChatRoomRepository.GetFirstOrDefaultAsync(
-            filter: ur => ur.ChatRoomId == roomId && ur.UserId == userId);
-
-        if (userChatRoom is null)
-            throw new NotFoundException($"User {userId} is not a chat member");
-
-        _userChatRoomRepository.Delete(userChatRoom);
-        await _userChatRoomRepository.SaveChangesAsync();
-    }
-
-    public async Task<bool> ExistsAsync(int id)
-    {
-        return await _chatRoomRepository.ExistsAsync(id);
-    } 
-    
     public async Task<ChatRoom> EnsurePrivateRoomCreatedAsync(int memberId1, int memberId2)
     {
-        ChatRoom? chatRoom;
-        chatRoom = await _chatRoomRepository.GetFirstOrDefaultAsync(
+        var (member1, member2) = (await _userService.GetUserByIdAsync(memberId1), 
+                                 await _userService.GetUserByIdAsync(memberId2));
+        if (member1 is null)
+        {
+            _loggerManager.LogWarn($"User with id {memberId1} does not exist");
+            throw new NotFoundException($"User with id {memberId1} does not exist");
+        }
+        if (member2 is null)
+        {
+            _loggerManager.LogWarn($"User with id {memberId2} does not exist");
+            throw new NotFoundException($"User with id {memberId2} does not exist");
+        }
+
+        var chatRoom = await _chatRoomRepository.GetFirstOrDefaultAsync(
             include: q => q.Include(cr => cr.UserChatRooms),
             filter: cr =>
                 cr.UserChatRooms.Select(ur => ur.UserId).Contains(memberId1)
@@ -107,7 +95,11 @@ public class ChatRoomService : IChatRoomService
             };
             await CreateAsync(chatRoom);
         }
-        
         return chatRoom;
     } 
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        return await _chatRoomRepository.ExistsAsync(id);
+    }
 }
