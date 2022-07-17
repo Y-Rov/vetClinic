@@ -5,6 +5,8 @@ using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Moq;
 
 namespace Application.Test.Fixtures
@@ -15,11 +17,12 @@ namespace Application.Test.Fixtures
         public AppointmentServiceFixture()
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-
+            
             MockAppointment = GenerateAppointment();
             MockProcedure = GenerateProcedure();
             MockUser = GenerateUser();
-            MockListAppointments = GenerateListAppointments();
+            MockPagedListAppointments = GeneratePagedList();
+            MockAppointmentParameters = GenerateParamters();
 
             MockAppointmentEntityService = fixture.Freeze<IAppointmentService>();
             MockProcedureEntityService = fixture.Freeze<Mock<IProcedureService>>();
@@ -50,8 +53,9 @@ namespace Application.Test.Fixtures
 
         public Appointment MockAppointment { get; set; }
         public Procedure MockProcedure { get; set; }
+        public AppointmentParameters MockAppointmentParameters { get; set; }
         public User MockUser { get; set; }
-        public IList<Appointment> MockListAppointments { get; set; }
+        public PagedList<Appointment> MockPagedListAppointments { get; set; }
 
         private Appointment GenerateAppointment()
         {
@@ -186,6 +190,21 @@ namespace Application.Test.Fixtures
             };
 
             return appointments;
+        }
+
+        public PagedList<Appointment> GeneratePagedList()
+        {
+            List<Appointment> appointmens = GenerateListAppointments().ToList();
+            return new PagedList<Appointment>(appointmens, appointmens.Count,1,10);
+        }
+
+        private AppointmentParameters GenerateParamters()
+        {
+            return new AppointmentParameters
+            {
+                PageNumber = 1,
+                PageSize = 10
+            };
         }
     }
 }

@@ -3,6 +3,7 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.AppointmentsViewModel;
@@ -25,15 +26,16 @@ namespace WebApi.Test.Fixtures
             MockAppointmentCreateViewModel = GenerateAppointmentCreateViewModel();
             MockAppointmentUpdateViewModel = GenerateAppointmentUpdateViewModel();
             MockAppointmentReadViewModel = GenerateAppointmentReadViewModel();
-            MockAppointments = GenerateAppointments();
-            MockAppointmentReadViewModels = GenerateAppointmentReadViewModels();
+            MockAppointments = GeneratePagedList();
+            MockAppointmentReadViewModels = GenerateReadPagedList();
+            MockParameters = GenerateParamters();
 
             MockAppointmentService = fixture.Freeze<Mock<IAppointmentService>>();
             MockCreateAppointmentMapper = fixture.Freeze<Mock<IViewModelMapper<AppointmentCreateViewModel, Appointment>>>();
             MockAppointmentsViewModelMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>>>();
             MockAppointmentReadMapper = fixture.Freeze<Mock<IViewModelMapper<Appointment, AppointmentReadViewModel>>>();
             MockAppointmentUpdateMapper = fixture.Freeze<Mock<IViewModelMapper<AppointmentUpdateViewModel, Appointment>>>();
-            MockViewModelIEnumMapper = fixture.Freeze <Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>>>();
+            MockPagedListMapper = fixture.Freeze<Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>>>();
 
             MockAppointmentController = new AppointmentController(
                 MockAppointmentService.Object,
@@ -41,25 +43,25 @@ namespace WebApi.Test.Fixtures
                 MockAppointmentsViewModelMapper.Object,
                 MockAppointmentReadMapper.Object,
                 MockAppointmentUpdateMapper.Object,
-                MockViewModelIEnumMapper.Object
-                );
+                MockPagedListMapper.Object);
         }
 
 
         public AppointmentController MockAppointmentController { get; }
         public Mock<IAppointmentService> MockAppointmentService { get; }
         public Mock<IViewModelMapper<AppointmentCreateViewModel, Appointment>> MockCreateAppointmentMapper { get; }
-        public Mock<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>> MockAppointmentsViewModelMapper;
+        public Mock<IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>> MockAppointmentsViewModelMapper { get; }
         public Mock<IViewModelMapper<Appointment, AppointmentReadViewModel>> MockAppointmentReadMapper { get; }
         public Mock<IViewModelMapper<AppointmentUpdateViewModel, Appointment>> MockAppointmentUpdateMapper { get; }
-        public Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>> MockViewModelIEnumMapper { get; }
+        public Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>>> MockPagedListMapper { get; }
 
-    public Appointment MockAppointment { get; set; }
+        public AppointmentParameters MockParameters { get; set; }
+        public Appointment MockAppointment { get; set; }
         public AppointmentCreateViewModel MockAppointmentCreateViewModel { get; set; }
         public AppointmentReadViewModel MockAppointmentReadViewModel { get; set; }
         public AppointmentUpdateViewModel MockAppointmentUpdateViewModel { get; set; }
-        public IEnumerable<Appointment> MockAppointments { get; set; }
-        public IEnumerable<AppointmentReadViewModel> MockAppointmentReadViewModels { get; set; }
+        public PagedList<Appointment> MockAppointments { get; set; }
+        public PagedReadViewModel<AppointmentReadViewModel> MockAppointmentReadViewModels { get; set; }
 
 
         public readonly Appointment appointmentWithoutProcedure = new Appointment()
@@ -114,6 +116,15 @@ namespace WebApi.Test.Fixtures
             };
 
             return appointment;
+        }
+
+        private AppointmentParameters GenerateParamters()
+        {
+            return new AppointmentParameters
+            {
+                PageNumber = 1,
+                PageSize = 10
+            };
         }
 
         private AppointmentReadViewModel GenerateAppointmentReadViewModel()
@@ -306,6 +317,27 @@ namespace WebApi.Test.Fixtures
             return appointmentReadViewModel;
         }
 
+        public PagedList<Appointment> GeneratePagedList()
+        {
+            List<Appointment> appointmens = GenerateAppointments().ToList();
+            return new PagedList<Appointment>(appointmens, appointmens.Count, 1, 10);
+        }
+
+        public PagedReadViewModel<AppointmentReadViewModel> GenerateReadPagedList()
+        {
+            List<AppointmentReadViewModel> appointments = GenerateAppointmentReadViewModels().ToList();
+
+            return new PagedReadViewModel<AppointmentReadViewModel>()
+            {
+                PageSize = 10,
+                Entities = appointments,
+                CurrentPage = 1,
+                TotalPages = 2,
+                TotalCount = appointments.Count,
+                HasNext = true,
+                HasPrevious = false
+            };
+        }
     }
 
 }
