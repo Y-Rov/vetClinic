@@ -32,10 +32,8 @@ public class MessagesController : ControllerBase
     [HttpGet("{chatRoomId:int:min(1)}/{skip:int:min(0)}/{take:int:min(1)}")]
     public async Task<IEnumerable<MessageGetViewModel>> GetMessagesInChatRoom(int chatRoomId, int skip, int take)
     {
-        var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
-        
         var messages = await _messageService
-            .GetMessagesInChatRoomAsync(userId, chatRoomId, skip, take);
+            .GetMessagesInChatRoomAsync(chatRoomId, skip, take);
         return _enumMessageMapper.Map(messages);
     }
     
