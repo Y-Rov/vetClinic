@@ -53,7 +53,7 @@ namespace DataAccess.Repositories
             return set;
         }
 
-        public new async Task<PagedList<Salary>> GetAsync(
+        public async Task<PagedList<Salary>> GetAsync(
             SalaryParametrs parametrs,
             Expression<Func<Salary, bool>>? filter = null,
             Func<IQueryable<Salary>, IOrderedQueryable<Salary>>? orderBy = null,
