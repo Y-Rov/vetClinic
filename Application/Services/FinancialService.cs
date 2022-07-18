@@ -260,24 +260,28 @@ namespace Application.Services
             var checkSalaryList = await _repository.GetAllForStatement(filter:x => x.Date < date.EndDate);
             if(checkSalaryList.Count() != salaries.Count())
             {
-                var newEmployeeSalary = from c in checkSalaryList
-                                            from s in salaries
-                                              where c.EmployeeId != s.EmployeeId
-                                        select c;
-                foreach(var salary in newEmployeeSalary)
+                var firstIdList = from c in checkSalaryList
+                                  select c.EmployeeId;
+                var secondIdList = from s in salaries
+                                   select s.EmployeeId;
+                var needIdList = firstIdList.Except(secondIdList);
+
+                foreach(var employeeId in needIdList)
                 {
-                    var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
-                    if (!premiums.ContainsKey(employee.Id))
+                    var employee = await _userRepository.GetByIdAsync(employeeId);
+                    if (!premiums.ContainsKey(employeeId))
                     {
-                        premiums.Add(employee.Id, 0);
+                        premiums.Add(employeeId, 0);
                     }
 
                     //Count Avarage Salary Value
-
-                    var expence = await GetExpencesAsync(salary, date, employee, premiums[employee.Id]);
+                    var salary = await _repository.GetByIdForStatement(employeeId, filter: x=> x.Date > date.StartDate);
+                    var expence = await GetExpencesAsync(salary, date, employee, premiums[employeeId]);
                     _expences.Add(expence);
                 }
             }
+
+
 
             //Count All Incomes
             foreach(var res in appCosts)
