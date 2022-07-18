@@ -13,5 +13,8 @@ namespace Core.Interfaces.Repositories
             Func<IQueryable<Salary>, IOrderedQueryable<Salary>>? orderBy = null,
             bool asNoTracking = true,
             string includeProperties = "");
+
+        Task<Salary?> GetByIdForStatement(int id, Expression<Func<Salary, bool>> filter);
+        Task<IEnumerable<Salary>> GetAllForStatement(Expression<Func<Salary, bool>> filter);
     }
 }

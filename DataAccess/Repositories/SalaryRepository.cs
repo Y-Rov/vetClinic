@@ -35,7 +35,8 @@ namespace DataAccess.Repositories
             var set = from s in context.Salaries
                       join q in query on s.Date equals q.Date
                       orderby s.EmployeeId
-                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value };
+                      where s.Value != 0
+                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value, Date = s.Date };
   
 
             if (!string.IsNullOrEmpty(includeProperties))
@@ -90,6 +91,34 @@ namespace DataAccess.Repositories
             return await set.FirstOrDefaultAsync(entity => entity == result);
         }
 
+
+        public async Task<Salary?> GetByIdForStatement(int id, Expression<Func<Salary, bool>> filter)
+        {
+            var query = context.Salaries
+                .Where(s => s.EmployeeId == id)
+                .OrderBy(s => s.Date)
+                .Select(s=>new Salary{EmployeeId=s.EmployeeId,Id=s.Id,Value=s.Value, Date = s.Date });
+
+            var res = await query
+                .Where(filter)
+                .FirstOrDefaultAsync();
+            return res;
+        }
+
+        public async Task<IEnumerable<Salary>> GetAllForStatement(Expression<Func<Salary, bool>> filter)
+        {
+            var query = context.Salaries
+                    .Where(filter)
+                    .GroupBy(s => s.EmployeeId)
+                    .Select(s => new Salary { EmployeeId = s.Key, Date = s.Max(x => x.Date) });
+
+            var set = from s in context.Salaries
+                      join q in query on s.Date equals q.Date
+                      orderby s.EmployeeId
+                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value, Date = s.Date };
+
+            return await set.ToListAsync();
+        }
 
     }
 }

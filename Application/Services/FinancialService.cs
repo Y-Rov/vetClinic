@@ -97,15 +97,6 @@ namespace Application.Services
             _logger.LogInfo($"Salary with id: {res.EmployeeId} updated");
         }
 
-        public async Task CleanOldSalariesAsync()
-        {
-            var salaries = await _repository.GetAsync(x => x.Date.Year >= (DateTime.Now.Year - 2));
-            foreach(var salary in salaries)
-            {
-                _repository.Delete(salary);
-            }
-        }
-
         public async Task<IEnumerable<User>> GetEmployeesWithoutSalary()
         {
             var parametrs = new SalaryParametrs()
@@ -126,8 +117,73 @@ namespace Application.Services
             return result;
         }
 
+        private async Task<IList<SalaryDetail>> GetSalaryDetail(Salary salary, DatePeriod date, int id)
+        {
+            //Count detail salary
+
+            IList<SalaryDetail> salaryDetail = new List<SalaryDetail>();
+            var salaryDate = salary.Date;
+            var value = salary.Value;
+            while (salaryDate < date.EndDate)
+            {
+                var salaryUpdate = await _repository.GetByIdForStatement(id, s => s.Date > salaryDate);
+                if (salaryUpdate == null)
+                {
+                    int lastPeriod = 0;
+                    if(salaryDate>date.StartDate)
+                    {
+                        lastPeriod = (date.EndDate - salaryDate).Days;
+                    }
+                    else
+                    {
+                        lastPeriod = (date.EndDate - date.StartDate).Days;
+                    }
+                    salaryDetail.Add(new SalaryDetail(lastPeriod, value));
+                    break;
+                }
+                else if (salaryUpdate.Date >= date.EndDate)
+                {
+                    var lastPeriod = (date.EndDate - salaryDate).Days;
+                    salaryDetail.Add(new SalaryDetail(lastPeriod, value));
+                    break;
+                }
+                var timePeriod = (salaryUpdate.Date - salaryDate).Days;
+                salaryDetail.Add(new SalaryDetail(timePeriod, value));
+                value = salaryUpdate.Value;
+                salaryDate = salaryUpdate.Date;
+            }
+            return salaryDetail;
+        }
+
+        private async Task<Expences> GetExpencesAsync(
+            Salary salary, 
+            DatePeriod date, 
+            User employee, 
+            decimal premium)
+        {
+            var salaryDetail = await GetSalaryDetail(salary, date, employee.Id);
+
+            var period = (date.EndDate - date.StartDate).Days;
+            decimal avgSalaryValue = 0;
+            decimal forDay = 0;
+
+            foreach (var sal in salaryDetail)
+            {
+                forDay = sal.Value / period;
+                avgSalaryValue += forDay * sal.Days;
+            }
+
+            var expence = new Expences()
+            {
+                EmployeeName = employee.FirstName + " " + employee.LastName,
+                SalaryValue = avgSalaryValue,
+                Premium = premium
+            };
+            return expence;
+        }
         private async Task<FinancialStatement> GetFinancialStatementOneMonth(DatePeriod date)
         {
+
             decimal procent = 0.1M;
             decimal allIncome =0;
             decimal allExpence = 0;
@@ -181,15 +237,12 @@ namespace Application.Services
                 }
 
             }
-            SalaryParametrs parametrs = new SalaryParametrs()
-            {
-                PageNumber = 1,
-                PageSize = 100
-            };
+            
             //Get all Salaries where we need to pay in Period
-            var salaries = await _repository.GetAsync(parametrs,filter:x => x.Date < date.StartDate);
+            var salaries = await _repository.GetAllForStatement(filter:x => x.Date < date.StartDate);
 
             var _expences = new List<Expences>();
+
             foreach(var salary in salaries)
             {
                 var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
@@ -197,25 +250,48 @@ namespace Application.Services
                 {
                     premiums.Add(employee.Id, 0);
                 }
-                    var expence = new Expences()
-                {
-                    EmployeeName = employee.FirstName + " " + employee.LastName,
-                    SalaryValue = salary.Value,
-                    Premium = premiums[employee.Id]
-                };
+
+                //Count Avarage Salary Value
+
+                var expence = await GetExpencesAsync(salary, date, employee, premiums[employee.Id]);
                 _expences.Add(expence);
             }
 
+            var checkSalaryList = await _repository.GetAllForStatement(filter:x => x.Date < date.EndDate);
+            if(checkSalaryList.Count() != salaries.Count())
+            {
+                var newEmployeeSalary = from c in checkSalaryList
+                                            from s in salaries
+                                              where c.EmployeeId != s.EmployeeId
+                                        select c;
+                foreach(var salary in newEmployeeSalary)
+                {
+                    var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
+                    if (!premiums.ContainsKey(employee.Id))
+                    {
+                        premiums.Add(employee.Id, 0);
+                    }
+
+                    //Count Avarage Salary Value
+
+                    var expence = await GetExpencesAsync(salary, date, employee, premiums[employee.Id]);
+                    _expences.Add(expence);
+                }
+            }
+
+            //Count All Incomes
             foreach(var res in appCosts)
             {
                 allIncome += res.Value*(1-procent);
             }    
 
+            //Count All Expences
             foreach(var expence in _expences)
             {
                 allExpence += (expence.SalaryValue + expence.Premium);
             }
 
+            //Generate Financial Statement for Month
             var financialStatement = new FinancialStatement()
             { 
                 Month = date.StartDate.ToString("MMMM yyyy"),
