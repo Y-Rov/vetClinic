@@ -1,8 +1,6 @@
 ﻿using Azure.Storage.Blobs;
-using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
 namespace DataAccess.Repositories;
@@ -11,16 +9,13 @@ public class ImageRepository : IImageRepository
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly IConfiguration _configuration;
-    private readonly IMemoryCache _memoryCache;
 
     public ImageRepository(
         BlobServiceClient blobServiceClient,
-        IConfiguration configuration,
-        IMemoryCache memoryCache)
+        IConfiguration configuration)
     {
         _blobServiceClient = blobServiceClient;
         _configuration = configuration;
-        _memoryCache = memoryCache;
     }
 
   public async Task<string> UploadFromIFormFile(IFormFile file, string folder, string fileName = "")

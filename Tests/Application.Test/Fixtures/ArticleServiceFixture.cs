@@ -6,7 +6,6 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Paginator;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace Application.Test.Fixtures;

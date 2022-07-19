@@ -20,7 +20,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     
     public void Dispose()
     {
-        _fixture.MockArticleRepository.ResetCalls();
         Dispose(true);
         GC.SuppressFinalize(this);
     }

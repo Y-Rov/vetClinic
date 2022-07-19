@@ -1,12 +1,11 @@
-﻿using System.Linq.Expressions;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Paginator;
 using Core.Paginator.Parameters;
-using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Services;
 
@@ -42,9 +41,9 @@ public class ArticleService : IArticleService
         var updatingArticle = await GetByIdAsync(article.Id);
         updatingArticle.Title = article.Title;
         
-        await _imageService.ClearUnusedImagesAsync(article.Body, updatingArticle.AuthorId);
-        await _imageService.ClearOutdatedImagesAsync(article.Body, updatingArticle.Body);
-        updatingArticle.Body = _imageService.TrimArticleImages(article.Body);
+        await _imageService.ClearUnusedImagesAsync(article.Body!, updatingArticle.AuthorId);
+        await _imageService.ClearOutdatedImagesAsync(article.Body!, updatingArticle.Body!);
+        updatingArticle.Body = _imageService.TrimArticleImages(article.Body!);
         
         updatingArticle.Published = article.Published;
         updatingArticle.Edited = true;
@@ -56,7 +55,7 @@ public class ArticleService : IArticleService
     public async Task DeleteArticleAsync(int articleId)
     {
         var articleToRemove = await GetByIdAsync(articleId);
-        articleToRemove.Body = await _imageService.DeleteImagesAsync(articleToRemove.Body);
+        articleToRemove.Body = await _imageService.DeleteImagesAsync(articleToRemove.Body!);
 
         _articleRepository.Delete(articleToRemove);
         await _articleRepository.SaveChangesAsync();
@@ -65,7 +64,7 @@ public class ArticleService : IArticleService
 
     public async Task<Article> GetByIdAsync(int articleId)
     {
-        var article = await _articleRepository.GetById(articleId, includeProperties:"Author");
+        var article = await _articleRepository.GetById(articleId, includeProperties: "Author");
         if (article is null)
         {
             _loggerManager.LogWarn($"Article with id {articleId} does not exist");
