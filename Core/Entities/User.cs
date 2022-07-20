@@ -20,5 +20,7 @@ namespace Core.Entities
         public IEnumerable<Feedback> Feedbacks { get; set; } = new List<Feedback>();
         public IEnumerable<AppointmentUser> AppointmentUsers { get; set; } = new List<AppointmentUser>();
         public IEnumerable<UserSpecialization> UserSpecializations { get; set; } = new List<UserSpecialization>();
+        public IEnumerable<Message> Messages { get; set; } = new List<Message>();
+        public IEnumerable<UserChatRoom> UserChatRooms { get; set; } = new List<UserChatRoom>();
     }
 }

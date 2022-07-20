@@ -17,6 +17,9 @@ namespace DataAccess.Repositories.Configuration
             services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddScoped<ISalaryRepository, SalaryRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+            services.AddScoped<IUserChatRoomRepository, UserChatRoomRepository>();
             services.AddScoped<IUserSpecializationRepository, UserSpecializationRepository>();
             services.AddScoped<IArticleRepository, ArticleRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();

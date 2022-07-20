@@ -3,6 +3,9 @@ using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Models.Finance;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.SalaryViewModel;
 using Moq;
 using WebApi.AutoMapper.Interface;
@@ -21,10 +24,10 @@ namespace WebApi.Test.Fixtures
             MockUserService = fixture.Freeze<Mock<IUserService>>();
             MockSalaryViewModel = fixture.Freeze<Mock<IViewModelMapper<Salary, SalaryViewModel>>>();
             MockSalary = fixture.Freeze<Mock<IViewModelMapper<SalaryViewModel, Salary>>>();
-            MockListSalaryViewModels = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>>>();
+            MockListSalaryViewModels = fixture.Freeze<Mock<IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>>>>();
             MockListEmployees = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>>>();
-            MockFinancialStatementViewModel = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<FinancialStatement>,
-                IEnumerable<FinancialStatementForMonthViewModel>>>>();
+            MockFinancialStatementViewModel = fixture.Freeze<Mock<IViewModelMapper<PagedList<FinancialStatement>,
+            PagedReadViewModel<FinancialStatementForMonthViewModel>>>>();
 
 
             MockFinancialController = new FinancialController(
@@ -55,6 +58,8 @@ namespace WebApi.Test.Fixtures
             FinStatVMList = GenerateFinancialStatementVM();
             FinStatEmpty = GenerateEmptyStatements();
             FinStatVMEmpty = GenerateEmptyFinStatVM();
+            SalaryParametrs = GenerateSalaryParameters();
+            FinancialStatementParameters = GenerateFinStatParameters();
         }
 
         public FinancialController MockFinancialController { get; }
@@ -62,29 +67,31 @@ namespace WebApi.Test.Fixtures
         public Mock<IUserService> MockUserService { get; }
         public Mock<IViewModelMapper<Salary, SalaryViewModel>> MockSalaryViewModel { get; }
         public Mock<IViewModelMapper<SalaryViewModel, Salary>> MockSalary { get; }
-        public Mock<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>> MockListSalaryViewModels { get; }
+        public Mock<IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>>> MockListSalaryViewModels { get; }
         public Mock<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>> MockListEmployees { get; }
-        public Mock<IViewModelMapper<IEnumerable<FinancialStatement>,
-            IEnumerable<FinancialStatementForMonthViewModel>>> MockFinancialStatementViewModel { get; }
+        public Mock<IViewModelMapper<PagedList<FinancialStatement>, 
+            PagedReadViewModel<FinancialStatementForMonthViewModel>>> MockFinancialStatementViewModel { get; }
 
         public int UserId {get;}
         public Salary SalaryModel { get;}
         public SalaryViewModel SalaryViewModel { get;}
         public User Employee { get;}
         public SalaryViewModel SalaryWithNameViewModel { get; }
-        public IEnumerable<Salary> SalaryList { get; }
-        public IEnumerable<SalaryViewModel> SalaryVMList { get; }
-        public IEnumerable<Salary> SalaryEmptyList { get; }
-        public IEnumerable<SalaryViewModel> SalaryVMEmptyList { get; }
+        public PagedList<Salary> SalaryList { get; }
+        public PagedReadViewModel<SalaryViewModel> SalaryVMList { get; }
+        public PagedList<Salary> SalaryEmptyList { get; }
+        public PagedReadViewModel<SalaryViewModel> SalaryVMEmptyList { get; }
         public IEnumerable<User> EmployeeList { get; }
         public IEnumerable<EmployeeViewModel> EmployeeVMList { get; }
         public IEnumerable<User> EmployeeEmptyList { get; }
         public IEnumerable<EmployeeViewModel> EmployeeVMEmptyList { get; }
         public DatePeriod Date { get; }
-        public IEnumerable<FinancialStatement> FinStatList { get; }
-        public IEnumerable<FinancialStatementForMonthViewModel> FinStatVMList { get; }
-        public IEnumerable<FinancialStatement> FinStatEmpty { get; }
-        public IEnumerable<FinancialStatementForMonthViewModel> FinStatVMEmpty { get; }
+        public PagedList<FinancialStatement> FinStatList { get; }
+        public PagedReadViewModel<FinancialStatementForMonthViewModel> FinStatVMList { get; }
+        public PagedList<FinancialStatement> FinStatEmpty { get; }
+        public PagedReadViewModel<FinancialStatementForMonthViewModel> FinStatVMEmpty { get; }
+        public SalaryParametrs SalaryParametrs { get; }
+        public FinancialStatementParameters FinancialStatementParameters { get; }
 
         private Salary GenerateSalary()
         {
@@ -126,7 +133,7 @@ namespace WebApi.Test.Fixtures
             };
             return salaryWithEmployeeNameViewModel;
         }
-        private IEnumerable<Salary> GenerateSalaryList()
+        private PagedList<Salary> GenerateSalaryList()
         {
             var salaryList = new List<Salary>()
             {
@@ -149,9 +156,10 @@ namespace WebApi.Test.Fixtures
                     Value = 30
                 }
             };
-            return salaryList;
+            var res = new PagedList<Salary>(salaryList, salaryList.Count, 1, salaryList.Count);
+            return res;
         }
-        private IEnumerable<SalaryViewModel> GenerateSalaryVMList()
+        private PagedReadViewModel<SalaryViewModel> GenerateSalaryVMList()
         {
             var salaryViewModelList = new List<SalaryViewModel>()
             {
@@ -171,15 +179,24 @@ namespace WebApi.Test.Fixtures
                     Value = 30
                 }
             };
-            return salaryViewModelList;
+            var res = new PagedReadViewModel<SalaryViewModel>()
+            {
+                Entities = salaryViewModelList,
+            };
+            return res;
         }
-        private IEnumerable<Salary> GenerateEmptyList()
+        private PagedList<Salary> GenerateEmptyList()
         {
-            return new List<Salary>();
+
+            return new PagedList<Salary>(new List<Salary>(),0,1,1);
         }
-        private IEnumerable<SalaryViewModel> GenerateVMEmptyList()
+        private PagedReadViewModel<SalaryViewModel> GenerateVMEmptyList()
         {
-            return new List<SalaryViewModel>();
+            var res = new PagedReadViewModel<SalaryViewModel>()
+            {
+                Entities = new List<SalaryViewModel>()
+            };
+            return res;
         }
         private IEnumerable<User> GenerateEmployeeList()
         {
@@ -248,7 +265,7 @@ namespace WebApi.Test.Fixtures
             };
             return date;
         }
-        private IEnumerable<FinancialStatement> GenerateFinancialStatement()
+        private PagedList<FinancialStatement> GenerateFinancialStatement()
         {
             var finStatement = new List<FinancialStatement>()
             {
@@ -265,9 +282,10 @@ namespace WebApi.Test.Fixtures
                     TotalExpences=2
                 }
             };
-            return finStatement;
+            var res = new PagedList<FinancialStatement>(finStatement, finStatement.Count, 1,finStatement.Count);
+            return res;
         }
-        private IEnumerable<FinancialStatementForMonthViewModel> GenerateFinancialStatementVM()
+        private PagedReadViewModel<FinancialStatementForMonthViewModel> GenerateFinancialStatementVM()
         {
             var finStatementVM = new List<FinancialStatementForMonthViewModel>()
             {
@@ -284,15 +302,41 @@ namespace WebApi.Test.Fixtures
                     TotalExpences=2
                 }
             };
-            return finStatementVM;
+            var res = new PagedReadViewModel<FinancialStatementForMonthViewModel>()
+            {
+                Entities = finStatementVM
+            };
+            return res;
         }
-        private IEnumerable<FinancialStatement> GenerateEmptyStatements()
+        private PagedList<FinancialStatement> GenerateEmptyStatements()
         {
-            return new List<FinancialStatement>();
+            return new PagedList<FinancialStatement>(new List<FinancialStatement>(),0,1,1);
         }
-        private IEnumerable<FinancialStatementForMonthViewModel> GenerateEmptyFinStatVM()
+        private PagedReadViewModel<FinancialStatementForMonthViewModel> GenerateEmptyFinStatVM()
         {
-            return new List<FinancialStatementForMonthViewModel>();
+            var res = new PagedReadViewModel<FinancialStatementForMonthViewModel>()
+            {
+                Entities = new List<FinancialStatementForMonthViewModel>()
+            };
+            return res;
+        }
+        private SalaryParametrs GenerateSalaryParameters()
+        {
+            var param = new SalaryParametrs()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+            return param;
+        }
+        private FinancialStatementParameters GenerateFinStatParameters()
+        {
+            var param = new FinancialStatementParameters()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+            return param;
         }
     }
 }
