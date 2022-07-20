@@ -255,15 +255,16 @@ namespace Application.Test
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
+                    It.IsAny<SalaryParametrs>(),
                     It.IsAny<Expression<Func<Salary, bool>>>(),
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<bool>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(_fixture.SalaryEmptyList);
 
             //Act
 
-            var result = await _fixture.MockFinancialService.GetSalaryAsync(null);
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(_fixture.SalaryParametrs);
 
             //Assert
 
@@ -443,32 +444,25 @@ namespace Application.Test
         {
             //Arrange
 
-            var pagedEmployees = new PagedList<User>(_fixture.EmployeeList, 5, 1, 5);
-
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogInfo(It.IsAny<string>()))
                 .Verifiable();
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
+                    It.IsAny<SalaryParametrs>(),
                     It.IsAny<Expression<Func<Salary, bool>>>(),
                     It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
-                .ReturnsAsync(_fixture.SalaryListFromRepo);
-
-            _fixture.MockSalaryRepository
-                .Setup(repo=> repo.GetEmployees())
-                .ReturnsAsync(_fixture.EmployeeIdList)
-                .Verifiable();
+                    It.IsAny<bool>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockUserRepository
-                .Setup(repo => repo.GetAllAsync(
-                    It.IsAny<UserParameters>(),
-                    It.IsAny<Expression<Func<User, bool>>>(),
+                .Setup(repo => repo.GetByRolesAsync(
+                    It.IsAny<List<int>>(),
                     It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                .ReturnsAsync(pagedEmployees);
+                .ReturnsAsync(_fixture.EmployeeList);
 
             //Act
 
@@ -479,7 +473,6 @@ namespace Application.Test
             _fixture.MockLoggerManager.Verify();
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            _fixture.MockSalaryRepository.Verify(x => x.GetEmployees(), Times.Once);
             Assert.IsAssignableFrom<IEnumerable<User>>(result);
         }
 
@@ -514,10 +507,11 @@ namespace Application.Test
             _fixture.MockSalaryRepository
                 .Setup(repo
                     => repo.GetAsync(
+                        It.IsAny<SalaryParametrs>(),
                         It.IsAny<Expression<Func<Salary, bool>>>(),
                         It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>()))
+                        It.IsAny<bool>(),
+                        It.IsAny<string>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockUserRepository
@@ -536,7 +530,8 @@ namespace Application.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.Date);
+            var result = await _fixture.MockFinancialService
+                .GetFinancialStatement(_fixture.Date,_fixture.FinancialStatementParameters);
             //Assert
 
             Assert.NotNull(result);
@@ -561,10 +556,11 @@ namespace Application.Test
             _fixture.MockSalaryRepository
                 .Setup(repo
                     => repo.GetAsync(
+                        It.IsAny<SalaryParametrs>(),
                         It.IsAny<Expression<Func<Salary, bool>>>(),
                         It.IsAny<Func<IQueryable<Salary>, IOrderedQueryable<Salary>>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>()))
+                        It.IsAny<bool>(),
+                        It.IsAny<string>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockUserRepository
@@ -583,12 +579,13 @@ namespace Application.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.Date);
+            var result = await _fixture.MockFinancialService
+                .GetFinancialStatement(_fixture.Date, _fixture.FinancialStatementParameters);
 
             //Assert
 
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<FinancialStatement>>(result);
+            Assert.IsAssignableFrom<PagedList<FinancialStatement>>(result);
         }
     }
 }

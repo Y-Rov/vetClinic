@@ -76,6 +76,8 @@ public static class ApplicationMappersConfiguration
             IEnumerable<FinancialStatementForMonthViewModel>>, FinancialStatementForMonthMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Salary>, IEnumerable<SalaryViewModel>>, SalariesMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>, EmployeesMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>>, SalaryPagedMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>>, FinancialStatementPagedMapper>();
 
         services.AddScoped<IViewModelMapper<Portfolio, PortfolioBaseViewModel>, PortfolioViewModelMapper>();
         services.AddScoped<IViewModelMapper<Portfolio, PortfolioCreateReadViewModel>, PortfolioCreateViewModelMapper>();

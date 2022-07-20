@@ -6,6 +6,8 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models.Finance;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Moq;
 
 namespace Application.Test.Fixtures
@@ -35,7 +37,6 @@ namespace Application.Test.Fixtures
             SalaryListFromRepo = GenerateSalaryListFromRepo();
             SalaryEmptyList = GenerateSalaryEmptyList();
             UpdatedSalary = GenerateUpdatedSalary();
-            EmployeeIdList = GenerateEmployeeIdList();
             EmployeeList = GenerateEmployeeList();
             Date = GenerateDate();
             AppointmentList = GenerateAppoinmentList();
@@ -47,6 +48,8 @@ namespace Application.Test.Fixtures
             UserTwo = GenerateSecondUser();
             ProcedureOne = GenerateFirstProcedure();
             ProcedureTwo = GenerateSecondProcedure();
+            SalaryParametrs = GenerateSalaryParametrs();
+            FinancialStatementParameters = GenerateFinancialStatementParametrs();
         }
 
         public IFinancialService MockFinancialService { get; }
@@ -58,14 +61,13 @@ namespace Application.Test.Fixtures
 
         public int UserId { get; }
         public Salary SalaryModel { get; }
-        public List<Salary> SalaryListFromRepo { get; }
-        public List<Salary> SalaryEmptyList { get; }
+        public PagedList<Salary> SalaryListFromRepo { get; }
+        public PagedList<Salary> SalaryEmptyList { get; }
         public Salary UpdatedSalary { get; }
-        public List<int> EmployeeIdList { get; }
         public List<User> EmployeeList { get; }
         public DatePeriod Date { get; }
         public List<Appointment> AppointmentList { get; }
-        public List<Salary> SalaryList { get; }
+        public PagedList<Salary> SalaryList { get; }
         public List<Appointment> AppoinmentEmptyList { get; }
         public Salary SalaryWithZeroValue { get; }
         public int SalaryWithValue { get; }
@@ -73,6 +75,8 @@ namespace Application.Test.Fixtures
         public User UserTwo { get; }
         public Procedure ProcedureOne { get; }
         public Procedure ProcedureTwo { get; }
+        public SalaryParametrs SalaryParametrs { get; }
+        public FinancialStatementParameters FinancialStatementParameters { get; }
 
         private Salary GenerateSalary()
         {
@@ -84,7 +88,7 @@ namespace Application.Test.Fixtures
             };
             return salary;
         }
-        private List<Salary> GenerateSalaryListFromRepo()
+        private PagedList<Salary> GenerateSalaryListFromRepo()
         {
             var salaryList = new List<Salary>()
             {
@@ -104,11 +108,12 @@ namespace Application.Test.Fixtures
                     Value = 30
                 }
             };
-            return salaryList;
+            return new PagedList<Salary>(salaryList,salaryList.Count, 1, salaryList.Count);
         }
-        private List<Salary> GenerateSalaryEmptyList()
+        private PagedList<Salary> GenerateSalaryEmptyList()
         {
-            return new List<Salary>();
+            var res = new PagedList<Salary>(new List<Salary>(), 0, 1, 1);
+            return res;
         }
         private Salary GenerateUpdatedSalary()
         {
@@ -182,7 +187,7 @@ namespace Application.Test.Fixtures
             };
             return appointments;
         }
-        private List<Salary> GenerateSalaryList()
+        private PagedList<Salary> GenerateSalaryList()
         {
             var salaries = new List<Salary>
             {
@@ -197,7 +202,7 @@ namespace Application.Test.Fixtures
                     Value =30
                 }
             };
-            return salaries;
+            return new PagedList<Salary>(salaries,salaries.Count,1,salaries.Count);
         }
         private List<Appointment> GenerateAppoinmentEmptyList()
         {
@@ -250,6 +255,24 @@ namespace Application.Test.Fixtures
                 Cost = 10
             };
             return procedureTwo;
+        }
+        private SalaryParametrs GenerateSalaryParametrs()
+        {
+            var res = new SalaryParametrs()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+            return res;
+        }
+        private FinancialStatementParameters GenerateFinancialStatementParametrs()
+        {
+            var res = new FinancialStatementParameters()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+            return res;
         }
     }
 }
