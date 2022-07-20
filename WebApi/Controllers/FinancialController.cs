@@ -13,7 +13,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Accountant")]
+    //[Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
@@ -96,17 +96,16 @@ namespace WebApi.Controllers
             await _financialService.UpdateSalaryAsync(writeSalary);
         }
 
-        [HttpPost("/api/financialStatements")]
+        [HttpGet("/api/financialStatements")]
         public async Task<PagedReadViewModel<FinancialStatementForMonthViewModel>> GetFinancialStatementAsync(
-            DatePeriod incomeDate, 
             [FromQuery] FinancialStatementParameters parameters)
         {
-            var date = new DatePeriod()
+            parameters.Date = new DatePeriod()
             {
-                StartDate = incomeDate.StartDate.ToLocalTime(),
-                EndDate = incomeDate.EndDate.ToLocalTime()
+                StartDate = parameters.Date.StartDate.ToLocalTime(),
+                EndDate = parameters.Date.EndDate.ToLocalTime()
             };
-            var result = await _financialService.GetFinancialStatement(date, parameters);
+            var result = await _financialService.GetFinancialStatement(parameters);
             var finViewModel = _finStatViewModel.Map(result);
             return finViewModel;
         }
