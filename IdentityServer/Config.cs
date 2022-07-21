@@ -57,6 +57,7 @@ public static class Config
                 AllowOfflineAccess = true, // enable refresh tokens
                 RefreshTokenUsage = TokenUsage.OneTimeOnly,
                 ClientSecrets = {new Secret("angular_client_secret".ToSha256())},
+                AllowedCorsOrigins = new [] {"http://localhost:4200"},
                 AccessTokenLifetime = 600,
             }
         };
