@@ -6,6 +6,7 @@ using Core.Interfaces.Services;
 using Core.Models.Finance;
 using Core.Paginator;
 using Core.Paginator.Parameters;
+using System.Globalization;
 
 namespace Application.Services
 {
@@ -218,7 +219,7 @@ namespace Application.Services
 
             var financialStatement = new FinancialStatement()
             { 
-                Month = date.StartDate.ToString("MMMM yyyy"),
+                Month = date.StartDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture),
                 ExpencesList = _expences,
                 IncomesList = _incomes,
                 TotalExpences = allExpence,
