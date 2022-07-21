@@ -1,5 +1,7 @@
 ﻿using Application.Services;
+using Application.Services.AnimalMedCard_PDF;
 using Application.Services.FinancialStatement_PDF;
+using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Interfaces.Services.PDF_Service;
 using Core.Models.Finance;
@@ -33,6 +35,9 @@ namespace Application.Configuration
             services.AddScoped<IPDfGenerator, PDF_Generator>();
             services.AddScoped<ICreateTableForPDF<FinancialStatement>, CreateTableForFinancialStatementPDF>();
             services.AddScoped<IGenerateFullPDF<FinancialStatementParameters>, FinancialStatementPDfGenerator>();
+
+            services.AddScoped<ICreateTableForPDF<Appointment>, CreateTableForAnimalMedCardPDF>();
+            services.AddScoped<IGenerateFullPDF<AnimalParameters>, AnimalMedCardPDFGenerator>();
         }
     }
 }
