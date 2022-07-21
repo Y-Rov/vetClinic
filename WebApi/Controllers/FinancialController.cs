@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Interfaces.Services.PDF_Service;
 using Core.Models.Finance;
 using Core.Paginator;
 using Core.Paginator.Parameters;
@@ -23,6 +24,7 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
         private readonly IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> _finStatViewModel;
+        private readonly IGenerateFullPDF<FinancialStatementParameters> _generatePDF;
 
         public FinancialController(
             IFinancialService financialService,
@@ -31,7 +33,8 @@ namespace WebApi.Controllers
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
             IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
-            IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> finStatViewModel
+            IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> finStatViewModel,
+            IGenerateFullPDF<FinancialStatementParameters> generatePDF
             )
         {
             _financialService = financialService;
@@ -41,6 +44,14 @@ namespace WebApi.Controllers
             _readSalaryList = readSalaryList;
             _readEmployeesList = readEmployeesList;
             _finStatViewModel = finStatViewModel;
+            _generatePDF = generatePDF;
+        }
+
+        [HttpGet("generatePDF")]
+        public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters animalParameters)
+        {
+            var pdfFileParams = await _generatePDF.GeneratePDF(animalParameters);
+            return File(pdfFileParams.FileStream, pdfFileParams.ContentType, pdfFileParams.DefaultFileName);
         }
 
         [HttpGet]

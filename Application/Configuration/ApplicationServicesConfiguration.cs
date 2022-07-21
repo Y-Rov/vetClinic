@@ -1,7 +1,9 @@
 ﻿using Application.Services;
-using Core.Interfaces.Repositories;
+using Application.Services.FinancialStatement_PDF;
 using Core.Interfaces.Services;
-using DataAccess.Repositories;
+using Core.Interfaces.Services.PDF_Service;
+using Core.Models.Finance;
+using Core.Paginator.Parameters;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Configuration
@@ -27,6 +29,10 @@ namespace Application.Configuration
             services.AddScoped<IImageParser, ImageParser>();
             services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+
+            services.AddScoped<IPDfGenerator, PDF_Generator>();
+            services.AddScoped<ICreateTableForPDF<FinancialStatement>, CreateTableForFinancialStatementPDF>();
+            services.AddScoped<IGenerateFullPDF<FinancialStatementParameters>, FinancialStatementPDfGenerator>();
         }
     }
 }
