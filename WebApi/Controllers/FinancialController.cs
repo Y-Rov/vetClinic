@@ -52,7 +52,8 @@ namespace WebApi.Controllers
         public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters animalParameters)
         {
             var pdfFileParams = await _generatePDF.GeneratePDF(animalParameters);
-            return this.File(pdfFileParams);
+            var result = this.File(pdfFileParams);
+            return result;
         }
 
         [HttpGet]
