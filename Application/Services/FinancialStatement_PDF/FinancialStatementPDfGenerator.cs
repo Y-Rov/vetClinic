@@ -3,6 +3,7 @@ using Core.Interfaces.Services.PDF_Service;
 using Core.Models;
 using Core.Models.Finance;
 using Core.Paginator.Parameters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Services.FinancialStatement_PDF
 {
@@ -29,6 +30,8 @@ namespace Application.Services.FinancialStatement_PDF
             var pdfFileParams = await _pDfGenerator.CreatePDF(financialStatementTable);
 
             return pdfFileParams;
+
+
         }
     }
 }

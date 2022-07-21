@@ -9,6 +9,7 @@ using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
+using WebApi.Extensions;
 
 namespace WebApi.Controllers
 {
@@ -51,7 +52,7 @@ namespace WebApi.Controllers
         public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters animalParameters)
         {
             var pdfFileParams = await _generatePDF.GeneratePDF(animalParameters);
-            return File(pdfFileParams.FileStream, pdfFileParams.ContentType, pdfFileParams.DefaultFileName);
+            return this.File(pdfFileParams);
         }
 
         [HttpGet]
