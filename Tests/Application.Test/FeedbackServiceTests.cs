@@ -41,7 +41,7 @@ namespace Application.Test
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksExist_thenReturnFeedbacks()
         {
-
+            // Arrange
             _fixture.MockRepository.Setup(repository =>
                 repository.GetPaged(
                     It.IsAny<FeedbackParameters>(),
@@ -49,10 +49,12 @@ namespace Application.Test
                     It.IsAny<Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>>()))
                 .ReturnsAsync(_fixture.ExpectedFeedbacks);
 
+            // Act
             var result = await _fixture.MockService.GetAllFeedbacks(
                     _fixture.TestParameters
                 );
 
+            // Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.IsAssignableFrom<IList<Feedback>>(result);
@@ -61,7 +63,7 @@ namespace Application.Test
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksDontExist_thenReturnEmptyList()
         {
-            
+            // Arrange
             _fixture.MockRepository.Setup(repository =>
                 repository.GetPaged(
                 It.IsAny<FeedbackParameters>(),
@@ -69,10 +71,10 @@ namespace Application.Test
                 It.IsAny<Func<IQueryable<Feedback>, IIncludableQueryable<Feedback, object>>>()))
             .ReturnsAsync(_fixture.ExpectedEmptyFeedbacks);
 
-
-
+            // Act
             var result = await _fixture.MockService.GetAllFeedbacks(_fixture.TestParameters);
 
+            // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
             Assert.IsAssignableFrom<IList<Feedback>>(result);

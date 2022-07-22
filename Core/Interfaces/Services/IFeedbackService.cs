@@ -6,7 +6,7 @@ namespace Core.Interfaces.Services
 {
     public interface IFeedbackService
     {
-        public Task<PagedList<Feedback>> GetAllFeedbacks(FeedbackParameters parameters);
-        public Task AddFeedback(Feedback feedback);
+        Task<PagedList<Feedback>> GetAllFeedbacks(FeedbackParameters parameters);
+        Task AddFeedback(Feedback feedback);
     }
 }

@@ -2,7 +2,6 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
-using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
@@ -80,7 +79,7 @@ namespace WebApi.Test.Fixtures
         public PagedList<Feedback> GeneratePagedList()
         {
             List<Feedback> feedbacks = GenerateFeedbacks().ToList();
-            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 4);
+            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 5);
         }
 
         public PagedReadViewModel<FeedbackReadViewModel> GeneratePagedReadList()
@@ -90,7 +89,7 @@ namespace WebApi.Test.Fixtures
             {
                 CurrentPage = 1,
                 TotalPages = 10,
-                PageSize = 4,
+                PageSize = 5,
                 TotalCount = feedbacks.Count,
                 HasPrevious = false,
                 HasNext = true,
@@ -149,7 +148,7 @@ namespace WebApi.Test.Fixtures
         public PagedList<Feedback> GenerateEmptyPagedList()
         {
             List<Feedback> feedbacks = new List<Feedback>();
-            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 4);
+            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 5);
         }
 
         public PagedReadViewModel<FeedbackReadViewModel> GenerateEmptyReadPagedList()
@@ -161,7 +160,7 @@ namespace WebApi.Test.Fixtures
                 TotalCount = feedbacks.Count,
                 CurrentPage = 1,
                 TotalPages = 10,
-                PageSize = 4,
+                PageSize = 5,
                 HasPrevious = false,
                 HasNext = true
             };
@@ -171,7 +170,7 @@ namespace WebApi.Test.Fixtures
         {
             return new FeedbackParameters()
             {
-                PageSize = 4,
+                PageSize = 5,
                 PageNumber = 1
             };
         }

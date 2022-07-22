@@ -1,15 +1,9 @@
 ﻿using Core.Entities;
-using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.FeedbackViewModels;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.Test.Fixtures;
 
 namespace WebApi.Test

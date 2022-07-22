@@ -82,20 +82,20 @@ namespace Application.Test.Fixtures
         private PagedList<Feedback> GeneratePagedList()
         {
             List<Feedback> feedbacks = GenerateFeedbacks().ToList();
-            return new PagedList<Feedback>(feedbacks,feedbacks.Count, 1,4);
+            return new PagedList<Feedback>(feedbacks,feedbacks.Count, 1,5);
         }
 
         public PagedList<Feedback> GenerateEmptyPagedList()
         {
             List<Feedback> feedbacks = new List<Feedback>();
-            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 4);
+            return new PagedList<Feedback>(feedbacks, feedbacks.Count, 1, 5);
         }
 
         private FeedbackParameters GenerateFeedbackParameters()
         {
             return new FeedbackParameters()
             {
-                PageSize = 4,
+                PageSize = 5,
                 PageNumber = 1
             };
         }
