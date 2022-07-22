@@ -141,7 +141,23 @@ namespace DataAccess.Migrations
                     b.ToTable("AppointmentUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entities.Article", b =>
+            modelBuilder.Entity("Core.Entities.ChatRoom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChatRooms", (string)null);
+                });
+
+             modelBuilder.Entity("Core.Entities.Article", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,6 +250,36 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Exceptions", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(600)
+                        .HasColumnType("nvarchar(600)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Feedback", b =>
@@ -477,6 +523,26 @@ namespace DataAccess.Migrations
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
+                });
+
+            modelBuilder.Entity("Core.Entities.UserChatRoom", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LastReadMessageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ChatRoomId");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("LastReadMessageId");
+
+                    b.ToTable("UserChatRooms");
                 });
 
             modelBuilder.Entity("Core.Entities.UserSpecialization", b =>
@@ -735,6 +801,25 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Core.Entities.Message", b =>
+                {
+                    b.HasOne("Core.Entities.ChatRoom", "ChatRoom")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.User", "Sender")
+                        .WithMany("Messages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("Core.Entities.Article", b =>
                 {
                     b.HasOne("Core.Entities.User", "Author")
@@ -815,6 +900,31 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Core.Entities.UserChatRoom", b =>
+                {
+                    b.HasOne("Core.Entities.ChatRoom", "ChatRoom")
+                        .WithMany("UserChatRooms")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Message", "LastReadMessage")
+                        .WithMany("LastReadByUsers")
+                        .HasForeignKey("LastReadMessageId");
+
+                    b.HasOne("Core.Entities.User", "User")
+                        .WithMany("UserChatRooms")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("LastReadMessage");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Core.Entities.UserSpecialization", b =>
@@ -899,6 +1009,18 @@ namespace DataAccess.Migrations
                     b.Navigation("AppointmentUsers");
                 });
 
+            modelBuilder.Entity("Core.Entities.ChatRoom", b =>
+                {
+                    b.Navigation("Messages");
+
+                    b.Navigation("UserChatRooms");
+                });
+
+            modelBuilder.Entity("Core.Entities.Message", b =>
+                {
+                    b.Navigation("LastReadByUsers");
+                 });
+
             modelBuilder.Entity("Core.Entities.Article", b =>
                 {
                     b.Navigation("Comments");
@@ -925,6 +1047,8 @@ namespace DataAccess.Migrations
                     b.Navigation("Animals");
 
                     b.Navigation("AppointmentUsers");
+ 
+                    b.Navigation("Messages");
 
                     b.Navigation("Articles");
 
@@ -935,6 +1059,8 @@ namespace DataAccess.Migrations
                     b.Navigation("Portfolio");
 
                     b.Navigation("Salaries");
+
+                    b.Navigation("UserChatRooms");
 
                     b.Navigation("UserSpecializations");
                 });
