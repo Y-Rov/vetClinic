@@ -130,5 +130,6 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<Feedback, FeedbackReadViewModel>, FeedbackMapper>();
         services.AddScoped<IViewModelMapper<FeedbackCreateViewModel, Feedback>, FeedbackCreateMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>>, FeedbackViewModelListMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>>, FeedbackPagedMapper>();
     }
 }
