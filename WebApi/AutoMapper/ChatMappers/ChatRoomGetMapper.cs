@@ -19,7 +19,8 @@ public class ChatRoomGetMapper : IUserOrientedViewModelMapper<ChatRoom, ChatRoom
         if (user is not null)
         {
             map.Name = $"{user.FirstName} {user.LastName}";
-            map.InterlocutorId = userId;
+            map.InterlocutorId = user.Id;
+            map.Picture = user.ProfilePicture;
         }
 
         return map;

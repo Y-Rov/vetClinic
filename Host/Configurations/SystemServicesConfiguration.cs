@@ -27,6 +27,7 @@ namespace Host.Configurations
                     policy.WithOrigins("http://localhost:4200");
                     policy.WithHeaders("*");
                     policy.WithMethods("*");
+                    policy.AllowCredentials();
                     policy.WithExposedHeaders("X-Pagination");
                 });
             });
