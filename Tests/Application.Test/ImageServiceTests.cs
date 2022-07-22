@@ -434,7 +434,7 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
             .Verifiable();
         
         //Act
-        await _fixture.MockImageService.ClearUnusedImagesAsync(_fixture.BodyWithAllCachedImagesUsed, 17);
+        await _fixture.MockImageService.ClearUnusedImagesAsync(_fixture.BodyWithUsedAndUnusedImages, 17);
         
         //Assert
         _fixture.MockImageRepository

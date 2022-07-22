@@ -12,13 +12,35 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test;
 
-public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
+public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>, IDisposable
 {
     private readonly ArticleControllerFixture _fixture;
+    private bool _disposed;
 
     public ArticleControllerTests(ArticleControllerFixture fixture)
     {
         _fixture = fixture;
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _fixture.MockImageService.ResetCalls();
+        }
+
+        _disposed = true;
     }
 
     [Fact]
@@ -169,7 +191,9 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         await _fixture.MockArticleController.DeleteAsync(1);
 
         //  Assert
-        _fixture.MockArticleService.Verify();
+        _fixture.MockArticleService.Verify(
+            s => s.DeleteArticleAsync(It.IsAny<int>()),
+            Times.Once);
     }
     
     [Fact]
@@ -208,8 +232,12 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         await _fixture.MockArticleController.CreateAsync(_fixture.CreateArticleViewModel);
 
         //  Assert
-        _fixture.MockCreateMapper.Verify(m => m.Map(_fixture.CreateArticleViewModel), Times.Once);
-        _fixture.MockArticleService.Verify(s => s.CreateArticleAsync(_fixture.Article), Times.Once);
+        _fixture.MockCreateMapper.Verify(
+            m => m.Map(_fixture.CreateArticleViewModel), 
+            Times.Once);
+        _fixture.MockArticleService.Verify(
+            s => s.CreateArticleAsync(_fixture.Article), 
+            Times.Once);
     }
     
     [Fact]
@@ -231,8 +259,12 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         await _fixture.MockArticleController.UpdateAsync(_fixture.UpdateArticleViewModel);
 
         //  Assert
-        _fixture.MockUpdateMapper.Verify(m => m.Map(_fixture.UpdateArticleViewModel), Times.Once);
-        _fixture.MockArticleService.Verify(s => s.UpdateArticleAsync(_fixture.Article), Times.Once);
+        _fixture.MockUpdateMapper.Verify(
+            m => m.Map(_fixture.UpdateArticleViewModel), 
+            Times.Once);
+        _fixture.MockArticleService.Verify(
+            s => s.UpdateArticleAsync(_fixture.Article), 
+            Times.Once);
     }
 
     [Fact]
@@ -310,7 +342,8 @@ public class ArticleControllerTests : IClassFixture<ArticleControllerFixture>
         //Act
         await _fixture.MockArticleController.DiscardEditing();
         //Assert
-        _fixture.MockImageService
-            .Verify(img => img.DiscardCachedImagesAsync(It.IsAny<int>()), Times.Once);
+        _fixture.MockImageService.Verify(
+                img => img.DiscardCachedImagesAsync(It.IsAny<int>()), 
+                Times.Once);
     }
 }

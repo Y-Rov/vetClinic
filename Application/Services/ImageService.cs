@@ -124,7 +124,6 @@ public class ImageService : IImageService
             body = body.Remove(
                 startIndex: startIndex,
                 count: length);
-            tagSplitter.UpdateBody(body);
             tagSplitter.RemoveTag(body);
         }
 

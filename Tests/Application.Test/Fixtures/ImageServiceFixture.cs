@@ -38,7 +38,6 @@ public class ImageServiceFixture
     ExpectedLink = GetExpectedLink();
     DefaultCachedFileNamesList = GetDefaultCachedFileNamesList();
     EmptyCachedFileNamesList = GetEmptyCachedFileNamesList();
-    BodyWithAllCachedImagesUsed = GetBodyWithAllCachedImagesUsed();
     BodyWithUnusedCachedImages = GetBodyWithUnusedCachedImages();
     CachedFileNamesListWithUnusedImages = GetCachedFileNamesListWithUnusedImages();
     ListOfImagesExpectedToDelete = GetListOfImagesExpectedToDelete();
@@ -74,7 +73,6 @@ public class ImageServiceFixture
     public string ExpectedLink { get; }
     public object DefaultCachedFileNamesList;
     public object EmptyCachedFileNamesList;
-    public string BodyWithAllCachedImagesUsed { get; }
     public string BodyWithUnusedCachedImages { get; }
     public object CachedFileNamesListWithUnusedImages; 
     public object CachedFileNamesListWithAllUnusedImages; 
@@ -185,13 +183,6 @@ public class ImageServiceFixture
     {
         var o = null as object;
         return o;
-    }
-
-    private string GetBodyWithAllCachedImagesUsed()
-    {
-        var body = 
-            "<img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/492a5cbb-4998-4bc4-94f6-6f5c97194f7c.png\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/0dce4f04-58a9-4c61-94a8-c4ced4ead76d.jpg\"><img src=\"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/e43f8e7a-b99a-4b53-811d-59bcdbe502aa.webp\">;<img src=\"https://d5nunyagcicgy.cloudfront.net/external_assets/hero_examples/hair_beach_v391182663/original.jpeg\"><img src=\"http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/45025163-0b68-4ea0-9fd6-e74a5e49a894.png\">";
-        return body;
     }
 
     private string GetBodyWithUnusedCachedImages()
