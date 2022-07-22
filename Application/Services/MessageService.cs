@@ -104,7 +104,7 @@ public class MessageService : IMessageService
         _loggerManager.LogInfo($"Created message #{message.Id} from user #{message.SenderId} in chatRoom #{message.ChatRoomId}");
     }
 
-    public async Task ReadMessageAsync(int readerId, int messageId)
+    public async Task ReadAsync(int readerId, int messageId)
     {
         var message = await GetByIdAsync(messageId);
 

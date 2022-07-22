@@ -8,5 +8,5 @@ public interface IMessageService
     Task<IEnumerable<Message>> GetMessagesInChatRoomAsync(int chatRoomId, int skip, int take);
     Task<IEnumerable<Message>> GetUnreadMessagesAsync(int userId);
     Task CreateAsync(Message message);
-    Task ReadMessageAsync(int readerId, int messageId);
+    Task ReadAsync(int readerId, int messageId);
 }

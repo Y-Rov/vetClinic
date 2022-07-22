@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.SignalR;
 
-namespace WebApi.Hubs.Configurations;
+namespace WebApi.SignalR.Configurations;
 
 public static class SignalRConfigurations
 {
