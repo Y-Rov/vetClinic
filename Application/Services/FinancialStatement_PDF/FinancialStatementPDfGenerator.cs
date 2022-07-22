@@ -8,9 +8,9 @@ namespace Application.Services.FinancialStatement_PDF
 {
     public class FinancialStatementPDfGenerator: IGenerateFullPDF<FinancialStatementParameters>
     {
-        IFinancialService _financialService;
-        ICreateTableForPDF<FinancialStatement> _createTable;
-        IPDfGenerator _pDfGenerator;
+        readonly IFinancialService _financialService;
+        readonly ICreateTableForPDF<FinancialStatement> _createTable;
+        readonly IPDfGenerator _pDfGenerator;
 
         public FinancialStatementPDfGenerator(
             IFinancialService financialService,
@@ -26,7 +26,7 @@ namespace Application.Services.FinancialStatement_PDF
         {
             var financialStatementList = await _financialService.GetFinancialStatement(parameters);
             var financialStatementTable = _createTable.CreateTable(financialStatementList);
-            var pdfFileParams = await _pDfGenerator.CreatePDF(financialStatementTable);
+            var pdfFileParams =  _pDfGenerator.CreatePDF(financialStatementTable);
 
             return pdfFileParams;
         }
