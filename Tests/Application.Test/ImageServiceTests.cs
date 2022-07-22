@@ -19,7 +19,6 @@ public class ImageServiceTests : IClassFixture<ImageServiceFixture>, IDisposable
     
     public void Dispose()
     {
-        _fixture.MockImageRepository.ResetCalls();
         Dispose(true);
         GC.SuppressFinalize(this);
     }
