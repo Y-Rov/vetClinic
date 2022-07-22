@@ -15,7 +15,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize(Roles = "Accountant")]
+    [Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
