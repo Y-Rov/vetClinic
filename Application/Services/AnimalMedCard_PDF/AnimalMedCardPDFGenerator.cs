@@ -31,7 +31,7 @@ namespace Application.Services.AnimalMedCard_PDF
         {
             var medCardList = await _animalService.GetAllAppointmentsWithAnimalIdAsync(parameters);
             var medCardTable = _createTable.CreateTable(medCardList);
-            var pdfFileParams = await _PDFGenerator.CreatePDF(medCardTable);
+            var pdfFileParams = _PDFGenerator.CreatePDF(medCardTable);
 
             return pdfFileParams;
 
