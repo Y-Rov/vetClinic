@@ -36,8 +36,8 @@ public class MessageService : IMessageService
         
         if (message is null)
             _loggerManager.LogInfo($"No message with id {id} was not found");
-        
-        _loggerManager.LogInfo($"Returned message with id {id}");
+        else
+            _loggerManager.LogInfo($"Returned message with id {id}");
         
         return message;
     }
