@@ -21,7 +21,7 @@ namespace Application.Services
             _contentType = _configuration["Pdf:ContentType"];
         }
 
-        public async Task<PdfFileModel> CreatePDF(DataTable table)
+        public PdfFileModel CreatePDF(DataTable table)
         {
             //Create a new PDF document
             PdfDocument doc = new PdfDocument();

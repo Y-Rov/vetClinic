@@ -45,7 +45,7 @@ namespace Application.Services.FinancialStatement_PDF
                     expencesList+= " " + expence.EmployeeName.ToString() 
                         + "\tPayments:" + (expence.SalaryValue + expence.Premium).ToString() + "\n";
                 }
-                table.Rows.Add(new object[] {null,incomesList,expencesList});
+                table.Rows.Add(new object[] {"",incomesList,expencesList});
             }
 
 

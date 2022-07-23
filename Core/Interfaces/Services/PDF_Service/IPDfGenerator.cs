@@ -5,6 +5,6 @@ namespace Core.Interfaces.Services.PDF_Service
 {
     public interface IPDfGenerator
     {
-        Task<PdfFileModel> CreatePDF(DataTable table);
+        PdfFileModel CreatePDF(DataTable table);
     }
 }

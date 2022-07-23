@@ -15,7 +15,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize(Roles = "Accountant")]
+    [Authorize(Roles = "Accountant")]
     public class FinancialController : ControllerBase
     {
         private readonly IFinancialService _financialService;
@@ -49,14 +49,15 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("generatePDF")]
-        public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters animalParameters)
+        public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters parameters)
         {
-            var pdfFileParams = await _generatePDF.GeneratePDF(animalParameters);
-            return this.File(pdfFileParams);
+            var pdfFileParams = await _generatePDF.GeneratePDF(parameters);
+            var result = this.File(pdfFileParams);
+            return result;
         }
 
         [HttpGet]
-        public async Task<PagedReadViewModel<SalaryViewModel>> GetAsync([FromQuery] SalaryParametrs parametrs)
+        public async Task<PagedReadViewModel<SalaryViewModel>> GetAsync([FromQuery] SalaryParameters parametrs)
         {
             var salaries = await _financialService.GetSalaryAsync(parametrs);
             var readSalary = _readSalaryList.Map(salaries);

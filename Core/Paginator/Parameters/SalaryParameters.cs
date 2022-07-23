@@ -1,6 +1,6 @@
 ﻿namespace Core.Paginator.Parameters
 {
-    public class SalaryParametrs: ElementParameters
+    public class SalaryParameters: ElementParameters
     {
     }
 }
