@@ -1,10 +1,12 @@
 ﻿using Core.Entities;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Core.Interfaces.Services
 {
     public interface IFeedbackService
     {
-        public Task<IEnumerable<Feedback>> GetAllFeedbacks(string? filterParam, int? takeCount, int skipCount = 0);
-        public Task AddFeedback(Feedback feedback);
+        Task<PagedList<Feedback>> GetAllFeedbacks(FeedbackParameters parameters);
+        Task AddFeedback(Feedback feedback);
     }
 }

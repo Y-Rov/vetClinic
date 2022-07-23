@@ -2,6 +2,8 @@
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -44,19 +46,15 @@ namespace Application.Services
             _logger.LogInfo($"The new feedback with ID = {feedback.Id} was added");
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacks(
-            string? filterParam, 
-            int? takeCount, 
-            int skipCount = 0)
+        public async Task<PagedList<Feedback>> GetAllFeedbacks(
+            FeedbackParameters parameters)
         {
             _logger.LogInfo("All feedbacks were received");
 
-            return await _repository.QueryAsync(
-                asNoTracking: true,
-                filter: GetFilterQuery(filterParam),
-                take: takeCount,
-                skip: skipCount,
-                include: query =>
+            return await _repository.GetPaged(
+                parameters: parameters,
+                filter: GetFilterQuery(parameters.FilterParam),
+                includeProperties: query =>
                     query.Include(feedback => feedback.User));
         }
     }
