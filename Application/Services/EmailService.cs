@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Interfaces;
 using Core.Interfaces.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -15,10 +16,12 @@ namespace Application.Services
         const int port = 587;
 
         IConfiguration _configuration;
+        ILoggerManager _logger;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration, ILoggerManager logger)
         {
             _configuration = configuration;
+            _logger = logger;
             address = _configuration.GetSection("Mailbox").GetSection("Address").Value;
             secret = _configuration.GetSection("Mailbox").GetSection("Secret").Value;
         }
@@ -52,13 +55,14 @@ namespace Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError($"Error happened during sending email. Error: {ex.Message}");
             }
             finally
             {
                 client.Disconnect(true);
                 client.Dispose();
             }
+            _logger.LogInfo("Email was successfully sended");
         }
 
         public async Task Send(EmailMessage message)
@@ -83,13 +87,14 @@ namespace Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError($"Error happened during sending emails. Error: {ex.Message}");
             }
             finally
             {
                 client.Disconnect(true);
                 client.Dispose();
             }
+            _logger.LogInfo("Emails were successfully sended");
         }
     }
 }
