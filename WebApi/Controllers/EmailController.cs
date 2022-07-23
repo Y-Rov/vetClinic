@@ -1,4 +1,5 @@
-﻿using Core.Interfaces.Services;
+﻿using Core.Entities;
+using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -7,11 +8,19 @@ namespace WebApi.Controllers
     [ApiController]
     public class EmailController : ControllerBase
     {
-        readonly IEmailService service;
+        readonly IEmailService _service;
 
         public EmailController(IEmailService service)
         {
-            this.service = service;
+            _service = service;
         }
+
+        [HttpPost]
+        public async Task SendEmail([FromBody] EmailMessage email) =>
+            await _service.Send(email);
+
+        [HttpPost("/notify")]
+        public async Task NotifyUsers([FromBody] Mailing message) =>
+            await _service.NotifyUsers(message);
     }
 }
