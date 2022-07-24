@@ -331,10 +331,17 @@ namespace WebApi.Test.Fixtures
         }
         private FinancialStatementParameters GenerateFinStatParameters()
         {
+            var date = new DatePeriod()
+            {
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
+            };
+
             var param = new FinancialStatementParameters()
             {
                 PageNumber = 1,
-                PageSize = 5
+                PageSize = 5,
+                Date = date
             };
             return param;
         }

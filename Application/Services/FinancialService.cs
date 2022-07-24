@@ -206,18 +206,21 @@ namespace Application.Services
             foreach(var appointment in appointments)
             {
                 appCosts.Add(appointment.Id, 0);
+
             //Count cost of every Appointment
                 foreach(var procedures in appointment.AppointmentProcedures)
                 {
                     var procedure = await _procedureRepository.GetById(procedures.ProcedureId);
                     appCosts[appointment.Id] += procedure.Cost;
                 }
+
             //Create Income 
                 var income = new Income
                 {
                     AppointmenId = appointment.Id,
                     Cost = appCosts[appointment.Id]
                 };
+
             //Add previous to list
                 _incomes.Add(income);
 
@@ -239,7 +242,7 @@ namespace Application.Services
             }
             
             //Get all Salaries where we need to pay in Period
-            var salaries = await _repository.GetAllForStatement(filter:x => x.Date < date.StartDate);
+            var salaries = await _repository.GetAllForStatement(x => x.Date < date.StartDate);
 
             var _expences = new List<Expences>();
 
@@ -280,8 +283,6 @@ namespace Application.Services
                     _expences.Add(expence);
                 }
             }
-
-
 
             //Count All Incomes
             foreach(var res in appCosts)
@@ -330,18 +331,20 @@ namespace Application.Services
             var finStatList = new List<FinancialStatement>();
             var monthDate = new DatePeriod();
 
-
-            for (int i = (parametrs.PageNumber-1)*parametrs.PageSize; i < parametrs.PageNumber*parametrs.PageSize; i++)
+            if (countMonth != 0)
             {
-                if(monthDate.EndDate == parametrs.Date.EndDate)
+                for (int i = (parametrs.PageNumber - 1) * parametrs.PageSize; i < parametrs.PageNumber * parametrs.PageSize; i++)
                 {
-                    break;
+                    if (monthDate.EndDate == parametrs.Date.EndDate)
+                    {
+                        break;
+                    }
+
+                    monthDate.StartDate = parametrs.Date.StartDate.AddMonths(i);
+                    monthDate.EndDate = parametrs.Date.StartDate.AddMonths(i + 1);
+
+                    finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
                 }
-
-                monthDate.StartDate = parametrs.Date.StartDate.AddMonths(i);
-                monthDate.EndDate = parametrs.Date.StartDate.AddMonths(i+1);
-
-                finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
             }
 
             //return finStatList;
