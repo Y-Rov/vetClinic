@@ -280,6 +280,7 @@
 //            _fixture.MockFinancialService.Verify();
 //        }
 
+
 //        [Fact]
 //        public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
 //        {
@@ -339,3 +340,4 @@
 //        }
 //    }
 //}
+

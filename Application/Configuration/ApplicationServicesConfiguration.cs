@@ -30,9 +30,13 @@ namespace Application.Configuration
             services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
 
+
             services.AddScoped<IPDfGenerator, PDF_Generator>();
             services.AddScoped<ICreateTableForPDF<FinancialStatement>, CreateTableForFinancialStatementPDF>();
             services.AddScoped<IGenerateFullPDF<FinancialStatementParameters>, FinancialStatementPDfGenerator>();
+
+            services.AddScoped<IEmailService, EmailService>();
+
         }
     }
 }
