@@ -126,7 +126,7 @@ namespace Application.Services
             var value = salary.Value;
             while (salaryDate < date.EndDate)
             {
-                var salaryUpdate = await _repository.GetByIdForStatement(id, s => s.Date > salaryDate);
+                var salaryUpdate = await _repository.GetByIdForStatement(id, s => s.Date >= salaryDate);
                 if (salaryUpdate == null)
                 {
                     int lastPeriod = 0;
@@ -252,11 +252,11 @@ namespace Application.Services
                 }
 
                 //Count Avarage Salary Value
-
                 var expence = await GetExpencesAsync(salary, date, employee, premiums[employee.Id]);
                 _expences.Add(expence);
             }
 
+            //Do the previous steps for new employee in period
             var checkSalaryList = await _repository.GetAllForStatement(filter:x => x.Date < date.EndDate);
             if(checkSalaryList.Count() != salaries.Count())
             {
