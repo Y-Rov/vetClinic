@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services.PDF_Service;
 using Core.Paginator;
+using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +22,7 @@ namespace Application.Services.AnimalMedCard_PDF
 
             foreach (var x in listOfAppointments)
             {
-                table.Rows.Add(new object[] { $"{x.Date}", $"{x.Disease}" });
+                table.Rows.Add(new object[] { $"{x.Date}", $"{x.Disease}"});
             }
 
             return table;

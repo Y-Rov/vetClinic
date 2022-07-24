@@ -3,6 +3,7 @@ using Core.Models;
 using Microsoft.Extensions.Configuration;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using System.Data;
 
@@ -27,12 +28,31 @@ namespace Application.Services
             PdfDocument doc = new PdfDocument();
             //Add a page
             PdfPage page = doc.Pages.Add();
+
+            //Table Name
+            PdfGraphics graphics = page.Graphics;
+            PdfFont font = new PdfStandardFont(PdfFontFamily.TimesRoman, 20);
+
+            graphics.DrawString($"{table.TableName}",
+                font: font,
+                brush: PdfBrushes.Black,
+                new PointF(10, 3));
+
             //Create a PdfGrid
             PdfGrid pdfGrid = new PdfGrid();
             //Assign data source
             pdfGrid.DataSource = table;
+
+            //Adding style
+            PdfGridBuiltinStyleSettings tableStyleOption = new PdfGridBuiltinStyleSettings();
+            tableStyleOption.ApplyStyleForBandedRows = true;
+            tableStyleOption.ApplyStyleForHeaderRow = true;
+
+            //Apply built-in table style
+            pdfGrid.ApplyBuiltinStyle(PdfGridBuiltinStyle.GridTable4Accent4, tableStyleOption);
+
             //Draw grid to the page of PDF document
-            pdfGrid.Draw(page, new PointF(10, 10));
+            pdfGrid.Draw(page, new PointF(10, 40));
             //Save the PDF document to stream
             MemoryStream stream = new MemoryStream();
             doc.Save(stream);
