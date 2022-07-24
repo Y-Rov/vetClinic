@@ -1,12 +1,9 @@
 ﻿using Core.Entities;
-using Core.Models;
+using Core.Paginator;
+using Core.Paginator.Parameters;
+using Core.ViewModels;
 using Core.ViewModels.FeedbackViewModels;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.Test.Fixtures;
 
 namespace WebApi.Test
@@ -46,45 +43,36 @@ namespace WebApi.Test
         public async Task GetAllFeedbacks_whenFeedbacksExist_thenReturnFeedbacks()
         {
             _fixture.MockFeedbackService.Setup(service =>
-                service.GetAllFeedbacks(
-                    It.IsAny<string?>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
-                .ReturnsAsync(_fixture.ExpectedFeedbacks);
+                service.GetAllFeedbacks(It.IsAny<FeedbackParameters>()))
+            .ReturnsAsync(_fixture.ExpectedFeedbacks);
 
-            _fixture.MockListFeedbackMapper.Setup(mapper =>
-                mapper.Map(It.IsAny<IEnumerable<Feedback>>()))
+            _fixture.MockPagedMapper.Setup(mapper =>
+                mapper.Map(It.IsAny<PagedList<Feedback>>()))
             .Returns(_fixture.ExpectedFeedbacksViewModel);
 
             var result = await _fixture.MockController.GetAllFeedbacks(_fixture.TestParameters);
 
             Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.IsAssignableFrom<IEnumerable<FeedbackReadViewModel>>(result);
+            Assert.NotEmpty(result.Entities);
+            Assert.IsType<PagedReadViewModel<FeedbackReadViewModel>>(result);
         }
 
         [Fact]
         public async Task GetAllFeedbacks_whenFeedbacksDontExist_thenReturnEmptyList()
         {
-            List<Feedback> emptyFeedbacks = new List<Feedback>();
-            List<FeedbackReadViewModel> emptyViewModelFeedbacks = new List<FeedbackReadViewModel>();
-
             _fixture.MockFeedbackService.Setup(service =>
-                service.GetAllFeedbacks(
-                    It.IsAny<string?>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
-                .ReturnsAsync(emptyFeedbacks);
+                service.GetAllFeedbacks(It.IsAny<FeedbackParameters>()))
+            .ReturnsAsync(_fixture.EmptyFeedbacks);
 
-            _fixture.MockListFeedbackMapper.Setup(mapper =>
-                mapper.Map(It.IsAny<IEnumerable<Feedback>>()))
-            .Returns(emptyViewModelFeedbacks);
+            _fixture.MockPagedMapper.Setup(mapper =>
+                mapper.Map(It.IsAny<PagedList<Feedback>>()))
+            .Returns(_fixture.EmptyReadFeedbacks);
 
             var result = await _fixture.MockController.GetAllFeedbacks(_fixture.TestParameters);
 
             Assert.NotNull(result);
-            Assert.Empty(result);
-            Assert.IsAssignableFrom<IEnumerable<FeedbackReadViewModel>>(result);
+            Assert.Empty(result.Entities);
+            Assert.IsType<PagedReadViewModel<FeedbackReadViewModel>>(result);
         }
 
         [Fact]

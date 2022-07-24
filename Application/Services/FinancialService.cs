@@ -324,24 +324,22 @@ namespace Application.Services
             }
         }
 
-        public async Task<PagedList<FinancialStatement>> GetFinancialStatement(
-            DatePeriod date, 
-            FinancialStatementParameters parametrs)
+        public async Task<PagedList<FinancialStatement>> GetFinancialStatement(FinancialStatementParameters parametrs)
         {
-            var countMonth = GetMonthsBetween(date.StartDate, date.EndDate);
+            var countMonth = GetMonthsBetween(parametrs.Date.StartDate, parametrs.Date.EndDate);
             var finStatList = new List<FinancialStatement>();
             var monthDate = new DatePeriod();
 
 
             for (int i = (parametrs.PageNumber-1)*parametrs.PageSize; i < parametrs.PageNumber*parametrs.PageSize; i++)
             {
-                if(monthDate.EndDate == date.EndDate)
+                if(monthDate.EndDate == parametrs.Date.EndDate)
                 {
                     break;
                 }
 
-                monthDate.StartDate = date.StartDate.AddMonths(i);
-                monthDate.EndDate = date.StartDate.AddMonths(i+1);
+                monthDate.StartDate = parametrs.Date.StartDate.AddMonths(i);
+                monthDate.EndDate = parametrs.Date.StartDate.AddMonths(i+1);
 
                 finStatList.Add(await GetFinancialStatementOneMonth(monthDate));
             }

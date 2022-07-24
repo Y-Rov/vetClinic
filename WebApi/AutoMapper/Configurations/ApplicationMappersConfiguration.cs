@@ -3,6 +3,8 @@ using Core.Models;
 using Core.Paginator;
 using Core.Models.Finance;
 using Core.ViewModels;
+using Core.ViewModel.MessageViewModels;
+using Core.ViewModels.ChatRoomViewModels;
 using Core.ViewModels.AddressViewModels;
 using Core.ViewModels.AnimalViewModel;
 using Core.ViewModels.ArticleViewModels;
@@ -19,12 +21,14 @@ using Microsoft.Extensions.DependencyInjection;
 using WebApi.AutoMapper.AddressMappers;
 using WebApi.AutoMapper.AnimalMappers;
 using WebApi.AutoMapper.AppointmentMappers;
+using WebApi.AutoMapper.ChatMappers;
 using WebApi.AutoMapper.ArticleMappers;
 using WebApi.AutoMapper.CommentMappers;
 using WebApi.AutoMapper.ExceptionMapper;
 using WebApi.AutoMapper.FeedbackMappers;
 using WebApi.AutoMapper.ExceptionMappers;
 using WebApi.AutoMapper.Interface;
+using WebApi.AutoMapper.MessageMappers;
 using WebApi.AutoMapper.PortfolioMappers;
 using WebApi.AutoMapper.ProcedureMappers;
 using WebApi.AutoMapper.SalaryMappers;
@@ -108,8 +112,23 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();
         services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
 
+        services.AddScoped<IViewModelMapper<Appointment, AppointmentReadViewModel>, AppointmentReadMapper>();
+        services.AddScoped<IViewModelMapper<AppointmentCreateViewModel, Appointment>, AppointmentCreateMapper>();
+        services.AddScoped<IViewModelMapper<AppointmentUpdateViewModel, Appointment>, AppointmentUpdateModelMapper>();
+        services.AddScoped <IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>>, AppointmentReadEnumerableMapper>();
+
+        services.AddScoped<IViewModelMapper<MessageSendViewModel, Message>, MessageSendMapper>();
+        services.AddScoped<IViewModelMapper<Message, MessageGetViewModel>, MessageGetMapper>();
+        services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Message>, IEnumerable<MessageGetViewModel>>,
+            MessageGetEnumerableMapper>();
+
+        services.AddScoped<IUserOrientedViewModelMapper<ChatRoom, ChatRoomGetViewModel>, ChatRoomGetMapper>();
+        services.AddScoped<IUserOrientedEnumerableViewModelMapper<ChatRoom, ChatRoomGetViewModel>,
+            ChatRoomGetEnumerableMapper>();
+
         services.AddScoped<IViewModelMapper<Feedback, FeedbackReadViewModel>, FeedbackMapper>();
         services.AddScoped<IViewModelMapper<FeedbackCreateViewModel, Feedback>, FeedbackCreateMapper>();
         services.AddScoped<IViewModelMapper<IEnumerable<Feedback>, IEnumerable<FeedbackReadViewModel>>, FeedbackViewModelListMapper>();
+        services.AddScoped<IViewModelMapper<PagedList<Feedback>, PagedReadViewModel<FeedbackReadViewModel>>, FeedbackPagedMapper>();
     }
 }

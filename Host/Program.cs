@@ -12,6 +12,8 @@ using NLog;
 using System.Text.Json.Serialization;
 using Azure.Storage.Blobs;
 using WebApi.AutoMapper.Configurations;
+using WebApi.SignalR.Configurations;
+using WebApi.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/Nlog.config"));
@@ -60,7 +62,11 @@ builder.Services.AddAuthentication(options => {
         {
             ClockSkew = TimeSpan.Zero
         };
+        options.AddAuthenticationForSignalRHubs();
     });
+
+builder.Services.AddUserIdProviderForSignalR();
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -81,5 +87,6 @@ app.UseCors(SystemServicesConfiguration.AllowedOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<MessageHub>("/hubs/messages");
 
 app.Run();
