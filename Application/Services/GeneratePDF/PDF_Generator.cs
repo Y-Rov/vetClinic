@@ -7,9 +7,9 @@ using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using System.Data;
 
-namespace Application.Services
+namespace Application.Services.GeneratePDF
 {
-    public class PDF_Generator: IPDfGenerator
+    public class PDF_Generator : IPDfGenerator
     {
         private readonly IConfiguration _configuration;
         private readonly string _fileName;
@@ -31,7 +31,7 @@ namespace Application.Services
 
             //Table Name
             PdfGraphics graphics = page.Graphics;
-            PdfFont font = new PdfStandardFont(PdfFontFamily.TimesRoman, 20);
+            PdfFont font = PdfParams.font;
 
             graphics.DrawString($"{table.TableName}",
                 font: font,

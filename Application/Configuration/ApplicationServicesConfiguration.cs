@@ -1,6 +1,7 @@
 ﻿using Application.Services;
 using Application.Services.AnimalMedCard_PDF;
 using Application.Services.FinancialStatement_PDF;
+using Application.Services.GeneratePDF;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Interfaces.Services.PDF_Service;
