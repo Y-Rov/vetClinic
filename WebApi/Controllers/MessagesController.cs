@@ -55,7 +55,7 @@ public class MessagesController : ControllerBase
     [HttpGet("unread")]
     public async Task<IEnumerable<MessageGetViewModel>> GetUnreadMessagesAsync()
     {
-        var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
+        var userId = (await _userManager.GetUserAsync(User)).Id;
 
         var messages = await _messageService.GetUnreadMessagesAsync(userId);
         return _enumMessageMapper.Map(messages);
