@@ -5,6 +5,7 @@ using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Moq;
@@ -25,6 +26,7 @@ namespace Application.Test.Fixtures
 
             pagingParameters = new()
             {
+                animalId=13,
                 PageNumber = 1,
                 PageSize = 10
             };
@@ -138,5 +140,6 @@ namespace Application.Test.Fixtures
         {
             return new List<Appointment>();
         }
+        
     }
 }
