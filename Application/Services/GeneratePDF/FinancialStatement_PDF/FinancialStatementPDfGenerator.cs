@@ -6,27 +6,27 @@ using Core.Paginator.Parameters;
 
 namespace Application.Services.GeneratePDF.FinancialStatement_PDF
 {
-    public class FinancialStatementPDfGenerator: IGenerateFullPDF<FinancialStatementParameters>
+    public class FinancialStatementPDfGenerator: IGenerateFullPdf<FinancialStatementParameters>
     {
         readonly IFinancialService _financialService;
-        readonly ICreateTableForPDF<FinancialStatement> _createTable;
-        readonly IPDfGenerator _pDfGenerator;
+        readonly ICreateTableForPdf<FinancialStatement> _createTable;
+        readonly IPdfGenerator _pDfGenerator;
 
         public FinancialStatementPDfGenerator(
             IFinancialService financialService,
-            ICreateTableForPDF<FinancialStatement> createTable, 
-            IPDfGenerator pDfGenerator)
+            ICreateTableForPdf<FinancialStatement> createTable, 
+            IPdfGenerator pDfGenerator)
         {
             _financialService = financialService;
             _createTable = createTable;
             _pDfGenerator = pDfGenerator;
         }
         
-        public async Task<PdfFileModel> GeneratePDF(FinancialStatementParameters parameters)
+        public async Task<PdfFileModel> GeneratePdf(FinancialStatementParameters parameters)
         {
             var financialStatementList = await _financialService.GetFinancialStatement(parameters);
             var financialStatementTable = _createTable.CreateTable(financialStatementList);
-            var pdfFileParams =  _pDfGenerator.CreatePDF(financialStatementTable);
+            var pdfFileParams =  _pDfGenerator.CreatePdf(financialStatementTable);
 
             return pdfFileParams;
         }

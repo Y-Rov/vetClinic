@@ -3,35 +3,30 @@ using Core.Interfaces.Services;
 using Core.Interfaces.Services.PDF_Service;
 using Core.Models;
 using Core.Paginator.Parameters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.GeneratePDF.AnimalMedCard_PDF
 {
-    public class AnimalMedCardPDFGenerator : IGenerateFullPDF<AnimalParameters>
+    public class AnimalMedCardPdfGenerator : IGenerateFullPdf<AnimalParameters>
     {
         private readonly IAnimalService _animalService;
-        private readonly ICreateTableForPDF<Appointment> _createTable;
-        private readonly IPDfGenerator _PDFGenerator;
+        private readonly ICreateTableForPdf<Appointment> _createTable;
+        private readonly IPdfGenerator _PDFGenerator;
 
-        public AnimalMedCardPDFGenerator(
+        public AnimalMedCardPdfGenerator(
             IAnimalService animalService,
-            ICreateTableForPDF<Appointment> createTable,
-            IPDfGenerator pDFGenerator)
+            ICreateTableForPdf<Appointment> createTable,
+            IPdfGenerator pDFGenerator)
         {
             _animalService = animalService;
             _createTable = createTable;
             _PDFGenerator = pDFGenerator;
         }
 
-        public async Task<PdfFileModel> GeneratePDF(AnimalParameters parameters)
+        public async Task<PdfFileModel> GeneratePdf(AnimalParameters parameters)
         {
             var medCardList = await _animalService.GetAllAppointmentsWithAnimalIdAsync(parameters);
             var medCardTable = _createTable.CreateTable(medCardList);
-            var pdfFileParams = _PDFGenerator.CreatePDF(medCardTable);
+            var pdfFileParams = _PDFGenerator.CreatePdf(medCardTable);
 
             return pdfFileParams;
 

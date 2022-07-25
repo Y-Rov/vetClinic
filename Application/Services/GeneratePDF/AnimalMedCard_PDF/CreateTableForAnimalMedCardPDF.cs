@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Services.GeneratePDF.AnimalMedCard_PDF
 {
-    public class CreateTableForAnimalMedCardPDF : ICreateTableForPDF<Appointment>
+    public class CreateTableForAnimalMedCardPDF : ICreateTableForPdf<Appointment>
     {
         public DataTable CreateTable(PagedList<Appointment> listOfAppointments)
         {

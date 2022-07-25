@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Interfaces.Services.PDF_Service
 {
-    public interface IGenerateFullPDF<TypeOfParameters>
+    public interface IGenerateFullPdf<TypeOfParameters>
     {
-        Task<PdfFileModel> GeneratePDF(TypeOfParameters parameters);
+        Task<PdfFileModel> GeneratePdf(TypeOfParameters parameters);
     }
 }
