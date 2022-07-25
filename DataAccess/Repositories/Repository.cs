@@ -86,10 +86,10 @@ namespace DataAccess.Repositories
             if (orderBy is not null)
                 query = orderBy(query);
             
+            query = query.Skip(skip);
+
             if (take is not null)
                 query = query.Take(take.Value);
-
-            query = query.Skip(skip);
             
             return await query.ToListAsync();
         }

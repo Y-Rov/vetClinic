@@ -6,7 +6,6 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Paginator;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace Application.Test.Fixtures;
@@ -20,7 +19,7 @@ public class ArticleServiceFixture
 
         MockArticleRepository = fixture.Freeze<Mock<IArticleRepository>>();
         MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
-        MockImageParser = fixture.Freeze<Mock<IImageParser>>();
+        MockImageService = fixture.Freeze<Mock<IImageService>>();
 
         ExpectedArticle = GetArticle();
         ExpectedArticles = GetArticles();
@@ -29,13 +28,13 @@ public class ArticleServiceFixture
         MockArticleService = new ArticleService(
             MockArticleRepository.Object,
             MockLoggerManager.Object,
-            MockImageParser.Object);
+            MockImageService.Object);
     }
     
     public ArticleService MockArticleService { get; }
     public Mock<IArticleRepository> MockArticleRepository { get; }
     public Mock<ILoggerManager> MockLoggerManager { get; }
-    public Mock<IImageParser> MockImageParser { get; }
+    public Mock<IImageService> MockImageService { get; }
     
     public Article ExpectedArticle { get; }
     public List<Article> ExpectedArticles { get; }

@@ -1,11 +1,9 @@
 ﻿using System.Linq.Expressions;
 using Application.Test.Fixtures;
-using Azure;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Paginator;
 using Core.Paginator.Parameters;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Application.Test;
@@ -168,10 +166,14 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     public async Task CreateArticleAsync_whenNormal_thenSuccess()
     {
         //Arrange
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ReturnsAsync("article body");
+        _fixture.MockImageService
+            .Setup(imgService => imgService.TrimArticleImages(It.IsAny<string>()))
+            .Returns(It.IsAny<string>());
         
+        _fixture.MockImageService
+            .Setup(imgService => imgService.ClearUnusedImagesAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+
         _fixture.MockArticleRepository
             .Setup(r => r.InsertAsync(It.IsAny<Article>()))
             .Returns(Task.FromResult<object?>(null)).Verifiable();
@@ -189,56 +191,6 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
     }
 
     [Fact]
-    public async Task CreateArticleAsync_whenUserDontExist_thenThrowNotFound()
-    {
-        //Arrange
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ReturnsAsync("article body");
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.InsertAsync(It.IsAny<Article>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.SaveChangesAsync())
-            .Throws<DbUpdateException>();
-
-        //Act
-        var result = _fixture.MockArticleService.CreateArticleAsync(_fixture.ExpectedArticle);
-        
-        //Assert
-        _fixture.MockArticleRepository
-            .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Once);
-        await Assert.ThrowsAsync<NotFoundException>(() => result);
-    }
-
-    [Fact]
-    public async Task CreateArticleAsync_whenBlobError_thenThrowBadRequest()
-    {
-        //Arrange
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ThrowsAsync(new BadRequestException());
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.InsertAsync(It.IsAny<Article>()))
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.SaveChangesAsync())
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        //Act
-        var result = _fixture.MockArticleService.CreateArticleAsync(_fixture.ExpectedArticle);
-        
-        //Assert
-        _fixture.MockArticleRepository
-            .Verify(r => r.InsertAsync(_fixture.ExpectedArticle), Times.Never);
-        await Assert.ThrowsAsync<BadRequestException>(() => result);
-    }
-
-    [Fact]
     public async Task UpdateArticleAsync_whenNormal_thenSuccess()
     {
         //Arrange
@@ -248,9 +200,17 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
                 It.IsAny<string>()))
             .ReturnsAsync(_fixture.ExpectedArticle);
 
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ReturnsAsync("article body");
+        _fixture.MockImageService
+            .Setup(imgService => imgService.TrimArticleImages(It.IsAny<string>()))
+            .Returns(It.IsAny<string>());
+        
+        _fixture.MockImageService
+            .Setup(imgService => imgService.ClearOutdatedImagesAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+        _fixture.MockImageService
+            .Setup(imgService => imgService.ClearUnusedImagesAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
         
         _fixture.MockArticleRepository
             .Setup(r => r.SaveChangesAsync())
@@ -263,39 +223,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
     }
-
-    [Fact]
-    public async Task UpdateArticleAsync_whenBlobError_thenThrowBadRequest()
-    {
-        //Arrange
-        _fixture.MockArticleRepository
-            .Setup(r => r.GetById(
-                It.IsAny<int>(), 
-                It.IsAny<string>()))
-            .ReturnsAsync(_fixture.ExpectedArticle);
-        
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ThrowsAsync(new RequestFailedException(""));
-
-        _fixture.MockArticleRepository
-            .Setup(r => r.SaveChangesAsync())
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        //Act
-        var result = _fixture.MockArticleService.UpdateArticleAsync(_fixture.ExpectedArticle);
-        
-        //Assert
-        _fixture.MockArticleRepository
-            .Verify(r => r.GetById(        
-                It.IsAny<int>(), 
-                It.IsAny<string>()), Times.Once);
-        _fixture.MockArticleRepository
-            .Verify(r => r.SaveChangesAsync(), Times.Never);
-        
-        await Assert.ThrowsAsync<BadRequestException>(() => result);
-    }
-
+    
     [Fact]
     public async Task UpdateArticleAsync_whenArticleDontExist_thenThrowNotFound()
     {
@@ -306,9 +234,17 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
                 It.IsAny<string>()))
             .ThrowsAsync(new NotFoundException());
         
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
-            .ReturnsAsync("article body");
+        _fixture.MockImageService
+            .Setup(imgService => imgService.TrimArticleImages(It.IsAny<string>()))
+            .Returns(It.IsAny<string>());
+        
+        _fixture.MockImageService
+            .Setup(imgService => imgService.ClearOutdatedImagesAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
+
+        _fixture.MockImageService
+            .Setup(imgService => imgService.ClearUnusedImagesAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .Returns(Task.FromResult<object?>(null)).Verifiable();
 
         _fixture.MockArticleRepository
             .Setup(r => r.SaveChangesAsync())
@@ -338,8 +274,8 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
                 It.IsAny<string>()))
             .ReturnsAsync(_fixture.ExpectedArticle);
 
-        _fixture.MockImageParser
-            .Setup(ip => ip.DeleteImages(It.IsAny<string>()))
+        _fixture.MockImageService
+            .Setup(ip => ip.DeleteImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository
@@ -357,43 +293,7 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
         _fixture.MockArticleRepository
             .Verify(r => r.SaveChangesAsync(), Times.Once);
     }
-
-    [Fact]
-    public async Task DeleteArticleAsync_whenBlobError_thenThrowBadRequest()
-    {
-        //Arrange
-        _fixture.MockArticleRepository
-            .Setup(r => r.GetById(
-                It.IsAny<int>(), 
-                It.IsAny<string>()))
-            .ReturnsAsync(_fixture.ExpectedArticle);
-        
-        _fixture.MockImageParser
-            .Setup(ip => ip.DeleteImages(It.IsAny<string>()))
-            .ThrowsAsync(new RequestFailedException(""));
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.Delete(It.IsAny<Article>()))
-            .Verifiable();
-        
-        _fixture.MockArticleRepository
-            .Setup(r => r.SaveChangesAsync())
-            .Returns(Task.FromResult<object?>(null)).Verifiable();
-        
-        //Act
-        var result = _fixture.MockArticleService.DeleteArticleAsync(17);
-        
-        //Assert
-        _fixture.MockArticleRepository
-            .Verify(r => r.GetById(        
-                It.IsAny<int>(), 
-                It.IsAny<string>()), Times.Once);
-        _fixture.MockArticleRepository
-            .Verify(r => r.SaveChangesAsync(), Times.Never);
-        
-        await Assert.ThrowsAsync<BadRequestException>(() => result);
-    }
-
+    
     [Fact]
     public async Task DeleteArticleAsync_whenArticleDontExist_thenThrowNotFound()
     {
@@ -404,8 +304,8 @@ public class ArticleServiceTests : IClassFixture<ArticleServiceFixture>, IDispos
                 It.IsAny<string>()))
             .ThrowsAsync(new NotFoundException());
         
-        _fixture.MockImageParser
-            .Setup(ip => ip.UploadImages(It.IsAny<string>()))
+        _fixture.MockImageService
+            .Setup(ip => ip.DeleteImagesAsync(It.IsAny<string>()))
             .ReturnsAsync("article body");
         
         _fixture.MockArticleRepository

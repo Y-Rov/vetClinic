@@ -29,7 +29,7 @@ namespace Application.Configuration
             services.AddScoped<IArticleService, ArticleService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IUserProfilePictureService, UserProfilePictureService>();
-            services.AddScoped<IImageParser, ImageParser>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
 
@@ -39,6 +39,9 @@ namespace Application.Configuration
 
             services.AddScoped<ICreateTableForPDF<Appointment>, CreateTableForAnimalMedCardPDF>();
             services.AddScoped<IGenerateFullPDF<AnimalParameters>, AnimalMedCardPDFGenerator>();
+
+            services.AddScoped<IEmailService, EmailService>();
+
         }
     }
 }
