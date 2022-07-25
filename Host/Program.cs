@@ -11,10 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using NLog;
 using System.Text.Json.Serialization;
 using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.SignalR;
 using WebApi.AutoMapper.Configurations;
-using WebApi.Hubs.Configurations;
-using WebApi.SignalR.HubFilters;
+using WebApi.SignalR.Configurations;
 using WebApi.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,12 +65,10 @@ builder.Services.AddAuthentication(options => {
         options.AddAuthenticationForSignalRHubs();
     });
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddUserIdProviderForSignalR();
-builder.Services.AddSignalR(opts =>
-{
-    opts.AddFilter<IntUserIdentifierHubFilter>();
-    opts.AddFilter<ValidationHubFilter>();
-});
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

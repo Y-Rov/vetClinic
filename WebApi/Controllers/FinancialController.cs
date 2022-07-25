@@ -25,7 +25,7 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
         private readonly IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> _finStatViewModel;
-        private readonly IGenerateFullPDF<FinancialStatementParameters> _generatePDF;
+        private readonly IGenerateFullPdf<FinancialStatementParameters> _generatePDF;
 
         public FinancialController(
             IFinancialService financialService,
@@ -35,7 +35,7 @@ namespace WebApi.Controllers
             IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
             IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> finStatViewModel,
-            IGenerateFullPDF<FinancialStatementParameters> generatePDF
+            IGenerateFullPdf<FinancialStatementParameters> generatePDF
             )
         {
             _financialService = financialService;
@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         [HttpGet("generatePDF")]
         public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters parameters)
         {
-            var pdfFileParams = await _generatePDF.GeneratePDF(parameters);
+            var pdfFileParams = await _generatePDF.GeneratePdf(parameters);
             var result = this.File(pdfFileParams);
             return result;
         }

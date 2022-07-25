@@ -3,8 +3,8 @@ using System.Data;
 
 namespace Core.Interfaces.Services.PDF_Service
 {
-    public interface IPDfGenerator
+    public interface IPdfGenerator
     {
-        PdfFileModel CreatePDF(DataTable table);
+        PdfFileModel CreatePdf(DataTable table);
     }
 }

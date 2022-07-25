@@ -1,7 +1,6 @@
-﻿using System.Drawing;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace DataAccess.Repositories;
@@ -18,51 +17,32 @@ public class ImageRepository : IImageRepository
         _blobServiceClient = blobServiceClient;
         _configuration = configuration;
     }
-    public async Task<string> UploadFromImageAsync(Image image, string folder, string imageFormat, string fileName = "")
+
+    public async Task<string> UploadFromIFormFile(IFormFile file, string folder, string fileName = "")
     {
         var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
-        if(string.IsNullOrEmpty(fileName))
-        { 
+        if (string.IsNullOrEmpty(fileName))
+        {
             fileName = Guid.NewGuid().ToString();
-        }        
-        fileName = $"{folder}/{fileName}.{imageFormat}";
-        var blobClient = blobContainer.GetBlobClient(fileName);
+        }
+
+        var imageFormat = file.ContentType.Split('/').Last();
+
+        var fullFilePath = $"{folder}/{fileName}.{imageFormat}";
         var ms = new MemoryStream();
-        image.Save(ms, image.RawFormat);
+        var blobClient = blobContainer.GetBlobClient(fullFilePath);
+        await file.CopyToAsync(ms);
         ms.Position = 0;
 
         await blobClient.UploadAsync(ms);
-        return fileName;    
+
+        return $"{_configuration["Azure:ContainerLink"]}/{_configuration["Azure:ContainerName"]}/{fullFilePath}";
     }
 
-  public async Task<string> UploadFromBase64Async(string base64, string folder, string imageFormat, string fileName = "")
-    {
-        var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
-        if(string.IsNullOrEmpty(fileName))
-        { 
-            fileName = Guid.NewGuid().ToString();
-        }        
-        fileName = $"{folder}/{fileName}.{imageFormat}";
-        var blobClient = blobContainer.GetBlobClient(fileName);
-        var bytes = Convert.FromBase64String(base64);
-        var ms = new MemoryStream(bytes);
-        ms.Position = 0;
-
-        await blobClient.UploadAsync(ms);
-        return fileName;          
-    }
-
-   public async Task DeleteAsync(string imageName, string folder)
+    public async Task DeleteAsync(string imageName, string folder)
     {
         var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
         var blobClient = blobContainer.GetBlobClient($"{folder}/{imageName}");
         await blobClient.DeleteAsync();
-    }
-    
-   public async Task DeleteAsync(string path)
-    {
-        var blobContainer = _blobServiceClient.GetBlobContainerClient(_configuration["Azure:ContainerName"]);
-        var blobClient = blobContainer.GetBlobClient(path);
-        await blobClient.DeleteAsync();    
     }
 }

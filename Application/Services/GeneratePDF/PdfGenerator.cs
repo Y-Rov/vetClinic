@@ -9,20 +9,20 @@ using System.Data;
 
 namespace Application.Services.GeneratePDF
 {
-    public class PDF_Generator : IPDfGenerator
+    public class PdfGenerator : IPdfGenerator
     {
         private readonly IConfiguration _configuration;
         private readonly string _fileName;
         private readonly string _contentType;
 
-        public PDF_Generator(IConfiguration configuration)
+        public PdfGenerator(IConfiguration configuration)
         {
             _configuration = configuration;
             _fileName = _configuration["Pdf:DefaultFileName"];
             _contentType = _configuration["Pdf:ContentType"];
         }
 
-        public PdfFileModel CreatePDF(DataTable table)
+        public PdfFileModel CreatePdf(DataTable table)
         {
             //Create a new PDF document
             PdfDocument doc = new PdfDocument();

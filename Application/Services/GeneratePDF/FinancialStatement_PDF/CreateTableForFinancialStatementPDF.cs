@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Application.Services.GeneratePDF.FinancialStatement_PDF
 {
-    public class CreateTableForFinancialStatementPDF : ICreateTableForPDF<FinancialStatement>
+    public class CreateTableForFinancialStatementPdf : ICreateTableForPdf<FinancialStatement>
     {   
         public DataTable CreateTable(PagedList<FinancialStatement> listOfFinancialStatement)
         {
