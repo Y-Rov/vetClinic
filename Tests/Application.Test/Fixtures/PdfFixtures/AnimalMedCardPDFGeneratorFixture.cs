@@ -22,9 +22,9 @@ using System.Threading.Tasks;
 
 namespace Application.Test.Fixtures.PdfFixtures
 {
-    public class AnimalMedCardPDFGeneratorFixture
+    public class AnimalMedCardPdfGeneratorFixture
     {
-        public AnimalMedCardPDFGeneratorFixture()
+        public AnimalMedCardPdfGeneratorFixture()
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
@@ -37,8 +37,8 @@ namespace Application.Test.Fixtures.PdfFixtures
 
 
             MockAnimalService = fixture.Freeze<Mock<IAnimalService>>();
-            MockAnimalCreateTable = fixture.Freeze<Mock<ICreateTableForPDF<Appointment>>>();
-            MockPDFGenerator = fixture.Freeze<Mock<IPDfGenerator>>();
+            MockAnimalCreateTable = fixture.Freeze<Mock<ICreateTableForPdf<Appointment>>>();
+            MockPDFGenerator = fixture.Freeze<Mock<IPdfGenerator>>();
 
             animalParams = new()
             {
@@ -55,20 +55,20 @@ namespace Application.Test.Fixtures.PdfFixtures
             };
 
 
-            MockAnimalMedCardPDFGenerator = new AnimalMedCardPDFGenerator(
+            MockAnimalMedCardPDFGenerator = new AnimalMedCardPdfGenerator(
                 MockAnimalService.Object,
                 MockAnimalCreateTable.Object,
                 MockPDFGenerator.Object);
         }
 
-        public AnimalMedCardPDFGenerator MockAnimalMedCardPDFGenerator { get; }
+        public AnimalMedCardPdfGenerator MockAnimalMedCardPDFGenerator { get; }
         public DataTable ExpectedTable { get; }
         public DataTable ExpectedEmptyTable { get; }
         public PdfFileModel ExpectedPdfFileModel { get; }
         public PdfFileModel ExpectedPdfFileModelEmpty { get; }
         public Mock<IAnimalService> MockAnimalService { get; }
-        public Mock<ICreateTableForPDF<Appointment>> MockAnimalCreateTable { get; }
-        public Mock<IPDfGenerator> MockPDFGenerator { get; }
+        public Mock<ICreateTableForPdf<Appointment>> MockAnimalCreateTable { get; }
+        public Mock<IPdfGenerator> MockPDFGenerator { get; }
         public PagedList<Appointment> ListOfAppointments { get; }
         public PagedList<Appointment> EmpyListOfAppointments { get; }
         public AnimalParameters animalParams { get; }

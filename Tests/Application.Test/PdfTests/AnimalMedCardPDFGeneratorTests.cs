@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace Application.Test.PdfTests
 {
-    public class AnimalMedCardPDFGeneratorTests : IClassFixture<AnimalMedCardPDFGeneratorFixture>
+    public class AnimalMedCardPDFGeneratorTests : IClassFixture<AnimalMedCardPdfGeneratorFixture>
     {
-        public AnimalMedCardPDFGeneratorTests(AnimalMedCardPDFGeneratorFixture fixture)
+        public AnimalMedCardPDFGeneratorTests(AnimalMedCardPdfGeneratorFixture fixture)
         {
             _fixture = fixture;
         }
 
-        private readonly AnimalMedCardPDFGeneratorFixture _fixture;
+        private readonly AnimalMedCardPdfGeneratorFixture _fixture;
 
         [Fact]
         public void GetFilledTable_ShouldReturnTable()
@@ -70,11 +70,11 @@ namespace Application.Test.PdfTests
                 .Returns(_fixture.ExpectedTable);
 
             _fixture.MockPDFGenerator
-                .Setup(ser => ser.CreatePDF(It.IsAny<DataTable>()))
+                .Setup(ser => ser.CreatePdf(It.IsAny<DataTable>()))
                 .Returns(_fixture.ExpectedPdfFileModel);
 
             //Act
-            var actualResult = await _fixture.MockAnimalMedCardPDFGenerator.GeneratePDF(_fixture.animalParams);
+            var actualResult = await _fixture.MockAnimalMedCardPDFGenerator.GeneratePdf(_fixture.animalParams);
 
             //Assert
             Assert.NotNull(actualResult);
@@ -94,11 +94,11 @@ namespace Application.Test.PdfTests
                 .Returns(_fixture.ExpectedEmptyTable);
 
             _fixture.MockPDFGenerator
-                .Setup(ser => ser.CreatePDF(It.IsAny<DataTable>()))
+                .Setup(ser => ser.CreatePdf(It.IsAny<DataTable>()))
                 .Returns(_fixture.ExpectedPdfFileModelEmpty);
 
             //Act
-            var actualResult = await _fixture.MockAnimalMedCardPDFGenerator.GeneratePDF(_fixture.animalParamsEmpty);
+            var actualResult = await _fixture.MockAnimalMedCardPDFGenerator.GeneratePdf(_fixture.animalParamsEmpty);
 
             //Assert
             Assert.NotNull(actualResult);

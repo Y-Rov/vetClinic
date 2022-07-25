@@ -227,7 +227,7 @@ namespace WebApi.Test
         {
             //Arrange
             _animalControllerFixture.MockMedCardPdf
-                .Setup(ser => ser.GeneratePDF(It.IsAny<AnimalParameters>()))
+                .Setup(ser => ser.GeneratePdf(It.IsAny<AnimalParameters>()))
                 .ReturnsAsync(_animalControllerFixture.ExpectedPdfFileModel);
 
             //Act

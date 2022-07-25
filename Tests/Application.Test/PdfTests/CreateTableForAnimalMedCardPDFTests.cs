@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace Application.Test.PdfTests
 {
-    public class CreateTableForAnimalMedCardPDFTests : IClassFixture<CreateTableForAnimalMedCardPDFFixture>
+    public class CreateTableForAnimalMedCardPDFTests : IClassFixture<CreateTableForAnimalMedCardPdfFixture>
     {
-        public CreateTableForAnimalMedCardPDFTests(CreateTableForAnimalMedCardPDFFixture fixture)
+        public CreateTableForAnimalMedCardPDFTests(CreateTableForAnimalMedCardPdfFixture fixture)
         {
             _fixture = fixture;
         }
 
-        private readonly CreateTableForAnimalMedCardPDFFixture _fixture;
+        private readonly CreateTableForAnimalMedCardPdfFixture _fixture;
 
         [Fact]
         public void GetTable_ShouldReturnFilledTable()

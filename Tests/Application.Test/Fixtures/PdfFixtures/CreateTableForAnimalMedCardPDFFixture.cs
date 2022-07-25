@@ -5,9 +5,9 @@ using System.Data;
 
 namespace Application.Test.Fixtures.PdfFixtures
 {
-    public class CreateTableForAnimalMedCardPDFFixture
+    public class CreateTableForAnimalMedCardPdfFixture
     {
-        public CreateTableForAnimalMedCardPDFFixture()
+        public CreateTableForAnimalMedCardPdfFixture()
         {
             ListOfAppointments = GetListOfAppointments();
             EmpyListOfAppointments = GetEmptyPagedMedCard();
