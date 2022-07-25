@@ -4,7 +4,7 @@ using Core.Paginator;
 using System.Data;
 using System.Text;
 
-namespace Application.Services.FinancialStatement_PDF
+namespace Application.Services.GeneratePDF.FinancialStatement_PDF
 {
     public class CreateTableForFinancialStatementPDF : ICreateTableForPDF<FinancialStatement>
     {   

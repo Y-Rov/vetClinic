@@ -4,7 +4,7 @@ using Core.Models;
 using Core.Models.Finance;
 using Core.Paginator.Parameters;
 
-namespace Application.Services.FinancialStatement_PDF
+namespace Application.Services.GeneratePDF.FinancialStatement_PDF
 {
     public class FinancialStatementPDfGenerator: IGenerateFullPDF<FinancialStatementParameters>
     {
