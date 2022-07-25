@@ -36,6 +36,9 @@ namespace Application.Test
             if (disposing)
             {
                 _fixture.MockSalaryRepository.ResetCalls();
+                _fixture.MockAppointmentRepository.ResetCalls();
+                _fixture.MockUserRepository.ResetCalls();
+                _fixture.MockProcedureRepository.ResetCalls();
             }
 
             _disposed = true;
@@ -692,6 +695,7 @@ namespace Application.Test
             Assert.NotEmpty(result);
             Assert.IsAssignableFrom<PagedList<FinancialStatement>>(result);
             _fixture.MockProcedureRepository.Verify(repo=> repo.GetById(_fixture.ProcedureOne.Id,""), Times.Once);
+            _fixture.MockProcedureRepository.VerifyAll();
         }
 
         [Fact]
@@ -736,12 +740,11 @@ namespace Application.Test
             //Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<PagedList<FinancialStatement>>(result);
-            _fixture.MockProcedureRepository.Verify(repo => repo.GetById(_fixture.ProcedureOne.Id, ""), Times.Once);
-            _fixture.MockProcedureRepository.Verify(repo => repo.GetById(_fixture.ProcedureTwo.Id, ""), Times.Once);
             foreach(var res in result)
             {
                 Assert.Equal(2, res.IncomesList.Count());
             }
+            _fixture.MockProcedureRepository.VerifyAll();
         }
 
         [Fact]
@@ -819,6 +822,7 @@ namespace Application.Test
             Assert.IsAssignableFrom<PagedList<FinancialStatement>>(result);
             _fixture.MockProcedureRepository.Verify(repo => repo.GetById(_fixture.ProcedureOne.Id, ""), Times.Once);
             _fixture.MockProcedureRepository.Verify(repo => repo.GetById(_fixture.ProcedureTwo.Id, ""), Times.Once);
+            _fixture.MockProcedureRepository.VerifyAll();
         }
 
         [Fact]
@@ -1029,11 +1033,8 @@ namespace Application.Test
                 Date = new DateTime(2022, 5, 20)
             };
 
-
             Expression<Func<Salary, bool>> firstFilter = s => s.Date >= _fixture.SalaryOne.Date;
             Expression<Func<Salary, bool>> secondFilter = s => s.Date >= newSalary.Date;
-
-
 
             _fixture.MockAppointmentRepository
                .Setup(repo =>
