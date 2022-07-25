@@ -242,12 +242,18 @@ namespace Application.Services
             }
             
             //Get all Salaries where we need to pay in Period
-            var salaries = await _repository.GetAllForStatement(x => x.Date < date.StartDate);
+            var salaries = await _repository.GetAllForStatement(x => x.Date < date.StartDate && x.Value!=0);
 
             var _expences = new List<Expences>();
 
             foreach(var salary in salaries)
             {
+                //Don`t create expence for employees without salary
+                if(salary.Value == 0)
+                {
+                    break;
+                }
+
                 var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
                 if (!premiums.ContainsKey(employee.Id))
                 {
@@ -260,7 +266,7 @@ namespace Application.Services
             }
 
             //Do the previous steps for new employee in period
-            var checkSalaryList = await _repository.GetAllForStatement(filter:x => x.Date < date.EndDate);
+            var checkSalaryList = await _repository.GetAllForStatement(x => x.Date < date.EndDate);
             if(checkSalaryList.Count() != salaries.Count())
             {
                 var firstIdList = from c in checkSalaryList
@@ -279,6 +285,10 @@ namespace Application.Services
 
                     //Count Avarage Salary Value
                     var salary = await _repository.GetByIdForStatement(employeeId, filter: x=> x.Date > date.StartDate);
+                    if(salary.Value == 0)
+                    {
+                        break;
+                    }
                     var expence = await GetExpencesAsync(salary, date, employee, premiums[employeeId]);
                     _expences.Add(expence);
                 }

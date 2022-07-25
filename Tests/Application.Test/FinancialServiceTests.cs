@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Core.Models.Finance;
 using Moq;
 using System.Linq.Expressions;
+using Neleus.LambdaCompare;
 
 namespace Application.Test
 {
@@ -947,8 +948,9 @@ namespace Application.Test
                 newSalary
             };
 
-            Expression<Func<Salary, bool>> firstFilter = x => x.Date < _fixture.FinancialStatementParameters.Date.StartDate;
+            Expression<Func<Salary, bool>> firstFilter = x => x.Date < _fixture.FinancialStatementParameters.Date.StartDate && x.Value != 0;
             Expression<Func<Salary, bool>> secondFilter = x => x.Date < _fixture.FinancialStatementParameters.Date.EndDate;
+            Expression<Func<Salary, bool>> thirdFilter = x => x.Date > _fixture.FinancialStatementParameters.Date.StartDate;
 
 
             _fixture.MockAppointmentRepository
@@ -977,16 +979,24 @@ namespace Application.Test
             _fixture.MockSalaryRepository
                 .Setup(repo =>
                     repo.GetAllForStatement(
-                        It.Is<Expression<Func<Salary, bool>>>(x=> x.Body == firstFilter)))
-                .ReturnsAsync(firstSalaryList)
-                .Verifiable();
+                        It.Is<Expression<Func<Salary, bool>>>(expression=>
+                            Lambda.Eq(expression,firstFilter))))
+                .ReturnsAsync(firstSalaryList);
 
             _fixture.MockSalaryRepository
                 .Setup(repo =>
                     repo.GetAllForStatement(
-                        It.Is<Expression<Func<Salary, bool>>>(x => x.Body == secondFilter)))
-                .ReturnsAsync(secondSalaryList)
-                .Verifiable();
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, secondFilter))))
+                .ReturnsAsync(secondSalaryList);
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserTwo.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression=>
+                            Lambda.Eq(expression,thirdFilter))))
+                .ReturnsAsync(newSalary);
 
             //Act
 
@@ -994,7 +1004,12 @@ namespace Application.Test
 
             //Assert
             Assert.NotNull(result);
-            _fixture.MockSalaryRepository.Verify(repo=> repo.GetAllForStatement(firstFilter), Times.Once);
+            Assert.NotEmpty(result);
+            foreach(var res in result)
+            {
+                Assert.Equal(2, res.ExpencesList.Count());
+            }
+            
         }
     }
 }

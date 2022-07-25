@@ -279,7 +279,7 @@ namespace Application.Test.Fixtures
         {
             var salary = new Salary
             {
-                EmployeeId = 1,
+                EmployeeId = 2,
                 Value = 10,
                 Date = new DateTime(2022, 4, 20)
             };

@@ -88,9 +88,17 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<Salary>> GetAllForStatement(Expression<Func<Salary, bool>> filter)
         {
-            var set = await GetQuery(filter).ToListAsync();
+            var query = context.Salaries
+                    .Where(filter)
+                    .GroupBy(s => s.EmployeeId)
+                    .Select(s => new Salary { EmployeeId = s.Key, Date = s.Max(x => x.Date) });
 
-            return set;
+            var set = from s in context.Salaries
+                      join q in query on s.Date equals q.Date
+                      orderby s.EmployeeId
+                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value, Date = s.Date };
+
+            return await set.ToListAsync();
         }
 
     }
