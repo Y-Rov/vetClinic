@@ -2,18 +2,16 @@
 using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Index = Microsoft.EntityFrameworkCore.Metadata.Internal.Index;
 
 namespace Application.Test;
 
-public class MessageServiceTest : IClassFixture<MessageServiceFixture>
+public class MessageServiceTests : IClassFixture<MessageServiceFixture>
 {
     private readonly MessageServiceFixture _messageServiceFixture;
     
-    public MessageServiceTest(MessageServiceFixture messageServiceFixture)
+    public MessageServiceTests(MessageServiceFixture messageServiceFixture)
     {
         _messageServiceFixture = messageServiceFixture;
     }
@@ -152,11 +150,9 @@ public class MessageServiceTest : IClassFixture<MessageServiceFixture>
     }
     
     [Fact]
-    public async Task CreateAsync_ShouldCreateMessage()
+    public void CreateAsync_ShouldCreateMessage()
     {
         // Arrange 
-        int chatRoomId = 1;
-        
         _messageServiceFixture.MockChatRoomRepository
             .Setup(repo => repo.ExistsAsync(It.IsAny<int>()))
             .ReturnsAsync(true);
@@ -185,8 +181,6 @@ public class MessageServiceTest : IClassFixture<MessageServiceFixture>
     public void CreateAsync_ShouldThrowNotFoundException_WhenChatRoomDoesNotExist()
     {
         // Arrange 
-        int chatRoomId = 1;
-        
         _messageServiceFixture.MockChatRoomRepository
             .Setup(repo => repo.ExistsAsync(It.IsAny<int>()))
             .ReturnsAsync(false);
@@ -204,7 +198,7 @@ public class MessageServiceTest : IClassFixture<MessageServiceFixture>
     }
 
     [Fact]
-    public async Task ReadAsync_ShouldSuccessfullyReadAndUpdateLastReadMessage()
+    public void ReadAsync_ShouldSuccessfullyReadAndUpdateLastReadMessage()
     {
         // Arrange
         int readerId = 1;
@@ -240,17 +234,15 @@ public class MessageServiceTest : IClassFixture<MessageServiceFixture>
         var result = _messageServiceFixture.MessageService.ReadAsync(readerId, messageId);
         
         // Assert
-        _messageServiceFixture.MockLoggerManager
-            .Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Exactly(2));
+        _messageServiceFixture.MockLoggerManager.Verify();
         
-        _messageServiceFixture.MockMessageRepository
-            .Verify(repo => repo.SaveChangesAsync(), Times.Once );
+        _messageServiceFixture.MockMessageRepository.Verify();
         
         Assert.NotNull(result);
     }
 
     [Fact]
-    public async Task ReadAsync_ShouldSuccessfullyReadWithoutUpdatingLastReadMessage()
+    public void ReadAsync_ShouldSuccessfullyReadWithoutUpdatingLastReadMessage()
     {
         // Arrange
         int readerId = 1;
@@ -286,12 +278,8 @@ public class MessageServiceTest : IClassFixture<MessageServiceFixture>
         var result = _messageServiceFixture.MessageService.ReadAsync(readerId, messageId);
         
         // Assert
-        _messageServiceFixture.MockLoggerManager
-            .Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
-        
-        _messageServiceFixture.MockMessageRepository
-            .Verify(repo => repo.SaveChangesAsync(), Times.Never );
-        
+        _messageServiceFixture.MockLoggerManager.Verify();
+
         Assert.NotNull(result);
     }
 
