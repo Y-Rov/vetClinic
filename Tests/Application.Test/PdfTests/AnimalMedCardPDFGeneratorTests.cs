@@ -23,41 +23,6 @@ namespace Application.Test.PdfTests
         private readonly AnimalMedCardPdfGeneratorFixture _fixture;
 
         [Fact]
-        public void GetFilledTable_ShouldReturnTable()
-        {
-            //Arrange
-            _fixture.MockAnimalCreateTable
-                .Setup(ser => ser.CreateTable(It.IsAny<PagedList<Appointment>>()))
-                .Returns(_fixture.ExpectedTable);
-
-            //Act
-            var actualTable = _fixture.MockAnimalCreateTable.Object.CreateTable(_fixture.ListOfAppointments);
-
-            //Assert
-            Assert.NotNull(actualTable);
-            Assert.Equal(_fixture.ExpectedTable.Rows.Count, actualTable.Rows.Count);
-            Assert.Equal(_fixture.ExpectedTable.Columns.Count, actualTable.Columns.Count);
-        }
-
-        [Fact]
-        public void GetFilledTable_ShouldReturnEmptyTable()
-        {
-            //Arrange
-            _fixture.MockAnimalCreateTable
-                .Setup(ser => ser.CreateTable(It.IsAny<PagedList<Appointment>>()))
-                .Returns(_fixture.ExpectedEmptyTable);
-
-            //Act
-            var actualTable = _fixture.MockAnimalCreateTable.Object.CreateTable(_fixture.EmpyListOfAppointments);
-
-            //Assert
-            Assert.NotNull(actualTable);
-            Assert.Equal("Medical Card", actualTable.TableName);
-            Assert.Equal(_fixture.ExpectedEmptyTable.Rows.Count, actualTable.Rows.Count);
-            Assert.Equal(_fixture.ExpectedEmptyTable.Columns.Count, actualTable.Columns.Count);
-        }
-
-        [Fact]
         public async Task GetNormalFile_ShouldReturnNormalPdf()
         {
             //Arrange
