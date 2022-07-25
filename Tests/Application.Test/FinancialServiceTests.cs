@@ -239,7 +239,7 @@ namespace Application.Test
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             _fixture.MockLoggerManager.Verify();
-            Assert.IsAssignableFrom<IEnumerable<Salary>>(result);
+            Assert.IsAssignableFrom<PagedList<Salary>>(result);
             Assert.Equal(_fixture.SalaryWithValue, result.Count());
         }
 
@@ -267,7 +267,7 @@ namespace Application.Test
             Assert.NotNull(result);
             Assert.Empty(result);
             _fixture.MockLoggerManager.Verify();
-            Assert.IsAssignableFrom<IEnumerable<Salary>>(result);
+            Assert.IsAssignableFrom<PagedList<Salary>>(result);
 
         }
 
@@ -1010,6 +1010,307 @@ namespace Application.Test
                 Assert.Equal(2, res.ExpencesList.Count());
             }
             
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenUserHasNoConstSalaryValue_thanReturnOk()
+        {
+            //Arrange
+
+            var firstSalaryList = new List<Salary>()
+            {
+                _fixture.SalaryOne
+            };
+
+            var newSalary = new Salary
+            {
+                EmployeeId = 1,
+                Value = 30,
+                Date = new DateTime(2022, 5, 20)
+            };
+
+
+            Expression<Func<Salary, bool>> firstFilter = s => s.Date >= _fixture.SalaryOne.Date;
+            Expression<Func<Salary, bool>> secondFilter = s => s.Date >= newSalary.Date;
+
+
+
+            _fixture.MockAppointmentRepository
+               .Setup(repo =>
+                   repo.GetAsync(
+                       It.IsAny<Expression<Func<Appointment, bool>>>(),
+                       It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
+                       It.IsAny<string>(),
+                       It.IsAny<bool>()))
+               .ReturnsAsync(_fixture.AppoinmentEmptyList);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(_fixture.UserOne);
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, firstFilter))))
+                .ReturnsAsync(newSalary)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo=>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x=> x==_fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary,bool>>>(expression=>
+                            Lambda.Eq(expression,secondFilter))))
+                .ReturnsAsync(()=>null)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetAllForStatement(
+                        It.IsAny<Expression<Func<Salary, bool>>>()))
+                .ReturnsAsync(firstSalaryList);
+
+
+            //Act
+
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.FinancialStatementParameters);
+
+            //Assert
+
+            Assert.NotNull(result);
+            _fixture.MockSalaryRepository.VerifyAll();
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenUserHasTheNextSalaryValueAfterPeriod_thanReturnOk()
+        {
+            //Arrange
+
+            var firstSalaryList = new List<Salary>()
+            {
+                _fixture.SalaryOne
+            };
+
+            var newSalary = new Salary
+            {
+                EmployeeId = 1,
+                Value = 30,
+                Date = new DateTime(2022, 5, 20)
+            };
+            var lastSalary = new Salary()
+            {
+                EmployeeId = 1,
+                Value = 30,
+                Date = new DateTime(2022, 6, 20)
+            };
+
+            Expression<Func<Salary, bool>> firstFilter = s => s.Date >= _fixture.SalaryOne.Date;
+            Expression<Func<Salary, bool>> secondFilter = s => s.Date >= newSalary.Date;
+
+            _fixture.MockAppointmentRepository
+               .Setup(repo =>
+                   repo.GetAsync(
+                       It.IsAny<Expression<Func<Appointment, bool>>>(),
+                       It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
+                       It.IsAny<string>(),
+                       It.IsAny<bool>()))
+               .ReturnsAsync(_fixture.AppoinmentEmptyList);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(_fixture.UserOne);
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, firstFilter))))
+                .ReturnsAsync(newSalary)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, secondFilter))))
+                .ReturnsAsync(lastSalary)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetAllForStatement(
+                        It.IsAny<Expression<Func<Salary, bool>>>()))
+                .ReturnsAsync(firstSalaryList);
+
+            //Act
+
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.FinancialStatementParameters);
+
+            //Assert
+
+            Assert.NotNull(result);
+            _fixture.MockSalaryRepository.VerifyAll();
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenUsersSecondSalaryStartedOnPeriodStartDate_thanReturnOk()
+        {
+            //Arrange
+
+            var firstSalaryList = new List<Salary>()
+            {
+                _fixture.SalaryOne
+            };
+
+            var newSalary = new Salary
+            {
+                EmployeeId = 1,
+                Value = 30,
+                Date = new DateTime(2022, 5, 1)
+            };
+
+            Expression<Func<Salary, bool>> firstFilter = s => s.Date >= _fixture.SalaryOne.Date;
+            Expression<Func<Salary, bool>> secondFilter = s => s.Date >= newSalary.Date;
+
+            _fixture.MockAppointmentRepository
+               .Setup(repo =>
+                   repo.GetAsync(
+                       It.IsAny<Expression<Func<Appointment, bool>>>(),
+                       It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
+                       It.IsAny<string>(),
+                       It.IsAny<bool>()))
+               .ReturnsAsync(_fixture.AppoinmentEmptyList);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(_fixture.UserOne);
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, firstFilter))))
+                .ReturnsAsync(newSalary)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, secondFilter))))
+                .ReturnsAsync(() => null)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetAllForStatement(
+                        It.IsAny<Expression<Func<Salary, bool>>>()))
+                .ReturnsAsync(firstSalaryList);
+
+
+            //Act
+
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.FinancialStatementParameters);
+
+            //Assert
+
+            Assert.NotNull(result);
+            _fixture.MockSalaryRepository.VerifyAll();
+        }
+
+        [Fact]
+        public async Task GetFinancialStatement_whenUserHasAtLeastThreeSalaryValueInPeriod_thanReturnOk()
+        {
+            //Arrange
+
+            var firstSalaryList = new List<Salary>()
+            {
+                _fixture.SalaryOne
+            };
+
+            var newSalary = new Salary
+            {
+                EmployeeId = 1,
+                Value = 30,
+                Date = new DateTime(2022, 5, 15)
+            };
+            var lastSalary = new Salary
+            {
+                EmployeeId = 1,
+                Value = 30,
+                Date = new DateTime(2022, 5, 25)
+            };
+
+
+            Expression<Func<Salary, bool>> firstFilter = s => s.Date >= _fixture.SalaryOne.Date;
+            Expression<Func<Salary, bool>> secondFilter = s => s.Date >= newSalary.Date;
+
+
+
+            _fixture.MockAppointmentRepository
+               .Setup(repo =>
+                   repo.GetAsync(
+                       It.IsAny<Expression<Func<Appointment, bool>>>(),
+                       It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
+                       It.IsAny<string>(),
+                       It.IsAny<bool>()))
+               .ReturnsAsync(_fixture.AppoinmentEmptyList);
+
+            _fixture.MockUserRepository
+                .Setup(repo =>
+                    repo.GetByIdAsync(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(_fixture.UserOne);
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, firstFilter))))
+                .ReturnsAsync(newSalary)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetByIdForStatement(
+                        It.Is<int>(x => x == _fixture.UserOne.Id),
+                        It.Is<Expression<Func<Salary, bool>>>(expression =>
+                            Lambda.Eq(expression, secondFilter))))
+                .ReturnsAsync(lastSalary)
+                .Verifiable();
+
+            _fixture.MockSalaryRepository
+                .Setup(repo =>
+                    repo.GetAllForStatement(
+                        It.IsAny<Expression<Func<Salary, bool>>>()))
+                .ReturnsAsync(firstSalaryList);
+
+
+            //Act
+
+            var result = await _fixture.MockFinancialService.GetFinancialStatement(_fixture.FinancialStatementParameters);
+
+            //Assert
+
+            Assert.NotNull(result);
+            _fixture.MockSalaryRepository.VerifyAll();
         }
     }
 }

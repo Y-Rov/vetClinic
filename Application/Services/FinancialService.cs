@@ -132,22 +132,34 @@ namespace Application.Services
                     int lastPeriod = 0;
                     if(salaryDate>date.StartDate)
                     {
-                        lastPeriod = (date.EndDate - salaryDate).Days;
+                        lastPeriod = (date.EndDate - salaryDate).Days-1;
+                    }
+                    else if(salaryDetail.Count==0)
+                    {
+                        lastPeriod = (date.EndDate - date.StartDate).Days;
                     }
                     else
                     {
-                        lastPeriod = (date.EndDate - date.StartDate).Days;
+                        lastPeriod = (date.EndDate - salaryDate).Days - 1;
                     }
                     salaryDetail.Add(new SalaryDetail(lastPeriod, value));
                     break;
                 }
                 else if (salaryUpdate.Date >= date.EndDate)
                 {
-                    var lastPeriod = (date.EndDate - salaryDate).Days;
+                    var lastPeriod = (date.EndDate - salaryDate).Days - 1;
                     salaryDetail.Add(new SalaryDetail(lastPeriod, value));
                     break;
                 }
-                var timePeriod = (salaryUpdate.Date - salaryDate).Days;
+                int timePeriod = 0;
+                if (salaryDate < date.StartDate)
+                {
+                    timePeriod = (salaryUpdate.Date - date.StartDate).Days+1;
+                }
+                else
+                {
+                    timePeriod = (salaryUpdate.Date - salaryDate).Days;
+                }
                 salaryDetail.Add(new SalaryDetail(timePeriod, value));
                 value = salaryUpdate.Value;
                 salaryDate = salaryUpdate.Date;
@@ -248,12 +260,6 @@ namespace Application.Services
 
             foreach(var salary in salaries)
             {
-                //Don`t create expence for employees without salary
-                if(salary.Value == 0)
-                {
-                    break;
-                }
-
                 var employee = await _userRepository.GetByIdAsync(salary.EmployeeId);
                 if (!premiums.ContainsKey(employee.Id))
                 {
