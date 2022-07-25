@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Interfaces.Services.PDF_Service;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
@@ -37,12 +38,14 @@ namespace WebApi.Test.Fixtures
             MockAnimalListToListMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>>>();
             MockAnimalViewModelMapperUpdater = fixture.Freeze<Mock<IViewModelMapperUpdater<AnimalViewModel, Animal>>>();
             MockPagedMedCardMapper = fixture.Freeze<Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>>>>();
+            MockMedCardPdf = fixture.Freeze<Mock<IGenerateFullPDF<AnimalParameters>>>();
 
             MockAnimalController = new AnimalController(
                 MockAnimalService.Object,
                 MockAnimalViewModelMapperUpdater.Object,
                 MockAnimalListToListMapper.Object,
-                MockPagedMedCardMapper.Object
+                MockPagedMedCardMapper.Object,
+                MockMedCardPdf.Object
                 );
         }
 
@@ -50,6 +53,7 @@ namespace WebApi.Test.Fixtures
         public Mock<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>> MockAnimalListToListMapper { get; }
         public Mock<IViewModelMapperUpdater<AnimalViewModel, Animal>> MockAnimalViewModelMapperUpdater { get; }
         public Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>>> MockPagedMedCardMapper { get; }
+        public Mock<IGenerateFullPDF<AnimalParameters>> MockMedCardPdf { get; }
         public AnimalController MockAnimalController { get; }
         public Animal ExpectedAnimal { get; }
         public AnimalViewModel ExpectedAnimalViewModel { get; }
