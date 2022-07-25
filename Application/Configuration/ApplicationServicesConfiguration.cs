@@ -1,5 +1,5 @@
 ﻿using Application.Services;
-using Application.Services.AnimalMedCard_PDF;
+using Application.Services.GeneratePDF.AnimalMedCard_PDF;
 using Application.Services.GeneratePDF;
 using Application.Services.GeneratePDF.FinancialStatement_PDF;
 using Core.Entities;
