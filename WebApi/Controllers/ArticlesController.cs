@@ -5,6 +5,8 @@ using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ArticleViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
 
@@ -19,19 +21,25 @@ public class ArticlesController : ControllerBase
     private readonly IViewModelMapper<UpdateArticleViewModel, Article> _updateMapper;
     private readonly IViewModelMapper<Article, ReadArticleViewModel> _readMapper;
     private readonly IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> _readPagedMapper;
+    private readonly UserManager<User> _userManager;
+    private readonly IImageService _imageService;
+
 
     public ArticlesController(
         IArticleService articleService,
         IViewModelMapper<CreateArticleViewModel, Article> createMapper,
         IViewModelMapper<UpdateArticleViewModel, Article> updateMapper,
         IViewModelMapper<Article, ReadArticleViewModel> readMapper,
-        IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> readPagedMapper)
+        IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>> readPagedMapper,
+        UserManager<User> userManager, IImageService imageService)
     {
         _articleService = articleService;
         _createMapper = createMapper;
         _updateMapper = updateMapper;
         _readMapper = readMapper;
         _readPagedMapper = readPagedMapper;
+        _userManager = userManager;
+        _imageService = imageService;
     }
 
     [Authorize(Roles = "Admin")]
@@ -80,5 +88,25 @@ public class ArticlesController : ControllerBase
     {
         var updatedArticle = _updateMapper.Map(viewModel);
         await _articleService.UpdateArticleAsync(updatedArticle);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("upload")]
+    public async Task<ImageLinkViewModel> UploadImage(IFormFile file)
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        var link = await _imageService.UploadImageAsync(file, user.Id);
+        return new ImageLinkViewModel()
+        {
+            ImageUrl = link
+        };
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("discard")]
+    public async Task DiscardEditing()
+    {
+        var user = await _userManager.GetUserAsync(HttpContext.User);
+        await _imageService.DiscardCachedImagesAsync(user.Id);
     }
 }
