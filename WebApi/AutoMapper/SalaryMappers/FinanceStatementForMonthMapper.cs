@@ -18,8 +18,8 @@ namespace WebApi.AutoMapper.SalaryMappers
         {
             var financialStatementForMonthViewModel = new FinancialStatementForMonthViewModel()
             {
-                TotalExpences = source.TotalExpences,
-                TotalIncomes = source.TotalIncomes,
+                TotalExpences = Math.Round(source.TotalExpences,2),
+                TotalIncomes = Math.Round(source.TotalIncomes,2),
                 Month = source.Month,
                 IncomesList = source.IncomesList,
                 ExpencesList = source.ExpencesList
