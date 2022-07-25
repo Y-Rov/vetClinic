@@ -16,11 +16,11 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task SendEmail([FromBody] EmailMessage email) =>
+        public async Task SendEmail(EmailMessage email) =>
             await _service.Send(email);
 
         [HttpPost("/notify")]
-        public async Task NotifyUsers([FromBody] Mailing message) =>
+        public async Task NotifyUsers(Mailing message) =>
             await _service.NotifyUsers(message);
     }
 }
