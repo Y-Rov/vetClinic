@@ -98,7 +98,7 @@ namespace WebApi.Test
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetSalaryAsync(
-                        It.IsAny<SalaryParametrs>()))
+                        It.IsAny<SalaryParameters>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockListSalaryViewModels
@@ -123,7 +123,7 @@ namespace WebApi.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParametrs);
+            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParameters);
 
             //Assert
 
@@ -140,7 +140,7 @@ namespace WebApi.Test
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetSalaryAsync(
-                        It.IsAny<SalaryParametrs>()))
+                        It.IsAny<SalaryParameters>()))
                 .ReturnsAsync(_fixture.SalaryEmptyList);
 
             _fixture.MockListSalaryViewModels
@@ -150,7 +150,7 @@ namespace WebApi.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParametrs);
+            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParameters);
 
             //Assert
 
@@ -334,6 +334,22 @@ namespace WebApi.Test
             Assert.NotNull(result.Entities);
             Assert.Empty(result.Entities);
             Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
+        }
+
+        [Fact]
+        public async Task GenerateFinancialStatementPdf_ShouldReturnFile()
+        {
+            //Arrange
+            _fixture.MockPdfGenerotor
+                .Setup(ser => ser.GeneratePdf(It.IsAny<FinancialStatementParameters>()))
+                .ReturnsAsync(_fixture.ExpectedPdfFileModel);
+
+            //Act
+            var actualResult = await _fixture.MockFinancialController
+                .GeneratePDF(_fixture.FinancialStatementParameters);
+
+            //Assert
+            Assert.NotNull(actualResult);
         }
 
     }

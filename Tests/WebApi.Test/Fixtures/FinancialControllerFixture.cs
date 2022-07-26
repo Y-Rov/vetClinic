@@ -2,6 +2,8 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Interfaces.Services.PDF_Service;
+using Core.Models;
 using Core.Models.Finance;
 using Core.Paginator;
 using Core.Paginator.Parameters;
@@ -27,7 +29,8 @@ namespace WebApi.Test.Fixtures
             MockListSalaryViewModels = fixture.Freeze<Mock<IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>>>>();
             MockListEmployees = fixture.Freeze<Mock<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>>>();
             MockFinancialStatementViewModel = fixture.Freeze<Mock<IViewModelMapper<PagedList<FinancialStatement>,
-            PagedReadViewModel<FinancialStatementForMonthViewModel>>>>();
+                PagedReadViewModel<FinancialStatementForMonthViewModel>>>>();
+            MockPdfGenerotor = fixture.Freeze<Mock<IGenerateFullPdf<FinancialStatementParameters>>>();
 
 
             MockFinancialController = new FinancialController(
@@ -37,7 +40,8 @@ namespace WebApi.Test.Fixtures
                 MockSalary.Object,
                 MockListSalaryViewModels.Object,
                 MockListEmployees.Object,
-                MockFinancialStatementViewModel.Object
+                MockFinancialStatementViewModel.Object,
+                MockPdfGenerotor.Object
                 );
 
             UserId = 1;
@@ -58,8 +62,9 @@ namespace WebApi.Test.Fixtures
             FinStatVMList = GenerateFinancialStatementVM();
             FinStatEmpty = GenerateEmptyStatements();
             FinStatVMEmpty = GenerateEmptyFinStatVM();
-            SalaryParametrs = GenerateSalaryParameters();
+            SalaryParameters = GenerateSalaryParameters();
             FinancialStatementParameters = GenerateFinStatParameters();
+            ExpectedPdfFileModel = GetPdfFileModel();
         }
 
         public FinancialController MockFinancialController { get; }
@@ -71,6 +76,7 @@ namespace WebApi.Test.Fixtures
         public Mock<IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>>> MockListEmployees { get; }
         public Mock<IViewModelMapper<PagedList<FinancialStatement>, 
             PagedReadViewModel<FinancialStatementForMonthViewModel>>> MockFinancialStatementViewModel { get; }
+        public Mock<IGenerateFullPdf<FinancialStatementParameters>> MockPdfGenerotor { get; }
 
         public int UserId {get;}
         public Salary SalaryModel { get;}
@@ -90,8 +96,9 @@ namespace WebApi.Test.Fixtures
         public PagedReadViewModel<FinancialStatementForMonthViewModel> FinStatVMList { get; }
         public PagedList<FinancialStatement> FinStatEmpty { get; }
         public PagedReadViewModel<FinancialStatementForMonthViewModel> FinStatVMEmpty { get; }
-        public SalaryParametrs SalaryParametrs { get; }
+        public SalaryParameters SalaryParameters { get; }
         public FinancialStatementParameters FinancialStatementParameters { get; }
+        public PdfFileModel ExpectedPdfFileModel { get; }
 
         private Salary GenerateSalary()
         {
@@ -320,9 +327,9 @@ namespace WebApi.Test.Fixtures
             };
             return res;
         }
-        private SalaryParametrs GenerateSalaryParameters()
+        private SalaryParameters GenerateSalaryParameters()
         {
-            var param = new SalaryParametrs()
+            var param = new SalaryParameters()
             {
                 PageNumber = 1,
                 PageSize = 5
@@ -344,6 +351,18 @@ namespace WebApi.Test.Fixtures
                 Date = date
             };
             return param;
+        }
+        private PdfFileModel GetPdfFileModel()
+        {
+
+            var expectedModel = new PdfFileModel()
+            {
+                FileStream = new MemoryStream(),
+                DefaultFileName = "pdf.pdf",
+                ContentType = "application/pdf"
+            };
+
+            return expectedModel;
         }
     }
 }
