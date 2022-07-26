@@ -7,15 +7,39 @@ using Moq;
 
 namespace Application.Test;
 
-public class MessageServiceTests : IClassFixture<MessageServiceFixture>
+public class MessageServiceTests : IClassFixture<MessageServiceFixture>, IDisposable
 {
     private readonly MessageServiceFixture _messageServiceFixture;
+    private bool _disposed;
     
     public MessageServiceTests(MessageServiceFixture messageServiceFixture)
     {
         _messageServiceFixture = messageServiceFixture;
     }
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _messageServiceFixture.MockMessageRepository.ResetCalls();
+            _messageServiceFixture.MockChatRoomRepository.ResetCalls();
+            _messageServiceFixture.MockUserChatRoomRepository.ResetCalls();
+        }
+
+        _disposed = true;
+    }
+    
     [Fact]
     public async Task GetByIdAsync_ShouldReturnSingleMessage()
     {
@@ -81,7 +105,7 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
             .Verifiable();
         
         // Act 
-        IEnumerable<Message> result = await _messageServiceFixture.MessageService
+        var result = await _messageServiceFixture.MessageService
             .GetMessagesInChatRoomAsync(chatRoomId, skip, take);
 
         // Assert
@@ -115,7 +139,7 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
             .Verifiable();
         
         // Act 
-        IEnumerable<Message> result = await _messageServiceFixture.MessageService
+        var result = await _messageServiceFixture.MessageService
             .GetMessagesInChatRoomAsync(chatRoomId, skip, take);
 
         // Assert
@@ -157,14 +181,6 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
             .Setup(repo => repo.ExistsAsync(It.IsAny<int>()))
             .ReturnsAsync(true);
 
-        _messageServiceFixture.MockMessageRepository
-            .Setup(repo => repo.InsertAsync(It.IsAny<Message>()))
-            .Returns(Task.FromResult<object?>(null));
-
-        _messageServiceFixture.MockMessageRepository
-            .Setup(rep => rep.SaveChangesAsync())
-            .Returns(Task.FromResult<object?>(null));
-
         _messageServiceFixture.MockLoggerManager
             .Setup(logger => logger.LogInfo(It.IsAny<string>()))
             .Verifiable();
@@ -174,6 +190,13 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
 
         // Assert
         _messageServiceFixture.MockLoggerManager.Verify();
+        
+        _messageServiceFixture.MockMessageRepository
+            .Verify(repo => repo.InsertAsync(It.IsAny<Message>()), Times.Once);
+        
+        _messageServiceFixture.MockMessageRepository
+            .Verify(repo => repo.SaveChangesAsync(), Times.Once);
+        
         Assert.NotNull(result);
     }
     
@@ -224,11 +247,6 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
         _messageServiceFixture.MockLoggerManager
             .Setup(logger => logger.LogInfo(It.IsAny<string>()))
             .Verifiable();
-        
-        _messageServiceFixture.MockMessageRepository
-            .Setup(rep => rep.SaveChangesAsync())
-            .Returns(Task.FromResult<object?>(null))
-            .Verifiable();
 
         // Act
         var result = _messageServiceFixture.MessageService.ReadAsync(readerId, messageId);
@@ -236,7 +254,8 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
         // Assert
         _messageServiceFixture.MockLoggerManager.Verify();
         
-        _messageServiceFixture.MockMessageRepository.Verify();
+        _messageServiceFixture.MockMessageRepository
+            .Verify(repo => repo.SaveChangesAsync(), Times.Once);
         
         Assert.NotNull(result);
     }
@@ -268,17 +287,15 @@ public class MessageServiceTests : IClassFixture<MessageServiceFixture>
         _messageServiceFixture.MockLoggerManager
             .Setup(logger => logger.LogInfo(It.IsAny<string>()))
             .Verifiable();
-        
-        _messageServiceFixture.MockMessageRepository
-            .Setup(rep => rep.SaveChangesAsync())
-            .Returns(Task.FromResult<object?>(null))
-            .Verifiable();
 
         // Act
         var result = _messageServiceFixture.MessageService.ReadAsync(readerId, messageId);
         
         // Assert
         _messageServiceFixture.MockLoggerManager.Verify();
+        
+        _messageServiceFixture.MockMessageRepository
+            .Verify(repo => repo.SaveChangesAsync(), Times.Never);
 
         Assert.NotNull(result);
     }

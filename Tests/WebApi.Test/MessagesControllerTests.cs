@@ -10,15 +10,39 @@ using WebApi.Test.Fixtures;
 
 namespace WebApi.Test;
 
-public class MessagesControllerTests : IClassFixture<MessagesControllerFixture>
+public class MessagesControllerTests : IClassFixture<MessagesControllerFixture>, IDisposable
 {
     private readonly MessagesControllerFixture _messagesControllerFixture;
+    private bool _disposed;
 
+    
     public MessagesControllerTests(MessagesControllerFixture messagesControllerFixture)
     {
         _messagesControllerFixture = messagesControllerFixture;
     }
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _messagesControllerFixture.MockMessageService.ResetCalls();
+            _messagesControllerFixture.MockHubContext.ResetCalls();
+        }
+
+        _disposed = true;
+    }
+    
     [Fact]
     public async Task GetMessagesInChatRoomAsync_ShouldReturnMessages()
     {
@@ -155,8 +179,7 @@ public class MessagesControllerTests : IClassFixture<MessagesControllerFixture>
 
         _messagesControllerFixture.MockChatRoomService
             .Setup(service => service.EnsurePrivateRoomCreatedAsync(It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync(_messagesControllerFixture.ExpectedPrivateChatRoom)
-            .Verifiable();
+            .ReturnsAsync(_messagesControllerFixture.ExpectedPrivateChatRoom);
 
         _messagesControllerFixture.MockMessageGetMapper
             .Setup(service => service.Map(It.IsAny<Message>()))
@@ -175,6 +198,9 @@ public class MessagesControllerTests : IClassFixture<MessagesControllerFixture>
             .SendPrivateMessageAsync(_messagesControllerFixture.ExpectedMessageSendViewModel);
 
         // Assert
+        _messagesControllerFixture.MockMessageService
+            .Verify(service => service.CreateAsync(It.IsAny<Message>()), Times.Once);
+        
         _messagesControllerFixture.MockHubContext
             .Verify(hubContext => hubContext.Clients, Times.Once);
         
@@ -211,17 +237,16 @@ public class MessagesControllerTests : IClassFixture<MessagesControllerFixture>
         _messagesControllerFixture.MockUserManager
             .Setup(manager => manager.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(_messagesControllerFixture.ExpectedUser);
-        
-        _messagesControllerFixture.MockMessageService
-            .Setup(service => service.ReadAsync(It.IsAny<int>(), It.IsAny<int>()))
-            .Returns(Task.FromResult<object?>(null))
-            .Verifiable();
-        
+
         // Act
         var result = _messagesControllerFixture.MessagesController.ReadMessageAsync(messageId);
 
         // Assert
         _messagesControllerFixture.MockMessageService.Verify();
+        
+        _messagesControllerFixture.MockMessageService
+            .Verify(service => service.ReadAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+        
         Assert.NotNull(result);
     }
 
