@@ -47,7 +47,7 @@ namespace Application.Test.Fixtures
             UserTwo = GenerateSecondUser();
             ProcedureOne = GenerateFirstProcedure();
             ProcedureTwo = GenerateSecondProcedure();
-            SalaryParametrs = GenerateSalaryParametrs();
+            SalaryParameters = GenerateSalaryParametrs();
             FinancialStatementParameters = GenerateFinancialStatementParametrs();
             SalaryOne = generateSalaryOne();
             SalaryTwo = generateSalaryTwo();
@@ -75,7 +75,7 @@ namespace Application.Test.Fixtures
         public User UserTwo { get; }
         public Procedure ProcedureOne { get; }
         public Procedure ProcedureTwo { get; }
-        public SalaryParameters SalaryParametrs { get; }
+        public SalaryParameters SalaryParameters { get; }
         public FinancialStatementParameters FinancialStatementParameters { get; }
         public Salary SalaryOne { get; }
         public Salary SalaryTwo { get; }

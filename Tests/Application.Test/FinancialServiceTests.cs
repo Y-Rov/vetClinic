@@ -229,13 +229,13 @@ namespace Application.Test
 
             _fixture.MockSalaryRepository
                 .Setup(repo=> repo.GetAsync(
-                    It.IsAny<SalaryParametrs>(),
+                    It.IsAny<SalaryParameters>(),
                     It.IsAny<Expression<Func<Salary, bool>>>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             //Act
 
-            var result = await _fixture.MockFinancialService.GetSalaryAsync(_fixture.SalaryParametrs);
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(_fixture.SalaryParameters);
 
             //Assert
 
@@ -257,13 +257,13 @@ namespace Application.Test
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
-                    It.IsAny<SalaryParametrs>(),
+                    It.IsAny<SalaryParameters>(),
                     It.IsAny<Expression<Func<Salary, bool>>>()))
                 .ReturnsAsync(_fixture.SalaryEmptyList);
 
             //Act
 
-            var result = await _fixture.MockFinancialService.GetSalaryAsync(_fixture.SalaryParametrs);
+            var result = await _fixture.MockFinancialService.GetSalaryAsync(_fixture.SalaryParameters);
 
             //Assert
 
@@ -449,7 +449,7 @@ namespace Application.Test
 
             _fixture.MockSalaryRepository
                 .Setup(repo => repo.GetAsync(
-                    It.IsAny<SalaryParametrs>(),
+                    It.IsAny<SalaryParameters>(),
                     It.IsAny<Expression<Func<Salary, bool>>>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
