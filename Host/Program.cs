@@ -65,6 +65,8 @@ builder.Services.AddAuthentication(options => {
         options.AddAuthenticationForSignalRHubs();
     });
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddUserIdProviderForSignalR();
 builder.Services.AddSignalR();
 

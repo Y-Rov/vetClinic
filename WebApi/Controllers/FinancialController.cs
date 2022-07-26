@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Interfaces.Services.PDF_Service;
 using Core.Models.Finance;
 using Core.Paginator;
 using Core.Paginator.Parameters;
@@ -8,6 +9,7 @@ using Core.ViewModels.SalaryViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.AutoMapper.Interface;
+using WebApi.Extensions;
 
 namespace WebApi.Controllers
 {
@@ -23,6 +25,7 @@ namespace WebApi.Controllers
         private readonly IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> _readSalaryList;
         private readonly IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> _readEmployeesList;
         private readonly IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> _finStatViewModel;
+        private readonly IGenerateFullPdf<FinancialStatementParameters> _generatePDF;
 
         public FinancialController(
             IFinancialService financialService,
@@ -31,7 +34,8 @@ namespace WebApi.Controllers
             IViewModelMapper<SalaryViewModel, Salary> writeSalary,
             IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>> readSalaryList,
             IViewModelMapper<IEnumerable<User>, IEnumerable<EmployeeViewModel>> readEmployeesList,
-            IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> finStatViewModel
+            IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>> finStatViewModel,
+            IGenerateFullPdf<FinancialStatementParameters> generatePDF
             )
         {
             _financialService = financialService;
@@ -41,6 +45,15 @@ namespace WebApi.Controllers
             _readSalaryList = readSalaryList;
             _readEmployeesList = readEmployeesList;
             _finStatViewModel = finStatViewModel;
+            _generatePDF = generatePDF;
+        }
+
+        [HttpGet("generatePDF")]
+        public async Task<FileStreamResult> GeneratePDF([FromQuery] FinancialStatementParameters parameters)
+        {
+            var pdfFileParams = await _generatePDF.GeneratePdf(parameters);
+            var result = this.File(pdfFileParams);
+            return result;
         }
 
         [HttpGet]

@@ -75,7 +75,7 @@ namespace Application.Test.Fixtures
         public User UserTwo { get; }
         public Procedure ProcedureOne { get; }
         public Procedure ProcedureTwo { get; }
-        public SalaryParametrs SalaryParametrs { get; }
+        public SalaryParameters SalaryParametrs { get; }
         public FinancialStatementParameters FinancialStatementParameters { get; }
         public Salary SalaryOne { get; }
         public Salary SalaryTwo { get; }
@@ -241,9 +241,9 @@ namespace Application.Test.Fixtures
             };
             return procedureTwo;
         }
-        private SalaryParametrs GenerateSalaryParametrs()
+        private SalaryParameters GenerateSalaryParametrs()
         {
-            var res = new SalaryParametrs()
+            var res = new SalaryParameters()
             {
                 PageNumber = 1,
                 PageSize = 5

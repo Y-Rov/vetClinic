@@ -6,6 +6,7 @@ using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ArticleViewModels;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using WebApi.AutoMapper.Interface;
 using WebApi.Controllers;
@@ -24,7 +25,9 @@ public class ArticleControllerFixture
         MockReadMapper = fixture.Freeze<Mock<IViewModelMapper<Article, ReadArticleViewModel>>>();
         MockReadPagedMapper = fixture
             .Freeze<Mock<IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>>>>();
-
+        MockUserManager = fixture.Freeze<Mock<UserManager<User>>>();
+        MockImageService = fixture.Freeze<Mock<IImageService>>();
+        
         Article = GetArticle();
         ExpectedReadArticleViewModel = GetExpectedReadArticleViewModel();
         CreateArticleViewModel = GetCreateArticleViewModel();
@@ -32,13 +35,17 @@ public class ArticleControllerFixture
         PagedArticles = GetPagedArticles();
         PagedReadViewModel = GetPagedReadViewModel();
         Parameters = GetParameters();
+        RequestUser = GetRequestUser();
+        ImageLink = GetImageLink();
         
         MockArticleController = new ArticlesController(
             MockArticleService.Object, 
             MockCreateMapper.Object,
             MockUpdateMapper.Object, 
             MockReadMapper.Object, 
-            MockReadPagedMapper.Object);
+            MockReadPagedMapper.Object,
+            MockUserManager.Object,
+            MockImageService.Object);
     }
     
     public ArticlesController MockArticleController { get; }
@@ -47,6 +54,9 @@ public class ArticleControllerFixture
     public Mock<IViewModelMapper<UpdateArticleViewModel, Article>> MockUpdateMapper { get; }
     public Mock<IViewModelMapper<Article, ReadArticleViewModel>> MockReadMapper { get; }
     public Mock<IViewModelMapper<PagedList<Article>, PagedReadViewModel<ReadArticleViewModel>>> MockReadPagedMapper { get; }
+    public Mock<UserManager<User>> MockUserManager { get; }
+    public Mock<IImageService> MockImageService { get; }
+
 
     public Article Article { get; }
     public ReadArticleViewModel ExpectedReadArticleViewModel { get; }
@@ -55,7 +65,9 @@ public class ArticleControllerFixture
     public PagedList<Article> PagedArticles { get; }
     public PagedReadViewModel<ReadArticleViewModel> PagedReadViewModel { get; }
     public ArticleParameters Parameters { get; }
-    
+    public User RequestUser { get; }
+    public string ImageLink { get; }
+
     private Article GetArticle()
     {
         var article = new Article()
@@ -209,5 +221,21 @@ public class ArticleControllerFixture
             PageSize = 5
         };
         return parameters;
+    }
+    
+    private User GetRequestUser()
+    {
+        var requestUser = new User()
+        {
+            Id = 1,
+            FirstName = "Admin",
+            LastName = "Admin"
+        };
+        return requestUser;
+    }
+
+    private string GetImageLink()
+    {
+        return "http://127.0.0.1:10000/devstoreaccount1/vet-clinic/articles/439e7759-7de1-42e8-ad6d-8bed3723b676.png";
     }
 }
