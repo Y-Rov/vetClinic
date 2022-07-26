@@ -24,6 +24,11 @@ namespace WebApi.AutoMapper.SalaryMappers
                 IncomesList = source.IncomesList,
                 ExpencesList = source.ExpencesList
             };
+            foreach(var expence in financialStatementForMonthViewModel.ExpencesList)
+            {
+                expence.SalaryValue = Math.Round(expence.SalaryValue,2);
+                expence.Premium = Math.Round(expence.Premium,2);
+            }
 
             return financialStatementForMonthViewModel;
         }
