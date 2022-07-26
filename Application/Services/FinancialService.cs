@@ -126,7 +126,7 @@ namespace Application.Services
             var value = salary.Value;
             while (salaryDate < date.EndDate)
             {
-                var salaryUpdate = await _repository.GetByIdForStatement(id, s => s.Date >= salaryDate);
+                var salaryUpdate = await _repository.GetByIdForStatement(id, s => s.Date > salaryDate);
                 if (salaryUpdate == null)
                 {
                     int lastPeriod = 0;
