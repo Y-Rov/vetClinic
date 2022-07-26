@@ -9,9 +9,9 @@ namespace Core.Interfaces.Repositories
     {
         Task<PagedList<Salary>> GetAsync(
             SalaryParameters parametrs,
-            Expression<Func<Salary, bool>>? filter = null,
-            Func<IQueryable<Salary>, IOrderedQueryable<Salary>>? orderBy = null,
-            bool asNoTracking = true,
-            string includeProperties = "");
+            Expression<Func<Salary, bool>>? filter = null);
+
+        Task<Salary?> GetByIdForStatement(int id, Expression<Func<Salary, bool>> filter);
+        Task<IEnumerable<Salary>> GetAllForStatement(Expression<Func<Salary, bool>> filter);
     }
 }
