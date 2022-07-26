@@ -4,7 +4,6 @@ using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.ExceptionViewModel;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebApi.Test.Fixtures;
