@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Claims;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModel.MessageViewModels;
 using Microsoft.AspNetCore.Authorization;

@@ -1,10 +1,6 @@
 ﻿using System.Security.Claims;
 using Core.Entities;
 using Core.Exceptions;
-using Core.ViewModel.MessageViewModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using WebApi.Test.Fixtures;
 
