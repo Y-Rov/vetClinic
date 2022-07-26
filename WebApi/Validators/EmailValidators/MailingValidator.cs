@@ -12,12 +12,6 @@ namespace WebApi.Validators.EmailValidators
                 .NotEmpty()
                 .WithMessage("Recipients are required");
 
-            RuleForEach(mailing => mailing.Recipients)
-                .NotEmpty()
-                .WithMessage("Recipient's email is required")
-                .EmailAddress()
-                .WithMessage("Recipient's email is invalid");
-
             RuleFor(email => email.Subject)
                 .NotEmpty()
                 .WithMessage("Subject is required")
@@ -29,8 +23,7 @@ namespace WebApi.Validators.EmailValidators
                 .NotEmpty()
                 .WithMessage("Message is required")
                 .MinimumLength(10)
-                .WithMessage("Lenght must be at least 10")
-                .MaximumLength(2400);
+                .WithMessage("Lenght must be at least 10");
         }
     }
 }
