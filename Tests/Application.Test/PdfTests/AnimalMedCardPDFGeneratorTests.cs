@@ -28,7 +28,7 @@ namespace Application.Test.PdfTests
             //Arrange
             _fixture.MockAnimalService
                 .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.IsAny<AnimalParameters>()))
-                .ReturnsAsync(_fixture.ListOfAppointments);
+                .ReturnsAsync(_fixture.PagedListOfAppointments);
 
             _fixture.MockAnimalCreateTable
                 .Setup(ser => ser.CreateTable(It.IsAny<PagedList<Appointment>>()))
@@ -52,7 +52,7 @@ namespace Application.Test.PdfTests
             //Arrange
             _fixture.MockAnimalService
                 .Setup(ser => ser.GetAllAppointmentsWithAnimalIdAsync(It.IsAny<AnimalParameters>()))
-                .ReturnsAsync(_fixture.EmpyListOfAppointments);
+                .ReturnsAsync(_fixture.EmpyPagedListOfAppointments);
 
             _fixture.MockAnimalCreateTable
                 .Setup(ser => ser.CreateTable(It.IsAny<PagedList<Appointment>>()))

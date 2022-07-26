@@ -35,13 +35,7 @@ namespace WebApi.Test.Fixtures
 
             ExpectedPdfFileModel = GetPdfFileModel();
 
-
-            pagingParameters = new()
-            {
-                animalId = 13,
-                PageNumber = 1,
-                PageSize = 10
-            };
+            pagingParameters = GetAnimalParameters();
 
             MockAnimalService = fixture.Freeze<Mock<IAnimalService>>();
             MockAnimalListToListMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>>>();
@@ -77,6 +71,18 @@ namespace WebApi.Test.Fixtures
         public PdfFileModel ExpectedPdfFileModel { get; }
 
         public AnimalParameters pagingParameters;
+
+        private AnimalParameters GetAnimalParameters()
+        {
+            var pagingParameters = new AnimalParameters()
+            {
+                animalId = 13,
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            return pagingParameters;
+        }
 
         private Animal GetAnimal()
         {

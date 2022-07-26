@@ -28,31 +28,21 @@ namespace Application.Test.Fixtures.PdfFixtures
         {
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            ListOfAppointments = GetListOfAppointments();
-            EmpyListOfAppointments = GetEmptyPagedMedCard();
-            ExpectedTable = GetTable(ListOfAppointments);
+            PagedListOfAppointments = GetPagedListOfAppointments();
+            EmpyPagedListOfAppointments = GetEmptyPagedMedCard();
+            ExpectedTable = GetTable(PagedListOfAppointments);
             ExpectedEmptyTable = GetEmptyTable();
             ExpectedPdfFileModel = GetFileStream(ExpectedTable);
             ExpectedPdfFileModelEmpty = GetFileStream(ExpectedEmptyTable);
+            animalParams = GetAnimalParams();
+            animalParamsEmpty = GetEmptyAnimalParams();
 
 
             MockAnimalService = fixture.Freeze<Mock<IAnimalService>>();
             MockAnimalCreateTable = fixture.Freeze<Mock<ICreateTableForPdf<Appointment>>>();
             MockPDFGenerator = fixture.Freeze<Mock<IPdfGenerator>>();
 
-            animalParams = new()
-            {
-                animalId = 13,
-                PageNumber = 1,
-                PageSize = 0
-            };
 
-            animalParamsEmpty = new()
-            {
-                animalId = 0,
-                PageNumber = 1,
-                PageSize = 0
-            };
 
 
             MockAnimalMedCardPDFGenerator = new AnimalMedCardPdfGenerator(
@@ -69,10 +59,32 @@ namespace Application.Test.Fixtures.PdfFixtures
         public Mock<IAnimalService> MockAnimalService { get; }
         public Mock<ICreateTableForPdf<Appointment>> MockAnimalCreateTable { get; }
         public Mock<IPdfGenerator> MockPDFGenerator { get; }
-        public PagedList<Appointment> ListOfAppointments { get; }
-        public PagedList<Appointment> EmpyListOfAppointments { get; }
+        public PagedList<Appointment> PagedListOfAppointments { get; }
+        public PagedList<Appointment> EmpyPagedListOfAppointments { get; }
         public AnimalParameters animalParams { get; }
         public AnimalParameters animalParamsEmpty { get; }
+
+        private AnimalParameters GetAnimalParams()
+        {
+            var animalParams = new AnimalParameters()
+            {
+                animalId = 13,
+                PageNumber = 1,
+                PageSize = 0
+            };
+            return animalParams;
+        }
+
+        private AnimalParameters GetEmptyAnimalParams()
+        {
+            var emptyAnimalParams = new AnimalParameters()
+            {
+                animalId = 0,
+                PageNumber = 1,
+                PageSize = 0
+            };
+            return emptyAnimalParams;
+        }
 
         private DataTable GetTable(PagedList<Appointment> listOfAppointments)
         {
@@ -99,7 +111,7 @@ namespace Application.Test.Fixtures.PdfFixtures
             return table;
         }
 
-        private PagedList<Appointment> GetListOfAppointments()
+        private PagedList<Appointment> GetPagedListOfAppointments()
         {
             var appointments = GetAppointmentList();
             var pagedList = PagedList<Appointment>.ToPagedList(appointments.AsQueryable(), 1, 10);
