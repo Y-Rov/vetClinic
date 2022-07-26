@@ -8,7 +8,7 @@ namespace Core.Interfaces.Repositories
     public interface ISalaryRepository: IRepository<Salary>
     {
         Task<PagedList<Salary>> GetAsync(
-            SalaryParametrs parametrs,
+            SalaryParameters parametrs,
             Expression<Func<Salary, bool>>? filter = null,
             Func<IQueryable<Salary>, IOrderedQueryable<Salary>>? orderBy = null,
             bool asNoTracking = true,

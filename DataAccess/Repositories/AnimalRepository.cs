@@ -17,8 +17,18 @@ namespace DataAccess.Repositories
         }
         public async Task<PagedList<Appointment>> GetAllAppointmentsWithAnimalIdAsync(AnimalParameters animalParameters)
         {
-            var result = GetAppointments(_clinicContext.Appointments, animalParameters.animalId);
-            var pagedResult = await result.ToPagedListAsync(animalParameters.PageNumber, animalParameters.PageSize);
+            var appointments = GetAppointments(_clinicContext.Appointments, animalParameters.animalId);
+
+            PagedList<Appointment> pagedResult;
+            if (animalParameters.PageSize == 0)
+            {
+                pagedResult = await appointments.ToPagedListAsync(animalParameters.PageNumber, appointments.Count());
+            }
+            else
+            {
+                pagedResult = await appointments.ToPagedListAsync(animalParameters.PageNumber, animalParameters.PageSize);
+            }
+
             return pagedResult;
         }
         private IQueryable<Appointment> GetAppointments(IQueryable<Appointment> appointments, int animalId)
