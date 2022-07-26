@@ -1,5 +1,6 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using netDumbster.smtp;
@@ -32,6 +33,8 @@ namespace Application.Test
         public EmailServiceTests(EmailServiceFixture fixture)
         {
             _fixture = fixture;
+
+            _smtpServer = SimpleSmtpServer.Start(9000);
         }
 
         public void Dispose()
@@ -43,12 +46,24 @@ namespace Application.Test
         [Fact]
         public async Task SendEmail_whenMessageIsCorrect_thenSend()
         {
-
-            _smtpServer = SimpleSmtpServer.Start(9000);
-
             await _fixture.MockService.Send(_fixture.TestEmailMessage);
 
             _fixture.MockLoggerManager.Verify(logger => logger.LogInfo("Email was successfully sended"), Times.Once);
+        }
+
+        [Fact]
+        public async Task NotifyEmployees_whenRecipientsExists_thenSendEmails()
+        {
+            _fixture.MockUserRepository.Setup(repository =>
+                repository.GetByRolesAsync(
+                    It.IsAny<List<int>>(),
+                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>?>()))
+                .ReturnsAsync(_fixture.ExpectedUsers);
+
+            await _fixture.MockService.NotifyUsers(_fixture.TestMailing);
+
+            _fixture.MockLoggerManager.Verify(logger => logger.LogInfo("Emails were successfully sended"), Times.Once);
         }
     }
 }

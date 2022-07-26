@@ -20,6 +20,7 @@ namespace Application.Test.Fixtures
             EmptyUsers = GenerateEmptyUsers();
 
             TestEmailMessage = GenerateMessage();
+            TestMailing = GenerateMailing();
 
             MockUserRepository = fixture.Freeze<Mock<IUserRepository>>();
             MockLoggerManager = fixture.Freeze<Mock<ILoggerManager>>();
@@ -40,6 +41,7 @@ namespace Application.Test.Fixtures
         public IEnumerable<User> ExpectedUsers { get; set; }
         public IEnumerable<User> EmptyUsers { get; set; }
         public EmailMessage TestEmailMessage { get; set; }
+        public Mailing TestMailing { get; set; }
 
         private IEnumerable<User> GenerateUsers()
         {
@@ -81,6 +83,16 @@ namespace Application.Test.Fixtures
             {
                 {"Mailbox:Address","vetclinicmanager222@gmail.com"},
                 { "Mailbox:Secret", "oxoelgyyqeyvyxzo" }
+            };
+        }
+
+        private Mailing GenerateMailing()
+        {
+            return new Mailing()
+            {
+                Recipients = "clients",
+                Subject = "Discount",
+                Body = "Hey, we have discount for you!"
             };
         }
     }
