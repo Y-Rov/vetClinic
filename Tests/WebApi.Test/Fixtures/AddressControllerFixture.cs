@@ -17,7 +17,7 @@ namespace WebApi.Test.Fixtures
 
             MockAddressService = fixture.Freeze<Mock<IAddressService>>();
             MockAddressCreateMapper = fixture.Freeze<Mock<IViewModelMapper<AddressCreateReadViewModel, Address>>>();
-            MockAddressReadViewModelMapper = fixture.Freeze<Mock<IViewModelMapper<Address, AddressBaseViewModel>>>();
+            MockAddressReadViewModelMapper = fixture.Freeze<Mock<IViewModelMapper<Address, AddressCreateReadViewModel>>>();
             MockAddressUpdateMapper = fixture.Freeze<Mock<IViewModelMapperUpdater<AddressBaseViewModel, Address>>>();
             MockAddressReadEnumerableViewModelMapper = fixture
                 .Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>>>();
@@ -41,7 +41,7 @@ namespace WebApi.Test.Fixtures
         public AddressController MockAddressController { get; }
         public Mock<IAddressService> MockAddressService { get; }
         public Mock<IViewModelMapper<AddressCreateReadViewModel, Address>> MockAddressCreateMapper { get; }
-        public Mock<IViewModelMapper<Address, AddressBaseViewModel>> MockAddressReadViewModelMapper { get; }
+        public Mock<IViewModelMapper<Address, AddressCreateReadViewModel>> MockAddressReadViewModelMapper { get; }
         public Mock<IViewModelMapperUpdater<AddressBaseViewModel, Address>> MockAddressUpdateMapper { get; }
         public Mock<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>> MockAddressReadEnumerableViewModelMapper
         {

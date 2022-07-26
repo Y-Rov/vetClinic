@@ -85,7 +85,7 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio>, PortfolioUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>>, PortfolioReadEnumerableViewModelMapper>();
 
-        services.AddScoped<IViewModelMapper<Address, AddressBaseViewModel>, AddressViewModelMapper>();
+        services.AddScoped<IViewModelMapper<Address, AddressCreateReadViewModel>, AddressViewModelMapper>();
         services.AddScoped<IViewModelMapper<Address, AddressCreateReadViewModel>, AddressCreateViewModelMapper>();
         services.AddScoped<IViewModelMapper<AddressCreateReadViewModel, Address>, AddressCreateMapper>();
         services.AddScoped<IViewModelMapperUpdater<AddressBaseViewModel, Address>, AddressUpdateMapper>();

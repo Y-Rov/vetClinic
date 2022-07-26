@@ -8,25 +8,28 @@ namespace WebApi.Validators.AddressValidators
     {
         public AddressBaseViewModelValidator()
         {
+            SetValidatorsForAddressCreateViewModel();
+
             RuleFor(viewModel => viewModel.City)
-                .NotEmpty()
+                .MinimumLength(1)
                 .WithMessage("City name must be non-empty")
                 .MaximumLength(85)
-                .WithMessage("City name must be less than or equal to 85 symbols");
+                .WithMessage("City name must be less than or equal to 85 symbols")
+                .When(viewModel => typeof(AddressBaseViewModel) == viewModel.GetType(), ApplyConditionTo.CurrentValidator);
 
             RuleFor(viewModel => viewModel.Street)
                 .MinimumLength(3)
                 .WithMessage("Street name must be greater than or equal to 3 symbols")
                 .MaximumLength(85)
-                .WithMessage("Street name must be less than or equal to 85 symbols");
+                .WithMessage("Street name must be less than or equal to 85 symbols")
+                .When(viewModel => typeof(AddressBaseViewModel) == viewModel.GetType(), ApplyConditionTo.CurrentValidator);
 
             RuleFor(viewModel => viewModel.House)
-                .NotEmpty()
-                .WithMessage("House number description must be non-empty")
                 .MaximumLength(15)
                 .WithMessage("House number description length must be less than or equal to 15 symbols")
                 .Matches(new Regex(@"^\d+(?: ?(?:[a-z]|[/-] ?\d+[a-z]?))?$", RegexOptions.IgnoreCase))
-                .WithMessage("House number is not valid");
+                .WithMessage("House number is not valid")
+                .When(viewModel => typeof(AddressBaseViewModel) == viewModel.GetType(), ApplyConditionTo.CurrentValidator);
 
             RuleFor(viewModel => viewModel.ApartmentNumber)
                 .GreaterThan((ushort)0)
@@ -40,5 +43,33 @@ namespace WebApi.Validators.AddressValidators
                 .Matches(new Regex(@"^\d{5}(?:[-\s]\d{4})?$"))
                 .WithMessage("ZipCode is not valid");
         }
+
+        private void SetValidatorsForAddressCreateViewModel()
+        {
+            RuleFor(viewModel => viewModel.City)
+                .NotEmpty()
+                .WithMessage("City name must be non-empty")
+                .MaximumLength(85)
+                .WithMessage("City name must be less than or equal to 85 symbols")
+                .When(viewModel => typeof(AddressCreateReadViewModel) == viewModel.GetType(), ApplyConditionTo.CurrentValidator);
+
+            RuleFor(viewModel => viewModel.Street)
+                .NotEmpty()
+                .WithMessage("Street name must be non-empty")
+                .MinimumLength(3)
+                .WithMessage("Street name must be greater than or equal to 3 symbols")
+                .MaximumLength(85)
+                .WithMessage("Street name must be less than or equal to 85 symbols")
+                .When(viewModel => typeof(AddressCreateReadViewModel) == viewModel.GetType(), ApplyConditionTo.CurrentValidator);
+
+            RuleFor(viewModel => viewModel.House)
+                .NotEmpty()
+                .WithMessage("House number description must be non-empty")
+                .MaximumLength(15)
+                .WithMessage("House number description length must be less than or equal to 15 symbols")
+                .Matches(new Regex(@"^\d+(?: ?(?:[a-z]|[/-] ?\d+[a-z]?))?$", RegexOptions.IgnoreCase))
+                .WithMessage("House number is not valid")
+                .When(viewModel => typeof(AddressCreateReadViewModel) == viewModel.GetType(), ApplyConditionTo.CurrentValidator);
+        } 
     }
 }

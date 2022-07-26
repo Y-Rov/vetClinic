@@ -103,7 +103,7 @@ namespace WebApi.Test
 
             _fixture.MockAddressReadViewModelMapper
                 .Setup(mapper => mapper.Map(It.IsAny<Address>()))
-                .Returns(_fixture.FullAddressBaseViewModel)
+                .Returns(_fixture.FullAddressCreateReadViewModel)
                 .Verifiable();
 
             // Act
@@ -117,7 +117,7 @@ namespace WebApi.Test
                 .Verify();
 
             Assert.NotNull(result);
-            Assert.IsType<AddressBaseViewModel>(result);
+            Assert.IsType<AddressCreateReadViewModel>(result);
         }
 
         [Fact]
