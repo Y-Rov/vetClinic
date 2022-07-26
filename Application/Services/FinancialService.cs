@@ -63,10 +63,10 @@ namespace Application.Services
             _logger.LogInfo($"Salary with id: {id} deleted");
         }
 
-        public async Task<PagedList<Salary>> GetSalaryAsync(SalaryParametrs parametrs)
+        public async Task<PagedList<Salary>> GetSalaryAsync(SalaryParameters parameters)
         {
 
-            var result = await _repository.GetAsync(parametrs);
+            var result = await _repository.GetAsync(parameters);
             _logger.LogInfo($"salaries were recieved");
             return result;
         }
@@ -99,7 +99,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<User>> GetEmployeesWithoutSalary()
         {
-            var parametrs = new SalaryParametrs()
+            var parametrs = new SalaryParameters()
             {
                 PageNumber = 1,
                 PageSize = 100

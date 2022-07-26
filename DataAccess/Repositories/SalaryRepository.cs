@@ -39,7 +39,7 @@ namespace DataAccess.Repositories
         }
 
         public async Task<PagedList<Salary>> GetAsync(
-            SalaryParametrs parametrs,
+            SalaryParameters parametrs,
             Expression<Func<Salary, bool>>? filter = null)
         {
             var query = await GetQuery(filter)

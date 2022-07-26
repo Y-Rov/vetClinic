@@ -9,7 +9,7 @@ namespace Core.Interfaces.Services
     public interface IFinancialService
     {
         Task<Salary> GetSalaryByUserIdAsync(int id);
-        Task<PagedList<Salary>> GetSalaryAsync(SalaryParametrs parametrs);
+        Task<PagedList<Salary>> GetSalaryAsync(SalaryParameters parametrs);
         Task CreateSalaryAsync(Salary salary);
         Task UpdateSalaryAsync(Salary salary);
         Task DeleteSalaryByUserIdAsync(int id);

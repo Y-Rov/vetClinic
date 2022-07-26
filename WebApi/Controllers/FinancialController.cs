@@ -44,7 +44,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<PagedReadViewModel<SalaryViewModel>> GetAsync([FromQuery] SalaryParametrs parametrs)
+        public async Task<PagedReadViewModel<SalaryViewModel>> GetAsync([FromQuery] SalaryParameters parametrs)
         {
             var salaries = await _financialService.GetSalaryAsync(parametrs);
             var readSalary = _readSalaryList.Map(salaries);
