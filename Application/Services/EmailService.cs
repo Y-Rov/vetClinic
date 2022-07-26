@@ -92,7 +92,7 @@ namespace Application.Services
                 client.Disconnect(true);
                 client.Dispose();
             }
-            _logger.LogInfo("Email was successfully sended");
+            _logger.LogInfo("Emails were successfully sended");
         }
 
         public async Task Send(EmailMessage message)
@@ -124,7 +124,7 @@ namespace Application.Services
                 client.Disconnect(true);
                 client.Dispose();
             }
-            _logger.LogInfo("Emails were successfully sended");
+            _logger.LogInfo("Email was successfully sended");
         }
     }
 }
