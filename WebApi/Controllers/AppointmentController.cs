@@ -1,5 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.AppointmentsViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -17,13 +19,15 @@ namespace WebApi.Controllers
         private readonly IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>> _appointmentsViewModelMapper;
         private readonly IViewModelMapper<Appointment, AppointmentReadViewModel> _appointmentReadMapper;
         private readonly IViewModelMapper<AppointmentUpdateViewModel, Appointment> _appointmentUpdateMapper;
+        private readonly IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>> _appointmentPagedViewModel;
 
         public AppointmentController(
             IAppointmentService appointmentService,
             IViewModelMapper<AppointmentCreateViewModel, Appointment> appointmentCreateMapper,
             IEnumerableViewModelMapper<IEnumerable<Appointment>, IEnumerable<AppointmentReadViewModel>> appointmentsViewModelMapper,
             IViewModelMapper<Appointment, AppointmentReadViewModel> appointmentReadMapper,
-            IViewModelMapper<AppointmentUpdateViewModel, Appointment> appointmentUpdateMapper
+            IViewModelMapper<AppointmentUpdateViewModel, Appointment> appointmentUpdateMapper,
+            IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AppointmentReadViewModel>> appointmentPagedViewModel
             )
         {
             _appointmentService = appointmentService;
@@ -31,15 +35,16 @@ namespace WebApi.Controllers
             _appointmentCreateMapper = appointmentCreateMapper;
             _appointmentReadMapper = appointmentReadMapper;
             _appointmentUpdateMapper = appointmentUpdateMapper; 
+            _appointmentPagedViewModel = appointmentPagedViewModel; 
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<IEnumerable<AppointmentReadViewModel>> GetAsync()
+        public async Task<PagedReadViewModel<AppointmentReadViewModel>> GetAsync([FromQuery] AppointmentParameters parameter)
         {
-            var appointments = await _appointmentService.GetAsync();
+            var appointments = await _appointmentService.GetAsync(parameter);
 
-            var appointmentsViewModel = _appointmentsViewModelMapper.Map(appointments);
+            var appointmentsViewModel = _appointmentPagedViewModel.Map(appointments);
 
             return appointmentsViewModel;
         }

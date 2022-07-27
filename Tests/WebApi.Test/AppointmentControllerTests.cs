@@ -1,5 +1,7 @@
 ﻿using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Core.ViewModels;
 using Core.ViewModels.AppointmentsViewModel;
 using Moq;
@@ -90,46 +92,57 @@ namespace WebApi.Test
             //  Arrange
             _fixture.MockAppointmentService
                 .Setup(service =>
-                    service.GetAsync())
+                    service.GetAsync(It.IsAny<AppointmentParameters>()))
                 .ReturnsAsync(_fixture.MockAppointments);
 
-            _fixture.MockAppointmentsViewModelMapper
-                .Setup(mapper =>
-                    mapper.Map(It.Is<IEnumerable<Appointment>>(p => p.Equals(_fixture.MockAppointments))))
-                .Returns(_fixture.MockAppointmentReadViewModels);
+            _fixture.MockPagedListMapper.Setup(mapper =>
+                mapper.Map(It.IsAny<PagedList<Appointment>>()))
+            .Returns(_fixture.MockAppointmentReadViewModels);
 
             //  Act
-            var result = await _fixture.MockAppointmentController.GetAsync();
+            var result = await _fixture.MockAppointmentController.GetAsync(_fixture.MockParameters);
 
             //  Assert
             Assert.NotNull(result);
-            Assert.Equal(result, _fixture.MockAppointmentReadViewModels);
+            Assert.NotEmpty(result.Entities);
+            Assert.IsType<PagedReadViewModel<AppointmentReadViewModel>>(result);
         }
 
         [Fact]
         public async Task GetAll_whenAppointmentsListIsEmpty_thenStatusOkReturned()
         {
             //  Arrange
-            var emptyAppointments = new List<Appointment>();
+            var emptyAppointments = 
+                new PagedList<Appointment>(new List<Appointment>(), 0, 1, 4);
 
-            var emptyAppointmentReadViewModels = new List<AppointmentReadViewModel>();
+            var emptyAppointmentReadViewModels = new PagedReadViewModel<AppointmentReadViewModel>()
+            {
+                Entities = new List<AppointmentReadViewModel>(),
+                PageSize = 10,
+                CurrentPage = 1,
+                TotalPages = 2,
+                TotalCount = 0,
+                HasNext = true,
+                HasPrevious = false
+            };
 
             _fixture.MockAppointmentService
                 .Setup(service =>
-                    service.GetAsync())
+                    service.GetAsync(_fixture.MockParameters))
                 .ReturnsAsync(emptyAppointments);
 
-            _fixture.MockAppointmentsViewModelMapper
+            _fixture.MockPagedListMapper
                 .Setup(mapper =>
-                    mapper.Map(It.Is<IEnumerable<Appointment>>(p => p.Equals(emptyAppointments))))
+                    mapper.Map(It.IsAny<PagedList<Appointment>>()))
                 .Returns(emptyAppointmentReadViewModels);
 
             //  Act
-            var result = await _fixture.MockAppointmentController.GetAsync();
+            var result = await _fixture.MockAppointmentController.GetAsync(_fixture.MockParameters);
 
             //  Assert
             Assert.NotNull(result);
-            Assert.Equal(result, emptyAppointmentReadViewModels);
+            Assert.Empty(result.Entities);
+            Assert.IsType<PagedReadViewModel<AppointmentReadViewModel>>(result);
         }
 
         [Fact]
