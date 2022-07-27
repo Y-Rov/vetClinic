@@ -31,11 +31,10 @@ namespace Application.Services.GeneratePDF
 
             //Table Name
             PdfGraphics graphics = page.Graphics;
-            PdfFont font = PdfParams.font;
 
             graphics.DrawString($"{table.TableName}",
-                font: font,
-                brush: PdfBrushes.Black,
+                font: PdfParams.font,
+                brush: PdfParams.color,
                 new PointF(10, 3));
 
             //Create a PdfGrid

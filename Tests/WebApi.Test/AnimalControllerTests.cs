@@ -221,5 +221,21 @@ namespace WebApi.Test
             Assert.NotNull(actualResult);
             Assert.Null(actualResult.Entities);
         }
+
+        [Fact]
+        public async Task GenerateMedCardPdf_ShouldReturnFile()
+        {
+            //Arrange
+            _animalControllerFixture.MockMedCardPdf
+                .Setup(ser => ser.GeneratePdf(It.IsAny<AnimalParameters>()))
+                .ReturnsAsync(_animalControllerFixture.ExpectedPdfFileModel);
+
+            //Act
+            var actualResult = await _animalControllerFixture.MockAnimalController
+                .GeneratePDF(_animalControllerFixture.pagingParameters);
+
+            //Assert
+            Assert.NotNull(actualResult);
+        }
     }
 }
