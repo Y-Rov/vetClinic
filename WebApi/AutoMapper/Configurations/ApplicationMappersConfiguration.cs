@@ -79,16 +79,14 @@ public static class ApplicationMappersConfiguration
         services.AddScoped<IViewModelMapper<PagedList<Salary>, PagedReadViewModel<SalaryViewModel>>, SalaryPagedMapper>();
         services.AddScoped<IViewModelMapper<PagedList<FinancialStatement>, PagedReadViewModel<FinancialStatementForMonthViewModel>>, FinancialStatementPagedMapper>();
 
-        services.AddScoped<IViewModelMapper<Portfolio, PortfolioBaseViewModel>, PortfolioViewModelMapper>();
-        services.AddScoped<IViewModelMapper<Portfolio, PortfolioCreateReadViewModel>, PortfolioCreateViewModelMapper>();
-        services.AddScoped<IViewModelMapper<PortfolioCreateReadViewModel, Portfolio>, PortfolioCreateMapper>();
+        services.AddScoped<IViewModelMapper<Portfolio, PortfolioCreateReadViewModel>, PortfolioCreateReadViewModelMapper>();
+        services.AddScoped<IViewModelMapper<PortfolioCreateReadViewModel, Portfolio>, PortfolioCreateReadMapper>();
         services.AddScoped<IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio>, PortfolioUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>>, PortfolioReadEnumerableViewModelMapper>();
 
-        services.AddScoped<IViewModelMapper<Address, AddressBaseViewModel>, AddressViewModelMapper>();
-        services.AddScoped<IViewModelMapper<Address, AddressCreateReadViewModel>, AddressCreateViewModelMapper>();
-        services.AddScoped<IViewModelMapper<AddressCreateReadViewModel, Address>, AddressCreateMapper>();
-        services.AddScoped<IViewModelMapperUpdater<AddressBaseViewModel, Address>, AddressUpdateMapper>();
+        services.AddScoped<IViewModelMapper<Address, AddressCreateReadViewModel>, AddressCreateReadViewModelMapper>();
+        services.AddScoped<IViewModelMapper<AddressCreateReadViewModel, Address>, AddressCreateReadMapper>();
+        services.AddScoped<IViewModelMapperUpdater<AddressUpdateViewModel, Address>, AddressUpdateMapper>();
         services.AddScoped<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>, AddressReadEnumerableViewModelMapper>();
 
         services.AddScoped<IViewModelMapper<Article, ReadArticleViewModel>, ReadArticleMapper>();

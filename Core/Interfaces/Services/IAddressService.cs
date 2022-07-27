@@ -7,7 +7,7 @@ namespace Core.Interfaces.Services
         Task<Address> GetAddressByUserIdAsync(int id);
         Task<IEnumerable<Address>> GetAllAddressesAsync();
         Task CreateAddressAsync(Address newAddress);
-        Task UpdateAddressAsync(Address updatedAddress);
+        Task UpdateAddressAsync(Address oldAddress);
         Task DeleteAddressByUserIdAsync(int id);
     }
 }

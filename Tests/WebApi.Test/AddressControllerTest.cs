@@ -94,7 +94,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task GetAsync_WhenUserIdIsCorrect_ThenAddressBaseViewModelIsReturned()
+        public async Task GetAsync_WhenUserIdIsCorrect_ThenAddressUpdateViewModelIsReturned()
         {
             // Arrange
             _fixture.MockAddressService
@@ -103,7 +103,7 @@ namespace WebApi.Test
 
             _fixture.MockAddressReadViewModelMapper
                 .Setup(mapper => mapper.Map(It.IsAny<Address>()))
-                .Returns(_fixture.FullAddressBaseViewModel)
+                .Returns(_fixture.FullAddressCreateReadViewModel)
                 .Verifiable();
 
             // Act
@@ -117,7 +117,7 @@ namespace WebApi.Test
                 .Verify();
 
             Assert.NotNull(result);
-            Assert.IsType<AddressBaseViewModel>(result);
+            Assert.IsType<AddressCreateReadViewModel>(result);
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace WebApi.Test
         }
 
         [Fact]
-        public async Task UpdateAsync_WhenAddressBaseViewModelIsCorrect_ThenNoContentResultIsReturned()
+        public async Task UpdateAsync_WhenAddressUpdateViewModelIsCorrect_ThenNoContentResultIsReturned()
         {
             // Arrange
             _fixture.MockAddressService
@@ -157,7 +157,7 @@ namespace WebApi.Test
 
             _fixture.MockAddressUpdateMapper
                 .Setup(mapper => mapper.Map(
-                    It.IsAny<AddressBaseViewModel>(),
+                    It.IsAny<AddressUpdateViewModel>(),
                     It.IsAny<Address>()));
 
             _fixture.MockAddressService
@@ -165,7 +165,7 @@ namespace WebApi.Test
                 .Returns(Task.FromResult<object?>(null));
 
             // Act
-            var result = await _fixture.MockAddressController.UpdateAsync(_fixture.UserId, _fixture.FullAddressBaseViewModel);
+            var result = await _fixture.MockAddressController.UpdateAsync(_fixture.UserId, _fixture.FullAddressUpdateViewModel);
 
             // Assert
             _fixture.MockAddressService

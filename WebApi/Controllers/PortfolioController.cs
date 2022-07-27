@@ -14,7 +14,7 @@ namespace WebApi.Controllers
     {
         private readonly IPortfolioService _portfolioService;
         private readonly IViewModelMapper<PortfolioCreateReadViewModel, Portfolio> _portfolioCreateMapper;
-        private readonly IViewModelMapper<Portfolio, PortfolioBaseViewModel> _portfolioReadViewModelMapper;
+        private readonly IViewModelMapper<Portfolio, PortfolioCreateReadViewModel> _portfolioReadViewModelMapper;
         private readonly IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio> _portfolioUpdateMapper;
         private readonly IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>>
             _portfolioReadEnumerableViewModelMapper;
@@ -22,7 +22,7 @@ namespace WebApi.Controllers
         public PortfolioController(
             IPortfolioService portfolioService,
             IViewModelMapper<PortfolioCreateReadViewModel, Portfolio> portfolioCreateMapper,
-            IViewModelMapper<Portfolio, PortfolioBaseViewModel> portfolioReadViewModelMapper,
+            IViewModelMapper<Portfolio, PortfolioCreateReadViewModel> portfolioReadViewModelMapper,
             IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio> portfolioUpdateMapper,
             IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>> portfolioReadEnumerableViewModelMapper)
         {
@@ -44,7 +44,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}")]
-        public async Task<PortfolioBaseViewModel> GetAsync([FromRoute] int id)
+        public async Task<PortfolioCreateReadViewModel> GetAsync([FromRoute] int id)
         {
             var portfolio = await _portfolioService.GetPortfolioByUserIdAsync(id);
 
