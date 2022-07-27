@@ -29,6 +29,4 @@ namespace WebApi.AutoMapper.AppointmentMappers
             };
         }
     }
-
-
 }
