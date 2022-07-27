@@ -1,6 +1,8 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 using Moq;
 using System.Linq.Expressions;
 
@@ -45,39 +47,44 @@ namespace Application.Test
             // Arrange
             _fixture.MockAppointmentRepository
                 .Setup(r => r.GetAsync(
+                    It.IsAny<AppointmentParameters>(),
                     It.IsAny<Expression<Func<Appointment, bool>>>(),
                     It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
-                .ReturnsAsync(_fixture.MockListAppointments);
+                    It.IsAny<bool>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(_fixture.MockPagedListAppointments);
 
             // Act
-            var result = await _fixture.MockAppointmentEntityService.GetAsync();
+            var result = await _fixture.MockAppointmentEntityService.GetAsync(_fixture.MockAppointmentParameters);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_fixture.MockListAppointments, result);
+            Assert.NotEmpty(result);
+            Assert.IsType<PagedList<Appointment>>(result);
         }
 
         [Fact]
-        public async Task GetAppointmentsAsync_whenAppointmentsExist_thenReturn()
+        public async Task GetAppointmentsAsync_whenAppointmentsNotExist_thenReturnEmpty()
         {
-            List<Appointment> emptyAppointments = new List<Appointment>();
+            var emptyAppointments = new PagedList<Appointment>(new List<Appointment>(), 0, 1, 4);
 
             // Arrange
             _fixture.MockAppointmentRepository
                 .Setup(r => r.GetAsync(
+                    It.IsAny<AppointmentParameters>(),
                     It.IsAny<Expression<Func<Appointment, bool>>>(),
                     It.IsAny<Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<bool>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(emptyAppointments);
 
             // Act
-            var result = await _fixture.MockAppointmentEntityService.GetAsync();
+            var result = await _fixture.MockAppointmentEntityService.GetAsync(_fixture.MockAppointmentParameters);
 
             // Assert
+            Assert.NotNull(result);
             Assert.Empty(result);
+            Assert.IsType<PagedList<Appointment>>(result);
         }
 
         [Fact]

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Claims;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces.Services;
 using Core.ViewModel.MessageViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -55,7 +53,7 @@ public class MessagesController : ControllerBase
     [HttpGet("unread")]
     public async Task<IEnumerable<MessageGetViewModel>> GetUnreadMessagesAsync()
     {
-        var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
+        var userId = (await _userManager.GetUserAsync(User)).Id;
 
         var messages = await _messageService.GetUnreadMessagesAsync(userId);
         return _enumMessageMapper.Map(messages);

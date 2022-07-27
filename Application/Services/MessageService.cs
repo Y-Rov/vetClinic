@@ -35,9 +35,9 @@ public class MessageService : IMessageService
             filter: m => m.Id == id);
         
         if (message is null)
-            _loggerManager.LogInfo($"No message with id {id} was not found");
-        
-        _loggerManager.LogInfo($"Returned message with id {id}");
+            _loggerManager.LogInfo($"Message with id {id} was not found");
+        else
+            _loggerManager.LogInfo($"Returned message with id {id}");
         
         return message;
     }
@@ -118,11 +118,17 @@ public class MessageService : IMessageService
             filter: ur => ur.UserId == readerId && ur.ChatRoomId == message.ChatRoomId,
             include: q => q.Include(ur => ur.LastReadMessage)!);
 
-        if (userChatRoom!.LastReadMessage is null || userChatRoom.LastReadMessage.SentAt < message.SentAt)
+        if (userChatRoom is null)
+        {
+            _loggerManager.LogWarn($"User with id {readerId} is not in chatRoom #{message.ChatRoomId}");
+            throw new NotFoundException($"User with id {readerId} is not in chatRoom #{message.ChatRoomId}");
+        }
+        
+        if (userChatRoom.LastReadMessage is null || userChatRoom.LastReadMessage.SentAt < message.SentAt)
         {
             userChatRoom.LastReadMessageId = message.Id;
             await _messageRepository.SaveChangesAsync();
-            _loggerManager.LogInfo($"Updated last read message for user #{readerId} #{message.ChatRoomId}");
+            _loggerManager.LogInfo($"Updated last read message for user #{readerId} in chatRoom #{message.ChatRoomId}");
         }
     }
 }

@@ -2,6 +2,8 @@
 using AutoFixture.AutoMoq;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Core.Interfaces.Services.PDF_Service;
+using Core.Models;
 using Core.Paginator;
 using Core.Paginator.Parameters;
 using Core.ViewModels;
@@ -31,18 +33,22 @@ namespace WebApi.Test.Fixtures
             ExpectedPagedListViewModel = GetPagedListViewModel();
             ExpectedEmptyPagedListViewModel = GetEmptyPagedListViewModel();
 
-            pagingParameters = new();
+            ExpectedPdfFileModel = GetPdfFileModel();
+
+            pagingParameters = GetAnimalParameters();
 
             MockAnimalService = fixture.Freeze<Mock<IAnimalService>>();
             MockAnimalListToListMapper = fixture.Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>>>();
             MockAnimalViewModelMapperUpdater = fixture.Freeze<Mock<IViewModelMapperUpdater<AnimalViewModel, Animal>>>();
             MockPagedMedCardMapper = fixture.Freeze<Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>>>>();
+            MockMedCardPdf = fixture.Freeze<Mock<IGenerateFullPdf<AnimalParameters>>>();
 
             MockAnimalController = new AnimalController(
                 MockAnimalService.Object,
                 MockAnimalViewModelMapperUpdater.Object,
                 MockAnimalListToListMapper.Object,
-                MockPagedMedCardMapper.Object
+                MockPagedMedCardMapper.Object,
+                MockMedCardPdf.Object
                 );
         }
 
@@ -50,6 +56,7 @@ namespace WebApi.Test.Fixtures
         public Mock<IEnumerableViewModelMapper<IEnumerable<Animal>, IEnumerable<AnimalViewModel>>> MockAnimalListToListMapper { get; }
         public Mock<IViewModelMapperUpdater<AnimalViewModel, Animal>> MockAnimalViewModelMapperUpdater { get; }
         public Mock<IViewModelMapper<PagedList<Appointment>, PagedReadViewModel<AnimalMedCardViewModel>>> MockPagedMedCardMapper { get; }
+        public Mock<IGenerateFullPdf<AnimalParameters>> MockMedCardPdf { get; }
         public AnimalController MockAnimalController { get; }
         public Animal ExpectedAnimal { get; }
         public AnimalViewModel ExpectedAnimalViewModel { get; }
@@ -61,8 +68,21 @@ namespace WebApi.Test.Fixtures
         public PagedList<Appointment> ExpectedEmptyPagedList { get; }
         public PagedReadViewModel<AnimalMedCardViewModel> ExpectedPagedListViewModel { get; }
         public PagedReadViewModel<AnimalMedCardViewModel> ExpectedEmptyPagedListViewModel { get; }
+        public PdfFileModel ExpectedPdfFileModel { get; }
 
         public AnimalParameters pagingParameters;
+
+        private AnimalParameters GetAnimalParameters()
+        {
+            var pagingParameters = new AnimalParameters()
+            {
+                animalId = 13,
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            return pagingParameters;
+        }
 
         private Animal GetAnimal()
         {
@@ -235,6 +255,18 @@ namespace WebApi.Test.Fixtures
         private List<Appointment> GetEmptyAppointmentList()
         {
             return new List<Appointment>();
+        }
+        private PdfFileModel GetPdfFileModel()
+        {
+
+            var expectedModel = new PdfFileModel()
+            {
+                FileStream = new MemoryStream(),
+                DefaultFileName = "pdf.pdf",
+                ContentType = "application/pdf"
+            };
+
+            return expectedModel;
         }
     }
 }

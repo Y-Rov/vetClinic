@@ -38,7 +38,6 @@ namespace Application.Test.Fixtures
             SalaryEmptyList = GenerateSalaryEmptyList();
             UpdatedSalary = GenerateUpdatedSalary();
             EmployeeList = GenerateEmployeeList();
-            Date = GenerateDate();
             AppointmentList = GenerateAppoinmentList();
             SalaryList = GenerateSalaryList();
             AppoinmentEmptyList = GenerateAppoinmentEmptyList();
@@ -48,8 +47,10 @@ namespace Application.Test.Fixtures
             UserTwo = GenerateSecondUser();
             ProcedureOne = GenerateFirstProcedure();
             ProcedureTwo = GenerateSecondProcedure();
-            SalaryParametrs = GenerateSalaryParametrs();
+            SalaryParameters = GenerateSalaryParametrs();
             FinancialStatementParameters = GenerateFinancialStatementParametrs();
+            SalaryOne = generateSalaryOne();
+            SalaryTwo = generateSalaryTwo();
         }
 
         public IFinancialService MockFinancialService { get; }
@@ -65,7 +66,6 @@ namespace Application.Test.Fixtures
         public PagedList<Salary> SalaryEmptyList { get; }
         public Salary UpdatedSalary { get; }
         public List<User> EmployeeList { get; }
-        public DatePeriod Date { get; }
         public List<Appointment> AppointmentList { get; }
         public PagedList<Salary> SalaryList { get; }
         public List<Appointment> AppoinmentEmptyList { get; }
@@ -75,8 +75,10 @@ namespace Application.Test.Fixtures
         public User UserTwo { get; }
         public Procedure ProcedureOne { get; }
         public Procedure ProcedureTwo { get; }
-        public SalaryParametrs SalaryParametrs { get; }
+        public SalaryParameters SalaryParameters { get; }
         public FinancialStatementParameters FinancialStatementParameters { get; }
+        public Salary SalaryOne { get; }
+        public Salary SalaryTwo { get; }
 
         private Salary GenerateSalary()
         {
@@ -125,14 +127,6 @@ namespace Application.Test.Fixtures
             };
             return salary;
         }
-        private List<int> GenerateEmployeeIdList()
-        {
-            var employeesId = new List<int>()
-            {
-                1,2,3
-            };
-            return employeesId;
-        }
         private List<User> GenerateEmployeeList()
         {
             var listEmployees = new List<User>()
@@ -154,15 +148,6 @@ namespace Application.Test.Fixtures
                 }
             };
             return listEmployees;
-        }
-        private DatePeriod GenerateDate()
-        {
-            var date = new DatePeriod()
-            {
-                StartDate = new DateTime(2022, 5, 1),
-                EndDate = new DateTime(2022, 6, 1)
-            };
-            return date;
         }
         private List<Appointment> GenerateAppoinmentList()
         {
@@ -256,9 +241,9 @@ namespace Application.Test.Fixtures
             };
             return procedureTwo;
         }
-        private SalaryParametrs GenerateSalaryParametrs()
+        private SalaryParameters GenerateSalaryParametrs()
         {
-            var res = new SalaryParametrs()
+            var res = new SalaryParameters()
             {
                 PageNumber = 1,
                 PageSize = 5
@@ -267,12 +252,38 @@ namespace Application.Test.Fixtures
         }
         private FinancialStatementParameters GenerateFinancialStatementParametrs()
         {
+            var date = new DatePeriod()
+            {
+                StartDate = new DateTime(2022, 5, 1),
+                EndDate = new DateTime(2022, 6, 1)
+            };
             var res = new FinancialStatementParameters()
             {
                 PageNumber = 1,
-                PageSize = 5
+                PageSize = 5,
+                Date = date
             };
             return res;
+        }
+        private Salary generateSalaryOne()
+        {
+            var salary = new Salary
+            {
+                EmployeeId = 1,
+                Value = 10,
+                Date = new DateTime(2022, 4, 1)
+            };
+            return salary;
+        }
+        private Salary generateSalaryTwo()
+        {
+            var salary = new Salary
+            {
+                EmployeeId = 2,
+                Value = 10,
+                Date = new DateTime(2022, 4, 20)
+            };
+            return salary;
         }
     }
 }

@@ -17,12 +17,9 @@ namespace DataAccess.Repositories
             this.context = context;
         }
 
-        public new IQueryable<Salary> GetQuery(
-            Expression<Func<Salary, bool>>? filter,
-            Func<IQueryable<Salary>, IOrderedQueryable<Salary>>? orderBy,
-            string includeProperties = "")
+        public IQueryable<Salary> GetQuery(
+            Expression<Func<Salary, bool>>? filter)
         {
-
 
             IQueryable<Salary> query = filter == null ? context.Salaries
                     .GroupBy(s => s.EmployeeId)
@@ -35,32 +32,17 @@ namespace DataAccess.Repositories
             var set = from s in context.Salaries
                       join q in query on s.Date equals q.Date
                       orderby s.EmployeeId
-                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value };
-  
-
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                set = includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Aggregate(set, (current, includeProperty)
-                        => current.Include(includeProperty));
-            }
-
-            if (orderBy != null)
-            {
-                set = orderBy(set);
-            }
+                      where s.Value != 0
+                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value, Date = s.Date };
 
             return set;
         }
 
         public async Task<PagedList<Salary>> GetAsync(
-            SalaryParametrs parametrs,
-            Expression<Func<Salary, bool>>? filter = null,
-            Func<IQueryable<Salary>, IOrderedQueryable<Salary>>? orderBy = null,
-            bool asNoTracking = true,
-            string includeProperties = "")
+            SalaryParameters parametrs,
+            Expression<Func<Salary, bool>>? filter = null)
         {
-            var query = await GetQuery(filter, orderBy, includeProperties)
+            var query = await GetQuery(filter)
                 .ToPagedListAsync(parametrs.PageNumber,parametrs.PageSize);
 
             return query;
@@ -90,6 +72,34 @@ namespace DataAccess.Repositories
             return await set.FirstOrDefaultAsync(entity => entity == result);
         }
 
+
+        public async Task<Salary?> GetByIdForStatement(int id, Expression<Func<Salary, bool>> filter)
+        {
+            var query = context.Salaries
+                .Where(s => s.EmployeeId == id)
+                .OrderBy(s => s.Date)
+                .Select(s=>new Salary{EmployeeId=s.EmployeeId,Id=s.Id,Value=s.Value, Date = s.Date });
+
+            var res = await query
+                .Where(filter)
+                .FirstOrDefaultAsync();
+            return res;
+        }
+
+        public async Task<IEnumerable<Salary>> GetAllForStatement(Expression<Func<Salary, bool>> filter)
+        {
+            var query = context.Salaries
+                    .Where(filter)
+                    .GroupBy(s => s.EmployeeId)
+                    .Select(s => new Salary { EmployeeId = s.Key, Date = s.Max(x => x.Date) });
+
+            var set = from s in context.Salaries
+                      join q in query on s.Date equals q.Date
+                      orderby s.EmployeeId
+                      select new Salary { EmployeeId = s.EmployeeId, Value = s.Value, Date = s.Date };
+
+            return await set.ToListAsync();
+        }
 
     }
 }

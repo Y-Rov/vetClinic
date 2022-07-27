@@ -11,7 +11,7 @@ namespace WebApi.AutoMapper.SalaryMappers
             var salary = new SalaryViewModel
             {
                 Id = source.EmployeeId,
-                Value = source.Value
+                Value = Math.Round(source.Value,2)
             };
             return salary;
         }

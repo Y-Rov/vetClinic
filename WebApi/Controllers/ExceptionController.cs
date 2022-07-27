@@ -7,7 +7,6 @@ using Core.ViewModels;
 using Core.ViewModels.ExceptionViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using WebApi.AutoMapper.Interface;
 
 namespace WebApi.Controllers

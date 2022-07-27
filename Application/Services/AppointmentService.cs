@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Paginator;
+using Core.Paginator.Parameters;
 
 namespace Application.Services
 {
@@ -67,9 +69,9 @@ namespace Application.Services
             _logger.LogInfo($"Appointment was deleted with Id {appointmentId} in method DeleteAsync");
         }
 
-        public async Task<IEnumerable<Appointment>> GetAsync()
+        public async Task<PagedList<Appointment>> GetAsync(AppointmentParameters parameters)
         {
-            var appointments = await _appointmentRepository.GetAsync(includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
+            var appointments = await _appointmentRepository.GetAsync(parameters, includeProperties: "AppointmentProcedures.Procedure,AppointmentUsers.User,Animal");
 
             _logger.LogInfo("Getting all Appointments in method GetAsync");
             return appointments;

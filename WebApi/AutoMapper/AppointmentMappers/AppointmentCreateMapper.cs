@@ -16,6 +16,7 @@ namespace WebApi.AutoMapper.AppointmentMappers
                 AnimalId = source.AnimalId
                 
             };
+
             return appointment;
         }
     }

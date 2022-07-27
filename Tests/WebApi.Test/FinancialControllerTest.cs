@@ -98,7 +98,7 @@ namespace WebApi.Test
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetSalaryAsync(
-                        It.IsAny<SalaryParametrs>()))
+                        It.IsAny<SalaryParameters>()))
                 .ReturnsAsync(_fixture.SalaryList);
 
             _fixture.MockListSalaryViewModels
@@ -123,7 +123,7 @@ namespace WebApi.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParametrs);
+            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParameters);
 
             //Assert
 
@@ -140,7 +140,7 @@ namespace WebApi.Test
             _fixture.MockFinancialService
                 .Setup(service =>
                     service.GetSalaryAsync(
-                        It.IsAny<SalaryParametrs>()))
+                        It.IsAny<SalaryParameters>()))
                 .ReturnsAsync(_fixture.SalaryEmptyList);
 
             _fixture.MockListSalaryViewModels
@@ -150,7 +150,7 @@ namespace WebApi.Test
 
             //Act
 
-            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParametrs);
+            var result = await _fixture.MockFinancialController.GetAsync(_fixture.SalaryParameters);
 
             //Assert
 
@@ -280,62 +280,77 @@ namespace WebApi.Test
             _fixture.MockFinancialService.Verify();
         }
 
-        //[Fact]
-        //public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
-        //{
-        //    //Arrange
+        [Fact]
+        public async Task GetFinancialStatement_whenFinancialStatementListIsNotEmpty_thenReturnOk()
+        {
+            //Arrange
 
-        //    _fixture.MockFinancialService
-        //        .Setup(service =>
-        //            service.GetFinancialStatement(
-        //                It.IsAny<DatePeriod>(),
-        //                It.IsAny<FinancialStatementParameters>()))
-        //        .ReturnsAsync(_fixture.FinStatList);
+            _fixture.MockFinancialService
+                .Setup(service =>
+                    service.GetFinancialStatement(
+                        It.IsAny<FinancialStatementParameters>()))
+                .ReturnsAsync(_fixture.FinStatList);
 
-        //    _fixture.MockFinancialStatementViewModel
-        //        .Setup(mapper=>
-        //            mapper.Map(It.Is<PagedList<FinancialStatement>>(x=> x==_fixture.FinStatList)))
-        //        .Returns(_fixture.FinStatVMList);
+            _fixture.MockFinancialStatementViewModel
+                .Setup(mapper =>
+                    mapper.Map(It.Is<PagedList<FinancialStatement>>(x => x == _fixture.FinStatList)))
+                .Returns(_fixture.FinStatVMList);
 
-        //    //Act
+            //Act
 
-        //    var result = await _fixture.MockFinancialController
-        //        .GetFinancialStatementAsync(_fixture.Date, _fixture.FinancialStatementParameters);
+            var result = await _fixture.MockFinancialController
+                .GetFinancialStatementAsync(_fixture.FinancialStatementParameters);
 
-        //    //Assert
+            //Assert
 
-        //    Assert.NotNull(result.Entities);
-        //    Assert.NotEmpty(result.Entities);
-        //    Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
-        //}
+            Assert.NotNull(result.Entities);
+            Assert.NotEmpty(result.Entities);
+            Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
+        }
 
-        //[Fact]
-        //public async Task GetFinancialStatement_whenFinancialStatementListIsEmpty_thenReturnOk()
-        //{
-        //    //Arrange
+        [Fact]
+        public async Task GetFinancialStatement_whenFinancialStatementListIsEmpty_thenReturnOk()
+        {
+            //Arrange
 
-        //    _fixture.MockFinancialService
-        //        .Setup(service =>
-        //            service.GetFinancialStatement(
-        //                It.IsAny<DatePeriod>(),
-        //                It.IsAny<FinancialStatementParameters>()))
-        //        .ReturnsAsync(_fixture.FinStatEmpty);
+            _fixture.MockFinancialService
+                .Setup(service =>
+                    service.GetFinancialStatement(
+                        It.IsAny<FinancialStatementParameters>()))
+                .ReturnsAsync(_fixture.FinStatEmpty);
 
-        //    _fixture.MockFinancialStatementViewModel
-        //        .Setup(mapper =>
-        //            mapper.Map(It.Is<PagedList<FinancialStatement>>(x=> x==_fixture.FinStatEmpty)))
-        //        .Returns(_fixture.FinStatVMEmpty);
+            _fixture.MockFinancialStatementViewModel
+                .Setup(mapper =>
+                    mapper.Map(It.Is<PagedList<FinancialStatement>>(x => x == _fixture.FinStatEmpty)))
+                .Returns(_fixture.FinStatVMEmpty);
 
-        //    //Act
+            //Act
 
-        //    var result = await _fixture.MockFinancialController
-        //        .GetFinancialStatementAsync(_fixture.Date,_fixture.FinancialStatementParameters);
+            var result = await _fixture.MockFinancialController
+                .GetFinancialStatementAsync(_fixture.FinancialStatementParameters);
 
-        //    //Assert
+            //Assert
 
-        //    Assert.NotNull(result.Entities);
-        //    Assert.Empty(result.Entities);
-        //    Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
-        //}
+            Assert.NotNull(result.Entities);
+            Assert.Empty(result.Entities);
+            Assert.IsAssignableFrom<PagedReadViewModel<FinancialStatementForMonthViewModel>>(result);
+        }
+
+        [Fact]
+        public async Task GenerateFinancialStatementPdf_ShouldReturnFile()
+        {
+            //Arrange
+            _fixture.MockPdfGenerotor
+                .Setup(ser => ser.GeneratePdf(It.IsAny<FinancialStatementParameters>()))
+                .ReturnsAsync(_fixture.ExpectedPdfFileModel);
+
+            //Act
+            var actualResult = await _fixture.MockFinancialController
+                .GeneratePDF(_fixture.FinancialStatementParameters);
+
+            //Assert
+            Assert.NotNull(actualResult);
+        }
+
     }
 }

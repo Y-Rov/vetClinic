@@ -2,7 +2,6 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using Core.Entities;
-using Core.Extensions;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Core.Models;
