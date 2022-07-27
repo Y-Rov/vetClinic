@@ -56,19 +56,10 @@ namespace Application.Services
             _loggerManager.LogInfo($"Address for user with ID = {newAddress.UserId} was created");
         }
 
-        public async Task UpdateAddressAsync(Address updatedAddress)
+        public async Task UpdateAddressAsync(Address oldAddress)
         {
-            //var address = await GetAddressByUserIdAsync(updatedAddress.UserId);
-
-            //address.City = updatedAddress.City;
-            //address.Street = updatedAddress.Street;
-            //address.House = updatedAddress.House;
-            //address.ApartmentNumber = updatedAddress.ApartmentNumber;
-            //address.ZipCode = updatedAddress.ZipCode;
-
-            _addressRepository.Update(updatedAddress);
             await _addressRepository.SaveChangesAsync();
-            _loggerManager.LogInfo($"Address for user with ID = {updatedAddress.UserId} was updated");
+            _loggerManager.LogInfo($"Address for user with ID = {oldAddress.UserId} was updated");
         }
 
         public async Task DeleteAddressByUserIdAsync(int id)

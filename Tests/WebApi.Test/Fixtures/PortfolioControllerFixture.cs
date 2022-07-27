@@ -17,7 +17,7 @@ namespace WebApi.Test.Fixtures
 
             MockPortfolioService = fixture.Freeze<Mock<IPortfolioService>>();
             MockPortfolioCreateMapper = fixture.Freeze<Mock<IViewModelMapper<PortfolioCreateReadViewModel, Portfolio>>>();
-            MockPortfolioReadViewModelMapper = fixture.Freeze<Mock<IViewModelMapper<Portfolio, PortfolioBaseViewModel>>>();
+            MockPortfolioReadViewModelMapper = fixture.Freeze<Mock<IViewModelMapper<Portfolio, PortfolioCreateReadViewModel>>>();
             MockPortfolioUpdateMapper = fixture.Freeze<Mock<IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio>>>();
             MockPortfolioReadEnumerableViewModelMapper = fixture
                 .Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>>>>();
@@ -41,7 +41,7 @@ namespace WebApi.Test.Fixtures
         public PortfolioController MockPortfolioController { get; }
         public Mock<IPortfolioService> MockPortfolioService { get; }
         public Mock<IViewModelMapper<PortfolioCreateReadViewModel, Portfolio>> MockPortfolioCreateMapper { get; }
-        public Mock<IViewModelMapper<Portfolio, PortfolioBaseViewModel>> MockPortfolioReadViewModelMapper { get; }
+        public Mock<IViewModelMapper<Portfolio, PortfolioCreateReadViewModel>> MockPortfolioReadViewModelMapper { get; }
         public Mock<IViewModelMapperUpdater<PortfolioBaseViewModel, Portfolio>> MockPortfolioUpdateMapper { get; }
         public Mock<IEnumerableViewModelMapper<IEnumerable<Portfolio>, IEnumerable<PortfolioCreateReadViewModel>>> MockPortfolioReadEnumerableViewModelMapper
         {

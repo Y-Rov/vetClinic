@@ -103,7 +103,7 @@ namespace WebApi.Test
 
             _fixture.MockPortfolioReadViewModelMapper
                 .Setup(mapper => mapper.Map(It.IsAny<Portfolio>()))
-                .Returns(_fixture.ReadyPortfolioBaseViewModel)
+                .Returns(_fixture.ReadyPortfolioCreateReadViewModel)
                 .Verifiable();
 
             // Act
@@ -117,7 +117,7 @@ namespace WebApi.Test
                 .Verify();
 
             Assert.NotNull(result);
-            Assert.IsType<PortfolioBaseViewModel>(result);
+            Assert.IsType<PortfolioCreateReadViewModel>(result);
         }
 
         [Fact]

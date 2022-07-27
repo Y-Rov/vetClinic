@@ -4,27 +4,27 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.AddressMappers
 {
-    public class AddressUpdateMapper : IViewModelMapperUpdater<AddressBaseViewModel, Address>
+    public class AddressUpdateMapper : IViewModelMapperUpdater<AddressUpdateViewModel, Address>
     {
-        public Address Map(AddressBaseViewModel source)
+        public Address Map(AddressUpdateViewModel source)
         {
             return new Address
             {
                 City = source.City ?? string.Empty,
                 Street = source.Street ?? string.Empty,
                 House = source.House ?? string.Empty,
-                ZipCode = source.ZipCode ?? string.Empty,
-                ApartmentNumber = source.ApartmentNumber ?? 1
+                ApartmentNumber = source.ApartmentNumber,
+                ZipCode = source.ZipCode
             };
         }
 
-        public void Map(AddressBaseViewModel source, Address dest)
+        public void Map(AddressUpdateViewModel source, Address dest)
         {
             dest.City = source.City ?? dest.City;
             dest.Street = source.Street ?? dest.Street;   
             dest.House = source.House ?? dest.House;
-            dest.ApartmentNumber = source.ApartmentNumber ?? dest.ApartmentNumber;
-            dest.ZipCode = source.ZipCode ?? dest.ZipCode;
+            dest.ApartmentNumber = source.ApartmentNumber;
+            dest.ZipCode = source.ZipCode;
         }
     }
 }

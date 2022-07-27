@@ -15,7 +15,7 @@ namespace WebApi.Controllers
         private readonly IAddressService _addressService;
         private readonly IViewModelMapper<AddressCreateReadViewModel, Address> _addressCreateMapper;
         private readonly IViewModelMapper<Address, AddressCreateReadViewModel> _addressReadViewModelMapper;
-        private readonly IViewModelMapperUpdater<AddressBaseViewModel, Address> _addressUpdateMapper;
+        private readonly IViewModelMapperUpdater<AddressUpdateViewModel, Address> _addressUpdateMapper;
         private readonly IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>
             _addressReadEnumerableViewModelMapper;
 
@@ -23,7 +23,7 @@ namespace WebApi.Controllers
             IAddressService addressService,
             IViewModelMapper<AddressCreateReadViewModel, Address> addressCreateMapper,
             IViewModelMapper<Address, AddressCreateReadViewModel> addressReadViewModelMapper,
-            IViewModelMapperUpdater<AddressBaseViewModel, Address> addressUpdateMapper,
+            IViewModelMapperUpdater<AddressUpdateViewModel, Address> addressUpdateMapper,
             IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>> addressReadEnumerableViewModelMapper)
         {
             _addressService = addressService;
@@ -61,8 +61,8 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:int:min(1)}")]
-        public async Task<ActionResult> UpdateAsync([FromRoute] int id, [FromBody] AddressBaseViewModel addressBaseViewModel)
+        [HttpPatch("{id:int:min(1)}")]
+        public async Task<ActionResult> UpdateAsync([FromRoute] int id, [FromBody] AddressUpdateViewModel addressBaseViewModel)
         {
             var address = await _addressService.GetAddressByUserIdAsync(id);
             _addressUpdateMapper.Map(addressBaseViewModel, address);

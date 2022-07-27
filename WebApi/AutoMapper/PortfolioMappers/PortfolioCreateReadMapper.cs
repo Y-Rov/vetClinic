@@ -4,15 +4,16 @@ using WebApi.AutoMapper.Interface;
 
 namespace WebApi.AutoMapper.PortfolioMappers
 {
-    public class PortfolioCreateViewModelMapper : IViewModelMapper<Portfolio, PortfolioCreateReadViewModel>
+    public class PortfolioCreateReadMapper : IViewModelMapper<PortfolioCreateReadViewModel, Portfolio>
     {
-        public PortfolioCreateReadViewModel Map(Portfolio source)
+        public Portfolio Map(PortfolioCreateReadViewModel source)
         {
-            return new PortfolioCreateReadViewModel
+            return new Portfolio
             {
-                Id = source.UserId,
+                UserId = source.Id,
                 Description = source.Description
             };
         }
     }
 }
+

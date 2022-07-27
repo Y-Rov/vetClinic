@@ -18,7 +18,7 @@ namespace WebApi.Test.Fixtures
             MockAddressService = fixture.Freeze<Mock<IAddressService>>();
             MockAddressCreateMapper = fixture.Freeze<Mock<IViewModelMapper<AddressCreateReadViewModel, Address>>>();
             MockAddressReadViewModelMapper = fixture.Freeze<Mock<IViewModelMapper<Address, AddressCreateReadViewModel>>>();
-            MockAddressUpdateMapper = fixture.Freeze<Mock<IViewModelMapperUpdater<AddressBaseViewModel, Address>>>();
+            MockAddressUpdateMapper = fixture.Freeze<Mock<IViewModelMapperUpdater<AddressUpdateViewModel, Address>>>();
             MockAddressReadEnumerableViewModelMapper = fixture
                 .Freeze<Mock<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>>>();
 
@@ -32,7 +32,7 @@ namespace WebApi.Test.Fixtures
 
             UserId = 1;
             FullAddress = GenerateAddress();
-            FullAddressBaseViewModel = GenerateAddressBaseViewModel();
+            FullAddressUpdateViewModel = GenerateAddressUpdateViewModel();
             FullAddressCreateReadViewModel = GenerateAddressCreateReadViewModel();
             Addresses = GenerateListOfAddresses();
             AddressCreateReadViewModels = GenerateListOfAddressCreateReadViewModels();
@@ -42,7 +42,7 @@ namespace WebApi.Test.Fixtures
         public Mock<IAddressService> MockAddressService { get; }
         public Mock<IViewModelMapper<AddressCreateReadViewModel, Address>> MockAddressCreateMapper { get; }
         public Mock<IViewModelMapper<Address, AddressCreateReadViewModel>> MockAddressReadViewModelMapper { get; }
-        public Mock<IViewModelMapperUpdater<AddressBaseViewModel, Address>> MockAddressUpdateMapper { get; }
+        public Mock<IViewModelMapperUpdater<AddressUpdateViewModel, Address>> MockAddressUpdateMapper { get; }
         public Mock<IEnumerableViewModelMapper<IEnumerable<Address>, IEnumerable<AddressCreateReadViewModel>>> MockAddressReadEnumerableViewModelMapper
         {
             get;
@@ -50,7 +50,7 @@ namespace WebApi.Test.Fixtures
 
         public int UserId { get; }
         public Address FullAddress { get; }
-        public AddressBaseViewModel FullAddressBaseViewModel { get; }
+        public AddressUpdateViewModel FullAddressUpdateViewModel { get; }
         public AddressCreateReadViewModel FullAddressCreateReadViewModel { get; }
         public IEnumerable<Address> Addresses { get; }
         public IEnumerable<AddressCreateReadViewModel> AddressCreateReadViewModels { get; }
@@ -62,11 +62,11 @@ namespace WebApi.Test.Fixtures
             return address;
         }
 
-        private AddressBaseViewModel GenerateAddressBaseViewModel()
+        private AddressUpdateViewModel GenerateAddressUpdateViewModel()
         {
-            var addressBaseViewModel = new AddressBaseViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
+            var AddressUpdateViewModel = new AddressUpdateViewModel { City = "Lviv", Street = "Franka", House = "20A", ApartmentNumber = 10, ZipCode = "79007" };
 
-            return addressBaseViewModel;
+            return AddressUpdateViewModel;
         }
 
         private AddressCreateReadViewModel GenerateAddressCreateReadViewModel()

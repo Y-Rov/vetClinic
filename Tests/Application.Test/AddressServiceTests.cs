@@ -197,12 +197,6 @@ namespace Application.Test
         [Fact]
         public async Task UpdateAddressAsync_WhenAddressIsCorrect_ThenItIsUpdatedSuccessfullyAndTaskIsReturned()
         {
-            _fixture.MockAddressRepository
-                .Setup(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
-                    It.IsAny<string>()))
-                .ReturnsAsync(_fixture.TestAddress);
-
             _fixture.MockLoggerManager
                 .Setup(logger => logger.LogInfo(It.IsAny<string>()))
                 .Verifiable();
@@ -212,9 +206,7 @@ namespace Application.Test
 
             // Assert
             _fixture.MockAddressRepository
-                .Verify(repository => repository.GetById(
-                    It.Is<int>(userId => userId == _fixture.TestAddress.UserId),
-                    It.IsAny<string>()), Times.Once);
+                .Verify(repository => repository.SaveChangesAsync(), Times.Once);
 
             _fixture.MockLoggerManager
                 .Verify();
