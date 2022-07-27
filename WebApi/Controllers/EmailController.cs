@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -15,12 +16,14 @@ namespace WebApi.Controllers
             _service = service;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task SendEmail([FromBody] EmailMessage email) =>
+        public async Task SendEmail(EmailMessage email) =>
             await _service.Send(email);
 
-        [HttpPost("/notify")]
-        public async Task NotifyUsers([FromBody] Mailing message) =>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("notify")]
+        public async Task NotifyUsers(Mailing message) =>
             await _service.NotifyUsers(message);
     }
 }

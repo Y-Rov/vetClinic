@@ -1,5 +1,7 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -17,21 +19,49 @@ namespace Application.Services
 
         IConfiguration _configuration;
         ILoggerManager _logger;
+        IUserRepository _userRepository;
 
-        public EmailService(IConfiguration configuration, ILoggerManager logger)
+        public EmailService(
+            IConfiguration configuration, 
+            ILoggerManager logger,
+            IUserRepository userRepository)
         {
             _configuration = configuration;
             _logger = logger;
+            _userRepository = userRepository;
             address = _configuration.GetSection("Mailbox").GetSection("Address").Value;
             secret = _configuration.GetSection("Mailbox").GetSection("Secret").Value;
         }
 
+        private async Task<List<string>?> GetRecipientsEmails(string role)
+        {
+            IEnumerable<User>? users = null;
+
+            if (role == "employees")
+                users = await _userRepository.GetByRolesAsync(
+                    roleIds: new List<int> { 2, 3 });
+            else if (role == "clients")
+                users = await _userRepository.GetByRolesAsync(
+                    roleIds: new List<int> { 4 });
+
+            return users?.Select(user => user.Email).ToList();
+        }
+
+
         public async Task NotifyUsers(Mailing message)
         {
+            var usersEmails = await GetRecipientsEmails(message.Recipients);
+
+            if(usersEmails == null || usersEmails.Count == 0)
+            {
+                _logger.LogError($"{message.Recipients} not found!");
+                throw new NotFoundException($"{message.Recipients} not found!");
+            }
+
             var createdMessage = new MimeMessage();
             var recipients = new List<MailboxAddress>();
 
-            foreach (var recipient in message.Recipients)
+            foreach (var recipient in usersEmails)
                 recipients.Add(MailboxAddress.Parse(recipient));
 
             createdMessage.From.Add(new MailboxAddress("Vet clinic", address));
@@ -62,7 +92,7 @@ namespace Application.Services
                 client.Disconnect(true);
                 client.Dispose();
             }
-            _logger.LogInfo("Email was successfully sended");
+            _logger.LogInfo("Emails were successfully sended");
         }
 
         public async Task Send(EmailMessage message)
@@ -94,7 +124,7 @@ namespace Application.Services
                 client.Disconnect(true);
                 client.Dispose();
             }
-            _logger.LogInfo("Emails were successfully sended");
+            _logger.LogInfo("Email was successfully sended");
         }
     }
 }
