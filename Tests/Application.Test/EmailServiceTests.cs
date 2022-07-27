@@ -1,5 +1,6 @@
 ﻿using Application.Test.Fixtures;
 using Core.Entities;
+using Core.Exceptions;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -52,7 +53,7 @@ namespace Application.Test
         }
 
         [Fact]
-        public async Task NotifyEmployees_whenRecipientsExists_thenSendEmails()
+        public async Task NotifyUsers_whenRecipientsExist_thenSendEmails()
         {
             _fixture.MockUserRepository.Setup(repository =>
                 repository.GetByRolesAsync(
@@ -64,6 +65,22 @@ namespace Application.Test
             await _fixture.MockService.NotifyUsers(_fixture.TestMailing);
 
             _fixture.MockLoggerManager.Verify(logger => logger.LogInfo("Emails were successfully sended"), Times.Once);
+        }
+
+        [Fact]
+        public async Task NotifyUsers_whenRecipientsNotExist_thenSendEmails()
+        {
+            _fixture.MockUserRepository.Setup(repository =>
+                repository.GetByRolesAsync(
+                    It.IsAny<List<int>>(),
+                    It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>?>()))
+                .ReturnsAsync(_fixture.EmptyUsers);
+
+
+            var result = _fixture.MockService.NotifyUsers(_fixture.TestMailing);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => result);
         }
     }
 }

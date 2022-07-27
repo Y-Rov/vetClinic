@@ -52,7 +52,7 @@ namespace Application.Services
         {
             var usersEmails = await GetRecipientsEmails(message.Recipients);
 
-            if(usersEmails == null)
+            if(usersEmails == null || usersEmails.Count == 0)
             {
                 _logger.LogError($"{message.Recipients} not found!");
                 throw new NotFoundException($"{message.Recipients} not found!");
